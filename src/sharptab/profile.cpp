@@ -12,13 +12,6 @@
 namespace sharp {
 
 	/*
-	 * An empty constructor - do nothing
-	 */
-	Profile::Profile() {
-		return;
-	}
-
-	/*
 	 * Construct a new Profile who's arrays have a length
 	 * of num_levs, and an integer describing what kind
 	 * of sounding it is (oberved, model, etc). 

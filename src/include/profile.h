@@ -55,10 +55,6 @@ namespace sharp {
 
         int m_nlevs;
         Source m_snd_type; // used to determine what kind of profile (e.g. observed, model)
-		
-
-		// Empty constructor
-		Profile();
 
 		// Constructor that allocates memory for
 		// the profile arrays
