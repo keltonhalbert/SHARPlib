@@ -25,6 +25,16 @@ namespace sharp {
     struct Profile {
 
 		/*
+		 * Defines what type of soundings we can use
+		 * and helps differentiate those types
+		 */
+		enum Source : unsigned int {
+			Observed = 0;
+			PFC = 1;
+			ACARS = 2;
+		}
+
+		/*
 		 * The m_ convention is a C++ convention
 		 * used to differenciate between variables
 		 * that are the members of a class/struct, 
@@ -41,22 +51,24 @@ namespace sharp {
         float* m_vtmp;
         float* m_uwin;
         float* m_vwin;
+		float* m_omeg;
 
         int m_nlevs;
-        int m_snd_type; // used to determine what kind of profile (e.g. observed, model)
+        Source m_snd_type; // used to determine what kind of profile (e.g. observed, model)
+		
 
 		// Empty constructor
 		Profile();
 
 		// Constructor that allocates memory for
 		// the profile arrays
-		Profile(int num_levels, int sounding_type);
+		Profile(int num_levels, Source sounding_type);
 
 		// Constructor that takes previously allocated
 		// arrays and assigns them to the struct
 		Profile(float* pres, float* hght, float* tmpc, float* dwpc, \
 				float* mixr, float* vtmp, float* uwin, float* vwin,
-				int nlevs, int type);
+				float* omeg, int nlevs, Source sounding_type);
 
 		// Destructor that deallocates arrays
 		~Profile();
