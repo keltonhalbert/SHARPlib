@@ -10,70 +10,57 @@
 
 namespace sharp {
     
+	/*
+	 * The Profile struct is used to store the arrays
+	 * of vertical data associated with either a weather
+	 * balloon or forecast model sounding profile. In 
+	 * C++, structs and classes are completely identical. 
+	 * We use a struct in this case, however, since really
+	 * it is just a data container, and we don't need
+	 * things like inheritence, polymorphism, etc that are
+	 * typically associated with classes. Additionally,
+	 * in C++ structs have all members and functions 
+	 * set to 'public' as default, which is desireable!
+	 */
     struct Profile {
 
-        float* pres;
-        float* hght;
-        float* tmpc;
-        float* dwpc;
-        float* mixr;
-        float* vtmp;
-        float* uwin;
-        float* vwin;
+		/*
+		 * The m_ convention is a C++ convention
+		 * used to differenciate between variables
+		 * that are the members of a class/struct, 
+		 * and everything else. This is helpful for
+		 * keeping track of what is a part of the 
+		 * class, and what might be a local variable 
+		 * or an argument passed to a function. 
+		 */
+        float* m_pres;
+        float* m_hght;
+        float* m_tmpc;
+        float* m_dwpc;
+        float* m_mixr;
+        float* m_vtmp;
+        float* m_uwin;
+        float* m_vwin;
 
-        int nlevs;
-        int type; // used to determine what kind of profile (e.g. observed, model)
+        int m_nlevs;
+        int m_snd_type; // used to determine what kind of profile (e.g. observed, model)
+
+		// Empty constructor
+		Profile();
 
 		// Constructor that allocates memory for
 		// the profile arrays
-		Profile(int num_levels, int sounding_type) {
-			this->pres = new float[num_levels];
-			this->hght = new float[num_levels];
-			this->tmpc = new float[num_levels];
-			this->dwpc = new float[num_levels];
-			this->mixr = new float[num_levels];
-			this->vtmp = new float[num_levels];
-			this->uwin = new float[num_levels];
-			this->vwin = new float[num_levels];
-
-			this->nlevs = num_levels;
-			this->type = sounding_type;
-			
-		}
-
+		Profile(int num_levels, int sounding_type);
 
 		// Constructor that takes previously allocated
 		// arrays and assigns them to the struct
 		Profile(float* pres, float* hght, float* tmpc, float* dwpc, \
 				float* mixr, float* vtmp, float* uwin, float* vwin,
-				int nlevs, int type) {
+				int nlevs, int type);
 
-			this->pres = pres;
-			this->hght = hght;
-			this->tmpc = tmpc;
-			this->dwpc = dwpc;
-			this->mixr = mixr;
-			this->vtmp = vtmp;
-			this->uwin = uwin;
-			this->vwin = vwin;
-			this->nlevs = nlevs;
-			this->type = type
-		}
+		// Destructor that deallocates arrays
+		~Profile();
 
-		// destructor that frees memory 
-		// when we destroy the Profile
-		~Profile() {
-
-			delete[] this->pres;
-			delete[] this->hght;
-			delete[] this->tmpc;
-			delete[] this->dwpc;
-			delete[] this->mixr;
-			delete[] this->vtmp;
-			delete[] this->uwin;
-			delete[] this->vwin;
-
-		}
     }
 
 }
