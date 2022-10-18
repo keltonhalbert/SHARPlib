@@ -9,5 +9,8 @@ Though there are likely to be instances where it will need to be deviated from, 
 
 ### Building the Docs
 To build the HTML documentation pages, simply navigate your terminal to the `docs` directory and run 
+
 ```doxygen Doxyfile```
+
 This will generate the HTML pages using the docstring in the header files. Obviously, it requires that Doxygen be installed, [which can be found here.](https://doxygen.nl/) 
+
