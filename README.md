@@ -8,4 +8,6 @@ Code is designed to target the **C++17** standard `-std=c++17`, and generally sh
 Though there are likely to be instances where it will need to be deviated from, this code generally attempts to abide by the [Google C++ style guide](https://google.github.io/styleguide/cppguide.html). While line width requirements are generally archaic, where possible we attempt to __keep line lengths to a maximum of 80 characters__ in order to preserve split screen code editing.  
 
 ### Building the Docs
-To build the HTML documentation pages, simply navigate your terminal to the `docs` directory and run `doxygen Doxyfile`, which will generate the HTML pages using the docstring in the header files. Obviously, it requires that Doxygen be installed, [which can be found here.](https://doxygen.nl/) 
+To build the HTML documentation pages, simply navigate your terminal to the `docs` directory and run 
+```doxygen Doxyfile```
+This will generate the HTML pages using the docstring in the header files. Obviously, it requires that Doxygen be installed, [which can be found here.](https://doxygen.nl/) 
