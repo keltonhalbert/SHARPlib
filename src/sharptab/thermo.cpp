@@ -94,8 +94,8 @@ inline float lcltemp(float temperature, float dewpoint) {
 
 	s = temperature - dewpoint;
 	dlt = s * (1.2185 + .001278 * temperature + s * 
-          (-.00219 + 1.173E-05 * s - .0000052 * temp));
-	return temp - dlt;
+          (-.00219 + 1.173E-05 * s - .0000052 * temperature));
+	return temperature - dlt;
 }
 
 /*
@@ -149,7 +149,7 @@ inline float thalvl(float potential_temperature, float temperature) {
 
 	potential_temperature += ZEROCNK;
 	temperature           += ZEROCNK;
-	return 1000.0 / std::pow((thta/temperature), (1.0/ROCP));
+	return 1000.0 / std::pow((potential_temperature/temperature), (1.0/ROCP));
 }
 
 
@@ -169,7 +169,7 @@ inline float thalvl(float potential_temperature, float temperature) {
  */
 inline float theta(float pressure, float temperature, float ref_pressure) {
     if ((temperature == MISSING) || (pressure == MISSING)
-                       || (reference_pressure == MISSING)) {
+                             || (ref_pressure == MISSING)) {
        return MISSING;
     } 
 
