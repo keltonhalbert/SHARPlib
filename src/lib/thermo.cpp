@@ -12,18 +12,6 @@
 
 namespace sharp {
 
-/*
- * WOBF
- * Authored by John Hart - NSSFC KCMO / NWSSPC OUN
- *
- * Compute the Wobus function for moist parcel 
- * ascent given a temperature in degrees Celsius. 
- * Returns the Sat. Pot. Temperature of a parcel 
- * in Celsius.
- *
- * @param    float temperature                     (degC)
- * @return   float Sat. Pot. Temperature of Parcel (degC)
- */
 inline float wobf(float temperature) {
     float x;
     double pol;
@@ -48,16 +36,6 @@ inline float wobf(float temperature) {
     }
 }
 
-/*
- * VAPPRES
- * Authored by John Hart - NSSFC KCMO / NWSSPC OUN
- *
- * Computes the vapor pressure of dry air at the
- * given temperature in degrees Celsius.
- *
- * @param    float temperature    (degC)
- * @return   float vapor_pressure (mb) 
- */
 inline float vappres(float temperature) {
 	double pol;
 
@@ -73,18 +51,6 @@ inline float vappres(float temperature) {
 	return 6.1078 / (pol * pol);
 }
 
-/*
- * LCLTEMP
- * Authored by John Hart - NSSFC KCMO / NWSSPC OUN
- *
- * Computes the temperature of a parcels LCL in 
- * Celsius given the parcel temperature and 
- * dewpoint in Celsius. 
- *
- * @param    float temperature     (degC)
- * @param    float dewpoint        (degC)
- * @return   float lcl_temperature (degC) 
- */
 inline float lcltemp(float temperature, float dewpoint) {
 	float s, t, dlt;
 
@@ -98,18 +64,6 @@ inline float lcltemp(float temperature, float dewpoint) {
 	return temperature - dlt;
 }
 
-/*
- * TEMPERATURE_AT_MIXRATIO 
- * Authored by John Hart - NSSFC KCMO / NWSSPC OUN
- *
- * Computes the temperature in Celsius of air at the
- * given water vapor mixing ratio in g/kg and the 
- * air pressure in mb.
- *
- * @param    float mixratio    (g/kg)
- * @param    float pressute    (mb)
- * @return   float temperature (degC) 
- */
 inline float temperature_at_mixratio(float mixratio, float pressure) {
     if ((mixratio == MISSING) || (pressure == MISSING)) {
        return MISSING;
@@ -129,18 +83,6 @@ inline float temperature_at_mixratio(float mixratio, float pressure) {
 	return (float)(tmrk - ZEROCNK);
 }
 
-/*
- * THALVL 
- * Authored by John Hart - NSSFC KCMO / NWSSPC OUN
- *
- * Returns the pressure level in millibars of a parcel
- * given the potential temperature in Celsius and the
- * temperature of the parcel in Celsius.
- *
- * @param    float potential_temperature (degC)
- * @param    float temperature           (degC)
- * @return   float pressure              (mb) 
- */
 inline float thalvl(float potential_temperature, float temperature) {
     if ((potential_temperature == MISSING)
                || (temperature == MISSING)) {
@@ -153,20 +95,6 @@ inline float thalvl(float potential_temperature, float temperature) {
 }
 
 
-/*
- * THETA 
- * Authored by John Hart - NSSFC KCMO / NWSSPC OUN
- *
- * Returns the potential temperature in Celsius of
- * a parcel given its pressure in millibars and
- * temperature in Celsius. The final argument is
- * the reference level, which is usually 1000.0 mb.
- *
- * @param    float pressure              (mb)
- * @param    float temperature           (degC)
- * @param    float ref_pressure          (mb)
- * @return   float potential_temperature (degC) 
- */
 inline float theta(float pressure, float temperature, float ref_pressure) {
     if ((temperature == MISSING) || (pressure == MISSING)
                              || (ref_pressure == MISSING)) {
