@@ -29,10 +29,10 @@ namespace sharp {
 		 * and helps differentiate those types
 		 */
 		enum Source : unsigned int {
-			Observed = 0;
-			PFC = 1;
-			ACARS = 2;
-		}
+			Observed = 0,
+			PFC = 1,
+			ACARS = 2,
+		};
 
 		/*
 		 * The m_ convention is a C++ convention
@@ -69,6 +69,6 @@ namespace sharp {
 		// Destructor that deallocates arrays
 		~Profile();
 
-    }
+    };
 
 }
