@@ -83,7 +83,7 @@ inline float temperature_at_mixratio(float mixratio, float pressure) {
 	return (float)(tmrk - ZEROCNK);
 }
 
-inline float thalvl(float potential_temperature, float temperature) {
+inline float theta_level(float potential_temperature, float temperature) {
     if ((potential_temperature == MISSING)
                || (temperature == MISSING)) {
        return MISSING;

@@ -81,7 +81,7 @@ inline float temperature_at_mixratio(float mixratio, float pressure);
  * \param    temperature           (degC)
  * \return   pressure              (mb) 
  */
-inline float thalvl(float potential_temperature, float temperature);
+inline float theta_level(float potential_temperature, float temperature);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
