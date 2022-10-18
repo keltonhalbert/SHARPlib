@@ -10,7 +10,12 @@
 
 namespace sharp {
 
-
+inline float wobf(float temperature);
+inline float vappres(float temperature);
+inline float lcltemp(float temperature, float dewpoint);
+inline float temperature_at_mixratio(float mixratio, float pressure);
+inline float thalvl(float potential_temperature, float temperature);
+inline float theta(float pressure, float temperature, float ref_pressure);
 
 
 }
