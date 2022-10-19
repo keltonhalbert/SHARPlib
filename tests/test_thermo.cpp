@@ -1,12 +1,8 @@
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest.h"
 #include "thermo.h"
 
-int main() {
+TEST_CASE("Testing the theta (Potential Temperature) function") {
 
-
-
-
-
-
-
-    return 0;
 }
+
