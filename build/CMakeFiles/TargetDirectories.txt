@@ -1,7 +1,0 @@
-/users/khalbert/CODEBASE/NSHARP-calc/build/CMakeFiles/SHARP.dir
-/users/khalbert/CODEBASE/NSHARP-calc/build/CMakeFiles/edit_cache.dir
-/users/khalbert/CODEBASE/NSHARP-calc/build/CMakeFiles/rebuild_cache.dir
-/users/khalbert/CODEBASE/NSHARP-calc/build/CMakeFiles/list_install_components.dir
-/users/khalbert/CODEBASE/NSHARP-calc/build/CMakeFiles/install.dir
-/users/khalbert/CODEBASE/NSHARP-calc/build/CMakeFiles/install/local.dir
-/users/khalbert/CODEBASE/NSHARP-calc/build/CMakeFiles/install/strip.dir
