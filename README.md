@@ -12,8 +12,9 @@ Another note to the Style Guide is that, where possible/appropriate, full or ver
 ### Building the Static Library
 To build the static library, simply run the following commands from the project root directory:
 ```
-cmake -B build
-cd build; make; make install
+mkdir build; cd build
+cmake .. 
+make
 ```
 It will install the static library to PROJECT_ROOT/lib
 
