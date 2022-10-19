@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.12.2)
 project(SHARP)
+include(CTest)
 
 ## Useful macro for setting the CXX standard
 macro(use_cxx17)
@@ -36,3 +37,4 @@ install(TARGETS SHARP DESTINATION lib)
 
 ## add unit test directory
 add_subdirectory(tests)
+add_test(NAME sharp_tests COMMAND sharp_tests)
