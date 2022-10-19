@@ -68,12 +68,12 @@ inline float temperature_at_mixratio(float mixratio, float pressure) {
        return MISSING;
     } 
 
-	double c1 = 0.0498646455;
-	double c2 = 2.4082965;
-	double c3 = 7.07475;
-	double c4 = 38.9114;
-	double c5 = 0.0915;
-	double c6 = 1.2035;
+	const double c1 = 0.0498646455;
+	const double c2 = 2.4082965;
+	const double c3 = 7.07475;
+	const double c4 = 38.9114;
+	const double c5 = 0.0915;
+	const double c6 = 1.2035;
 
 	double x    = std::log10( mixratio * pressure / (622.0 + mixratio));
 	double tmrk = std::pow(10.0, c1 * x + c2) - c3 + c4 * 
