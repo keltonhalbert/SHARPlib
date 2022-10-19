@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 2.8.12.2)
 project(SHARPlib)
 
 ## Bring the headers into the project
@@ -9,6 +9,9 @@ file(GLOB SOURCES "src/sharptab/*.cpp")
 
 ## Add the library build command
 add_library(SHARP STATIC ${SOURCES})
+
+## This is where we set the C++ standard
+add_compile_options(-std=c++17)
 
 ## set install prefix to ../lib
 set(LOCAL_PREFIX "../")
