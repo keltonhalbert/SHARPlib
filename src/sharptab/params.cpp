@@ -6,7 +6,6 @@
 // Written for the NWS Storm Predidiction Center
 // Based on NSHARP routines originally written by
 // John Hart and Rich Thompson at SPC. 
-#pragma once
 
 namespace sharp {
 
