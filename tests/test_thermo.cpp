@@ -4,5 +4,7 @@
 
 TEST_CASE("Testing the theta (Potential Temperature) function") {
 
+    CHECK(sharp::theta(900.0, 10.0, 1000.0) == doctest::Approx(18.6444));
+
 }
 
