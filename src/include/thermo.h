@@ -39,7 +39,7 @@ inline float wobf(float temperature);
  * \param    temperature    (degC)
  * \return   vapor_pressure (mb) 
  */
-inline float vappres(float temperature);
+inline float vapor_pressure(float temperature);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -53,7 +53,7 @@ inline float vappres(float temperature);
  * \param    dewpoint        (degC)
  * \return   lcl_temperature (degC) 
  */
-inline float lcltemp(float temperature, float dewpoint);
+inline float lcl_temperature(float temperature, float dewpoint);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
