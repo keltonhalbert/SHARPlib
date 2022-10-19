@@ -1,6 +1,16 @@
 cmake_minimum_required(VERSION 2.8.12.2)
 project(SHARPlib)
 
+## This is where we set the C++ standard
+macro(use_cxx17)
+  if (CMAKE_VERSION VERSION_LESS "3.1")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+  else ()
+    set (CMAKE_CXX_STANDARD 17)
+  endif ()
+endmacro(use_cxx17)
+use_cxx17()
+
 ## Bring the headers into the project
 include_directories(include)
 
@@ -10,8 +20,9 @@ file(GLOB SOURCES "src/sharptab/*.cpp")
 ## Add the library build command
 add_library(SHARP STATIC ${SOURCES})
 
-## This is where we set the C++ standard
-add_compile_options(-std=c++17)
+
+## Make the output from the makefiles verbose
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 ## set install prefix to ../lib
 set(LOCAL_PREFIX "../")
