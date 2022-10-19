@@ -9,6 +9,14 @@ Though there are likely to be instances where it will need to be deviated from, 
 
 Another note to the Style Guide is that, where possible/appropriate, full or verbose variable names are preferred to abbreviated ones when working with function parameters. For example, `temperature` or `pressure` is preferable to `temp` or `pres` when defining function arguments, so that it is abundantly clear to the code reader what is being passed through. This is especially the case with temperature, as `temp` is commonly used to refer to temporary variables, leading to confusion. 
 
+### Building the Static Library
+To build the static library, simply run the following commands from the project root directory:
+```
+cmake -B build
+cd build; make; make install
+```
+It will install the static library to PROJECT_ROOT/lib
+
 ### Building the Docs
 To build the HTML documentation pages, simply navigate your terminal to the `docs` directory and run:
 
