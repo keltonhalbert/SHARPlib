@@ -26,6 +26,12 @@
 *.a
 *.lib
 
+## CMake stuff
+*.cmake
+CMakeCahce.txt
+install_manifest.txt
+Makefile
+
 # Executables
 *.exe
 *.out
