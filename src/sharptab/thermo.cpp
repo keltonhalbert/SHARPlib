@@ -8,7 +8,7 @@
 // John Hart and Rich Thompson at SPC. 
 #pragma once
 #include <cmath>
-#include "../include/constants.h"
+#include "constants.h"
 
 namespace sharp {
 
