@@ -22,7 +22,7 @@ add_library(SHARP STATIC ${SOURCES})
 
 
 ## Make the output from the makefiles verbose
-set(CMAKE_VERBOSE_MAKEFILE ON)
+#set(CMAKE_VERBOSE_MAKEFILE ON)
 
 ## set install prefix to ../lib
 set(LOCAL_PREFIX "../")
