@@ -36,7 +36,7 @@ inline float wobf(float temperature) {
     }
 }
 
-inline float vappres(float temperature) {
+inline float vapor_pressure(float temperature) {
 	double pol;
 
     if (temperature == MISSING) return MISSING;
@@ -51,7 +51,7 @@ inline float vappres(float temperature) {
 	return 6.1078 / (pol * pol);
 }
 
-inline float lcltemp(float temperature, float dewpoint) {
+inline float lcl_temperature(float temperature, float dewpoint) {
 	float s, t, dlt;
 
     if ((temperature == MISSING) || (dewpoint == MISSING)) {
