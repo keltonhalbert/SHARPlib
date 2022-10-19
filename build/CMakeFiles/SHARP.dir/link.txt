@@ -1,0 +1,2 @@
+/users/khalbert/installs/git/spack/opt/spack/linux-rhel7-nehalem/gcc-10.3.0/binutils-2.38-xzgat4k66roe5pn7d2f3aaepojdirkww/bin/ar qc libSHARP.a CMakeFiles/SHARP.dir/src/sharptab/interp.cpp.o CMakeFiles/SHARP.dir/src/sharptab/params.cpp.o CMakeFiles/SHARP.dir/src/sharptab/profile.cpp.o CMakeFiles/SHARP.dir/src/sharptab/thermo.cpp.o CMakeFiles/SHARP.dir/src/sharptab/winds.cpp.o
+/users/khalbert/installs/git/spack/opt/spack/linux-rhel7-nehalem/gcc-10.3.0/binutils-2.38-xzgat4k66roe5pn7d2f3aaepojdirkww/bin/ranlib libSHARP.a
