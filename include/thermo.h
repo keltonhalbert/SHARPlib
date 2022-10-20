@@ -27,7 +27,7 @@ namespace sharp {
  * \param    temperature                     (degC)
  * \return   Sat. Pot. Temperature of Parcel (degC)
  */
-inline float wobf(float temperature);
+float wobf(float temperature);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -39,7 +39,7 @@ inline float wobf(float temperature);
  * \param    temperature    (degC)
  * \return   vapor_pressure (mb) 
  */
-inline float vapor_pressure(float temperature);
+float vapor_pressure(float temperature);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -53,7 +53,7 @@ inline float vapor_pressure(float temperature);
  * \param    dewpoint        (degC)
  * \return   lcl_temperature (degC) 
  */
-inline float lcl_temperature(float temperature, float dewpoint);
+float lcl_temperature(float temperature, float dewpoint);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -67,7 +67,7 @@ inline float lcl_temperature(float temperature, float dewpoint);
  * \param    pressure    (mb)
  * \return   temperature (degC) 
  */
-inline float temperature_at_mixratio(float mixratio, float pressure);
+float temperature_at_mixratio(float mixratio, float pressure);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -81,7 +81,7 @@ inline float temperature_at_mixratio(float mixratio, float pressure);
  * \param    temperature           (degC)
  * \return   pressure              (mb) 
  */
-inline float theta_level(float potential_temperature, float temperature);
+float theta_level(float potential_temperature, float temperature);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -97,7 +97,7 @@ inline float theta_level(float potential_temperature, float temperature);
  * \param    ref_pressure          (mb)
  * \return   potential_temperature (degC) 
  */
-inline float theta(float pressure, float temperature, float ref_pressure);
+float theta(float pressure, float temperature, float ref_pressure);
 
 
 }

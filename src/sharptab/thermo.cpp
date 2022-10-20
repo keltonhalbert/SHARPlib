@@ -11,7 +11,7 @@
 
 namespace sharp {
 
-inline float wobf(float temperature) {
+float wobf(float temperature) {
     float x;
     double pol;
 
@@ -35,7 +35,7 @@ inline float wobf(float temperature) {
     }
 }
 
-inline float vapor_pressure(float temperature) {
+float vapor_pressure(float temperature) {
 	double pol;
 
     if (temperature == MISSING) return MISSING;
@@ -50,7 +50,7 @@ inline float vapor_pressure(float temperature) {
 	return 6.1078 / (pol * pol);
 }
 
-inline float lcl_temperature(float temperature, float dewpoint) {
+float lcl_temperature(float temperature, float dewpoint) {
 	float s, t, dlt;
 
     if ((temperature == MISSING) || (dewpoint == MISSING)) {
@@ -63,7 +63,7 @@ inline float lcl_temperature(float temperature, float dewpoint) {
 	return temperature - dlt;
 }
 
-inline float temperature_at_mixratio(float mixratio, float pressure) {
+float temperature_at_mixratio(float mixratio, float pressure) {
     if ((mixratio == MISSING) || (pressure == MISSING)) {
        return MISSING;
     } 
@@ -82,7 +82,7 @@ inline float temperature_at_mixratio(float mixratio, float pressure) {
 	return (float)(tmrk - ZEROCNK);
 }
 
-inline float theta_level(float potential_temperature, float temperature) {
+float theta_level(float potential_temperature, float temperature) {
     if ((potential_temperature == MISSING)
                || (temperature == MISSING)) {
        return MISSING;
@@ -94,7 +94,7 @@ inline float theta_level(float potential_temperature, float temperature) {
 }
 
 
-inline float theta(float pressure, float temperature, float ref_pressure) {
+float theta(float pressure, float temperature, float ref_pressure) {
     if ((temperature == MISSING) || (pressure == MISSING)
                              || (ref_pressure == MISSING)) {
        return MISSING;
