@@ -49,4 +49,4 @@ install(TARGETS SHARP DESTINATION lib)
 
 ## add unit test directory
 add_subdirectory(tests)
-add_test(NAME sharp_tests COMMAND sharp_tests)
+add_test(NAME sharp_thermo COMMAND test_sharp_thermo)
