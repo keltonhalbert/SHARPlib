@@ -20,8 +20,19 @@ mkdir build; cd build
 cmake .. 
 make
 make test
+make install
 ```
-It will install the static library to PROJECT_ROOT/lib
+It will install the static library to PROJECT_ROOT/lib.
+
+The library will be built in release mode by default, which sets the `-O3` optimization flag. To build in debug mode, clean out the build directory (CMake will cache certain things) and run the following command and proceed to build normally:
+```
+cmake .. -DCMAKE_BUILD_TYPE=Debug
+```
+
+If you would like a verbose compile process, run the make command in the following manner:
+```
+make VERBOSE=1
+```
 
 ### Building the Docs
 To build the HTML documentation pages, simply navigate your terminal to the `docs` directory and run:
