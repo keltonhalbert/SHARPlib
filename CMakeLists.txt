@@ -40,11 +40,10 @@ endif()
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
-## set install prefix to ../lib
-set(LOCAL_PREFIX "../")
+set(LOCAL_PREFIX "${CMAKE_SOURCE_DIR}")
 set(CMAKE_INSTALL_PREFIX "${LOCAL_PREFIX}")
 
-## install it to the local lib directory
+## install it to the PROJECT_ROOT/lib directory
 install(TARGETS SHARP DESTINATION lib)
 
 ## add unit test directory
