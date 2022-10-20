@@ -1,6 +1,6 @@
 # SHARP-calc
 [![CMake](https://github.com/keltonhalbert/SHARP-calc/actions/workflows/cmake.yml/badge.svg)](https://github.com/keltonhalbert/SHARP-calc/actions/workflows/cmake.yml)
-**Sounding and Hodograph Analysis and Research Program (SHARP)** C++ library for conducting analysis of atmospheric sounding profiles. Based on the NSHARP routines written by John Hart and Rich Thompson at the NWS Storm Prediction Center in Norman, Oklahoma. 
+\n**Sounding and Hodograph Analysis and Research Program (SHARP)** C++ library for conducting analysis of atmospheric sounding profiles. Based on the NSHARP routines written by John Hart and Rich Thompson at the NWS Storm Prediction Center in Norman, Oklahoma. 
 
 ### C++ Version
 Code is designed to target the **C++17** standard `-std=c++17`, and generally should not use **C++2X** features. This library is written to work on **RHEL8** systems, and with careful configuration, backwards to **RHEL7**, and should not attempt to use bleeding edge features at risk of breaking compatibility. The C++ 17 standard is not supported by the default RHEL7 compilers, but a version of GCC that supports the C++17 standard can be acquired through the **__devtoolset__** RHEL channel. 
