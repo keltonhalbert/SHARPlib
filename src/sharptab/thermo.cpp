@@ -204,6 +204,7 @@ float wetlift(float pressure, float temperature, float lifted_pressure) {
 	return saturated_lift(lifted_pressure, thm);
 }
 
+
 void drylift(float pressure, float temperature, float dewpoint,
              float& pressure_at_lcl, float& temperature_at_lcl) {
 
@@ -225,6 +226,7 @@ void drylift(float pressure, float temperature, float dewpoint,
 
 }
 
+
 float lifted(float pressure, float temperature, float dewpoint,
              float lifted_pressure) {
     if ((pressure == MISSING) || (temperature == MISSING)
@@ -242,5 +244,54 @@ float lifted(float pressure, float temperature, float dewpoint,
 }
 
 
+float wetbulb(float pressure, float temperature, float dewpoint) {
+    if ((pressure == MISSING) || (temperature == MISSING) 
+                                 || (dewpoint == MISSING)) {
+        return MISSING;
+    }
+    float pressure_at_lcl = MISSING;
+    float temperature_at_lcl = MISSING;
+
+    // pressure_at_lcl and temperature_at_lcl are passed by reference,
+    // so the values are changed by the drylift routine
+    drylift(pressure, temperature, dewpoint, pressure_at_lcl, temperature_at_lcl);
+    return wetlift(pressure_at_lcl, temperature_at_lcl, pressure);
+}
+
+
+float theta_wetbulb(float pressure, float temperature, float dewpoint) {
+    if ((pressure == MISSING) || (temperature == MISSING)
+                                 || (dewpoint == MISSING)) {
+        return MISSING;
+    }
+
+    float pressure_at_lcl = MISSING;
+    float temperature_at_lcl = MISSING;
+
+    // pressure_at_lcl and temperature_at_lcl are passed by reference,
+    // so the values are changed by the drylift routine
+    drylift(pressure, temperature, dewpoint, pressure_at_lcl, temperature_at_lcl);
+    return wetlift(pressure_at_lcl, temperature_at_lcl, 1000.0);
+}
+
+
+float thetae(float pressure, float temperature, float dewpoint) {
+    if ((pressure == MISSING) || (temperature == MISSING)
+                                 || (dewpoint == MISSING)) {
+        return MISSING;
+    }
+
+    float pressure_at_lcl = MISSING;
+    float temperature_at_lcl = MISSING;
+
+    // pressure_at_lcl and temperature_at_lcl are passed by reference,
+    // so the values are changed by the drylift routine
+    drylift(pressure, temperature, dewpoint, pressure_at_lcl, temperature_at_lcl);
+    // Lift a saturated parcel to 100 mb
+    float lifted_temperature = wetlift(pressure_at_lcl, temperature_at_lcl, 100.0);
+    // Return the potential temperature of the 100 hPa value
+    return theta(100.0, lifted_temperature, 1000.0);
+
+}
 
 }
