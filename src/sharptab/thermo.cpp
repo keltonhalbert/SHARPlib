@@ -204,6 +204,27 @@ float wetlift(float pressure, float temperature, float lifted_pressure) {
 	return saturated_lift(lifted_pressure, thm);
 }
 
+void drylift(float pressure, float temperature, float dewpoint,
+             float& pressure_at_lcl, float& temperature_at_lcl) {
+
+    pressure_at_lcl    = MISSING;
+    temperature_at_lcl = MISSING;
+
+    if ((pressure == MISSING) || (temperature == MISSING) 
+                              || (dewpoint == MISSING)) {
+        return;
+    }
+
+    // theta is constant from parcel level to LCL
+    float parcel_theta = theta(pressure, temperature, 1000.0);
+
+    temperature_at_lcl = lcl_temperature(temperature, dewpoint);
+    pressure_at_lcl = theta_level(parcel_theta, temperature_at_lcl);
+
+    return;
+
+}
+
 
 
 }
