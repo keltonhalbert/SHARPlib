@@ -11,6 +11,7 @@
 
 namespace sharp {
 
+
 float wobf(float temperature) {
     float x;
     double pol;
@@ -35,6 +36,7 @@ float wobf(float temperature) {
     }
 }
 
+
 float vapor_pressure(float temperature) {
 	double pol;
 
@@ -50,6 +52,7 @@ float vapor_pressure(float temperature) {
 	return 6.1078 / (pol * pol);
 }
 
+
 float lcl_temperature(float temperature, float dewpoint) {
 	float s, t, dlt;
 
@@ -62,6 +65,7 @@ float lcl_temperature(float temperature, float dewpoint) {
           (-.00219 + 1.173E-05 * s - .0000052 * temperature));
 	return temperature - dlt;
 }
+
 
 float temperature_at_mixratio(float mixratio, float pressure) {
     if ((mixratio == MISSING) || (pressure == MISSING)) {
@@ -81,6 +85,7 @@ float temperature_at_mixratio(float mixratio, float pressure) {
 
 	return (float)(tmrk - ZEROCNK);
 }
+
 
 float theta_level(float potential_temperature, float temperature) {
     if ((potential_temperature == MISSING)
@@ -104,6 +109,7 @@ float theta(float pressure, float temperature, float ref_pressure) {
 	return (temperature * std::pow(ref_pressure / pressure, ROCP)) - ZEROCNK;
 }
 
+
 float mixratio(float pressure, float temperature) {
     if (( temperature == MISSING ) || (pressure == MISSING)) {
         return MISSING;
@@ -114,6 +120,7 @@ float mixratio(float pressure, float temperature) {
     float fwesw = wfw * vapor_pressure(temperature);
     return 621.97 * (fwesw / (pressure - fwesw));
 }
+
 
 float virtual_temperature(float pressure, float temperature, float dewpoint) {
 
@@ -181,6 +188,21 @@ float saturated_lift(float pressure, float theta_sat) {
 }
 
 
+float wetlift(float pressure, float temperature, float lifted_pressure) {
+	if ((temperature == MISSING) || (pressure == MISSING)
+                           || (lifted_pressure = MISSING)) {
+	  return MISSING;
+    }
+
+	float tha = theta(pressure, temperature, 1000.0);
+	float woth = wobf(tha);
+	float wott = wobf(temperature);
+    // This is the wet bulb potential temperature
+	float thm = tha - woth + wott;
+    // get the temperature that crosses the moist adiabat at
+    // this pressure level
+	return saturated_lift(lifted_pressure, thm);
+}
 
 
 
