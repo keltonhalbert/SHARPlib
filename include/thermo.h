@@ -237,4 +237,24 @@ float wetlift(float pressure, float temperature, float lifted_pressure);
 void drylift(float pressure, float temperature, float dewpoint, 
              float& pressure_at_lcl, float& temperature_at_lcl);
 
+
+/**
+ * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ * \brief Compute the Lifted Index of a parcel lifted to a given pressure level. 
+ *
+ * This routine computes the temperature required to derive the Lifted Index
+ * for a particulat pressure level. Given a parcel's initial pressure (millibars), 
+ * temperature (Celsius), and dewpoint (Celsius), it first lifts a parcel to 
+ * its LCL, and then continues to lift it moist adiabatically to the given 
+ * lifted pressure level (millibars). 
+ *
+ * \param    pressure                   (mb)
+ * \param    temperature                (degC)
+ * \param    dewpoint                   (degC)
+ * \param    lifted_pressure            (mb)
+ * \return   lifted_index_temperature   (degC) 
+ */
+float lifted(float pressure, float temperature, float dewpoint, 
+                                         float lifted_pressure);
+
 }
