@@ -29,8 +29,14 @@ It will install the static library to PROJECT_ROOT/lib.
 
 The library will be built in release mode by default, which sets the `-O3` optimization flag. To build in debug mode, clean out the build directory (CMake will cache certain things) and run the following command and proceed to build normally:
 ```
-cmake .. -DCMAKE_BUILD_TYPE=Debug
+cmake -DCMAKE_BUILD_TYPE=Debug ..
 ```
+
+If you are planning on using the library with gridded data, you can turn off quality control checks traditionally only needed for observed sounding profile data. This can be disabled by running CMake with the following build flag:
+```
+cmake -DCMAKE_CXX_FLAGS="-DNO_QC" ..
+```
+This will also disable missing value checks in the tests directory.
 
 If you would like a verbose compile process, run the make command in the following manner:
 ```
