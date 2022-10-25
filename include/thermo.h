@@ -271,4 +271,116 @@ void drylift(float pressure, float temperature, float dewpoint,
 float lifted(float pressure, float temperature, float dewpoint, 
                                          float lifted_pressure);
 
+/**
+ * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ * \brief Compute the wetbulb temperature.  
+ *
+ * Compute the wet bulb temperature (Celsius) given the pressure 
+ * (millibars), temperature (Celsius), and dewpoint (Celsius).
+ *
+ * First, it lifts a parcel with the given pressure, temperature, and
+ * dewpoint temperature to its Lifted Condensation Level (LCL). To 
+ * compute the temperature and pressure of the LCL, an approximation
+ * is used. See the lcl_temperature documentation for more information.
+ *
+ * After the parcel has reached the LCL, the wetlift routine lowers the
+ * parcel to its initial pressure level along a moist adiabat. The 
+ * wetlift routine relies on the Wobus Function, which is an 
+ * approximation with some inherent errors. See the wetlift 
+ * documentation for more information. 
+ *
+ * \param    pressure               (mb)
+ * \param    temperature            (degC)
+ * \param    dewpoint               (degC)
+ * \return   wetbulb_temperature    (degC) 
+ */
+float wetbulb(float pressure, float temperature, float dewpoint);
+
+
+/**
+ * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ * \brief Compute the wetbulb potential temperature.  
+ *
+ * Compute the wet bulb potential temperature (Celsius) given 
+ * the pressure (millibars), temperature (Celsius), and dewpoint 
+ * (Celsius).
+ *
+ * First, it lifts a parcel with the given pressure, temperature, and
+ * dewpoint temperature to its Lifted Condensation Level (LCL). To 
+ * compute the temperature and pressure of the LCL, an approximation
+ * is used. See the lcl_temperature documentation for more information.
+ *
+ * After the parcel has reached the LCL, the wetlift routine lowers the
+ * parcel to the standard reference pressure level (1000.0 mb) along a 
+ * moist adiabat. The wetlift routine relies on the Wobus Function, 
+ * which is an approximation with some inherent errors. See the wetlift 
+ * documentation for more information. 
+ *
+ * \param    pressure                       (mb)
+ * \param    temperature                    (degC)
+ * \param    dewpoint                       (degC)
+ * \return   wetbulb_potential_temperature  (degC) 
+ */
+float theta_wetbulb(float pressure, float temperature, float dewpoint);
+
+
+/**
+ * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ * \brief Compute the equivalent potential temperature.  
+ *
+ * Compute the equivalent potential temperature (Celsius) given 
+ * the pressure (millibars), temperature (Celsius), and dewpoint 
+ * (Celsius).
+ *
+ * First, it lifts a parcel with the given pressure, temperature, and
+ * dewpoint temperature to its Lifted Condensation Level (LCL). To 
+ * compute the temperature and pressure of the LCL, an approximation
+ * is used. See the lcl_temperature documentation for more information.
+ *
+ * After the parcel has reached the LCL, the wetlift routine lifts the
+ * parcel to 100 hPa along a moist adiabat. Finally, the parcel is then
+ * lowered dry adiabatically to the standard reference pressure level of
+ * 1000.0 mb. The wetlift routine relies on the Wobus Function, which is an 
+ * approximation with some inherent errors. See the wetlift 
+ * documentation for more information. 
+ *
+ * \param    pressure                           (mb)
+ * \param    temperature                        (degC)
+ * \param    dewpoint                           (degC)
+ * \return   equivalent_potential_temperature   (degC) 
+ */
+float thetae(float pressure, float temperature, float dewpoint);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
