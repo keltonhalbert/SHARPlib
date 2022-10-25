@@ -99,5 +99,49 @@ float theta_level(float potential_temperature, float temperature);
  */
 float theta(float pressure, float temperature, float ref_pressure);
 
+/**
+ * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ * \brief Compute the water vapor mixing ratio. 
+ *
+ * Returns the water vapor mixing ratio in g/kg given 
+ * the environmental pressure in millibars and a 
+ * temperature (dry-bulb or dewpoint) in Celsius.  
+ *
+ * \param    pressure              (mb)
+ * \param    temperature           (degC)
+ * \return   mixratio              (g/kg) 
+ */
+float mixratio(float pressure, float temperature); 
+
+/**
+ * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ * \brief Compute the virtual temperature. 
+ *
+ * Returns the virtual temperature in Celsius given the ambient
+ * pressure in millibars, dry-bulb temperature in Celsius, and 
+ * the dewpoint temperature in Celsius.
+ *
+ * \param    pressure              (mb)
+ * \param    temperature           (degC)
+ * \param    dewpoint              (degC)
+ * \return   virtual_temperature   (degC) 
+ */
+float virtual_temperature(float pressure, float temperature, float dewpoint);
+
+/**
+ * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ * \brief Compute the new temperature of a saturated parcel lifted to a new level. 
+ *
+ * Returns the lifted temperature in Celsius of a saturated parcel
+ * that is lifted to a new pressure level in millibars. Caution should
+ * be exercised when using this routine with data at higher resolutions, such
+ * as with full resolution radiosondes, as the default convergence criteria
+ * can cause drift in the calculations, resulting in erroneous moist adiabats.
+ *
+ * \param    pressure              (mb)
+ * \param    theta_sat             (degC)
+ * \return   lifted_temperature    (degC) 
+ */
+float saturated_lift(float pressure, float theta_sat);
 
 }
