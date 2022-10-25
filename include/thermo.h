@@ -198,7 +198,9 @@ float saturated_lift(float pressure, float theta_sat);
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
  * \brief Compute the temperature of a parcel lifted moist adiabatically to a new level. 
  *
- * With a given parcel defined by a pressure and temperature (in millibars and Celsius), lift it moist adiabatically to a new pressure level (in millibars) and return the temperture of the parcel at that level. 
+ * With a given parcel defined by a pressure and temperature (in millibars and 
+ * Celsius), lift it moist adiabatically to a new pressure level (in millibars) 
+ * and return the temperture of the parcel at that level. 
  *
  * This computation relies on the Wobus Function to compute the moist adiabats,
  * and it was shown by Robert Davies-Jones (2007) that the Wobus function has a 
@@ -207,8 +209,32 @@ float saturated_lift(float pressure, float theta_sat);
  *
  * \param    pressure              (mb)
  * \param    temperature           (degC)
- * \return   lifted_pressure       (degC) 
+ * \param    lifted_pressure       (mb) 
+ * \return   lifted_temperature    (degC)
  */
 float wetlift(float pressure, float temperature, float lifted_pressure);
+
+
+/**
+ * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ * \brief Lift a parcel dry adiabatically to its Lifted Condensation Level (LCL). 
+ *
+ * Given a parcel's initial pressure (millibars), temperature (Celsius), and
+ * dewpoint temperature (Celsius), lift the parcel dry adiabatically to its
+ * Lifted Condensation Level and store the resulting LCL pressure (millibars)
+ * and LCL temperature (Celsius) in the variables passed by reference to the
+ * routine. 
+ *
+ *
+ * The lcl_temperature formula is given by Table 1 on page 7 of Stipanuk (1973).
+ *
+ * \param    pressure              (mb)
+ * \param    temperature           (degC)
+ * \param    dewpoint              (degC)
+ * \return   pressure_at_lcl       (mb) 
+ * \return   temperature_at_lcl    (degC) 
+ */
+void drylift(float pressure, float temperature, float dewpoint, 
+             float& pressure_at_lcl, float& temperature_at_lcl);
 
 }
