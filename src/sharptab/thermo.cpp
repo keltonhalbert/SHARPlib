@@ -104,4 +104,84 @@ float theta(float pressure, float temperature, float ref_pressure) {
 	return (temperature * std::pow(ref_pressure / pressure, ROCP)) - ZEROCNK;
 }
 
+float mixratio(float pressure, float temperature) {
+    if (( temperature == MISSING ) || (pressure == MISSING)) {
+        return MISSING;
+    }
+
+    float x = 0.02 * (temperature - 12.5 +7500.0 / pressure);
+    float wfw = 1.0 + 0.0000045 * pressure + 0.0014 * x * x;
+    float fwesw = wfw * vapor_pressure(temperature);
+    return 621.97 * (fwesw / (pressure - fwesw));
+}
+
+float virtual_temperature(float pressure, float temperature, float dewpoint) {
+
+    // Just an example of how we can remove missing data checks
+    // for grid operations by compiling without the QC_DATA flag. 
+//#ifdef QC_DATA
+    if (dewpoint == MISSING) {
+        return temperature;
+    }
+    else if ((pressure == MISSING) || (temperature == MISSING)) {
+        return MISSING;
+    }
+//#endif
+
+    constexpr double eps = 0.62197;
+    double temperature_k = temperature + ZEROCNK;
+    double w = 0.001 * (double)mixratio(pressure, dewpoint);
+    return (float)(temperature_k * (1.0 + w / eps) / (1.0 + w) - ZEROCNK);
+}
+
+
+float saturated_lift(float pressure, float theta_sat) {
+    if ((pressure == MISSING) || (theta_sat == MISSING)) {
+        return MISSING;
+    }
+    
+    // this function is about lifting a parcel, so if we are lifting it below
+    // 1000.0 hPa then something is probably wrong
+	if ((std::fabs(pressure - 1000.0) - 0.001) <= 0.0) return theta_sat;
+
+	float pwrp, t1, t2, woto, wotm, wot2, woe2, e1, e2, rate;
+	float eor = 999;
+
+    // TO-DO: Pass the 0.1 as an argument or 
+    // define it as a constant, since this controls
+    // the rate of convergence and therefore the quality
+    // of the calculation
+	while (std::fabs(eor) - 0.1 > 0.0) {
+        
+        // TO-DO: This section can be optimized because it is
+        // only called once. There is no need to check this
+        // iff condition multiple times to achieve the result.
+        if (eor == 999) {                    /* First Pass */
+	        pwrp = std::pow(pressure / 1000.0, ROCP);
+            // get the temperature 
+	        t1 = (theta_sat + ZEROCNK) * pwrp - ZEROCNK;
+	        woto = wobf(t1);
+	        wotm = wobf(theta_sat);
+	        e1 = woto - wotm;
+	        rate = 1;
+        }
+        else {  /* Successive Passes */
+            rate = (t2 - t1) / (e2 - e1);
+	        t1 = t2;
+	        e1 = e2;
+        }
+        t2 = t1 - e1 * rate;
+	    e2 = (t2 + ZEROCNK) / pwrp - ZEROCNK;
+	    wot2 = wobf( t2 );
+	    woe2 = wobf( e2 );
+	    e2 = e2 + wot2 - woe2 - theta_sat;
+	    eor = e2 * rate;
+	}
+	return t2 - eor;
+}
+
+
+
+
+
 }
