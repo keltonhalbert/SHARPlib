@@ -225,6 +225,22 @@ void drylift(float pressure, float temperature, float dewpoint,
 
 }
 
+float lifted(float pressure, float temperature, float dewpoint,
+             float lifted_pressure) {
+    if ((pressure == MISSING) || (temperature == MISSING)
+                                 || (dewpoint == MISSING)) {
+        return MISSING;
+    }
+
+    float pressure_at_lcl = MISSING;
+    float temperature_at_lcl = MISSING;
+
+    // pressure_at_lcl and temperature_at_lcl are passed by reference,
+    // so the values are changed by the drylift routine
+    drylift(pressure, temperature, dewpoint, pressure_at_lcl, temperature_at_lcl);
+    return wetlift(pressure_at_lcl, temperature_at_lcl, lifted_pressure);
+}
+
 
 
 }
