@@ -17,6 +17,7 @@ namespace sharp {
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ *
  * \brief Computes the difference between the wet-bulb potential temperatures for saturated and dry air given the temperature.
  *
  * The Wobus Function (wobf) is defined as the difference between
@@ -49,10 +50,11 @@ float wobf(float temperature);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ *
  * \brief Compute the vapor pressure over liquid water
  *
  * Computes the vapor pressure (or saturation vapor pressure) in
- * millibars over liquied water given the temperature in Celsius 
+ * millibars over liquid water given the temperature in Celsius 
  * (or dewpoint temperature in Celsius).
  *
  * This function uses a polynomial fit approximated by Herman Wobus,
@@ -69,6 +71,7 @@ float vapor_pressure(float temperature);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ *
  * \brief Compute the temperature of the LCL.
  *
  * Computes the temperature of a parcels LCL in 
@@ -89,6 +92,7 @@ float lcl_temperature(float temperature, float dewpoint);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ *
  * \brief Compute the temperature at a given water vapor mixing ratio and pressure level. 
  *
  * Computes the temperature in Celsius of air at the
@@ -105,6 +109,7 @@ float temperature_at_mixratio(float wv_mixratio, float pressure);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ *
  * \brief Comute the pressure level given potential temperature and temperature. 
  *
  * Returns the pressure level in millibars of a parcel
@@ -119,6 +124,7 @@ float theta_level(float potential_temperature, float temperature);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ *
  * \brief Compute the potential temperature. 
  *
  * Returns the potential temperature in Celsius of
@@ -135,6 +141,7 @@ float theta(float pressure, float temperature, float ref_pressure);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ *
  * \brief Compute the water vapor mixing ratio. 
  *
  * Returns the water vapor mixing ratio in g/kg given 
@@ -153,8 +160,8 @@ float theta(float pressure, float temperature, float ref_pressure);
  * encountered in Earth's atmosphere. 
  *
  * Additionally, this correction computes the vapor pressure
- * using the vapor_pressure routine, which is a third-order 
- * polynomial approximation written by Herman Wobus. 
+ * using the sharp::vapor_pressure routine, which is a 
+ * third-order polynomial approximation written by Herman Wobus. 
  *
  * \param    pressure              (mb)
  * \param    temperature           (degC)
@@ -164,17 +171,18 @@ float mixratio(float pressure, float temperature);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ *
  * \brief Compute the virtual temperature. 
  *
  * Returns the virtual temperature in Celsius given the ambient
  * pressure in millibars, dry-bulb temperature in Celsius, and 
  * the dewpoint temperature in Celsius.
  *
- * This routine uses the mixratio function to compute the water
+ * This routine uses the sharp::mixratio function to compute the water
  * vapor mixing ratio from the dewpoint temperature and pressure.
- * The mixratio function approximates the water vapor mixing ratio
- * and the vapor pressure using approximations. See the mixratio
- * and vapor_pressure documentation to learn more. 
+ * The sharp::mixratio function calculates the water vapor mixing ratio
+ * and the vapor pressure using approximations. See the sharp::mixratio
+ * and sharp::vapor_pressure documentation to learn more. 
  *
  * \param    pressure              (mb)
  * \param    temperature           (degC)
@@ -185,6 +193,7 @@ float virtual_temperature(float pressure, float temperature, float dewpoint);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ *
  * \brief Compute the temperature along a moist adiabat (wet-bulb potential temperature) at a given pressure
  *
  * Compute the temperature at which the moist adiabat intersects a line 
@@ -192,10 +201,10 @@ float virtual_temperature(float pressure, float temperature, float dewpoint);
  * temperature, given by theta_sat, defines a moist adiabat in Celsius, and
  * the temperature at the given pressure level in millibars is returned.
  *
- * This function relies on the Wobus Function, and it was shown by Robert 
- * Davies-Jones (2007) that the Wobus function has a slight dependence on 
- * pressure, which results in errors of up to 1.2 degrees Kelvin in the 
- * temperature of a lifted parcel. 
+ * This function relies on the Wobus Function ( sharp::wobf ), and it was shown 
+ * by Robert Davies-Jones (2007) that the Wobus function has a slight 
+ * dependence on pressure, which results in errors of up to 1.2 degrees Kelvin 
+ * in the temperature of a lifted parcel. 
  *
  * \param    pressure              (mb)
  * \param    theta_sat             (degC)
@@ -206,16 +215,17 @@ float saturated_lift(float pressure, float theta_sat);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ *
  * \brief Compute the temperature of a parcel lifted moist adiabatically to a new level. 
  *
  * With a given parcel defined by a pressure and temperature (in millibars and 
  * Celsius), lift it moist adiabatically to a new pressure level (in millibars) 
  * and return the temperture of the parcel at that level. 
  *
- * This computation relies on the Wobus Function to compute the moist adiabats,
- * and it was shown by Robert Davies-Jones (2007) that the Wobus function has a 
- * slight dependence on pressure. This can result in errors of up to 1.2 
- * degrees Kelvin int he temperature of a lifted parcel. 
+ * This function relies on the Wobus Function ( sharp::wobf ), and it was shown 
+ * by Robert Davies-Jones (2007) that the Wobus function has a slight 
+ * dependence on pressure, which results in errors of up to 1.2 degrees Kelvin 
+ * in the temperature of a lifted parcel. 
  *
  * \param    pressure              (mb)
  * \param    temperature           (degC)
@@ -227,6 +237,7 @@ float wetlift(float pressure, float temperature, float lifted_pressure);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ *
  * \brief Lift a parcel dry adiabatically to its Lifted Condensation Level (LCL). 
  *
  * Given a parcel's initial pressure (millibars), temperature (Celsius), and
@@ -236,14 +247,14 @@ float wetlift(float pressure, float temperature, float lifted_pressure);
  * routine. 
  *
  *
- * The LCL temperature is computed using an approximation. See the lcl_temperature
- * documentation for more information. 
+ * The LCL temperature is computed using an approximation. See the 
+ * sharp::lcl_temperature documentation for more information. 
  *
  * \param    pressure              (mb)
  * \param    temperature           (degC)
  * \param    dewpoint              (degC)
- * \return   pressure_at_lcl       (mb) 
- * \return   temperature_at_lcl    (degC) 
+ * \param    pressure_at_lcl       (mb) 
+ * \param    temperature_at_lcl    (degC) 
  */
 void drylift(float pressure, float temperature, float dewpoint, 
              float& pressure_at_lcl, float& temperature_at_lcl);
@@ -251,6 +262,7 @@ void drylift(float pressure, float temperature, float dewpoint,
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ *
  * \brief Compute the Lifted Index of a parcel lifted to a given pressure level. 
  *
  * This routine computes the temperature required to derive the Lifted Index
@@ -259,8 +271,11 @@ void drylift(float pressure, float temperature, float dewpoint,
  * its LCL, and then continues to lift it moist adiabatically to the given 
  * lifted pressure level (millibars). 
  *
- * The LCL temperature is computed using an approximation. See the lcl_temperature
- * documentation for more information. 
+ * The LCL temperature is computed using an approximation. See the 
+ * sharp::lcl_temperature documentation for more information. 
+ * The moist adiabatic ascent is done by calling sharp::wetlift, which 
+ * relies on the Wobus Function ( sharp::wobf ). There are inherent 
+ * estimation errors, so see documentation to learn more. 
  *
  * \param    pressure                   (mb)
  * \param    temperature                (degC)
@@ -273,6 +288,7 @@ float lifted(float pressure, float temperature, float dewpoint,
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ *
  * \brief Compute the wetbulb temperature.  
  *
  * Compute the wet bulb temperature (Celsius) given the pressure 
@@ -281,13 +297,14 @@ float lifted(float pressure, float temperature, float dewpoint,
  * First, it lifts a parcel with the given pressure, temperature, and
  * dewpoint temperature to its Lifted Condensation Level (LCL). To 
  * compute the temperature and pressure of the LCL, an approximation
- * is used. See the lcl_temperature documentation for more information.
+ * is used. See the sharp::lcl_temperature documentation for more 
+ * information.
  *
- * After the parcel has reached the LCL, the wetlift routine lowers the
- * parcel to its initial pressure level along a moist adiabat. The 
- * wetlift routine relies on the Wobus Function, which is an 
- * approximation with some inherent errors. See the wetlift 
- * documentation for more information. 
+ * After the parcel has reached the LCL, the sharp::wetlift routine 
+ * lowers the parcel to its initial pressure level along a moist adiabat.
+ * The sharp::wetlift routine relies on the Wobus Function ( sharp::wobf ), 
+ * which is an approximation with some inherent errors. See the 
+ * sharp::wetlift documentation for more information. 
  *
  * \param    pressure               (mb)
  * \param    temperature            (degC)
@@ -299,6 +316,7 @@ float wetbulb(float pressure, float temperature, float dewpoint);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ *
  * \brief Compute the wetbulb potential temperature.  
  *
  * Compute the wet bulb potential temperature (Celsius) given 
@@ -308,13 +326,15 @@ float wetbulb(float pressure, float temperature, float dewpoint);
  * First, it lifts a parcel with the given pressure, temperature, and
  * dewpoint temperature to its Lifted Condensation Level (LCL). To 
  * compute the temperature and pressure of the LCL, an approximation
- * is used. See the lcl_temperature documentation for more information.
+ * is used. See the sharp::lcl_temperature documentation for more 
+ * information.
  *
- * After the parcel has reached the LCL, the wetlift routine lowers the
- * parcel to the standard reference pressure level (1000.0 mb) along a 
- * moist adiabat. The wetlift routine relies on the Wobus Function, 
- * which is an approximation with some inherent errors. See the wetlift 
- * documentation for more information. 
+ * After the parcel has reached the LCL, the sharp::wetlift routine 
+ * lowers the parcel to the standard reference pressure level 
+ * (1000.0 mb) along a moist adiabat. The sharp::wetlift routine relies 
+ * on the Wobus Function ( sharp::wobf ), which is an approximation with 
+ * some inherent errors. See the sharp::wetlift documentation for more 
+ * information. 
  *
  * \param    pressure                       (mb)
  * \param    temperature                    (degC)
@@ -326,6 +346,7 @@ float theta_wetbulb(float pressure, float temperature, float dewpoint);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
+ *
  * \brief Compute the equivalent potential temperature.  
  *
  * Compute the equivalent potential temperature (Celsius) given 
@@ -335,14 +356,16 @@ float theta_wetbulb(float pressure, float temperature, float dewpoint);
  * First, it lifts a parcel with the given pressure, temperature, and
  * dewpoint temperature to its Lifted Condensation Level (LCL). To 
  * compute the temperature and pressure of the LCL, an approximation
- * is used. See the lcl_temperature documentation for more information.
+ * is used. See the sharp::lcl_temperature documentation for more 
+ * information.
  *
- * After the parcel has reached the LCL, the wetlift routine lifts the
- * parcel to 100 hPa along a moist adiabat. Finally, the parcel is then
- * lowered dry adiabatically to the standard reference pressure level of
- * 1000.0 mb. The wetlift routine relies on the Wobus Function, which is an 
- * approximation with some inherent errors. See the wetlift 
- * documentation for more information. 
+ * After the parcel has reached the LCL, the sharp::wetlift routine 
+ * lifts the parcel to 100 hPa along a moist adiabat. Finally, the 
+ * parcel is then lowered dry adiabatically to the standard reference 
+ * pressure level of 1000.0 mb. The sharp::wetlift routine relies on 
+ * the Wobus Function ( sharp::wobf ), which is an approximation with 
+ * some inherent errors. See the sharp::wetlift documentation for 
+ * more information. 
  *
  * \param    pressure                           (mb)
  * \param    temperature                        (degC)
@@ -350,37 +373,6 @@ float theta_wetbulb(float pressure, float temperature, float dewpoint);
  * \return   equivalent_potential_temperature   (degC) 
  */
 float thetae(float pressure, float temperature, float dewpoint);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
