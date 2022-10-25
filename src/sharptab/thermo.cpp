@@ -80,12 +80,12 @@ float temperature_at_mixratio(float wv_mixratio, float pressure) {
     } 
 #endif
 
-	const double c1 = 0.0498646455;
-	const double c2 = 2.4082965;
-	const double c3 = 7.07475;
-	const double c4 = 38.9114;
-	const double c5 = 0.0915;
-	const double c6 = 1.2035;
+	constexpr double c1 = 0.0498646455;
+	constexpr double c2 = 2.4082965;
+	constexpr double c3 = 7.07475;
+	constexpr double c4 = 38.9114;
+	constexpr double c5 = 0.0915;
+	constexpr double c6 = 1.2035;
 
 	double x    = std::log10( wv_mixratio * pressure / (622.0 + wv_mixratio));
 	double tmrk = std::pow(10.0, c1 * x + c2) - c3 + c4 * 
@@ -132,6 +132,8 @@ float mixratio(float pressure, float temperature) {
     }
 #endif
 
+    // correction factor for the departure of the mixture
+    // of air and water vapor from the ideal gas law
     float x = 0.02 * (temperature - 12.5 +7500.0 / pressure);
     float wfw = 1.0 + 0.0000045 * pressure + 0.0014 * x * x;
     float fwesw = wfw * vapor_pressure(temperature);
@@ -217,14 +219,16 @@ float wetlift(float pressure, float temperature, float lifted_pressure) {
     }
 #endif
 
-	float tha = theta(pressure, temperature, 1000.0);
-	float woth = wobf(tha);
+    // parcels potential temperature
+	float pcl_theta = theta(pressure, temperature, 1000.0);
+    // some Wobus voodo
+	float woth = wobf(pcl_theta);
 	float wott = wobf(temperature);
     // This is the wet bulb potential temperature
-	float thm = tha - woth + wott;
+	float pcl_thetaw = pcl_theta - woth + wott;
     // get the temperature that crosses the moist adiabat at
     // this pressure level
-	return saturated_lift(lifted_pressure, thm);
+	return saturated_lift(lifted_pressure, pcl_thetaw);
 }
 
 
@@ -242,10 +246,10 @@ void drylift(float pressure, float temperature, float dewpoint,
 #endif
 
     // theta is constant from parcel level to LCL
-    float parcel_theta = theta(pressure, temperature, 1000.0);
+    float pcl_theta = theta(pressure, temperature, 1000.0);
 
     temperature_at_lcl = lcl_temperature(temperature, dewpoint);
-    pressure_at_lcl = theta_level(parcel_theta, temperature_at_lcl);
+    pressure_at_lcl = theta_level(pcl_theta, temperature_at_lcl);
 
     return;
 
