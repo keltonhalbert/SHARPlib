@@ -67,8 +67,8 @@ float lcl_temperature(float temperature, float dewpoint) {
 }
 
 
-float temperature_at_mixratio(float mixratio, float pressure) {
-    if ((mixratio == MISSING) || (pressure == MISSING)) {
+float temperature_at_mixratio(float wv_mixratio, float pressure) {
+    if ((wv_mixratio == MISSING) || (pressure == MISSING)) {
        return MISSING;
     } 
 
@@ -79,7 +79,7 @@ float temperature_at_mixratio(float mixratio, float pressure) {
 	const double c5 = 0.0915;
 	const double c6 = 1.2035;
 
-	double x    = std::log10( mixratio * pressure / (622.0 + mixratio));
+	double x    = std::log10( wv_mixratio * pressure / (622.0 + wv_mixratio));
 	double tmrk = std::pow(10.0, c1 * x + c2) - c3 + c4 * 
                   std::pow(std::pow(10.0, c5 * x) - c6, 2.0);
 

@@ -89,7 +89,7 @@ float lcl_temperature(float temperature, float dewpoint);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
- * \brief Compute the temperature at a given mixing ratio and pressure level. 
+ * \brief Compute the temperature at a given water vapor mixing ratio and pressure level. 
  *
  * Computes the temperature in Celsius of air at the
  * given water vapor mixing ratio in g/kg and the 
@@ -97,11 +97,11 @@ float lcl_temperature(float temperature, float dewpoint);
  *
  * The formula is given by Table 1 on page 7 of Stipanuk (1973).
  *
- * \param    mixratio    (g/kg)
- * \param    pressure    (mb)
- * \return   temperature (degC) 
+ * \param    wv_mixratio    (g/kg)
+ * \param    pressure       (mb)
+ * \return   temperature    (degC) 
  */
-float temperature_at_mixratio(float mixratio, float pressure);
+float temperature_at_mixratio(float wv_mixratio, float pressure);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -152,6 +152,10 @@ float theta(float pressure, float temperature, float ref_pressure);
  * only for pressures and temperatures normally 
  * encountered in Earth's atmosphere. 
  *
+ * Additionally, this correction computes the vapor pressure
+ * using the vapor_pressure routine, which is a third-order 
+ * polynomial approximation written by Herman Wobus. 
+ *
  * \param    pressure              (mb)
  * \param    temperature           (degC)
  * \return   mixratio              (g/kg) 
@@ -165,6 +169,12 @@ float mixratio(float pressure, float temperature);
  * Returns the virtual temperature in Celsius given the ambient
  * pressure in millibars, dry-bulb temperature in Celsius, and 
  * the dewpoint temperature in Celsius.
+ *
+ * This routine uses the mixratio function to compute the water
+ * vapor mixing ratio from the dewpoint temperature and pressure.
+ * The mixratio function approximates the water vapor mixing ratio
+ * and the vapor pressure using approximations. See the mixratio
+ * and vapor_pressure documentation to learn more. 
  *
  * \param    pressure              (mb)
  * \param    temperature           (degC)
@@ -226,7 +236,8 @@ float wetlift(float pressure, float temperature, float lifted_pressure);
  * routine. 
  *
  *
- * The lcl_temperature formula is given by Table 1 on page 7 of Stipanuk (1973).
+ * The LCL temperature is computed using an approximation. See the lcl_temperature
+ * documentation for more information. 
  *
  * \param    pressure              (mb)
  * \param    temperature           (degC)
@@ -247,6 +258,9 @@ void drylift(float pressure, float temperature, float dewpoint,
  * temperature (Celsius), and dewpoint (Celsius), it first lifts a parcel to 
  * its LCL, and then continues to lift it moist adiabatically to the given 
  * lifted pressure level (millibars). 
+ *
+ * The LCL temperature is computed using an approximation. See the lcl_temperature
+ * documentation for more information. 
  *
  * \param    pressure                   (mb)
  * \param    temperature                (degC)
