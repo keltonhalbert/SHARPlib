@@ -6,3 +6,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include ${DOCTEST_INCLUDE_DIR})
 ## add test executable
 add_executable(test_sharp_thermo test_thermo.cpp)
 target_link_libraries(test_sharp_thermo SHARP) 
+
+
+add_executable(test_sharp_interp test_interp.cpp)
+target_link_libraries(test_sharp_interp SHARP) 
