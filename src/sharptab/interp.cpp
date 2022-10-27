@@ -14,8 +14,8 @@
 
 namespace sharp {
 
-float interp_height(const float& height_val, const float* height_arr, 
-                    const float* data_arr,   const int& num_levs) {
+float interp_height(float height_val, const float* height_arr, 
+                    const float* data_arr, int num_levs) {
 
     // If the height value is beyond the top of the profile, 
     // or below the surface, we can't reasonably extrapolate
@@ -54,8 +54,8 @@ float interp_height(const float& height_val, const float* height_arr,
 }
 
 
-float interp_pressure(const float& pressure_val, const float* pressure_arr,
-                      const float* data_arr,     const int& num_levs) {
+float interp_pressure(float pressure_val, const float* pressure_arr,
+                      const float* data_arr, int num_levs) {
 
     // If the pressure value is beyond the top of the profile, 
     // or below the surface, we can't reasonably extrapolate
