@@ -26,26 +26,6 @@ TEST_CASE("Testing lerp (float)") {
     CHECK(std::isinf(sharp::lerp((float)10.0, (float)50.0, inf)));
 }
 
-TEST_CASE("Testing lerp (double)") {
-
-    CHECK(sharp::lerp((double)10.0, (double)20.0, (double)0) == (double)10.0);
-    CHECK(sharp::lerp((double)10.0, (double)20.0, (double)1) == (double)20.0);
-    CHECK(sharp::lerp((double)10.0, (double)20.0, (double)0.5) == (double)15.0);
-
-    // make sure reordering the operations 
-    // doesnt change the result!
-    CHECK(sharp::lerp((double)20.0, (double)10.0, (double)0) == (double)20.0);
-    CHECK(sharp::lerp((double)20.0, (double)10.0, (double)1) == (double)10.0);
-    CHECK(sharp::lerp((double)20.0, (double)10.0, (double)0.5) == (double)15.0);
-
-    const double inf = std::numeric_limits<double>::infinity();
-    // test the infinity bound - should return first arg
-    CHECK(sharp::lerp((double)10.0, (double)10.0, inf) == (double)10.0);
-
-    // this one should return infinity
-    CHECK(std::isinf(sharp::lerp((double)10.0, (double)50.0, inf)));
-}
-
 TEST_CASE("Testing interp_height") {
 
     float height_arr[10] = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
