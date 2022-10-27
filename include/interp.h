@@ -108,8 +108,8 @@ lerp(float __a, float __b, float __t) noexcept
  * \param num_levs      The length of data_arr and height_arr
  * \return              The value of data_arr at the requested height_val.
  */
-float interp_height(const float& height_val, const float* height_arr, 
-                    const float* data_arr,   const int& num_levs);
+float interp_height(float height_val, const float* height_arr, 
+                    const float* data_arr,   int num_levs);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -131,7 +131,7 @@ float interp_height(const float& height_val, const float* height_arr,
  * \param num_levs        The length of data_arr and pressure_arr
  * \return                The value of data_arr at the requested pressure_val.
  */
-float interp_pressure(const float& pressure_val, const float* pressure_arr,
-                      const float* data_arr,     const int& num_levs);
+float interp_pressure(float pressure_val, const float* pressure_arr,
+                      const float* data_arr, int num_levs);
 
 }
