@@ -51,8 +51,34 @@ TEST_CASE("Testing interp_height") {
                                           == doctest::Approx(1.1));
     CHECK(sharp::interp_height(391, height_arr, data_arr, arr_len) 
                                          == doctest::Approx(3.91));
-
 }
 
+TEST_CASE("Testing interp_pressure") {
 
+    float pres_arr[10] = {1000, 900, 800, 700, 600, 500, 400, 300, 200, 100};
+    float data_arr[10] = {   1,    2,  3,   4,   5,   6,   7,   8,   9,  10};
+    int arr_len = 10;
+
+    // test out of bounds values
+    CHECK(sharp::interp_pressure(0, pres_arr, data_arr, arr_len) 
+                                              == sharp::MISSING);
+    CHECK(sharp::interp_pressure(1100, pres_arr, data_arr, arr_len) 
+                                                 == sharp::MISSING);
+
+    // test exact values along the edges of the arrays
+    CHECK(sharp::interp_pressure(1000, pres_arr, data_arr, arr_len) == 1);
+    CHECK(sharp::interp_pressure(100, pres_arr, data_arr, arr_len) == 10);
+
+    // test an exact value in the middle
+    CHECK(sharp::interp_pressure(500, pres_arr, data_arr, arr_len) == 6);
+
+    // test between levels -- float values were generated using
+    // numpy.interp in python to get a known value
+    CHECK(sharp::interp_pressure(975, pres_arr, data_arr, arr_len) 
+                           == doctest::Approx(1.2402969255248580));
+    CHECK(sharp::interp_pressure(950, pres_arr, data_arr, arr_len) 
+                           == doctest::Approx(1.4868360226532418));
+    CHECK(sharp::interp_pressure(925, pres_arr, data_arr, arr_len) 
+                           == doctest::Approx(1.7399502648876880));
+}
 
