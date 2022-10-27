@@ -146,4 +146,28 @@ constexpr long double
 lerp(long double __a, long double __b, long double __t) noexcept
 { return __lerp(__a, __b, __t); }
 
+/**
+ * \Author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * 
+ * \brief Linearly interpolate a data field to a requested height level.
+ *
+ * Interpolates data in height coordinates (meters) when given the 
+ * array of heights, the array of data to interpolate, a height
+ * level to interpolate to, and the number of levels in the arrays.
+ *
+ * The height array must be sorted in ascending order and monotonic. 
+ * Duplicate height values or decreasing height values may produce
+ * unexpected results. 
+ *
+ * \param height_val
+ * \param height_arr
+ * \param data_arr
+ * \param num_levs
+ * \return the value of data_arr at the requested height_value.
+ */
+float interp_height(const float& height_val, const float* height_arr, 
+                    const float* data_arr, const int& num_levs);
+
+//float interp_pressure();
+
 }

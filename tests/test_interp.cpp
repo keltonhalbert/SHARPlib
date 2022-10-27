@@ -45,3 +45,34 @@ TEST_CASE("Testing lerp (double)") {
     // this one should return infinity
     CHECK(std::isinf(sharp::lerp((double)10.0, (double)50.0, inf)));
 }
+
+TEST_CASE("Testing interp_height") {
+
+    float height_arr[10] = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+    float data_arr[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int arr_len = 10;
+
+    // test out of bounds values
+    CHECK(sharp::interp_height(0, height_arr, data_arr, arr_len) 
+                                              == sharp::MISSING);
+    CHECK(sharp::interp_height(1100, height_arr, data_arr, arr_len) 
+                                                 == sharp::MISSING);
+
+    // test exact values along the edges of the arrays
+    CHECK(sharp::interp_height(100, height_arr, data_arr, arr_len) == 1);
+    CHECK(sharp::interp_height(1000, height_arr, data_arr, arr_len) == 10);
+
+    // test an exact value in the middle
+    CHECK(sharp::interp_height(500, height_arr, data_arr, arr_len) == 5);
+
+    // test between levels
+    CHECK(sharp::interp_height(550, height_arr, data_arr, arr_len) == 5.5);
+    CHECK(sharp::interp_height(110, height_arr, data_arr, arr_len) 
+                                          == doctest::Approx(1.1));
+    CHECK(sharp::interp_height(391, height_arr, data_arr, arr_len) 
+                                         == doctest::Approx(3.91));
+
+}
+
+
+
