@@ -106,11 +106,32 @@ lerp(float __a, float __b, float __t) noexcept
  * \param height_arr    The array of height values in the profile
  * \param data_arr      The array of data values you want interpolated
  * \param num_levs      The length of data_arr and height_arr
- * \return              The value of data_arr at the requested height_value.
+ * \return              The value of data_arr at the requested height_val.
  */
 float interp_height(const float& height_val, const float* height_arr, 
-                    const float* data_arr, const int& num_levs);
+                    const float* data_arr,   const int& num_levs);
 
-//float interp_pressure();
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * 
+ * \brief Linearly interpolate a data field to a requested pressure level.
+ *
+ * Interpolates data in pressure coordinates (mb) when given the 
+ * array of pressure values, the array of data to interpolate, a 
+ * pressure level to interpolate to, and the number of levels in 
+ * the arrays.
+ *
+ * The pressure array must be sorted in descending order and monotonic. 
+ * Duplicate pressure values or increasing pressure values may produce
+ * unexpected results. 
+ *
+ * \param pressure_val    The pressure value to interpolate data to
+ * \param pressure_arr    The array of pressure values in the profile
+ * \param data_arr        The array of data values you want interpolated
+ * \param num_levs        The length of data_arr and pressure_arr
+ * \return                The value of data_arr at the requested pressure_val.
+ */
+float interp_pressure(const float& pressure_val, const float* pressure_arr,
+                      const float* data_arr,     const int& num_levs);
 
 }
