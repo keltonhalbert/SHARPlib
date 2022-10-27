@@ -35,7 +35,7 @@ namespace sharp {
  * 4. Boundedness: t<0 || t>1 || isfinite(lerp(a,b,t))
  * 5. Consistency: lerp(a,a,t) == a
  *
- * \param __a lef value
+ * \param __a left value
  * \param __b right value
  * \param __t where 0 <= __t <= 1.0
  *
@@ -78,7 +78,7 @@ template<typename _Fp>
  * 4. Boundedness: t<0 || t>1 || isfinite(lerp(a,b,t))
  * 5. Consistency: lerp(a,a,t) == a
  *
- * \param __a lef value
+ * \param __a left value
  * \param __b right value
  * \param __t where 0 <= __t <= 1.0
  *
@@ -107,7 +107,7 @@ lerp(float __a, float __b, float __t) noexcept
  * 4. Boundedness: t<0 || t>1 || isfinite(lerp(a,b,t))
  * 5. Consistency: lerp(a,a,t) == a
  *
- * \param __a lef value
+ * \param __a left value
  * \param __b right value
  * \param __t where 0 <= __t <= 1.0
  *
@@ -136,7 +136,7 @@ lerp(double __a, double __b, double __t) noexcept
  * 4. Boundedness: t<0 || t>1 || isfinite(lerp(a,b,t))
  * 5. Consistency: lerp(a,a,t) == a
  *
- * \param __a lef value
+ * \param __a left value
  * \param __b right value
  * \param __t where 0 <= __t <= 1.0
  *
@@ -147,7 +147,7 @@ lerp(long double __a, long double __b, long double __t) noexcept
 { return __lerp(__a, __b, __t); }
 
 /**
- * \Author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  * 
  * \brief Linearly interpolate a data field to a requested height level.
  *
@@ -159,11 +159,11 @@ lerp(long double __a, long double __b, long double __t) noexcept
  * Duplicate height values or decreasing height values may produce
  * unexpected results. 
  *
- * \param height_val
- * \param height_arr
- * \param data_arr
- * \param num_levs
- * \return the value of data_arr at the requested height_value.
+ * \param height_val    The height value to interpolate data to
+ * \param height_arr    The array of height values in the profile
+ * \param data_arr      The array of data values you want interpolated
+ * \param num_levs      The length of data_arr and height_arr
+ * \return              The value of data_arr at the requested height_value.
  */
 float interp_height(const float& height_val, const float* height_arr, 
                     const float* data_arr, const int& num_levs);
