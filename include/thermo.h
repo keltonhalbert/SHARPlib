@@ -46,7 +46,7 @@ namespace sharp {
  * \param    temperature                     (degC)
  * \return   Sat. Pot. Temperature of Parcel (degC)
  */
-float wobf(float temperature);
+float wobf(const float& temperature);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -67,7 +67,7 @@ float wobf(float temperature);
  * \param    temperature    (degC)
  * \return   vapor_pressure (mb) 
  */
-float vapor_pressure(float temperature);
+float vapor_pressure(const float& temperature);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -88,7 +88,7 @@ float vapor_pressure(float temperature);
  * \param    dewpoint        (degC)
  * \return   lcl_temperature (degC) 
  */
-float lcl_temperature(float temperature, float dewpoint);
+float lcl_temperature(const float& temperature, const float& dewpoint);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -105,7 +105,7 @@ float lcl_temperature(float temperature, float dewpoint);
  * \param    pressure       (mb)
  * \return   temperature    (degC) 
  */
-float temperature_at_mixratio(float wv_mixratio, float pressure);
+float temperature_at_mixratio(const float& wv_mixratio, const float& pressure);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -120,7 +120,7 @@ float temperature_at_mixratio(float wv_mixratio, float pressure);
  * \param    temperature           (degC)
  * \return   pressure              (mb) 
  */
-float theta_level(float potential_temperature, float temperature);
+float theta_level(const float& potential_temperature, const float& temperature);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -137,7 +137,8 @@ float theta_level(float potential_temperature, float temperature);
  * \param    ref_pressure          (mb)
  * \return   potential_temperature (degC) 
  */
-float theta(float pressure, float temperature, float ref_pressure);
+float theta(const float& pressure, const float& temperature, 
+                                   const float& ref_pressure);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -167,7 +168,7 @@ float theta(float pressure, float temperature, float ref_pressure);
  * \param    temperature           (degC)
  * \return   mixratio              (g/kg) 
  */
-float mixratio(float pressure, float temperature); 
+float mixratio(const float& pressure, const float& temperature); 
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -189,7 +190,8 @@ float mixratio(float pressure, float temperature);
  * \param    dewpoint              (degC)
  * \return   virtual_temperature   (degC) 
  */
-float virtual_temperature(float pressure, float temperature, float dewpoint);
+float virtual_temperature(const float& pressure, const float& temperature, 
+                                                 const float& dewpoint);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -210,7 +212,7 @@ float virtual_temperature(float pressure, float temperature, float dewpoint);
  * \param    theta_sat             (degC)
  * \return   lifted_temperature    (degC) 
  */
-float saturated_lift(float pressure, float theta_sat);
+float saturated_lift(const float& pressure, const float& theta_sat);
 
 
 /**
@@ -232,7 +234,8 @@ float saturated_lift(float pressure, float theta_sat);
  * \param    lifted_pressure       (mb) 
  * \return   lifted_temperature    (degC)
  */
-float wetlift(float pressure, float temperature, float lifted_pressure);
+float wetlift(const float& pressure, const float& temperature, 
+                                     const float& lifted_pressure);
 
 
 /**
@@ -256,8 +259,9 @@ float wetlift(float pressure, float temperature, float lifted_pressure);
  * \param    pressure_at_lcl       (mb) 
  * \param    temperature_at_lcl    (degC) 
  */
-void drylift(float pressure, float temperature, float dewpoint, 
-             float& pressure_at_lcl, float& temperature_at_lcl);
+void drylift(const float& pressure, const float& temperature, 
+             const float& dewpoint, float& pressure_at_lcl, 
+                                    float& temperature_at_lcl);
 
 
 /**
@@ -283,8 +287,8 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \param    lifted_pressure            (mb)
  * \return   lifted_index_temperature   (degC) 
  */
-float lifted(float pressure, float temperature, float dewpoint, 
-                                         float lifted_pressure);
+float lifted(const float& pressure, const float& temperature, 
+             const float& dewpoint, const float& lifted_pressure);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -311,7 +315,8 @@ float lifted(float pressure, float temperature, float dewpoint,
  * \param    dewpoint               (degC)
  * \return   wetbulb_temperature    (degC) 
  */
-float wetbulb(float pressure, float temperature, float dewpoint);
+float wetbulb(const float& pressure, const float& temperature, 
+                                     const float& dewpoint);
 
 
 /**
@@ -341,7 +346,8 @@ float wetbulb(float pressure, float temperature, float dewpoint);
  * \param    dewpoint                       (degC)
  * \return   wetbulb_potential_temperature  (degC) 
  */
-float theta_wetbulb(float pressure, float temperature, float dewpoint);
+float theta_wetbulb(const float& pressure, const float& temperature, 
+                                           const float& dewpoint);
 
 
 /**
@@ -372,7 +378,8 @@ float theta_wetbulb(float pressure, float temperature, float dewpoint);
  * \param    dewpoint                           (degC)
  * \return   equivalent_potential_temperature   (degC) 
  */
-float thetae(float pressure, float temperature, float dewpoint);
+float thetae(const float& pressure, const float& temperature, 
+                                    const float& dewpoint);
 
 
 }
