@@ -88,63 +88,6 @@ constexpr float
 lerp(float __a, float __b, float __t) noexcept
 { return __lerp(__a, __b, __t); }
 
-/**
- * \author C++20 Standard Template Library <cmath>
- *
- * \brief Linearly interpolates between a and b with distance t.
- *
- * This routine was copied from the C++20 <cmath> standard template library.
- * It is used to linearly interpolate between A and B over a normalized 
- * distance T, where 0 <= T <= 1. Full documentation and details can be found
- * in the paper located here: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p0811r3.html 
-
- *
- * This linear interpolation guarantees the following:
- *
- * 1. Exactness: lerp(a,b,0)==a & lerp(a,b,1)==b
- * 2. Monotonicity: cmp(lerp(a,b,t2), lerp(a,b,t1)) * cmp(t2, t1) * cmp(b,a) >= 0, where cmp is an arithmetic three-way comparison function
- * 3. Determinacy: result of NaN only for lerp(a,a,INFINITY)
- * 4. Boundedness: t<0 || t>1 || isfinite(lerp(a,b,t))
- * 5. Consistency: lerp(a,a,t) == a
- *
- * \param __a left value
- * \param __b right value
- * \param __t where 0 <= __t <= 1.0
- *
- * \return The value between __a and __b at distance __t between them. 
- */
-constexpr double
-lerp(double __a, double __b, double __t) noexcept
-{ return __lerp(__a, __b, __t); }
-
-/**
- * \author C++20 Standard Template Library <cmath>
- *
- * \brief Linearly interpolates between a and b with distance t.
- *
- * This routine was copied from the C++20 <cmath> standard template library.
- * It is used to linearly interpolate between A and B over a normalized 
- * distance T, where 0 <= T <= 1. Full documentation and details can be found
- * in the paper located here: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p0811r3.html 
-
- *
- * This linear interpolation guarantees the following:
- *
- * 1. Exactness: lerp(a,b,0)==a & lerp(a,b,1)==b
- * 2. Monotonicity: cmp(lerp(a,b,t2), lerp(a,b,t1)) * cmp(t2, t1) * cmp(b,a) >= 0, where cmp is an arithmetic three-way comparison function
- * 3. Determinacy: result of NaN only for lerp(a,a,INFINITY)
- * 4. Boundedness: t<0 || t>1 || isfinite(lerp(a,b,t))
- * 5. Consistency: lerp(a,a,t) == a
- *
- * \param __a left value
- * \param __b right value
- * \param __t where 0 <= __t <= 1.0
- *
- * \return The value between __a and __b at distance __t between them. 
- */
-constexpr long double
-lerp(long double __a, long double __b, long double __t) noexcept
-{ return __lerp(__a, __b, __t); }
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
