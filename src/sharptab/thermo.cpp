@@ -12,7 +12,7 @@
 namespace sharp {
 
 
-float wobf(const float& temperature) {
+float wobf(float temperature) {
     float x;
     double pol;
 
@@ -39,7 +39,7 @@ float wobf(const float& temperature) {
 }
 
 
-float vapor_pressure(const float& temperature) {
+float vapor_pressure(float temperature) {
 	double pol;
 
 #ifndef NO_QC
@@ -57,7 +57,7 @@ float vapor_pressure(const float& temperature) {
 }
 
 
-float lcl_temperature(const float& temperature, const float& dewpoint) {
+float lcl_temperature(float temperature, float dewpoint) {
 	float s, t, dlt;
 
 #ifndef NO_QC
@@ -73,7 +73,7 @@ float lcl_temperature(const float& temperature, const float& dewpoint) {
 }
 
 
-float temperature_at_mixratio(const float& wv_mixratio, const float& pressure) {
+float temperature_at_mixratio(float wv_mixratio, float pressure) {
 #ifndef NO_QC
     if ((wv_mixratio == MISSING) || (pressure == MISSING)) {
        return MISSING;
@@ -95,7 +95,7 @@ float temperature_at_mixratio(const float& wv_mixratio, const float& pressure) {
 }
 
 
-float theta_level(const float& potential_temperature, const float& temperature) {
+float theta_level(float potential_temperature, float temperature) {
 
 #ifndef NO_QC
     if ((potential_temperature == MISSING)
@@ -111,8 +111,7 @@ float theta_level(const float& potential_temperature, const float& temperature) 
 }
 
 
-float theta(const float& pressure, const float& temperature, 
-                                   const float& ref_pressure) {
+float theta(float pressure, float temperature, float ref_pressure) {
 
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING)
@@ -127,7 +126,7 @@ float theta(const float& pressure, const float& temperature,
 }
 
 
-float mixratio(const float& pressure, const float& temperature) {
+float mixratio(float pressure, float temperature) {
 
 #ifndef NO_QC
     if (( temperature == MISSING ) || (pressure == MISSING)) {
@@ -144,8 +143,7 @@ float mixratio(const float& pressure, const float& temperature) {
 }
 
 
-float virtual_temperature(const float& pressure, const float& temperature, 
-                                                 const float& dewpoint) {
+float virtual_temperature(float pressure, float temperature, float dewpoint) {
 
     // Just an example of how we can remove missing data checks
     // for grid operations by compiling without the QC_DATA flag. 
@@ -165,7 +163,7 @@ float virtual_temperature(const float& pressure, const float& temperature,
 }
 
 
-float saturated_lift(const float& pressure, const float& theta_sat) {
+float saturated_lift(float pressure, float theta_sat) {
 
 #ifndef NO_QC
     if ((pressure == MISSING) || (theta_sat == MISSING)) {
@@ -214,8 +212,7 @@ float saturated_lift(const float& pressure, const float& theta_sat) {
 }
 
 
-float wetlift(const float& pressure, const float& temperature, 
-                                     const float& lifted_pressure) {
+float wetlift(float pressure, float temperature, float lifted_pressure) {
 
 #ifndef NO_QC
 	if ((temperature == MISSING) || (pressure == MISSING)
@@ -237,9 +234,9 @@ float wetlift(const float& pressure, const float& temperature,
 }
 
 
-void drylift(const float& pressure, const float& temperature, 
-             const float& dewpoint, float& pressure_at_lcl, 
-                                    float& temperature_at_lcl) {
+void drylift(float pressure, float temperature, 
+             float dewpoint, float& pressure_at_lcl, 
+                             float& temperature_at_lcl) {
 
     pressure_at_lcl    = MISSING;
     temperature_at_lcl = MISSING;
@@ -262,8 +259,8 @@ void drylift(const float& pressure, const float& temperature,
 }
 
 
-float lifted(const float& pressure, const float& temperature, 
-             const float& dewpoint, const float& lifted_pressure) {
+float lifted(float pressure, float temperature, 
+             float dewpoint, float lifted_pressure) {
 
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING)
@@ -282,8 +279,8 @@ float lifted(const float& pressure, const float& temperature,
 }
 
 
-float wetbulb(const float& pressure, const float& temperature, 
-                                     const float& dewpoint) {
+float wetbulb(float pressure, float temperature, 
+                                     float dewpoint) {
 
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING) 
@@ -302,8 +299,7 @@ float wetbulb(const float& pressure, const float& temperature,
 }
 
 
-float theta_wetbulb(const float& pressure, const float& temperature, 
-                                           const float& dewpoint) {
+float theta_wetbulb(float pressure, float temperature, float dewpoint) {
 
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING)
@@ -322,8 +318,7 @@ float theta_wetbulb(const float& pressure, const float& temperature,
 }
 
 
-float thetae(const float &pressure, const float& temperature, 
-                                    const float& dewpoint) {
+float thetae(float pressure, float temperature, float dewpoint) {
 
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING)
