@@ -105,9 +105,9 @@ float theta_level(float potential_temperature, float temperature) {
 #endif
 
     // convert to degrees kelvin
-    float theta_k = potential_temperature + ZEROCNK;
-    float temperature_k = temperature + ZEROCNK;
-	return 1000.0 / std::pow((theta_k/temperature_k), (1.0/ROCP));
+    potential_temperature += ZEROCNK;
+    temperature += ZEROCNK;
+	return 1000.0 / std::pow((potential_temperature/temperature), (1.0/ROCP));
 }
 
 
@@ -121,8 +121,8 @@ float theta(float pressure, float temperature, float ref_pressure) {
 #endif
 
     // get temperature in kelvin
-	float temperature_k = temperature + ZEROCNK;
-	return (temperature_k * std::pow(ref_pressure / pressure, ROCP)) - ZEROCNK;
+	temperature += ZEROCNK;
+	return (temperature * std::pow(ref_pressure / pressure, ROCP)) - ZEROCNK;
 }
 
 
