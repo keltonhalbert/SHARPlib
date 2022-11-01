@@ -42,7 +42,7 @@ float vector_angle(float u_comp, float v_comp) {
     if ((u_comp == 0) && (v_comp == 0))
         return 0;
 
-    float wind_direction = std::atan2( -1*v_comp, -1*u_comp) * (180.0 / PI);
+    float wind_direction = std::atan2( -1*u_comp, -1*v_comp) * (180.0 / PI);
     if (wind_direction < 0) wind_direction += 360.0;
     if (wind_direction < TOL) wind_direction = 0;
     return wind_direction; 
