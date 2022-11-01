@@ -53,4 +53,5 @@ install(TARGETS SHARP DESTINATION lib)
 add_subdirectory(tests)
 add_test(NAME sharp_thermo COMMAND test_sharp_thermo)
 add_test(NAME sharp_interp COMMAND test_sharp_interp)
+add_test(NAME sharp_winds COMMAND test_sharp_winds)
 
