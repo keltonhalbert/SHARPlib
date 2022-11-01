@@ -1,11 +1,16 @@
-// Author: Kelton Halbert
-// Email: kelton.halbert@noaa.gov
-// License: Apache 2.0
-// Date: 2022-10-13
-//
-// Written for the NWS Storm Predidiction Center
-// Based on NSHARP routines originally written by
-// John Hart and Rich Thompson at SPC. 
+/**
+ * \file
+ * \brief Data structures for containing data from vertical atmospheric sounding profiles 
+ * \author  
+ *   Kelton Halbert                  \n
+ *   Email: kelton.halbert@noaa.gov  \n
+ *   License: Apache 2.0             \n
+ * \date   2022-10-13
+ *
+ * Written for the NWS Storm Predidiction Center \n
+ * Based on NSHARP routines originally written by
+ * John Hart and Rich Thompson at SPC. 
+ */
 #include "profile.h"
 
 namespace sharp {
