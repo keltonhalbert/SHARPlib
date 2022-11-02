@@ -14,6 +14,8 @@
 #include <cmath>
 
 #include "constants.h"
+#include "interp.h"
+#include "utils.h"
 #include "winds.h"
 
 namespace sharp {
@@ -92,5 +94,102 @@ WindComponents vector_to_components(float wind_speed, float wind_direction) {
     return {u_comp, v_comp};
 }
 
+WindComponents mean_wind(const PressureLayer& layer, 
+                         const float* pres,   const float* u_wind, 
+                         const float* v_wind, int num_levs) {
+#ifndef NO_QC
+    if ((layer.pbot == MISSING) || (layer.ptop == MISSING))
+        return {MISSING, MISSING};
+#endif
+
+    // bounds checking our layer
+    // requests to the available data
+    float pbot, ptop;
+    if (layer.pbot > pres[0])
+        pbot = pres[0];
+    else
+        pbot = layer.pbot;
+
+    if (layer.ptop < pres[num_levs-1])
+        ptop = pres[num_levs-1];
+    else
+        ptop = layer.ptop;
+
+
+    float pres_level = pbot;
+    float u_sum = 0;
+    float v_sum = 0;
+    float weight = 0;
+    while(pres_level >= ptop) {
+        u_sum += interp_pressure(pres_level, pres, u_wind, num_levs) * pres_level; 
+        v_sum += interp_pressure(pres_level, pres, v_wind, num_levs) * pres_level; 
+        weight += pres_level;
+        pres_level -= layer.dp;
+    }
+
+    float mean_u = u_sum / weight;
+    float mean_v = v_sum / weight;
+
+    return {mean_u, mean_v}; 
+}
+
+WindComponents mean_wind_npw(const PressureLayer& layer,
+                             const float* pres,   const float* u_wind,
+                             const float* v_wind, int num_levs) {
+#ifndef NO_QC
+    if ((layer.pbot == MISSING) || (layer.ptop == MISSING))
+        return {MISSING, MISSING};
+#endif
+
+    // bounds checking our layer
+    // requests to the available data
+    float pbot, ptop;
+    if (layer.pbot > pres[0])
+        pbot = pres[0];
+    else
+        pbot = layer.pbot;
+
+    if (layer.ptop < pres[num_levs-1])
+        ptop = pres[num_levs-1];
+    else
+        ptop = layer.ptop;
+
+
+    float pres_level = pbot;
+    float u_sum = 0;
+    float v_sum = 0;
+    float weight = 0;
+    while(pres_level >= ptop) {
+        u_sum += interp_pressure(pres_level, pres, u_wind, num_levs);
+        v_sum += interp_pressure(pres_level, pres, v_wind, num_levs);
+        weight += 1; 
+        pres_level -= layer.dp;
+    }
+
+    float mean_u = u_sum / weight;
+    float mean_v = v_sum / weight;
+
+    return {mean_u, mean_v}; 
+
+}
+
+WindComponents mean_wind(float pressure_bot,  float pressure_top,
+                         const float* pres,   const float* u_wind, 
+                         const float* v_wind, int num_levs) {
+
+    PressureLayer layer = {pressure_bot, pressure_top, 1};
+    return mean_wind(layer, pres, u_wind, v_wind, num_levs);
+
+}
+
+
+WindComponents mean_wind_nwp(float pressure_bot,  float pressure_top,
+                             const float* pres,   const float* u_wind, 
+                             const float* v_wind, int num_levs) {
+
+    PressureLayer layer = {pressure_bot, pressure_top, 1};
+    return mean_wind_npw(layer, pres, u_wind, v_wind, num_levs);
+
+}
 
 }
