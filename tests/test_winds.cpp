@@ -1,9 +1,10 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <cmath>
-#include <limits>
+#include <iostream>
 
 #include "constants.h"
 #include "doctest.h"
+#include "utils.h"
 #include "winds.h"
 
 TEST_CASE("Testing wind components (u,v) operations") {
@@ -44,15 +45,15 @@ TEST_CASE("Testing wind components (u,v) operations") {
     CHECK(sharp::vector_magnitude(nw_wind.u, nw_wind.v) 
                          == doctest::Approx(14.142135));
 
-    sharp::WindVector s_vect = sharp::components_to_vector(s_wind.u, s_wind.v);
-    sharp::WindVector w_vect = sharp::components_to_vector(w_wind.u, w_wind.v);
-    sharp::WindVector n_vect = sharp::components_to_vector(n_wind.u, n_wind.v);
-    sharp::WindVector e_vect = sharp::components_to_vector(e_wind.u, e_wind.v);
+    auto s_vect = sharp::components_to_vector(s_wind.u, s_wind.v);
+    auto w_vect = sharp::components_to_vector(w_wind.u, w_wind.v);
+    auto n_vect = sharp::components_to_vector(n_wind.u, n_wind.v);
+    auto e_vect = sharp::components_to_vector(e_wind.u, e_wind.v);
 
-    sharp::WindVector sw_vect = sharp::components_to_vector(sw_wind.u, sw_wind.v);
-    sharp::WindVector se_vect = sharp::components_to_vector(se_wind.u, se_wind.v);
-    sharp::WindVector ne_vect = sharp::components_to_vector(ne_wind.u, ne_wind.v);
-    sharp::WindVector nw_vect = sharp::components_to_vector(nw_wind.u, nw_wind.v);
+    auto sw_vect = sharp::components_to_vector(sw_wind.u, sw_wind.v);
+    auto se_vect = sharp::components_to_vector(se_wind.u, se_wind.v);
+    auto ne_vect = sharp::components_to_vector(ne_wind.u, ne_wind.v);
+    auto nw_vect = sharp::components_to_vector(nw_wind.u, nw_wind.v);
 
     CHECK(s_vect.speed == 10.0);
     CHECK(w_vect.speed == 10.0);
@@ -124,4 +125,55 @@ TEST_CASE("Testing vector (speed, direction) operations") {
                                     == doctest::Approx(-7.07107));
     CHECK(sharp::v_component(se_vect.speed, se_vect.direction)
                                     == doctest::Approx(7.07107));
+}
+
+TEST_CASE("Testing mean wind calculations") {
+
+    // create the testing data
+    constexpr int NZ = 10;
+    float pres[NZ];
+    float u_wind[NZ];
+    float v_wind[NZ];
+
+    float snd_bot = 1000.0;
+    float u_start = 10.0;
+    float v_start = 10.0;
+    float dp = 100.0;
+
+    for (int k = 0; k < NZ; k++) {
+        pres[k] = snd_bot - dp*k;
+        u_wind[k] = u_start + 5*k;
+        v_wind[k] = v_start + 5*k;
+    }
+
+
+    sharp::PressureLayer layer1 = {1000.0, 800.0, 1};
+    sharp::PressureLayer layer2 = {1000.0, 500.0, 1};
+    sharp::PressureLayer layer3 = {1000.0, 100.0, 1};
+
+    auto mean_layer1 = sharp::mean_wind(layer1, pres, u_wind, v_wind, NZ);
+    auto mean_layer2 = sharp::mean_wind(layer2, pres, u_wind, v_wind, NZ);
+    auto mean_layer3 = sharp::mean_wind(layer3, pres, u_wind, v_wind, NZ);
+
+    auto mean_layer4 = sharp::mean_wind_npw(layer1, pres, u_wind, v_wind, NZ);
+    auto mean_layer5 = sharp::mean_wind_npw(layer2, pres, u_wind, v_wind, NZ);
+    auto mean_layer6 = sharp::mean_wind_npw(layer3, pres, u_wind, v_wind, NZ);
+
+    CHECK(mean_layer1.u == doctest::Approx(14.7669));
+    CHECK(mean_layer1.v == doctest::Approx(14.7669));
+
+    CHECK(mean_layer2.u == doctest::Approx(21.0501));
+    CHECK(mean_layer2.v == doctest::Approx(21.0501));
+
+    CHECK(mean_layer3.u == doctest::Approx(26.2741));
+    CHECK(mean_layer3.v == doctest::Approx(26.2741));
+
+    CHECK(mean_layer4.u == doctest::Approx(14.9538));
+    CHECK(mean_layer4.v == doctest::Approx(14.9538));
+
+    CHECK(mean_layer5.u == doctest::Approx(22.4424));
+    CHECK(mean_layer5.v == doctest::Approx(22.4424));
+
+    CHECK(mean_layer6.u == doctest::Approx(32.3939));
+    CHECK(mean_layer6.v == doctest::Approx(32.3939));
 }
