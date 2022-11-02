@@ -82,6 +82,12 @@ WindVector components_to_vector(float u_comp, float v_comp) {
 }
 
 
+WindVector components_to_vector(const WindComponents& comp) {
+    WindVector vec = components_to_vector(comp.u, comp.v); 
+    return {vec.speed, vec.direction};
+}
+
+
 WindComponents vector_to_components(float wind_speed, float wind_direction) {
 #ifndef NO_QC
     if ((wind_direction == MISSING) || (wind_speed == MISSING))
@@ -93,6 +99,13 @@ WindComponents vector_to_components(float wind_speed, float wind_direction) {
 
     return {u_comp, v_comp};
 }
+
+
+WindComponents vector_to_components(const WindVector& vect) {
+    WindComponents comp = vector_to_components(vect.speed, vect.direction); 
+    return {comp.u, comp.v};
+}
+
 
 WindComponents mean_wind(const PressureLayer& layer, 
                          const float* pres,   const float* u_wind, 
@@ -132,6 +145,7 @@ WindComponents mean_wind(const PressureLayer& layer,
 
     return {mean_u, mean_v}; 
 }
+
 
 WindComponents mean_wind_npw(const PressureLayer& layer,
                              const float* pres,   const float* u_wind,
@@ -173,6 +187,7 @@ WindComponents mean_wind_npw(const PressureLayer& layer,
 
 }
 
+
 WindComponents mean_wind(float pressure_bot,  float pressure_top,
                          const float* pres,   const float* u_wind, 
                          const float* v_wind, int num_levs) {
@@ -191,5 +206,6 @@ WindComponents mean_wind_nwp(float pressure_bot,  float pressure_top,
     return mean_wind_npw(layer, pres, u_wind, v_wind, num_levs);
 
 }
+
 
 }

@@ -15,6 +15,7 @@
 
 namespace sharp {
 
+
 /**
  *
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -36,6 +37,7 @@ struct WindVector {
      */ 
     float direction;
 };
+
 
 /**
  *
@@ -167,6 +169,24 @@ WindVector components_to_vector(float u_comp, float v_comp);
  *
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
+ * \brief Conveniance function to compute wind speed and direction from components 
+ *
+ * Given the components of a vector via sharp::WindComponents, compute
+ * and return the wind speed (distance / time) and direction (degrees from North)
+ * and return them as sharp::WindVector. Implemented as a wrapper around the
+ * sharp::components_to_vector(float, float) function call.  
+ *
+ * \param u_comp                (distance / time)
+ * \param v_comp                (distance / time)
+ * \return sharp::WindVector    {wind_speed, wind_direction}
+ */
+WindVector components_to_vector(const WindComponents& comp);
+
+
+/**
+ *
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
  * \brief Conveniance function to compute the U and V components of a wind vector. 
  *
  * Given the wind speed and direction of a vector, compute and return the 
@@ -179,6 +199,24 @@ WindVector components_to_vector(float u_comp, float v_comp);
 WindComponents vector_to_components(float wind_speed, float wind_direction);
 
 
+/**
+ *
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Conveniance function to compute the U and V components of a wind vector. 
+ *
+ * Given the wind speed and direction of a vector via sharp::WindVector, 
+ * compute and return the zonal and meridional vector components as a struct. 
+ * Implemented as a wrapper around sharp::vector_to_components(float, float). 
+ *
+ * \param wind_speed                (distance / time)
+ * \param wind_direction            (degrees from North)
+ * \return sharp::WindComponents    {u_comp, v_comp}
+ */
+WindComponents vector_to_components(const WindVector& vect);
+
+
+WindComponents vector_to_components(float wind_speed, float wind_direction);
 /**
  *
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
