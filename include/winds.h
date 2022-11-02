@@ -179,4 +179,93 @@ WindVector components_to_vector(float u_comp, float v_comp);
 WindComponents vector_to_components(float wind_speed, float wind_direction);
 
 
+/**
+ *
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Compute the pressure weighted mean wind over the given sharp::PressureLayer 
+ *
+ * Computes the pressure weighted mean wind over the given sharp::PressureLayer 
+ * and arrays of pressure and wind components with a length of num_levs.
+ *
+ * \param layer     sharp::PressureLayer      
+ * \param pres      (hPa)
+ * \param u_wind    (kts or m/s)
+ * \param v_wind    (kts or m/s)
+ * \param num_levs  (length of arrays)
+ * \return sharp::WindComponents    {mean_u, mean_v}
+ */
+WindComponents mean_wind(const PressureLayer& layer, 
+                         const float* pres,   const float* u_wind,
+                         const float* v_wind, int num_levs);
+
+
+/**
+ *
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Compute the pressure weighted mean wind over the given bottom and top pressure levels 
+ *
+ * Computes the pressure weighted mean wind over the given bottom and top 
+ * pressure levels, and arrays of pressure and wind components with a length 
+ * of num_levs. This is a wrapper around the sharp::PressureLayer implementation.
+ *
+ * \param pressure_bot  (hPa)
+ * \param pressure_top  (hPa)
+ * \param pres          (hPa)
+ * \param u_wind        (kts or m/s)
+ * \param v_wind        (kts or m/s)
+ * \param num_levs      (length of arrays)
+ * \return sharp::WindComponents    {mean_u, mean_v}
+ */
+WindComponents mean_wind(float pressure_bot,  float pressure_top,
+                         const float *pres,   const float* u_wind,
+                         const float *v_wind, int num_levs);
+
+
+/**
+ *
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Compute the non-pressure weighted mean wind over the given sharp::PressureLayer 
+ *
+ * Computes the non-pressure weighted mean wind over the given 
+ * sharp::PressureLayer and arrays of pressure and wind components 
+ * with a length of num_levs.
+ *
+ * \param layer     sharp::PressureLayer      
+ * \param pres      (hPa)
+ * \param u_wind    (kts or m/s)
+ * \param v_wind    (kts or m/s)
+ * \param num_levs  (length of arrays)
+ * \return sharp::WindComponents    {mean_u, mean_v}
+ */
+WindComponents mean_wind_npw(const PressureLayer& layer, 
+                             const float* pres,   const float* u_wind,
+                             const float* v_wind, int num_levs);
+
+
+/**
+ *
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Compute the non-pressure weighted mean wind over the given bottom and top pressure levels 
+ *
+ * Computes the non-pressure weighted mean wind over the given bottom and top 
+ * pressure levels, and arrays of pressure and wind components with a length 
+ * of num_levs. This is a wrapper around the sharp::PressureLayer implementation.
+ *
+ * \param pressure_bot  (hPa)
+ * \param pressure_top  (hPa)
+ * \param pres          (hPa)
+ * \param u_wind        (kts or m/s)
+ * \param v_wind        (kts or m/s)
+ * \param num_levs      (length of arrays)
+ * \return sharp::WindComponents    {mean_u, mean_v}
+ */
+WindComponents mean_wind_npw(float pressure_bot,  float pressure_top,
+                             const float *pres,   const float* u_wind,
+                             const float *v_wind, int num_levs);
+
+
 }
