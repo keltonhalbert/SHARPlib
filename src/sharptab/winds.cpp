@@ -83,8 +83,10 @@ WindVector components_to_vector(float u_comp, float v_comp) {
 
 
 WindVector components_to_vector(const WindComponents& comp) {
-    WindVector vec = components_to_vector(comp.u, comp.v); 
-    return {vec.speed, vec.direction};
+    float wind_speed = vector_magnitude(comp.u, comp.v);
+    float wind_direction = vector_angle(comp.u, comp.v);
+
+    return {wind_speed, wind_direction};
 }
 
 
@@ -102,8 +104,15 @@ WindComponents vector_to_components(float wind_speed, float wind_direction) {
 
 
 WindComponents vector_to_components(const WindVector& vect) {
-    WindComponents comp = vector_to_components(vect.speed, vect.direction); 
-    return {comp.u, comp.v};
+#ifndef NO_QC
+    if ((vect.speed == MISSING) || (vect.direction == MISSING))
+        return {MISSING, MISSING}; 
+#endif
+    float wind_direction = vect.direction * (PI / 180.0);
+    float u_comp = -1.0 * vect.speed * std::sin(wind_direction);
+    float v_comp = -1.0 * vect.speed * std::cos(wind_direction);
+
+    return {u_comp, v_comp};
 }
 
 
