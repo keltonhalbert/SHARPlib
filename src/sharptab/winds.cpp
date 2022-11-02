@@ -217,12 +217,52 @@ WindComponents mean_wind_nwp(float pressure_bot,  float pressure_top,
 }
 
 
+WindComponents wind_shear(const PressureLayer& layer, 
+                          const float* pres,   const float* u_wind,
+                          const float* v_wind, int num_levs) {
+#ifndef NO_QC
+    if ((layer.pbot == MISSING) || (layer.ptop == MISSING))
+        return {MISSING, MISSING};
+#endif
+
+    // bounds checking our layer
+    // requests to the available data
+    float pbot, ptop;
+    if (layer.pbot > pres[0])
+        pbot = pres[0];
+    else
+        pbot = layer.pbot;
+
+    if (layer.ptop < pres[num_levs-1])
+        ptop = pres[num_levs-1];
+    else
+        ptop = layer.ptop;
+
+    float u_bot = interp_pressure(pbot, pres, u_wind, num_levs);
+    float u_top = interp_pressure(ptop, pres, u_wind, num_levs);
+
+    float v_bot = interp_pressure(pbot, pres, v_wind, num_levs);
+    float v_top = interp_pressure(ptop, pres, v_wind, num_levs);
+
+#ifndef NO_QC
+    if ((u_bot == MISSING) || (v_bot == MISSING) ||
+        (u_top == MISSING) || (v_top == MISSING)) {
+
+        return {MISSING, MISSING}; 
+    }
+#endif
+
+    return {u_top - u_bot, v_top - v_bot};
+
 }
+
+
+} // end namespace sharp
 
 
 namespace sharp::exper {
 
 
-}
+} // end namespace sharp::exper
 
 
