@@ -257,6 +257,9 @@ WindComponents wind_shear(const PressureLayer& layer,
 }
 
 
+// TO-DO: Right now it is unclear whether the base usings of
+// u_wind and v_wind should be knots or m/s. Need to clarify
+// design here and update documentation accordingly. 
 float helicity(const HeightLayer& layer_agl, 
                const WindComponents& storm_motion,
                const float* height, const float* u_wind, 
@@ -268,31 +271,19 @@ float helicity(const HeightLayer& layer_agl,
     if ((layer_agl.zbot == MISSING) || (layer_agl.ztop == MISSING)) {
         return MISSING;
     }
-    if ((layer_agl.ztop < layer_agl.zbot)) {
-        return MISSING;
-    }
 #endif
 
-    float hbot;
-    float htop;
+    // get the height in MSL by adding the surface height
+    float hbot = height[0] + layer_agl.zbot;
+    float htop = height[0] + layer_agl.ztop;
 
     // bounds check the integration
     if (hbot < height[0]) {
         hbot = height[0];
     }
-    else {
-        hbot = layer_agl.zbot;
-    }
     if (htop > height[num_levs-1]) {
         htop = height[num_levs-1];
     }
-    else {
-        htop = layer_agl.ztop;
-    }
-
-    // get the height in MSL by adding the surface height
-    hbot += height[0];
-    htop += height[0];
 
     // find the lowest observation, but not if it
     // is exactly the bottom of our layer (it gets
@@ -311,6 +302,7 @@ float helicity(const HeightLayer& layer_agl,
     }
 
     // Get the interpolated bottom of the layer to integrate
+    // and convert to storm-relative winds
     float sru_bot = interp_height(hbot, height, u_wind, num_levs);
     float srv_bot = interp_height(hbot, height, v_wind, num_levs);
     sru_bot -= storm_motion.u;
@@ -319,7 +311,7 @@ float helicity(const HeightLayer& layer_agl,
     // will get set in first loop iter
     float sru_top;
     float srv_top;
-    float lyrh;
+    float lyrh = 0.0;
     float phel = 0.0;
     float nhel = 0.0;
     for (int k = lower_idx; k <= upper_idx; k++) {
@@ -328,9 +320,11 @@ float helicity(const HeightLayer& layer_agl,
             continue;
         }
 #endif
+        // top of layer storm relative winds
         sru_top = u_wind[k] - storm_motion.u;
         srv_top = v_wind[k] - storm_motion.v;
 
+        // integrate layer
         lyrh = (sru_top * srv_bot) - (sru_bot * srv_top); 
         if (lyrh > 0.0) {
             phel += lyrh;
@@ -338,14 +332,20 @@ float helicity(const HeightLayer& layer_agl,
         else {
             nhel += lyrh;
         }
+        // set the top to be the bottom
+        // of the next layer
+        sru_bot = sru_top;
+        srv_bot = srv_top;
     }
 
     // Get the interpolated top of the layer to integrate
+    // and convert to storm-relative winds
     sru_top = interp_height(htop, height, u_wind, num_levs);
     srv_top = interp_height(htop, height, v_wind, num_levs);
     sru_top -= storm_motion.u;
     srv_top -= storm_motion.v;
     
+    // integrate the final layer
     lyrh = (sru_top * srv_bot) - (sru_bot * srv_top); 
     if (lyrh > 0.0) {
         phel += lyrh;
@@ -355,7 +355,6 @@ float helicity(const HeightLayer& layer_agl,
     }
 
     return (phel + nhel);
-
 }
 
 
