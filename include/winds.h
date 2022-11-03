@@ -324,12 +324,12 @@ WindComponents wind_shear(const PressureLayer& layer,
                           const float* v_wind, int num_levs);
 
 
-}
+} // end namespace sharp
 
 
 namespace sharp::exper {
 
 
-}
+} // end namespace sharp::exper
 
 

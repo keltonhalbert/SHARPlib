@@ -104,12 +104,12 @@ float interp_pressure(float pressure_val, const float* pressure_arr,
 }
 
 
-}
+} // end namespace sharp
 
 
 namespace sharp::exper {
 
 
-}
+} // end namespace sharp::exper
 
 

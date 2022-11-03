@@ -20,9 +20,8 @@ namespace sharp {
 
 
 HeightLayer::HeightLayer(float bot, float top, float delta) {
-
     if (bot > top) {
-        throw std::range_error("The top of the layer must be > the bottom of the layer.");
+        throw std::range_error("The top of the height layer must be > the bottom of the height layer.");
     }
     zbot = bot;
     ztop = top;
@@ -32,7 +31,7 @@ HeightLayer::HeightLayer(float bot, float top, float delta) {
 
 HeightLayer::HeightLayer(float bot, float top) {
     if (bot > top) {
-        throw std::range_error("The top of the layer must be > the bottom of the layer.");
+        throw std::range_error("The top of the height layer must be > the bottom of the height layer.");
     }
     zbot = bot;
     ztop = top;
@@ -42,7 +41,7 @@ HeightLayer::HeightLayer(float bot, float top) {
 
 PressureLayer::PressureLayer(float bot, float top, float delta) {
     if (bot < top) {
-        throw std::range_error("The top of the pressurelayer must be < the bottom of the pressure layer.");
+        throw std::range_error("The top of the pressure layer must be < the bottom of the pressure layer.");
     }
     pbot = bot;
     ptop = top;
@@ -52,16 +51,12 @@ PressureLayer::PressureLayer(float bot, float top, float delta) {
 
 PressureLayer::PressureLayer(float bot, float top) {
     if (bot < top) {
-        throw std::range_error("The top of the pressurelayer must be < the bottom of the pressure layer.");
+        throw std::range_error("The top of the pressure layer must be < the bottom of the pressure layer.");
     }
     pbot = bot;
     ptop = top;
     dp = 1;
 }
-
-
-
-
 
 
 
@@ -71,3 +66,6 @@ PressureLayer::PressureLayer(float bot, float top) {
 namespace sharp::exper {
 
 } // end namespace sharp::exper
+
+
+

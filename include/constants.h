@@ -26,4 +26,5 @@ namespace sharp {
 	static constexpr float CP_WATER = 4184.f; // specific heat capacity of water J/kg
 	static constexpr float LV = 2.5104e6f; // Latent heat of vaporization of water (J/kg)
 	static constexpr float ROCP = RDGAS / CP_DRYAIR;
-}
+
+} // end namespace sharp
