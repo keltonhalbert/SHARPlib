@@ -1,6 +1,5 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <cmath>
-#include <iostream>
 
 #include "constants.h"
 #include "doctest.h"
