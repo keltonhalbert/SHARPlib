@@ -181,7 +181,7 @@ float max_value(HeightLayer layer,     const float* height,
         zval = height[k];
         dval = data_arr[k];
 
-        if (zval > max_val) {
+        if (dval > max_val) {
             max_val = dval;
             hght_of_max = zval;
         }
@@ -261,7 +261,7 @@ float min_value(HeightLayer layer,     const float* height,
         zval = height[k];
         dval = data_arr[k];
 
-        if (zval < min_val) {
+        if (dval < min_val) {
             min_val = dval;
             hght_of_min = zval;
         }
