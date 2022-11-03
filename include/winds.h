@@ -175,8 +175,7 @@ WindVector components_to_vector(float u_comp, float v_comp);
  * and return the wind speed (distance / time) and direction (degrees from North)
  * and return them as sharp::WindVector. 
  *
- * \param u_comp                (distance / time)
- * \param v_comp                (distance / time)
+ * \param comp                  sharp::WindComponents {u, v} 
  * \return sharp::WindVector    {wind_speed, wind_direction}
  */
 WindVector components_to_vector(WindComponents comp);
@@ -207,9 +206,8 @@ WindComponents vector_to_components(float wind_speed, float wind_direction);
  * Given the wind speed and direction of a vector via sharp::WindVector, 
  * compute and return the zonal and meridional vector components as a struct. 
  *
- * \param wind_speed                (distance / time)
- * \param wind_direction            (degrees from North)
- * \return sharp::WindComponents    {u_comp, v_comp}
+ * \param   vect    sharp::WindVector {speed, direction}
+ * \return  sharp::WindComponents    {u_comp, v_comp}
  */
 WindComponents vector_to_components(WindVector vect);
 
