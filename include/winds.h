@@ -323,6 +323,34 @@ WindComponents wind_shear(const PressureLayer& layer,
                           const float* pres,   const float* u_wind,
                           const float* v_wind, int num_levs);
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Computes the Storm Relative Helicity (SRH) over a given sharp::HeightLayer.
+ *
+ * Computes the Storm Relative Helicity (SRH) over a given sharp::HeightLayer
+ * using storm motion vector components stored in sharp::WindComponents. This 
+ * integration occurs over the given arrays of height, u_wind, and v_wind, 
+ * with num_levs elements in each. The integration only uses interpolation
+ * for the top and bottom of the specified layer. 
+ *
+ * The values in sharp::HeightLayer are expected in units above-ground-level 
+ * (AGL), and gets converted to above-mean-sea-level (MSL) during the 
+ * computation. 
+ *
+ * \param layer_agl     sharp::HeightLayer   {bottom_agl, top_agl}
+ * \param storm_motion  sharp::WindComonents {storm_u, storm_v}
+ * \param height        (meters)
+ * \param u_wind        (m/s??)
+ * \param v_wind        (m/s??)
+ * \param num_levs      (length of arrays)
+ *
+ */
+float helicity(const HeightLayer& layer_agl,
+               const WindComponents& storm_motion,
+               const float* height, const float* u_wind,
+               const float* v_wind, int num_levs);
+
 
 } // end namespace sharp
 
