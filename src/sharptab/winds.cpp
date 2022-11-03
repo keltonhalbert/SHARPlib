@@ -82,7 +82,7 @@ WindVector components_to_vector(float u_comp, float v_comp) {
 }
 
 
-WindVector components_to_vector(const WindComponents& comp) {
+WindVector components_to_vector(WindComponents comp) {
     float wind_speed = vector_magnitude(comp.u, comp.v);
     float wind_direction = vector_angle(comp.u, comp.v);
 
@@ -103,7 +103,7 @@ WindComponents vector_to_components(float wind_speed, float wind_direction) {
 }
 
 
-WindComponents vector_to_components(const WindVector& vect) {
+WindComponents vector_to_components(WindVector vect) {
 #ifndef NO_QC
     if ((vect.speed == MISSING) || (vect.direction == MISSING))
         return {MISSING, MISSING}; 
@@ -116,9 +116,9 @@ WindComponents vector_to_components(const WindVector& vect) {
 }
 
 
-WindComponents mean_wind(const PressureLayer& layer, 
-                         const float* pres,   const float* u_wind, 
-                         const float* v_wind, int num_levs) {
+WindComponents mean_wind(PressureLayer layer, const float* pres,
+                         const float* u_wind, const float* v_wind, 
+                         int num_levs) {
 #ifndef NO_QC
     if ((layer.pbot == MISSING) || (layer.ptop == MISSING))
         return {MISSING, MISSING};
@@ -126,27 +126,25 @@ WindComponents mean_wind(const PressureLayer& layer,
 
     // bounds checking our layer
     // requests to the available data
-    float pbot, ptop;
+    // -- since PressureLayer is passed
+    // by value, this does not modify 
+    // the original object
     if (layer.pbot > pres[0])
-        pbot = pres[0];
-    else
-        pbot = layer.pbot;
+        layer.pbot = pres[0];
 
     if (layer.ptop < pres[num_levs-1])
-        ptop = pres[num_levs-1];
-    else
-        ptop = layer.ptop;
+        layer.ptop = pres[num_levs-1];
 
 
-    float pres_level = pbot;
+    float pr_lvl = layer.pbot;
     float u_sum = 0;
     float v_sum = 0;
     float weight = 0;
-    while(pres_level >= ptop) {
-        u_sum += interp_pressure(pres_level, pres, u_wind, num_levs) * pres_level; 
-        v_sum += interp_pressure(pres_level, pres, v_wind, num_levs) * pres_level; 
-        weight += pres_level;
-        pres_level -= layer.dp;
+    while(pr_lvl >= layer.ptop) {
+        u_sum += interp_pressure(pr_lvl, pres, u_wind, num_levs) * pr_lvl; 
+        v_sum += interp_pressure(pr_lvl, pres, v_wind, num_levs) * pr_lvl; 
+        weight += pr_lvl;
+        pr_lvl -= layer.dp;
     }
 
     float mean_u = u_sum / weight;
@@ -156,9 +154,9 @@ WindComponents mean_wind(const PressureLayer& layer,
 }
 
 
-WindComponents mean_wind_npw(const PressureLayer& layer,
-                             const float* pres,   const float* u_wind,
-                             const float* v_wind, int num_levs) {
+WindComponents mean_wind_npw(PressureLayer layer, const float* pres,
+                             const float* u_wind, const float* v_wind, 
+                             int num_levs) {
 #ifndef NO_QC
     if ((layer.pbot == MISSING) || (layer.ptop == MISSING))
         return {MISSING, MISSING};
@@ -166,27 +164,25 @@ WindComponents mean_wind_npw(const PressureLayer& layer,
 
     // bounds checking our layer
     // requests to the available data
-    float pbot, ptop;
+    // -- since PressureLayer is passed
+    // by value, this does not modify 
+    // the original object
     if (layer.pbot > pres[0])
-        pbot = pres[0];
-    else
-        pbot = layer.pbot;
+        layer.pbot = pres[0];
 
     if (layer.ptop < pres[num_levs-1])
-        ptop = pres[num_levs-1];
-    else
-        ptop = layer.ptop;
+        layer.ptop = pres[num_levs-1];
 
 
-    float pres_level = pbot;
+    float pr_lvl = layer.pbot;
     float u_sum = 0;
     float v_sum = 0;
     float weight = 0;
-    while(pres_level >= ptop) {
-        u_sum += interp_pressure(pres_level, pres, u_wind, num_levs);
-        v_sum += interp_pressure(pres_level, pres, v_wind, num_levs);
+    while(pr_lvl >= layer.ptop) {
+        u_sum += interp_pressure(pr_lvl, pres, u_wind, num_levs);
+        v_sum += interp_pressure(pr_lvl, pres, v_wind, num_levs);
         weight += 1; 
-        pres_level -= layer.dp;
+        pr_lvl -= layer.dp;
     }
 
     float mean_u = u_sum / weight;
@@ -197,29 +193,9 @@ WindComponents mean_wind_npw(const PressureLayer& layer,
 }
 
 
-WindComponents mean_wind(float pressure_bot,  float pressure_top,
-                         const float* pres,   const float* u_wind, 
-                         const float* v_wind, int num_levs) {
-
-    PressureLayer layer = {pressure_bot, pressure_top, 1};
-    return mean_wind(layer, pres, u_wind, v_wind, num_levs);
-
-}
-
-
-WindComponents mean_wind_nwp(float pressure_bot,  float pressure_top,
-                             const float* pres,   const float* u_wind, 
-                             const float* v_wind, int num_levs) {
-
-    PressureLayer layer = {pressure_bot, pressure_top, 1};
-    return mean_wind_npw(layer, pres, u_wind, v_wind, num_levs);
-
-}
-
-
-WindComponents wind_shear(const PressureLayer& layer, 
-                          const float* pres,   const float* u_wind,
-                          const float* v_wind, int num_levs) {
+WindComponents wind_shear(PressureLayer layer, const float* pres, 
+                          const float* u_wind, const float* v_wind, 
+                          int num_levs) {
 #ifndef NO_QC
     if ((layer.pbot == MISSING) || (layer.ptop == MISSING))
         return {MISSING, MISSING};
@@ -227,22 +203,19 @@ WindComponents wind_shear(const PressureLayer& layer,
 
     // bounds checking our layer
     // requests to the available data
-    float pbot, ptop;
+    // -- since PressureLayer is passed
+    // by value, this does not modify 
+    // the original object
     if (layer.pbot > pres[0])
-        pbot = pres[0];
-    else
-        pbot = layer.pbot;
-
+        layer.pbot = pres[0];
     if (layer.ptop < pres[num_levs-1])
-        ptop = pres[num_levs-1];
-    else
-        ptop = layer.ptop;
+        layer.ptop = pres[num_levs-1];
 
-    float u_bot = interp_pressure(pbot, pres, u_wind, num_levs);
-    float u_top = interp_pressure(ptop, pres, u_wind, num_levs);
+    float u_bot = interp_pressure(layer.pbot, pres, u_wind, num_levs);
+    float u_top = interp_pressure(layer.ptop, pres, u_wind, num_levs);
 
-    float v_bot = interp_pressure(pbot, pres, v_wind, num_levs);
-    float v_top = interp_pressure(ptop, pres, v_wind, num_levs);
+    float v_bot = interp_pressure(layer.pbot, pres, v_wind, num_levs);
+    float v_top = interp_pressure(layer.ptop, pres, v_wind, num_levs);
 
 #ifndef NO_QC
     if ((u_bot == MISSING) || (v_bot == MISSING) ||
@@ -260,8 +233,7 @@ WindComponents wind_shear(const PressureLayer& layer,
 // TO-DO: Right now it is unclear whether the base usings of
 // u_wind and v_wind should be knots or m/s. Need to clarify
 // design here and update documentation accordingly. 
-float helicity(const HeightLayer& layer_agl, 
-               const WindComponents& storm_motion,
+float helicity(HeightLayer layer_agl, WindComponents storm_motion,
                const float* height, const float* u_wind, 
                const float* v_wind, int num_levs) {
 #ifndef NO_QC
@@ -274,37 +246,20 @@ float helicity(const HeightLayer& layer_agl,
 #endif
 
     // get the height in MSL by adding the surface height
-    float hbot = height[0] + layer_agl.zbot;
-    float htop = height[0] + layer_agl.ztop;
+    // -- modifying in this function does not modify
+    // original layer struct since it is passed by value
+    layer_agl.zbot += height[0];
+    layer_agl.ztop += height[0];
 
-    // bounds check the integration
-    if (hbot < height[0]) {
-        hbot = height[0];
-    }
-    if (htop > height[num_levs-1]) {
-        htop = height[num_levs-1];
-    }
-
-    // find the lowest observation, but not if it
-    // is exactly the bottom of our layer (it gets
-    // interpolated).
-    int lower_idx = 0;
-    while (height[lower_idx] <= hbot) {
-        lower_idx++;
-    }
-
-    // find the highest observation, but not if it
-    // is exactly the top of our layer (it gets 
-    // interpolated)
-    int upper_idx = num_levs - 1;
-    while (height[upper_idx] >= htop) {
-        upper_idx--;
-    }
+    // Get the vertical array indices corresponding to our layer,
+    // while also bounds checking our search. Indices exclude the 
+    // top and bottom layers that will be interpolated.
+    LayerIndex layer_idx = get_layer_index(layer_agl, height, num_levs);
 
     // Get the interpolated bottom of the layer to integrate
     // and convert to storm-relative winds
-    float sru_bot = interp_height(hbot, height, u_wind, num_levs);
-    float srv_bot = interp_height(hbot, height, v_wind, num_levs);
+    float sru_bot = interp_height(layer_agl.zbot, height, u_wind, num_levs);
+    float srv_bot = interp_height(layer_agl.zbot, height, v_wind, num_levs);
     sru_bot -= storm_motion.u;
     srv_bot -= storm_motion.v;
 
@@ -314,7 +269,7 @@ float helicity(const HeightLayer& layer_agl,
     float lyrh = 0.0;
     float phel = 0.0;
     float nhel = 0.0;
-    for (int k = lower_idx; k <= upper_idx; k++) {
+    for (int k = layer_idx.kbot; k <= layer_idx.ktop; k++) {
 #ifndef NO_QC
         if ((u_wind[k] != MISSING) && (v_wind[k] != MISSING)) {
             continue;
@@ -340,8 +295,8 @@ float helicity(const HeightLayer& layer_agl,
 
     // Get the interpolated top of the layer to integrate
     // and convert to storm-relative winds
-    sru_top = interp_height(htop, height, u_wind, num_levs);
-    srv_top = interp_height(htop, height, v_wind, num_levs);
+    sru_top = interp_height(layer_agl.ztop, height, u_wind, num_levs);
+    srv_top = interp_height(layer_agl.ztop, height, v_wind, num_levs);
     sru_top -= storm_motion.u;
     srv_top -= storm_motion.v;
     
