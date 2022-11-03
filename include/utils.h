@@ -132,7 +132,7 @@ LayerIndex get_layer_index(PressureLayer& layer,
  *
  *
  * \param layer     (sharp::HeightLayer)    {zbot, ztop}
- * \param pressure  (hPa)
+ * \param height    (meters)
  * \param num_levs  (length of array)
  * \return          sharp::LayerIndex       {kbot, ktop}
  *
