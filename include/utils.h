@@ -38,6 +38,9 @@ struct HeightLayer {
      * \brief The height interval with which to iterate over the layer (meters) 
      */
     float dz = 100.0;
+
+    HeightLayer(float bot, float top, float delta);
+    HeightLayer(float bot, float top);
 };
 
 
@@ -65,6 +68,8 @@ struct PressureLayer {
      * \brief The pressure interval with which to iterate over the layer (hPa)
      */
     float dp = 1;
+    PressureLayer(float bot, float top, float delta);
+    PressureLayer(float bot, float top);
 };
 
 

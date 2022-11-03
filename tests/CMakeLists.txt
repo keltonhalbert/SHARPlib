@@ -11,6 +11,8 @@ target_link_libraries(test_sharp_thermo SHARP)
 add_executable(test_sharp_interp test_interp.cpp)
 target_link_libraries(test_sharp_interp SHARP) 
 
+add_executable(test_sharp_utils test_utils.cpp)
+target_link_libraries(test_sharp_utils SHARP) 
 
 add_executable(test_sharp_winds test_winds.cpp)
 target_link_libraries(test_sharp_winds SHARP) 

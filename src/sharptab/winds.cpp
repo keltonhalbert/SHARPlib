@@ -257,6 +257,108 @@ WindComponents wind_shear(const PressureLayer& layer,
 }
 
 
+float helicity(const HeightLayer& layer_agl, 
+               const WindComponents& storm_motion,
+               const float* height, const float* u_wind, 
+               const float* v_wind, int num_levs) {
+#ifndef NO_QC
+    if ((storm_motion.u == MISSING) || (storm_motion.v == MISSING)) {
+        return MISSING;
+    }
+    if ((layer_agl.zbot == MISSING) || (layer_agl.ztop == MISSING)) {
+        return MISSING;
+    }
+    if ((layer_agl.ztop < layer_agl.zbot)) {
+        return MISSING;
+    }
+#endif
+
+    float hbot;
+    float htop;
+
+    // bounds check the integration
+    if (hbot < height[0]) {
+        hbot = height[0];
+    }
+    else {
+        hbot = layer_agl.zbot;
+    }
+    if (htop > height[num_levs-1]) {
+        htop = height[num_levs-1];
+    }
+    else {
+        htop = layer_agl.ztop;
+    }
+
+    // get the height in MSL by adding the surface height
+    hbot += height[0];
+    htop += height[0];
+
+    // find the lowest observation, but not if it
+    // is exactly the bottom of our layer (it gets
+    // interpolated).
+    int lower_idx = 0;
+    while (height[lower_idx] <= hbot) {
+        lower_idx++;
+    }
+
+    // find the highest observation, but not if it
+    // is exactly the top of our layer (it gets 
+    // interpolated)
+    int upper_idx = num_levs - 1;
+    while (height[upper_idx] >= htop) {
+        upper_idx--;
+    }
+
+    // Get the interpolated bottom of the layer to integrate
+    float sru_bot = interp_height(hbot, height, u_wind, num_levs);
+    float srv_bot = interp_height(hbot, height, v_wind, num_levs);
+    sru_bot -= storm_motion.u;
+    srv_bot -= storm_motion.v;
+
+    // will get set in first loop iter
+    float sru_top;
+    float srv_top;
+    float lyrh;
+    float phel = 0.0;
+    float nhel = 0.0;
+    for (int k = lower_idx; k <= upper_idx; k++) {
+#ifndef NO_QC
+        if ((u_wind[k] != MISSING) && (v_wind[k] != MISSING)) {
+            continue;
+        }
+#endif
+        sru_top = u_wind[k] - storm_motion.u;
+        srv_top = v_wind[k] - storm_motion.v;
+
+        lyrh = (sru_top * srv_bot) - (sru_bot * srv_top); 
+        if (lyrh > 0.0) {
+            phel += lyrh;
+        }
+        else {
+            nhel += lyrh;
+        }
+    }
+
+    // Get the interpolated top of the layer to integrate
+    sru_top = interp_height(htop, height, u_wind, num_levs);
+    srv_top = interp_height(htop, height, v_wind, num_levs);
+    sru_top -= storm_motion.u;
+    srv_top -= storm_motion.v;
+    
+    lyrh = (sru_top * srv_bot) - (sru_bot * srv_top); 
+    if (lyrh > 0.0) {
+        phel += lyrh;
+    }
+    else {
+        nhel += lyrh;
+    }
+
+    return (phel + nhel);
+
+}
+
+
 } // end namespace sharp
 
 
