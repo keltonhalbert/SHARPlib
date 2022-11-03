@@ -376,12 +376,12 @@ float theta_wetbulb(float pressure, float temperature, float dewpoint);
 float thetae(float pressure, float temperature, float dewpoint);
 
 
-}
+} // end namespace sharp
 
 
 namespace sharp::exper {
 
 
-}
+} // end namespace sharp::exper
 
 
