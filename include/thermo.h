@@ -13,6 +13,8 @@
  */
 #pragma once
 
+#include "utils.h"
+
 namespace sharp {
 
 /**
@@ -374,6 +376,15 @@ float theta_wetbulb(float pressure, float temperature, float dewpoint);
  * \return   equivalent_potential_temperature   (degC) 
  */
 float thetae(float pressure, float temperature, float dewpoint);
+
+
+float lapse_rate(HeightLayer layer_agl, const float* height, 
+                 const float* temperature, int num_levs);
+
+
+float lapse_rate(PressureLayer layer, const float* pressure,
+                 const float* height, const float* temperature,
+                 int num_levs);
 
 
 } // end namespace sharp
