@@ -122,6 +122,12 @@ LayerIndex get_layer_index(HeightLayer& layer,
 float max_value(PressureLayer layer,   const float* pressure, 
                 const float* data_arr, int num_levs,
                 float* pres_of_max) {
+#ifndef NO_QC
+    if ((layer.pbot == MISSING) || (layer.ptop == MISSING)) {
+        return MISSING;
+    }
+#endif
+
     // Get the vertical array indices corresponding to our layer,
     // while also bounds checking our search. 
     LayerIndex layer_idx = get_layer_index(layer, pressure, num_levs);
@@ -163,6 +169,12 @@ float max_value(PressureLayer layer,   const float* pressure,
 float max_value(HeightLayer layer,     const float* height,
                 const float* data_arr, int num_levs,
                 float* hght_of_max) {
+#ifndef NO_QC
+    if ((layer.zbot == MISSING) || (layer.ztop == MISSING)) {
+        return MISSING;
+    }
+#endif
+
     // Get the vertical array indices corresponding to our layer,
     // while also bounds checking our search. 
     LayerIndex layer_idx = get_layer_index(layer, height, num_levs);
@@ -204,6 +216,12 @@ float max_value(HeightLayer layer,     const float* height,
 float min_value(PressureLayer layer,   const float* pressure,
                 const float* data_arr, int num_levs,
                 float* pres_of_min) {
+#ifndef NO_QC
+    if ((layer.pbot == MISSING) || (layer.ptop == MISSING)) {
+        return MISSING;
+    }
+#endif
+
     // Get the vertical array indices corresponding to our layer,
     // while also bounds checking our search. 
     LayerIndex layer_idx = get_layer_index(layer, pressure, num_levs);
@@ -245,6 +263,12 @@ float min_value(PressureLayer layer,   const float* pressure,
 float min_value(HeightLayer layer,     const float* height,
                 const float* data_arr, int num_levs,
                 float* hght_of_min) {
+#ifndef NO_QC
+    if ((layer.zbot == MISSING) || (layer.ztop == MISSING)) {
+        return MISSING;
+    }
+#endif
+
     // Get the vertical array indices corresponding to our layer,
     // while also bounds checking our search.
     LayerIndex layer_idx = get_layer_index(layer, height, num_levs);
@@ -285,6 +309,12 @@ float min_value(HeightLayer layer,     const float* height,
 
 float mean_value(PressureLayer layer,   const float* pressure,
                  const float* data_arr, int num_levs) {
+#ifndef NO_QC
+    if ((layer.pbot == MISSING) || (layer.ptop == MISSING)) {
+        return MISSING;
+    }
+#endif
+
     // Get the vertical array indices corresponding to our layer,
     // while also bounds checking our search.
     LayerIndex layer_idx = get_layer_index(layer, pressure, num_levs);
@@ -313,6 +343,12 @@ float mean_value(PressureLayer layer,   const float* pressure,
 
 float mean_value(HeightLayer layer,     const float* height, 
                  const float* data_arr, int num_levs) {
+#ifndef NO_QC
+    if ((layer.zbot == MISSING) || (layer.ztop == MISSING)) {
+        return MISSING;
+    }
+#endif
+
     // Get the vertical array indices corresponding to our layer,
     // while also bounds checking our search.
     LayerIndex layer_idx = get_layer_index(layer, height, num_levs);
