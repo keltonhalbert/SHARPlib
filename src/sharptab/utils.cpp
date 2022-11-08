@@ -119,24 +119,19 @@ LayerIndex get_layer_index(HeightLayer& layer,
 }
 
 
-// TO-DO: Need to figure out how I plan on passing back the pressure
-// or height level of the maximum. Probably another struct, which 
-// is kind of annoying to have to create... or can pass by 
-// pointer or reference and modify it. Will see I guess. 
-float max_value(PressureLayer layer,   const float* pressure,
-                const float* data_arr, int num_levs) {
+float max_value(PressureLayer layer,   const float* pressure, 
+                const float* data_arr, int num_levs,
+                float* pres_of_max) {
     // Get the vertical array indices corresponding to our layer,
     // while also bounds checking our search. 
     LayerIndex layer_idx = get_layer_index(layer, pressure, num_levs);
 
     // start with the interpolated bottom of the layer
     float max_val = interp_pressure(layer.pbot, pressure, data_arr, num_levs);
-    float pres_of_max = layer.pbot;
+    float pr_max = layer.pbot;
 
-    int lower_idx = layer_idx.kbot;
-    int upper_idx = layer_idx.ktop;
     float pval, dval;
-    for (int k = lower_idx; k <= upper_idx; k++) {
+    for (int k = layer_idx.kbot; k <= layer_idx.ktop; k++) {
 #ifndef NO_QC
         if ((pressure[k] == MISSING) || (data_arr[k] == MISSING)) {
             continue;
@@ -147,7 +142,7 @@ float max_value(PressureLayer layer,   const float* pressure,
 
         if (dval > max_val) {
             max_val = dval;
-            pres_of_max = pval;
+            pr_max = pval;
         }
     }
 
@@ -156,27 +151,28 @@ float max_value(PressureLayer layer,   const float* pressure,
     dval = interp_pressure(layer.ptop, pressure, data_arr, num_levs);
     if (dval > max_val) {
         max_val = dval;
-        pres_of_max = pval;
+        pr_max = pval;
     }
 
+    // if it isn't nullptr
+    if (pres_of_max) *pres_of_max = pr_max;
     return max_val;
 }
 
 
 float max_value(HeightLayer layer,     const float* height,
-                const float* data_arr, int num_levs) {
+                const float* data_arr, int num_levs,
+                float* hght_of_max) {
     // Get the vertical array indices corresponding to our layer,
     // while also bounds checking our search. 
     LayerIndex layer_idx = get_layer_index(layer, height, num_levs);
 
     // start with the interpolated bottom of the layer
     float max_val = interp_height(layer.zbot, height, data_arr, num_levs);
-    float hght_of_max = layer.zbot;
+    float ht_max = layer.zbot;
 
-    int lower_idx = layer_idx.kbot;
-    int upper_idx = layer_idx.ktop;
     float zval, dval;
-    for (int k = lower_idx; k <= upper_idx; k++) {
+    for (int k = layer_idx.kbot; k <= layer_idx.ktop; k++) {
 #ifndef NO_QC
         if ((height[k] == MISSING) || (data_arr[k] == MISSING)) {
             continue;
@@ -187,7 +183,7 @@ float max_value(HeightLayer layer,     const float* height,
 
         if (dval > max_val) {
             max_val = dval;
-            hght_of_max = zval;
+            ht_max = zval;
         }
     }
 
@@ -196,27 +192,28 @@ float max_value(HeightLayer layer,     const float* height,
     dval = interp_height(layer.ztop, height, data_arr, num_levs);
     if (dval > max_val) {
         max_val = dval;
-        hght_of_max = zval;
+        ht_max = zval;
     }
 
+    // if not nullptr
+    if (hght_of_max) *hght_of_max = ht_max;
     return max_val;
 }
 
 
 float min_value(PressureLayer layer,   const float* pressure,
-                const float* data_arr, int num_levs) {
+                const float* data_arr, int num_levs,
+                float* pres_of_min) {
     // Get the vertical array indices corresponding to our layer,
     // while also bounds checking our search. 
     LayerIndex layer_idx = get_layer_index(layer, pressure, num_levs);
 
     // start with the interpolated bottom of the layer
     float min_val = interp_pressure(layer.pbot, pressure, data_arr, num_levs);
-    float pres_of_min = layer.pbot;
+    float pr_min = layer.pbot;
 
-    int lower_idx = layer_idx.kbot;
-    int upper_idx = layer_idx.ktop;
     float pval, dval;
-    for (int k = lower_idx; k <= upper_idx; k++) {
+    for (int k = layer_idx.kbot; k <= layer_idx.ktop; k++) {
 #ifndef NO_QC
         if ((pressure[k] == MISSING) || (data_arr[k] == MISSING)) {
             continue;
@@ -227,7 +224,7 @@ float min_value(PressureLayer layer,   const float* pressure,
 
         if (dval < min_val) {
             min_val = dval;
-            pres_of_min = pval;
+            pr_min = pval;
         }
     }
 
@@ -236,27 +233,28 @@ float min_value(PressureLayer layer,   const float* pressure,
     dval = interp_pressure(layer.ptop, pressure, data_arr, num_levs);
     if (dval < min_val) {
         min_val = dval;
-        pres_of_min = pval;
+        pr_min = pval;
     }
 
+    // if not nullptr
+    if (pres_of_min) *pres_of_min = pr_min;
     return min_val;
 }
 
 
 float min_value(HeightLayer layer,     const float* height,
-                const float* data_arr, int num_levs) {
+                const float* data_arr, int num_levs,
+                float* hght_of_min) {
     // Get the vertical array indices corresponding to our layer,
     // while also bounds checking our search.
     LayerIndex layer_idx = get_layer_index(layer, height, num_levs);
 
     // start with the interpolated bottom of the layer
     float min_val = interp_height(layer.zbot, height, data_arr, num_levs);
-    float hght_of_min = layer.zbot;
+    float ht_min = layer.zbot;
 
-    int lower_idx = layer_idx.kbot;
-    int upper_idx = layer_idx.ktop;
     float zval, dval;
-    for (int k = lower_idx; k <= upper_idx; k++) {
+    for (int k = layer_idx.kbot; k <= layer_idx.ktop; k++) {
 #ifndef NO_QC
         if ((height[k] == MISSING) || (data_arr[k] == MISSING)) {
             continue;
@@ -267,7 +265,7 @@ float min_value(HeightLayer layer,     const float* height,
 
         if (dval < min_val) {
             min_val = dval;
-            hght_of_min = zval;
+            ht_min = zval;
         }
     }
 
@@ -276,9 +274,11 @@ float min_value(HeightLayer layer,     const float* height,
     dval = interp_height(layer.ztop, height, data_arr, num_levs);
     if (dval < min_val) {
         min_val = dval;
-        hght_of_min = zval;
+        ht_min = zval;
     }
 
+    // if not nullptr
+    if (hght_of_min) *hght_of_min = ht_min;
     return min_val;
 }
 
