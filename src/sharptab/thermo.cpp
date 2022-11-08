@@ -7,7 +7,10 @@
 // Based on NSHARP routines originally written by
 // John Hart and Rich Thompson at SPC. 
 #include <cmath>
+
 #include "constants.h"
+#include "interp.h"
+#include "utils.h"
 
 namespace sharp {
 
@@ -338,6 +341,64 @@ float thetae(float pressure, float temperature, float dewpoint) {
     // Return the potential temperature of the 100 hPa value
     return theta(100.0, lifted_temperature, 1000.0);
 
+}
+
+
+float lapse_rate(HeightLayer layer_agl, const float* height, 
+                 const float* temperature, int num_levs) {
+#ifndef NO_QC
+    if ((layer_agl.zbot == MISSING) || (layer_agl.ztop == MISSING)) {
+        return MISSING;
+    }
+#endif
+
+    // convert from agl to msl
+    layer_agl.zbot += height[0];
+    layer_agl.ztop += height[0];
+
+    // bounds check the height layer 
+    if (layer_agl.zbot < height[0]) {
+        layer_agl.zbot = height[0];
+    }
+    if (layer_agl.ztop > height[num_levs-1]) {
+        layer_agl.ztop = height[num_levs-1];
+    }
+
+    // lower and upper temperature
+    float tmpc_l = interp_height(layer_agl.zbot, height, temperature, num_levs);
+    float tmpc_u = interp_height(layer_agl.ztop, height, temperature, num_levs);
+    float dz = layer_agl.ztop - layer_agl.zbot;
+#ifndef NO_QC
+    if ((tmpc_l == MISSING) || (tmpc_u == MISSING)) {
+        return MISSING;
+    }
+#endif
+
+    // dT/dz, positive (definition of lapse rate), in km
+    return ((tmpc_u - tmpc_l) / dz) * -1000.0;
+}
+
+
+float lapse_rate(PressureLayer layer, const float* pressure, 
+                 const float* height, const float* temperature,
+                 int num_levs) {
+    HeightLayer h_layer = {MISSING, MISSING};
+
+    // get the pressure layer heights in agl
+    h_layer.zbot = interp_pressure(layer.pbot, pressure, height, num_levs);
+    h_layer.ztop = interp_pressure(layer.ptop, pressure, height, num_levs);
+
+#ifndef NO_QC
+    if ((h_layer.zbot == MISSING) || (h_layer.ztop == MISSING)) {
+        return MISSING;
+    }
+#endif
+
+    // convert to agl
+    h_layer.zbot -= height[0];
+    h_layer.ztop -= height[0];
+
+    return lapse_rate(h_layer, height, temperature, num_levs);
 }
 
 
