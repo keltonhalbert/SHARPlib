@@ -248,7 +248,7 @@ float min_value(HeightLayer layer,     const float* height,
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- * \breif Computes the mean value of a field over a given pressure layer.
+ * \brief Computes the mean value of a field over a given pressure layer.
  *
  * Computes the mean value of a given array of data and corresponding 
  * pressure coordinates over the given sharp::PressureLayer.
@@ -267,13 +267,13 @@ float mean_value(PressureLayer layer,   const float* pressure,
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- * \breif Computes the mean value of a field over a given height layer.
+ * \brief Computes the mean value of a field over a given height layer.
  *
  * Computes the mean value of a given array of data and corresponding 
  * height coordinates over the given sharp::HeightLayer.
  *
  * \param layer     (sharp::PressureLayer)  {pbot, ptop}
- * \param pressure  (vertical pressure array; hPa)
+ * \param height    (vertical height array; meters)
  * \param data_arr  (The data for which to compute a mean)
  * \param num_levs  (length of pressure and data arrays)
  * \return mean_value

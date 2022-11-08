@@ -406,7 +406,8 @@ float lapse_rate(HeightLayer layer_agl, const float* height,
  * handles converting the pressure layer into a height layer, and 
  * then calles the sharp::HeightLayer implementation of this routine.
  *
- * \param layer_agl     (meters AGL) 
+ * \param layer         (meters AGL) 
+ * \param pressure      (hPa)
  * \param height        (meters MSL)
  * \param temperature   (degC)
  * \param num_levs      (length of arrays) 
