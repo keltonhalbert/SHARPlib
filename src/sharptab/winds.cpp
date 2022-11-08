@@ -266,9 +266,7 @@ float helicity(HeightLayer layer_agl, WindComponents storm_motion,
     // will get set in first loop iter
     float sru_top;
     float srv_top;
-    float lyrh = 0.0;
-    float phel = 0.0;
-    float nhel = 0.0;
+    float layer_helicity = 0.0;
     for (int k = layer_idx.kbot; k <= layer_idx.ktop; k++) {
 #ifndef NO_QC
         if ((u_wind[k] != MISSING) && (v_wind[k] != MISSING)) {
@@ -280,13 +278,7 @@ float helicity(HeightLayer layer_agl, WindComponents storm_motion,
         srv_top = v_wind[k] - storm_motion.v;
 
         // integrate layer
-        lyrh = (sru_top * srv_bot) - (sru_bot * srv_top); 
-        if (lyrh > 0.0) {
-            phel += lyrh;
-        }
-        else {
-            nhel += lyrh;
-        }
+        layer_helicity += (sru_top * srv_bot) - (sru_bot * srv_top); 
         // set the top to be the bottom
         // of the next layer
         sru_bot = sru_top;
@@ -301,15 +293,9 @@ float helicity(HeightLayer layer_agl, WindComponents storm_motion,
     srv_top -= storm_motion.v;
     
     // integrate the final layer
-    lyrh = (sru_top * srv_bot) - (sru_bot * srv_top); 
-    if (lyrh > 0.0) {
-        phel += lyrh;
-    }
-    else {
-        nhel += lyrh;
-    }
+    layer_helicity = (sru_top * srv_bot) - (sru_bot * srv_top); 
 
-    return (phel + nhel);
+    return layer_helicity; 
 }
 
 
