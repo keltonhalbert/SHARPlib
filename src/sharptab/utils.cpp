@@ -119,6 +119,10 @@ LayerIndex get_layer_index(HeightLayer& layer,
 }
 
 
+// TO-DO: Need to figure out how I plan on passing back the pressure
+// or height level of the maximum. Probably another struct, which 
+// is kind of annoying to have to create... or can pass by 
+// pointer or reference and modify it. Will see I guess. 
 float max_value(PressureLayer layer,   const float* pressure,
                 const float* data_arr, int num_levs) {
     // Get the vertical array indices corresponding to our layer,
