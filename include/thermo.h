@@ -379,10 +379,39 @@ float theta_wetbulb(float pressure, float temperature, float dewpoint);
 float thetae(float pressure, float temperature, float dewpoint);
 
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief compute the lapse rate over the given height layer (AGL)
+ *
+ * Computes the lapse rate over a given height layer above-ground-level.
+ * This routine handles converting AGL to MSL by adding the surface height
+ * value to the layer.  
+ *
+ * \param layer_agl     (meters AGL) 
+ * \param height        (meters MSL)
+ * \param temperature   (degC)
+ * \param num_levs      (length of arrays) 
+ * \return Temperature Lapse Rate (degC/km)
+ */
 float lapse_rate(HeightLayer layer_agl, const float* height, 
                  const float* temperature, int num_levs);
 
-
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief compute the lapse rate over the given pressure layer
+ *
+ * Computes the lapse rate over a given pressure layer. This routine 
+ * handles converting the pressure layer into a height layer, and 
+ * then calles the sharp::HeightLayer implementation of this routine.
+ *
+ * \param layer_agl     (meters AGL) 
+ * \param height        (meters MSL)
+ * \param temperature   (degC)
+ * \param num_levs      (length of arrays) 
+ * \return Temperature Lapse Rate (degC/km)
+ */
 float lapse_rate(PressureLayer layer, const float* pressure,
                  const float* height, const float* temperature,
                  int num_levs);
