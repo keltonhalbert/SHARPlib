@@ -269,7 +269,7 @@ float helicity(HeightLayer layer_agl, WindComponents storm_motion,
     float layer_helicity = 0.0;
     for (int k = layer_idx.kbot; k <= layer_idx.ktop; k++) {
 #ifndef NO_QC
-        if ((u_wind[k] != MISSING) && (v_wind[k] != MISSING)) {
+        if ((u_wind[k] == MISSING) || (v_wind[k] == MISSING)) {
             continue;
         }
 #endif
