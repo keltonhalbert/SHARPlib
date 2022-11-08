@@ -232,16 +232,16 @@ float wetlift(float pressure, float temperature, float lifted_pressure) {
 void drylift(float pressure, float temperature, 
              float dewpoint, float& pressure_at_lcl, 
                              float& temperature_at_lcl) {
+    // we do this before the QC check so that 
+    // these values are passed back as missing
+    pressure_at_lcl    = MISSING;
+    temperature_at_lcl = MISSING;
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING) 
                               || (dewpoint == MISSING)) {
         return;
     }
 #endif
-
-    pressure_at_lcl    = MISSING;
-    temperature_at_lcl = MISSING;
-
 
     // theta is constant from parcel level to LCL
     float pcl_theta = theta(pressure, temperature, 1000.0);
@@ -355,7 +355,6 @@ float lapse_rate(HeightLayer layer_agl, const float* height,
     // lower and upper temperature
     float tmpc_l = interp_height(layer_agl.zbot, height, temperature, num_levs);
     float tmpc_u = interp_height(layer_agl.ztop, height, temperature, num_levs);
-    float dz = layer_agl.ztop - layer_agl.zbot;
 #ifndef NO_QC
     if ((tmpc_l == MISSING) || (tmpc_u == MISSING)) {
         return MISSING;
@@ -363,6 +362,7 @@ float lapse_rate(HeightLayer layer_agl, const float* height,
 #endif
 
     // dT/dz, positive (definition of lapse rate), in km
+    float dz = layer_agl.ztop - layer_agl.zbot;
     return ((tmpc_u - tmpc_l) / dz) * -1000.0;
 }
 
@@ -370,17 +370,25 @@ float lapse_rate(HeightLayer layer_agl, const float* height,
 float lapse_rate(PressureLayer layer, const float* pressure, 
                  const float* height, const float* temperature,
                  int num_levs) {
+#ifndef NO_QC
+    if ((layer.pbot == MISSING) || (layer.ptop == MISSING)) {
+        return MISSING;
+    }
+#endif
+
+    // bounds check the pressure layer 
+    if (layer.pbot > pressure[0]) {
+        layer.pbot = pressure[0];
+    }
+    if (layer.ptop < pressure[num_levs-1]) {
+        layer.ptop = pressure[num_levs-1];
+    }
+
     HeightLayer h_layer = {MISSING, MISSING};
 
     // get the pressure layer heights in agl
     h_layer.zbot = interp_pressure(layer.pbot, pressure, height, num_levs);
     h_layer.ztop = interp_pressure(layer.ptop, pressure, height, num_levs);
-
-#ifndef NO_QC
-    if ((h_layer.zbot == MISSING) || (h_layer.ztop == MISSING)) {
-        return MISSING;
-    }
-#endif
 
     // convert to agl
     h_layer.zbot -= height[0];
