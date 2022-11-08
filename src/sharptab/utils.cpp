@@ -283,6 +283,62 @@ float min_value(HeightLayer layer,     const float* height,
 }
 
 
+float mean_value(PressureLayer layer,   const float* pressure,
+                 const float* data_arr, int num_levs) {
+    // Get the vertical array indices corresponding to our layer,
+    // while also bounds checking our search.
+    LayerIndex layer_idx = get_layer_index(layer, pressure, num_levs);
+
+    // start with interpolated bottom layer
+    float data_sum = interp_pressure(layer.pbot, pressure, data_arr, num_levs);
+    float count = 1.0;
+
+    for (int k = layer_idx.kbot; k <= layer_idx.ktop; k++) {
+#ifndef NO_QC
+        if ((pressure[k] == MISSING) || (data_arr[k] == MISSING)) {
+            continue;
+        }
+#endif
+        data_sum += data_arr[k]; 
+        count += 1.0;
+    }
+
+    // finish with interpolated top layer
+    data_sum += interp_pressure(layer.ptop, pressure, data_arr, num_levs);
+    count += 1.0;
+
+    return data_sum / count;
+}
+
+
+float mean_value(HeightLayer layer,     const float* height, 
+                 const float* data_arr, int num_levs) {
+    // Get the vertical array indices corresponding to our layer,
+    // while also bounds checking our search.
+    LayerIndex layer_idx = get_layer_index(layer, height, num_levs);
+
+    // start with interpolated bottom layer
+    float data_sum = interp_height(layer.zbot, height, data_arr, num_levs);
+    float count = 1.0;
+
+    for (int k = layer_idx.kbot; k <= layer_idx.ktop; k++) {
+#ifndef NO_QC
+        if ((height[k] == MISSING) || (data_arr[k] == MISSING)) {
+            continue;
+        }
+#endif
+        data_sum += data_arr[k]; 
+        count += 1.0;
+    }
+
+    // finish with interpolated top layer
+    data_sum += interp_height(layer.ztop, height, data_arr, num_levs);
+    count += 1.0;
+
+    return data_sum / count;
+}
+
+
 } // end namespace sharp
 
 
