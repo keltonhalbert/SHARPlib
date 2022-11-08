@@ -150,15 +150,21 @@ LayerIndex get_layer_index(HeightLayer& layer,
  * over the given sharp::PressureLayer. The function bounds checks
  * the sharp::PressureLayer by calling sharp::get_layer_index.
  *
- * \param layer     (sharp::PressureLayer)  {pbot, ptop}
- * \param pressure  (hPa)
- * \param data_arr  (data array to find max on)
- * \param num_levs  (length of arrays)
+ * If pres_of_max is not a nullptr, then the pointer will be 
+ * dereferenced and filled with the pressure of the maximum
+ * value. 
+ *
+ * \param layer         (sharp::PressureLayer)  {pbot, ptop}
+ * \param pressure      (hPa)
+ * \param data_arr      (data array to find max on)
+ * \param num_levs      (length of arrays)
+ * \param pres_of_max   (Pressure level of max val; hpa)
  * \return max_value
  *
  */
 float max_value(PressureLayer layer,   const float* pressure,
-                const float* data_arr, int num_levs); 
+                const float* data_arr, int num_levs,
+                float* pres_of_max); 
 
 
 /**
@@ -170,15 +176,21 @@ float max_value(PressureLayer layer,   const float* pressure,
  * over the given sharp::HeightLayer. The function bounds checks
  * the sharp::HeightLayer by calling sharp::get_layer_index.
  *
- * \param layer     (sharp::HeightLayer)  {zbot, ztop}
- * \param height    (meters)
- * \param data_arr  (data array to find max on)
- * \param num_levs  (length of arrays)
+ * If hght_of_max is not a nullptr, then the pointer will be 
+ * dereferenced and filled with the height of the maximum
+ * value. 
+ *
+ * \param layer         (sharp::HeightLayer)  {zbot, ztop}
+ * \param height        (meters)
+ * \param data_arr      (data array to find max on)
+ * \param num_levs      (length of arrays)
+ * \param hght_of_max   (Height level of max val; meters)
  * \return max_value
  *
  */
 float max_value(HeightLayer layer,     const float* height,
-                const float* data_arr, int num_levs);
+                const float* data_arr, int num_levs,
+                float* hght_of_max);
 
 
 /**
@@ -190,15 +202,21 @@ float max_value(HeightLayer layer,     const float* height,
  * over the given sharp::PressureLayer. The function bounds checks
  * the sharp::PressureLayer by calling sharp::get_layer_index.
  *
- * \param layer     (sharp::PressureLayer)  {pbot, ptop}
- * \param pressure  (hPa)
- * \param data_arr  (data array to find min on)
- * \param num_levs  (length of arrays)
+ * If pres_of_min is not a nullptr, then the pointer will be 
+ * dereferenced and filled with the pressure of the minimum
+ * value. 
+ *
+ * \param layer         (sharp::PressureLayer)  {pbot, ptop}
+ * \param pressure      (hPa)
+ * \param data_arr      (data array to find min on)
+ * \param num_levs      (length of arrays)
+ * \param pres_of_min   (Pressure level of min val; hPa)
  * \return min_value
  *
  */
 float min_value(PressureLayer layer,   const float* pressure,
-                const float* data_arr, int num_levs);
+                const float* data_arr, int num_levs,
+                float* pres_of_min);
 
 
 /**
@@ -210,15 +228,21 @@ float min_value(PressureLayer layer,   const float* pressure,
  * over the given sharp::HeightLayer. The function bounds checks
  * the sharp::HeightLayer by calling sharp::get_layer_indices.
  *
- * \param layer     (sharp::HeightLayer)  {zbot, ztop}
- * \param height    (meters)
- * \param data_arr  (data array to find min on)
- * \param num_levs  (length of arrays)
+ * If hght_of_min is not a nullptr, then the pointer will be 
+ * dereferenced and filled with the height of the minimum
+ * value. 
+ *
+ * \param layer         (sharp::HeightLayer)  {zbot, ztop}
+ * \param height        (meters)
+ * \param data_arr      (data array to find min on)
+ * \param num_levs      (length of arrays)
+ * \param hght_of_min   (Height level of min val; meters)
  * \return min_value
  *
  */
 float min_value(HeightLayer layer,     const float* height,
-                const float* data_arr, int num_levs); 
+                const float* data_arr, int num_levs,
+                float* hght_of_min); 
 
 
 } // end namespace sharp
