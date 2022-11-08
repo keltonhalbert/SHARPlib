@@ -16,12 +16,11 @@ namespace sharp {
 
 
 float wobf(float temperature) {
-    float x;
-    double pol;
-
 #ifndef NO_QC
     if (temperature == MISSING) return MISSING;
 #endif
+    float x;
+    double pol;
 
     x = temperature - 20.0;
     if (x <= 0.0) {
@@ -43,11 +42,10 @@ float wobf(float temperature) {
 
 
 float vapor_pressure(float temperature) {
-	double pol;
-
 #ifndef NO_QC
     if (temperature == MISSING) return MISSING;
 #endif
+	double pol;
 
 	pol = temperature * (1.1112018e-17 + temperature * (-3.0994571e-20));
 	pol = temperature * (2.1874425e-13 + temperature * (-1.789232e-15 + pol));
@@ -61,13 +59,12 @@ float vapor_pressure(float temperature) {
 
 
 float lcl_temperature(float temperature, float dewpoint) {
-	float s, t, dlt;
-
 #ifndef NO_QC
     if ((temperature == MISSING) || (dewpoint == MISSING)) {
        return MISSING;
     } 
 #endif
+	float s, t, dlt;
 
 	s = temperature - dewpoint;
 	dlt = s * (1.2185 + .001278 * temperature + s * 
@@ -147,9 +144,6 @@ float mixratio(float pressure, float temperature) {
 
 
 float virtual_temperature(float pressure, float temperature, float dewpoint) {
-
-    // Just an example of how we can remove missing data checks
-    // for grid operations by compiling without the QC_DATA flag. 
 #ifndef NO_QC
     if (dewpoint == MISSING) {
         return temperature;
@@ -167,7 +161,6 @@ float virtual_temperature(float pressure, float temperature, float dewpoint) {
 
 
 float saturated_lift(float pressure, float theta_sat) {
-
 #ifndef NO_QC
     if ((pressure == MISSING) || (theta_sat == MISSING)) {
         return MISSING;
@@ -216,7 +209,6 @@ float saturated_lift(float pressure, float theta_sat) {
 
 
 float wetlift(float pressure, float temperature, float lifted_pressure) {
-
 #ifndef NO_QC
 	if ((temperature == MISSING) || (pressure == MISSING)
                           || (lifted_pressure == MISSING)) {
@@ -240,16 +232,16 @@ float wetlift(float pressure, float temperature, float lifted_pressure) {
 void drylift(float pressure, float temperature, 
              float dewpoint, float& pressure_at_lcl, 
                              float& temperature_at_lcl) {
-
-    pressure_at_lcl    = MISSING;
-    temperature_at_lcl = MISSING;
-
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING) 
                               || (dewpoint == MISSING)) {
         return;
     }
 #endif
+
+    pressure_at_lcl    = MISSING;
+    temperature_at_lcl = MISSING;
+
 
     // theta is constant from parcel level to LCL
     float pcl_theta = theta(pressure, temperature, 1000.0);
@@ -264,7 +256,6 @@ void drylift(float pressure, float temperature,
 
 float lifted(float pressure, float temperature, 
              float dewpoint, float lifted_pressure) {
-
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING)
                                  || (dewpoint == MISSING)) {
@@ -283,8 +274,7 @@ float lifted(float pressure, float temperature,
 
 
 float wetbulb(float pressure, float temperature, 
-                                     float dewpoint) {
-
+                              float dewpoint) {
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING) 
                                  || (dewpoint == MISSING)) {
@@ -303,7 +293,6 @@ float wetbulb(float pressure, float temperature,
 
 
 float theta_wetbulb(float pressure, float temperature, float dewpoint) {
-
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING)
                                  || (dewpoint == MISSING)) {
@@ -322,7 +311,6 @@ float theta_wetbulb(float pressure, float temperature, float dewpoint) {
 
 
 float thetae(float pressure, float temperature, float dewpoint) {
-
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING)
                                  || (dewpoint == MISSING)) {

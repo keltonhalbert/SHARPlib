@@ -11,7 +11,9 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC. 
  */
-#pragma once 
+
+#ifndef __SHARP_CONSTANTS
+#define __SHARP_CONSTANTS
 
 namespace sharp {
 
@@ -28,3 +30,5 @@ namespace sharp {
 	static constexpr float ROCP = RDGAS / CP_DRYAIR;
 
 } // end namespace sharp
+
+#endif

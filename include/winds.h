@@ -11,7 +11,8 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC. 
  */
-#pragma once
+#ifndef __SHARP_WINDS
+#define __SHARP_WINDS
 
 namespace sharp {
 
@@ -313,3 +314,4 @@ namespace sharp::exper {
 } // end namespace sharp::exper
 
 
+#endif

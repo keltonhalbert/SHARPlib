@@ -11,7 +11,8 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC. 
  */
-#pragma once
+#ifndef __SHARP_PROFILE
+#define __SHARP_PROFILE
 
 namespace sharp {
     
@@ -132,3 +133,4 @@ namespace sharp::exper {
 } // end namespace sharp::exper
 
 
+#endif

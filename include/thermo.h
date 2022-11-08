@@ -11,7 +11,8 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC. 
  */
-#pragma once
+#ifndef __SHARP_THERMO
+#define __SHARP_THERMO
 
 #include "utils.h"
 
@@ -396,3 +397,4 @@ namespace sharp::exper {
 } // end namespace sharp::exper
 
 
+#endif

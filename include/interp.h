@@ -12,7 +12,9 @@
  * John Hart and Rich Thompson at SPC. 
  */
 
-#pragma once 
+#ifndef __SHARP_INTERP
+#define __SHARP_INTERP
+
 #include <cmath>
 
 namespace sharp {
@@ -144,3 +146,4 @@ namespace sharp::exper {
 } // end namespace sharp::exper
 
 
+#endif
