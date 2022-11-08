@@ -46,55 +46,86 @@ namespace sharp {
 struct Profile {
 
     /**
+     * \brief Vertical array of pressure in millibars (descending)
+     */
+    float* m_pres;
+
+    /**
+     * \brief Vertical array of height in meters (ascending)
+     */
+    float* m_hght;
+
+    /**
+     * \brief Vertical array of temperature in degrees Celsius 
+     */
+    float* m_tmpc;
+
+    /**
+     * \brief Vertical array of dewpoint in degrees Celsius 
+     */
+    float* m_dwpc;
+
+    /**
+     * \brief Vertical array of water vapor mixing ratio in degrees Celsius 
+     */
+    float* m_mixr;
+
+    /**
+     * \brief Vertical array of relative humidity over liquid water (%) 
+     */
+    float* m_relh;
+
+    /**
+     * \brief Vertical array of virtual temperature in degrees Celsius 
+     */
+    float* m_vtmp;
+
+    /**
+     * \brief Vertical array of wind speed in knots
+     */
+    float* m_wspd;
+
+    /**
+     * \brief Vertical array of wind direction in degrees
+     */
+    float* m_wdir;
+
+    /**
+     * \brief Vertical array of the U wind component in m/s
+     */
+    float* m_uwin;
+
+    /**
+     * \brief Vertical array of the V wind component in m/s
+     */
+    float* m_vwin;
+
+    /**
+     * \brief Vertical array of vertical velocity in m/s 
+     */
+    float* m_vvel;
+
+    /**
+     * \brief Vertical array of potential temperature in degrees Celsius
+     */
+    float* m_theta;
+
+    /**
+     * \brief Vertical array of equivalent potential temperature in degC
+     */
+    float* m_theta_e;
+
+    /**
      * \brief Enum used to differentiate sounding profile types
      *
      * Defines what type of soundings we can use
      * and helps differentiate those types.
      */
-    enum Source : unsigned int {
+    enum Source : int {
         Observed = 0,
         PFC = 1,
         ACARS = 2,
     };
-
-    /**
-     * \brief Vertical array of pressure in millibars (descending)
-     */
-    float* m_pres;
-    /**
-     * \brief Vertical array of height in meters (ascending)
-     */
-    float* m_hght;
-    /**
-     * \brief Vertical array of temperature in degrees Celsius 
-     */
-    float* m_tmpc;
-    /**
-     * \brief Vertical array of dewpoint in degrees Celsius 
-     */
-    float* m_dwpc;
-    /**
-     * \brief Vertical array of water vapor mixing ratio in degrees Celsius 
-     */
-    float* m_mixr;
-    /**
-     * \brief Vertical array of virtual temperature in degrees Celsius 
-     */
-    float* m_vtmp;
-    /**
-     * \brief Vertical array of the U wind component in knots 
-     */
-    float* m_uwin;
-    /**
-     * \brief Vertical array of the V wind component in knots 
-     */
-    float* m_vwin;
-    /**
-     * \brief Vertical array of omega (vertical velocity on pressure surfaces) in millibars/hour 
-     */
-    float* m_omeg;
-
-
 
     /**
      * \brief The number of vertical levels present / the length of the arrays. 
@@ -107,16 +138,9 @@ struct Profile {
     Source m_snd_type; 
 
 
-
     // Constructor that allocates memory for
     // the profile arrays
     Profile(int num_levels, Source sounding_type);
-
-    // Constructor that takes previously allocated
-    // arrays and assigns them to the struct
-    Profile(float* pres, float* hght, float* tmpc, float* dwpc, \
-            float* mixr, float* vtmp, float* uwin, float* vwin,
-            float* omeg, int nlevs, Source sounding_type);
 
     // Destructor that deallocates arrays
     ~Profile();
