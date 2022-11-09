@@ -16,14 +16,15 @@
 #include "interp.h"
 #include "parcel.h"
 #include "utils.h"
+#include "thermo.h"
 
 namespace sharp {
 
 
 Parcel::Parcel() {
-    pcl_pres = MISSING;
-    pcl_tmpc = MISSING;
-    pcl_dwpc = MISSING;
+    pres = MISSING;
+    tmpc = MISSING;
+    dwpc = MISSING;
     
     lcl_pressure = MISSING;
     lfc_pressure = MISSING;
@@ -50,33 +51,93 @@ Parcel::Parcel() {
 // 4) Set LCL/LFC/EL values
 // 5) Integrate CAPE/CINH
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Sets the parcel initial values to the surface of the profile
+ *
+ * \param prof
+ * \param pcl
+ *
+ */
+void _sfc(Profile* prof, Parcel* pcl) {
+            pcl->pres = prof->pres[0];
+            pcl->tmpc = prof->tmpc[0];
+            pcl->dwpc = prof->dwpc[0]; 
+}
+
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Sets the parcel initial values to the most unstable parcel level 
+ *
+ * \param prof
+ * \param pcl
+ *
+ */
+void _mu(Profile* prof, Parcel* pcl) {
+    // Search for the most unstable parcel in the bottom
+    // 300 hPa of the profile
+    PressureLayer mu_layer(prof->pres[0], prof->pres[0]-300.0);
+
+    // max_value returns the max, and will set the pressure
+    // of the max via a pointer to a float. 
+    max_value(mu_layer, prof->pres, prof->theta_e, prof->NZ, &(pcl->pres));
+    pcl->tmpc = interp_pressure(pcl->pres, prof->pres, prof->tmpc, prof->NZ);
+    pcl->dwpc = interp_pressure(pcl->pres, prof->pres, prof->dwpc, prof->NZ);
+}
+
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Sets the parcel initial values to the bottom 100mb mixed layer 
+ *
+ * \param prof
+ * \param pcl
+ *
+ */
+void _ml(Profile* prof, Parcel* pcl) {
+    PressureLayer mix_layer(prof->pres[0], prof->pres[0]-100.0);
+
+    // get the mean attributes of the lowest 100 hPa
+    float mean_mixr = mean_value(mix_layer, prof->pres, 
+                                 prof->mixr, prof->NZ);
+    float mean_thta = mean_value(mix_layer, prof->pres, 
+                                 prof->theta, prof->NZ);
+
+    // set the parcel attributes
+    pcl->pres = prof->pres[0];
+    pcl->tmpc = theta(1000.0, mean_thta, prof->pres[0]);
+    pcl->dwpc = temperature_at_mixratio(mean_mixr, prof->pres[0]); 
+}
+
+
 void define_parcel(Profile* prof, Parcel* pcl, LPL source) {
     pcl->source = source;
 
-    switch(source) {
-        case LPL::SFC:
-            // set the parcel attributes to the surface
-            pcl->pcl_pres = prof->pres[0];
-            pcl->pcl_tmpc = prof->tmpc[0];
-            pcl->pcl_dwpc = prof->dwpc[0]; 
-            break;
-        case LPL::FCST:
-            // call forecast parcel routine
-            break;
-        case LPL::MU:
-            // call the most unstable parcel routine
-            break;
-        case LPL::ML:
-            // call the mixed layer parcel routine
-            break;
-        case LPL::USR:
-            // Parcel attributes are user defined, do
-            // nothing then?
-            break;
-        case LPL::EIL: 
-            // Call the mean effective inflow layer parcel
-            break;
-    };
+    if (source == LPL::SFC) {
+        _sfc(prof, pcl);
+    }
+    else if (source == LPL::FCST) {
+
+    }
+    else if (source == LPL::MU) {
+        _mu(prof, pcl);
+    }
+    else if (source == LPL::ML) {
+        _ml(prof, pcl);
+    }
+    else if (source == LPL::EIL) {
+    }
+    else if (source == LPL::USR) {
+        // do nothing - its already
+        // been set!
+    }
+    else {
+        // TO-DO: probably should raise an error or something
+    }
 }
 
 

@@ -22,10 +22,10 @@ namespace sharp {
  * Defines what type of soundings we can use
  * and helps differentiate those types.
  */
-enum Source : int {
+enum class Source : int {
     Observed = 0,
-    PFC = 1,
-    ACARS = 2,
+    PFC      = 1,
+    ACARS    = 2,
 };
     
 /**

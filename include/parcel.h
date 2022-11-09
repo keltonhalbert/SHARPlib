@@ -24,13 +24,13 @@ namespace sharp {
 /**
  * \brief Enum that defines the lifted parcel level (LPL) of origin.
  */
-enum LPL : int {
-    SFC  = 1,
-    FCST = 2,
-    MU   = 3,
-    ML   = 4,
-    USR  = 5,
-    EIL  = 6,
+enum class LPL : int {
+    SFC  = 1, // surface
+    FCST = 2, // forecast surface
+    MU   = 3, // most unstable
+    ML   = 4, // 100mb mixed layer
+    USR  = 5, // user-defined
+    EIL  = 6, // Mean effective inflow layer
 };
 
 
@@ -48,17 +48,17 @@ struct Parcel {
     /**
      * \brief Parcel starting pressure (hPa)
      */
-    float pcl_pres;
+    float pres;
 
     /**
      * \brief Parcel starting temperature (degC)
      */
-    float pcl_tmpc;
+    float tmpc;
 
     /**
      * \brief Parcel starting dewpoint (degC)
      */
-    float pcl_dwpc;
+    float dwpc;
 
     /**
      * \brief Pressure at the Lifted Condensation Level (hPa)
