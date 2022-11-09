@@ -141,7 +141,66 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) {
 }
 
 
+void lift_parcel_wobus(const float* pressure, const float* height, 
+                       int num_levs, Parcel* pcl) {
 
+    float vtmp_pcl = virtual_temperature(pcl->pres, pcl->tmpc, pcl->dwpc);
+
+    // int pcl_idx = 0;
+    // pcl->temperature_trace[pcl_idx] = vtmp_pcl;
+    // pcl->pressure_trace[pcl_idx] = pcl->pres;
+    // pcl->height_trace[pcl_idx] = interp_pressure(pcl->pres, pressure, height, num_levs);
+    // pcl_idx += 1;
+
+    // Lift the parcel from the LPL to the LCL
+    float pres_at_lcl; 
+    float tmpc_at_lcl;
+
+    // does not need to use virtual temperature, because this isn't
+    // a quantity that has to do with buoyancy...
+    drylift(pcl->pres, pcl->tmpc, pcl->dwpc, pres_at_lcl, tmpc_at_lcl);
+
+    // vtmp_pcl = virtual_temperature(pres_at_lcl, tmpc_at_lcl, tmpc_at_lcl);
+    // pcl->temperature_trace[pcl_idx] = vtmp_pcl;
+    // pcl->pressure_trace[pcl_idx] = pres_at_lcl;
+    // pcl->height_trace[pcl_idx] = interp_pressure(pcl->pres, pressure, height, num_levs);
+    // pcl_idx += 1;
+
+    // define the parcel saturated lift layer to be
+    // from the LCL to the top of the profile available
+    PressureLayer sat_layer(pres_at_lcl, pressure[num_levs-1]);
+
+    // excludes the indices that would correspond to the exact top and
+    // bottom of this layer - default is that bottom and top is interpolated
+    LayerIndex sat_index = get_layer_index(sat_layer, pressure, num_levs);
+
+    // iterate from the LCL to the top of the profile
+    float pbot = pres_at_lcl;
+    float tbot = tmpc_at_lcl;
+    float ptop, ttop;
+    for (int k = sat_index.kbot; k <= sat_index.ktop; k++) {
+       ptop = pressure[k]; 
+       ttop = wetlift(pbot, tbot, ptop);
+       vtmp_pcl = virtual_temperature(ptop, ttop, ttop);
+       // pcl->temperature_trace[pcl_idx] = vtmp_pcl;
+       // pcl->pressure_trace[pcl_idx] = ptop;
+       // pcl->height_trace[pcl_idx] = height[k];
+       // pcl_idx += 1; 
+
+       // set the top of the current layer to the
+       // bottom of the next layer
+       pbot = ptop;
+       tbot = ttop;
+    }
+
+    // lift final level
+    ttop = wetlift(pbot, tbot, sat_layer.ptop);
+    vtmp_pcl = virtual_temperature(ptop, ttop, ttop);
+   // pcl->temperature_trace[pcl_idx] = vtmp_pcl;
+   // pcl->pressure_trace[pcl_idx] = sat_layer.ptop;
+   // pcl->height_trace[pcl_idx] = height[sat_index.ktop+1]; 
+   // pcl_idx += 1; 
+}
 
 
 
