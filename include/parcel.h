@@ -15,9 +15,24 @@
 #ifndef __SHARP_PARCEL
 #define __SHARP_PARCEL
 
+#include "profile.h"
 #include "utils.h"
 
 namespace sharp {
+
+
+/**
+ * \brief Enum that defines the lifted parcel level (LPL) of origin.
+ */
+enum LPL : int {
+    SFC  = 1,
+    FCST = 2,
+    MU   = 3,
+    ML   = 4,
+    USR  = 5,
+    EIL  = 6,
+};
+
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -74,7 +89,23 @@ struct Parcel {
      * \brief Parcel Convective Inhibition (J/kg)
      */
     float cinh;
+
+    /**
+     * \brief The type of parcel this is
+     */
+    LPL source; 
+    
+    /**
+     * \brief Parcel empty constructor that sets all values to sharp::MISSING
+     */
+    Parcel();
 };
+
+
+/**
+ *
+ */
+void define_parcel(Profile* prof, Parcel* pcl, LPL source);
 
 
 } // end namespace sharp
