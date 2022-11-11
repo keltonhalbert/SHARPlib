@@ -8,5 +8,11 @@
 TEST_CASE("Testing parcel definitions") {
 
     sharp::Profile prof(10, sharp::Source::Observed);
+    sharp::Parcel pcl;
+
+    sharp::lifter_wobus lifter;
+    sharp::define_parcel(&prof, &pcl, sharp::LPL::SFC);
+
+    sharp::lift_parcel<sharp::lifter_wobus>(lifter, &prof, &pcl);
 
 }
