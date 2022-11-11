@@ -13,19 +13,21 @@
  * John Hart and Rich Thompson at SPC. 
  */
 #include "constants.h"
+#include "thermo.h"
 #include "interp.h"
 #include "parcel.h"
 #include "utils.h"
-#include "thermo.h"
 
 namespace sharp {
 
 
 Parcel::Parcel() {
+    // Set LPL values to MISSING
     pres = MISSING;
     tmpc = MISSING;
     dwpc = MISSING;
     
+    // Set derived values to MISSING
     lcl_pressure = MISSING;
     lfc_pressure = MISSING;
     eql_pressure = MISSING;
@@ -35,21 +37,6 @@ Parcel::Parcel() {
     cinh = 0.0;
 }
 
-
-// Trying to mentally sketch out how I want parcel lifting
-// and CAPE/CINH integration to work. I want it to be modular
-// such that different methods of computing moist adiabats can
-// be supported. I want to separate the parcel lifting from the
-// actual numerical integration. I want to be able to store and
-// reuse the temperature/pressure traces of parcel lifting. Need 
-// to support a "fast CAPE/CINH" for effective inflow calculations.
-// 
-//
-// 1) Create the parcel struct
-// 2) Define its starting attributes (MU/ML/SFC/etc)
-// 3) Lift the parcel/compute temperature trace
-// 4) Set LCL/LFC/EL values
-// 5) Integrate CAPE/CINH
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -119,89 +106,33 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) {
 
     if (source == LPL::SFC) {
         _sfc(prof, pcl);
+        return;
     }
     else if (source == LPL::FCST) {
-
+        // TO-DO: Write the forecast_surface routine
+        return;
     }
     else if (source == LPL::MU) {
         _mu(prof, pcl);
+        return;
     }
     else if (source == LPL::ML) {
         _ml(prof, pcl);
+        return;
     }
     else if (source == LPL::EIL) {
+        // TO-DO: Write the EIL routine
+        return;
     }
     else if (source == LPL::USR) {
-        // do nothing - its already
-        // been set!
+        // do nothing - its already been set!
+        return;
     }
     else {
         // TO-DO: probably should raise an error or something
+        return;
     }
 }
-
-
-void lift_parcel_wobus(const float* pressure, const float* height, 
-                       int num_levs, Parcel* pcl) {
-
-    float vtmp_pcl = virtual_temperature(pcl->pres, pcl->tmpc, pcl->dwpc);
-
-    // int pcl_idx = 0;
-    // pcl->temperature_trace[pcl_idx] = vtmp_pcl;
-    // pcl->pressure_trace[pcl_idx] = pcl->pres;
-    // pcl->height_trace[pcl_idx] = interp_pressure(pcl->pres, pressure, height, num_levs);
-    // pcl_idx += 1;
-
-    // Lift the parcel from the LPL to the LCL
-    float pres_at_lcl; 
-    float tmpc_at_lcl;
-
-    // does not need to use virtual temperature, because this isn't
-    // a quantity that has to do with buoyancy...
-    drylift(pcl->pres, pcl->tmpc, pcl->dwpc, pres_at_lcl, tmpc_at_lcl);
-
-    // vtmp_pcl = virtual_temperature(pres_at_lcl, tmpc_at_lcl, tmpc_at_lcl);
-    // pcl->temperature_trace[pcl_idx] = vtmp_pcl;
-    // pcl->pressure_trace[pcl_idx] = pres_at_lcl;
-    // pcl->height_trace[pcl_idx] = interp_pressure(pcl->pres, pressure, height, num_levs);
-    // pcl_idx += 1;
-
-    // define the parcel saturated lift layer to be
-    // from the LCL to the top of the profile available
-    PressureLayer sat_layer(pres_at_lcl, pressure[num_levs-1]);
-
-    // excludes the indices that would correspond to the exact top and
-    // bottom of this layer - default is that bottom and top is interpolated
-    LayerIndex sat_index = get_layer_index(sat_layer, pressure, num_levs);
-
-    // iterate from the LCL to the top of the profile
-    float pbot = pres_at_lcl;
-    float tbot = tmpc_at_lcl;
-    float ptop, ttop;
-    for (int k = sat_index.kbot; k <= sat_index.ktop; k++) {
-       ptop = pressure[k]; 
-       ttop = wetlift(pbot, tbot, ptop);
-       vtmp_pcl = virtual_temperature(ptop, ttop, ttop);
-       // pcl->temperature_trace[pcl_idx] = vtmp_pcl;
-       // pcl->pressure_trace[pcl_idx] = ptop;
-       // pcl->height_trace[pcl_idx] = height[k];
-       // pcl_idx += 1; 
-
-       // set the top of the current layer to the
-       // bottom of the next layer
-       pbot = ptop;
-       tbot = ttop;
-    }
-
-    // lift final level
-    ttop = wetlift(pbot, tbot, sat_layer.ptop);
-    vtmp_pcl = virtual_temperature(ptop, ttop, ttop);
-   // pcl->temperature_trace[pcl_idx] = vtmp_pcl;
-   // pcl->pressure_trace[pcl_idx] = sat_layer.ptop;
-   // pcl->height_trace[pcl_idx] = height[sat_index.ktop+1]; 
-   // pcl_idx += 1; 
-}
-
 
 
 } // end namespace sharp
