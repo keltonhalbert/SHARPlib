@@ -418,6 +418,17 @@ float lapse_rate(PressureLayer layer, const float* pressure,
                  int num_levs);
 
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief compute buoyancy given parcel and environment temperatures 
+ *
+ * \param pcl_temperature	(degC)
+ * \param env_temperature	(degC)
+ */
+float buoyancy(float pcl_temperature, float env_temperature);
+
+
 } // end namespace sharp
 
 

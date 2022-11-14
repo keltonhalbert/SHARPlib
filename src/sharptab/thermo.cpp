@@ -398,6 +398,12 @@ float lapse_rate(PressureLayer layer, const float* pressure,
 }
 
 
+float buoyancy(float pcl_temperature, float env_temperature) {
+	return GRAVITY * (pcl_temperature - env_temperature) / 
+		   (env_temperature + ZEROCNK);
+}
+
+
 } // end namespace sharp
 
 
