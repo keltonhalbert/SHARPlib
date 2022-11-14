@@ -254,13 +254,52 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source);
  */
 template <typename Lifter>
 void lift_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
-    // virtual temperature at LPL
-    float vtmp_pcl = virtual_temperature(pcl->pres, pcl->tmpc, pcl->dwpc);
 
     // Lift the parcel from the LPL to the LCL 
     float pres_at_lcl; 
     float tmpc_at_lcl;
     drylift(pcl->pres, pcl->tmpc, pcl->dwpc, pres_at_lcl, tmpc_at_lcl);
+
+	// these values are constant from LPL to LCL
+	float pcl_theta = theta(pres_at_lcl, tmpc_at_lcl, 1000.0);
+	float pcl_mxrat = mixratio(pcl->pres, pcl->dwpc);
+
+	// Accumulate CINH in the mixing layer below the LCL.
+	// This will be done in 10 mb increments and will use the
+	// virtual temperature correction. 
+	for (float pbot = pcl->pres, pbot > pres_at_lcl; pbot -= 10.0) {
+		// don't accidentally go above the LCL
+		float ptop = pbot - 10.0;
+		if (ptop < pres_at_lcl) ptop = pres_at_lcl;
+
+		float tmpc_env_bot = interp_pressure(pbot, prof->pres, prof->tmpc, prof->NZ);
+		float tmpc_env_top = interp_pressure(ptop, prof->pres, prof->tmpc, prof->NZ);
+
+		float dwpc_env_bot = interp_pressure(pbot, prof->pres, prof->dwpc, prof->NZ);
+		float dwpc_env_top = interp_pressure(ptop, prof->pres, prof->dwpc, prof->NZ);
+
+		float tmpc_pcl_bot = theta(1000.0, pcl_theta, pbot);
+		float tmpc_pcl_top = theta(1000.0, pcl_theta, ptop);
+
+		float dwpc_pcl_bot = temperature_at_mixratio(pcl_mxrat, pbot);
+		float dwpc_pcl_top = temperature_at_mixratio(pcl_mxrat, ptop);
+
+		float hbot = interp_pres(pbot, prof->pres, prof->hght, prof->NZ);
+		float htop = interp_pres(ptop, prof->pres, prof->hght, prof->NZ);
+
+		float dz = htop - hbot;
+
+		float vtmp_env_bot = virtual_temperature(pbot, tmpc_env_bot, dwpc_env_bot);
+		float vtmp_env_top = virtual_temperature(ptop, tmpc_env_top, dwpc_env_top);
+
+		float vtmp_pcl_bot = virtual_temperature(pbot, tmpc_pcl_bot, dwpc_pcl_bot);
+		float vtmp_pcl_top = virtual_temperature(pbot, tmpc_pcl_top, dwpc_pcl_top);
+
+		float tdef_bot = buoyancy(vtmp_pcl_bot, vtmp_env_bot);
+		float tdef_top = buoyancy(vtmp_pcl_top, vtmp_env_top);
+
+		float lyre = ( (tdef_bot + tdef_top) / 2.0 ) * dz;
+	}
 
     // define the parcel saturated lift layer to be
     // from the LCL to the top of the profile available
@@ -275,6 +314,7 @@ void lift_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
     float tbot = virtual_temperature(pres_at_lcl, tmpc_at_lcl, tmpc_at_lcl);
     float ptop = MISSING;
     float ttop = MISSING;
+	float vtmp_pcl = MISSING;
     for (int k = sat_index.kbot; k <= sat_index.ktop; k++) {
 #ifndef NO_QC
         if ((prof->pres[k] == MISSING) || (prof->tmpc[k] == MISSING)) {
