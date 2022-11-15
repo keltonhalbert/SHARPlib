@@ -16,6 +16,7 @@
 #define __SHARP_PARCEL
 
 #include "profile.h"
+#include "interp.h"
 #include "thermo.h"
 #include "utils.h"
 
@@ -267,7 +268,7 @@ void lift_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
 	// Accumulate CINH in the mixing layer below the LCL.
 	// This will be done in 10 mb increments and will use the
 	// virtual temperature correction. 
-	for (float pbot = pcl->pres, pbot > pres_at_lcl; pbot -= 10.0) {
+	for (float pbot = pcl->pres; pbot > pres_at_lcl; pbot -= 10.0) {
 		// don't accidentally go above the LCL
 		float ptop = pbot - 10.0;
 		if (ptop < pres_at_lcl) ptop = pres_at_lcl;
@@ -284,8 +285,8 @@ void lift_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
 		float dwpc_pcl_bot = temperature_at_mixratio(pcl_mxrat, pbot);
 		float dwpc_pcl_top = temperature_at_mixratio(pcl_mxrat, ptop);
 
-		float hbot = interp_pres(pbot, prof->pres, prof->hght, prof->NZ);
-		float htop = interp_pres(ptop, prof->pres, prof->hght, prof->NZ);
+		float hbot = interp_pressure(pbot, prof->pres, prof->hght, prof->NZ);
+		float htop = interp_pressure(ptop, prof->pres, prof->hght, prof->NZ);
 
 		float dz = htop - hbot;
 
