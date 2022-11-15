@@ -135,6 +135,52 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) {
 }
 
 
+float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl, float tmpc_lcl) {
+    // get the virtual temoerature of the LCL
+    float vtmp_lcl = virtual_temperature(pres_lcl, tmpc_lcl, tmpc_lcl);
+
+    // parcel thetav, or virtual potential temperature,
+    // is constant from the LPL to the LCL.
+	float pcl_thetav = theta(pres_lcl, vtmp_lcl, 1000.0);
+
+	// Accumulate CINH in the mixing layer below the LCL.
+	// This will be done in 10 mb increments and will use the
+	// virtual temperature correction. 
+    float cinh = 0.0;
+	for (float pbot = pcl->pres; pbot > pres_lcl; pbot -= 10.0) {
+		// don't accidentally go above the LCL
+		float ptop = pbot - 10.0;
+		if (ptop < pres_lcl) ptop = pres_lcl;
+
+        // _pcb - parcel bottom layer
+        // _pct - parcel top layer
+        // _enb - environment bottom layer
+        // _ent - environment top layer
+
+        // "lift" the thetav of the parcel to a new pressure level
+		float vtmp_pcb = theta(1000.0, pcl_thetav, pbot);
+		float vtmp_pct = theta(1000.0, pcl_thetav, ptop);
+
+        // get the virtual temperature of the environment
+		float vtmp_enb = interp_pressure(pbot, prof->pres, prof->vtmp, prof->NZ);
+		float vtmp_ent = interp_pressure(ptop, prof->pres, prof->vtmp, prof->NZ);
+
+		float buoy_bot = buoyancy(vtmp_pcb, vtmp_enb);
+		float buoy_top = buoyancy(vtmp_pct, vtmp_ent);
+
+		float hbot = interp_pressure(pbot, prof->pres, prof->hght, prof->NZ);
+		float htop = interp_pressure(ptop, prof->pres, prof->hght, prof->NZ);
+
+		float dz = htop - hbot;
+
+        // integrate using trapezoid method 
+		float lyre = ( (buoy_bot + buoy_top) / 2.0 ) * dz;
+        if (lyre < 0.0) cinh += lyre;
+	}
+    return cinh;
+}
+
+
 } // end namespace sharp
 
 
