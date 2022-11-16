@@ -135,6 +135,8 @@ struct Profile {
      */
     Profile(int num_levels, Source sounding_type);
 
+    Profile() {};
+
     // Destructor that deallocates arrays
     ~Profile();
 

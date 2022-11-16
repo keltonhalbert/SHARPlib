@@ -14,6 +14,8 @@
 #ifndef __SHARP_WINDS
 #define __SHARP_WINDS
 
+#include "utils.h"
+
 namespace sharp {
 
 
