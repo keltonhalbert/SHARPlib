@@ -154,21 +154,27 @@ TEST_CASE("Testing parcel definitions") {
         sharp::lift_parcel<sharp::lifter_wobus>(lifter, prof, &mu_pcl);
         sharp::lift_parcel<sharp::lifter_wobus>(lifter, prof, &ml_pcl);
         end_time = std::chrono::system_clock::now();
-        duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
+        duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
 
         std::cout << "SFC PCL\t";
+        std::cout << "LFC PRES: " << sfc_pcl.lfc_pressure << "\t"; 
+        std::cout << "EL PRES: " << sfc_pcl.eql_pressure << "\t"; 
         std::cout << "CAPE: " << sfc_pcl.cape << "\t"; 
         std::cout << "CINH: " << sfc_pcl.cinh << std::endl;
 
         std::cout << "MU PCL\t";
+        std::cout << "LFC PRES: " << mu_pcl.lfc_pressure << "\t"; 
+        std::cout << "EL PRES: " << mu_pcl.eql_pressure << "\t"; 
         std::cout << "CAPE: " << mu_pcl.cape << "\t"; 
         std::cout << "CINH: " << mu_pcl.cinh << std::endl;
 
         std::cout << "ML PCL\t";
+        std::cout << "LFC PRES: " << ml_pcl.lfc_pressure << "\t"; 
+        std::cout << "EL PRES: " << ml_pcl.eql_pressure << "\t"; 
         std::cout << "CAPE: " << ml_pcl.cape << "\t"; 
         std::cout << "CINH: " << ml_pcl.cinh << std::endl;
 
-        std::cout << "Lifting 3 parcels took: " << duration << "ms" << std::endl;
+        std::cout << "Lifting 3 parcels took: " << duration << "us" << std::endl;
         
     }
 }

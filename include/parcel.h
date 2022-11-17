@@ -320,7 +320,7 @@ void lift_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
     // excluded by get_layer_index
     for (int k = sat_index.kbot; k <= sat_index.ktop+1; k++) {
 #ifndef NO_QC
-        if ((prof->pres[k] == MISSING) || (prof->tmpc[k] == MISSING)) {
+        if (prof->tmpc[k] == MISSING) {
             continue;
         }
 #endif
@@ -345,6 +345,34 @@ void lift_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
         }
         else {
             if (ptop > 500.0) cinh += lyre;
+        }
+
+        // check for the LFC
+        if ((lyre >= 0) && (lyre_last <= 0)) {
+            // Set the LFC pressure to the 
+            float lfc_pres = pbot;
+            while (interp_pressure(lfc_pres, prof->pres, prof->vtmp, prof->NZ) 
+                    > virtual_temperature(lfc_pres,
+                        liftpcl(ptop, tmpc_pct, lfc_pres), 
+                        liftpcl(ptop, tmpc_pct, lfc_pres))) {
+                lfc_pres -= 5;
+            }
+
+            pcl->lfc_pressure = lfc_pres;
+        }
+
+        // check for the EL
+        if ((lyre <= 0) && (lyre_last >= 0)) {
+            float el_pres = pbot;
+            while (interp_pressure(el_pres, prof->pres, prof->vtmp, prof->NZ) 
+                    < virtual_temperature(el_pres,
+                        liftpcl(ptop, tmpc_pct, el_pres), 
+                        liftpcl(ptop, tmpc_pct, el_pres))) {
+                el_pres -= 5;
+            }
+
+            pcl->eql_pressure = el_pres;
+            if ((pcl->eql_pressure < pcl->lfc_pressure) && (ptop < 500)) break;
         }
 
         // set the top of the current layer to the
