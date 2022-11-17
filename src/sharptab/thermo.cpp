@@ -177,7 +177,9 @@ float saturated_lift(float pressure, float theta_sat) {
     // TO-DO: Pass the 0.1 as an argument or 
     // define it as a constant, since this controls
     // the rate of convergence and therefore the quality
-    // of the calculation
+    // of the calculation.
+    // TO-DO: Default might need to be 0.001 - doesn't appear to
+    // affect low-res soundings, improves convergence on hi-res
 	while (std::fabs(eor) - 0.1 > 0.0) {
         
         // TO-DO: This section can be optimized because it is

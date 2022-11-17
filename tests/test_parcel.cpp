@@ -130,8 +130,10 @@ TEST_CASE("Testing parcel definitions") {
 
     std::string fname = "/users/khalbert/CODEBASE/NSHARP-server/unprocessed/sars_supercell/99050323f0.okc";
     std::string fname2 = "/users/khalbert/Downloads/newSPC.txt";
+
+
     auto start_time = std::chrono::system_clock::now();
-    sharp::Profile* prof = read_sounding(fname2);
+    sharp::Profile* prof = read_sounding(fname);
     auto end_time = std::chrono::system_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
 
@@ -155,15 +157,15 @@ TEST_CASE("Testing parcel definitions") {
         duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
 
         std::cout << "SFC PCL\t";
-        std::cout << "LPL Pres: " << sfc_pcl.pres << "\t";
+        std::cout << "CAPE: " << sfc_pcl.cape << "\t"; 
         std::cout << "CINH: " << sfc_pcl.cinh << std::endl;
 
         std::cout << "MU PCL\t";
-        std::cout << "LPL Pres: " << mu_pcl.pres << "\t";
+        std::cout << "CAPE: " << mu_pcl.cape << "\t"; 
         std::cout << "CINH: " << mu_pcl.cinh << std::endl;
 
         std::cout << "ML PCL\t";
-        std::cout << "LPL Pres: " << ml_pcl.pres << "\t";
+        std::cout << "CAPE: " << ml_pcl.cape << "\t"; 
         std::cout << "CINH: " << ml_pcl.cinh << std::endl;
 
         std::cout << "Lifting 3 parcels took: " << duration << "ms" << std::endl;

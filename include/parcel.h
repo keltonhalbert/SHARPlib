@@ -295,7 +295,9 @@ void lift_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
     LayerIndex sat_index = get_layer_index(sat_layer, prof->pres, prof->NZ);
 
     float pbot = pres_lcl;
+    float hbot = interp_pressure(pres_lcl, prof->pres, prof->hght, prof->NZ);
     float ptop = MISSING;
+    float htop = MISSING;
 
     // _enb - environment bottom layer
     // _ent - environment top layer
@@ -314,41 +316,49 @@ void lift_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
     float lyre_last = 0.0;
     float cape = 0.0;
     // iterate from the LCL to the top of the profile
-    for (int k = sat_index.kbot; k <= sat_index.ktop; k++) {
+    // -- the +1 takes us to the last level since it is
+    // excluded by get_layer_index
+    for (int k = sat_index.kbot; k <= sat_index.ktop+1; k++) {
 #ifndef NO_QC
         if ((prof->pres[k] == MISSING) || (prof->tmpc[k] == MISSING)) {
             continue;
         }
 #endif
         ptop = prof->pres[k]; 
+        htop = prof->hght[k]; 
+
         tmpc_pct = liftpcl(pbot, tmpc_pcb, ptop);
         // parcel is saturated, so temperature and dewpoint are same
         vtmp_pct = virtual_temperature(ptop, tmpc_pct, tmpc_pct);
-        vtmp_ent = interp_pressure(ptop, prof->pres, prof->vtmp, prof->NZ);
+        vtmp_ent = prof->vtmp[k];
 
         float buoy_bot = buoyancy(vtmp_pcb, vtmp_enb);
         float buoy_top = buoyancy(vtmp_pct, vtmp_ent);
 
-        float hbot = interp_pressure(pbot, prof->pres, prof->hght, prof->NZ);
-        float htop = interp_pressure(ptop, prof->pres, prof->hght, prof->NZ);
         float dz = htop - hbot;
 
         lyre_last = lyre;
         lyre = ( ( buoy_bot + buoy_top ) / 2.0 ) * dz;
 
+        if (lyre > 0) {
+            cape += lyre;
+        }
+        else {
+            if (ptop > 500.0) cinh += lyre;
+        }
+
         // set the top of the current layer to the
         // bottom of the next layer
         pbot = ptop;
+        hbot = htop;
         vtmp_enb = vtmp_ent;
         tmpc_pcb = tmpc_pct;
         vtmp_pcb = vtmp_pct;
     }
 
-    // lift final level
-    tmpc_pct = liftpcl(pbot, tmpc_pcb, sat_layer.ptop);
-    vtmp_pct = virtual_temperature(ptop, tmpc_pct, tmpc_pct); 
-
+    if (cape == 0) cinh = 0;
     pcl->cinh = cinh;
+    pcl->cape = cape;
 }
 
 
