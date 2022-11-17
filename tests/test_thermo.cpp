@@ -5,7 +5,7 @@
 
 TEST_CASE("Testing theta") {
 
-    CHECK(sharp::theta(900.0, 10.0, 1000.0) == doctest::Approx(18.6444));
+    CHECK(sharp::theta(900.0, 10.0, 1000.0) == doctest::Approx(18.6533));
 
 #ifndef NO_QC
     CHECK(sharp::theta(sharp::MISSING, 10.0, 1000.0) == sharp::MISSING);
