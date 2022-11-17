@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <chrono>
 
 #include "doctest.h"
 #include "constants.h"
@@ -13,11 +14,13 @@
 
 // splits a string on a delimiter and stores in a vector
 std::vector<std::string> split(std::string s, std::string delimiter) {
-    size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+    size_t pos_start = 0;
+    size_t pos_end = 0;
+    size_t delim_len = delimiter.length();
     std::string token;
     std::vector<std::string> res;
 
-    while ((pos_end = s.find (delimiter, pos_start)) != std::string::npos) {
+    while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
         token = s.substr (pos_start, pos_end - pos_start);
         pos_start = pos_end + delim_len;
         res.push_back (token);
@@ -27,8 +30,7 @@ std::vector<std::string> split(std::string s, std::string delimiter) {
     return res;
 }
 
-void build_profile(sharp::Profile* prof, 
-                   std::vector<std::string>& row, int idx) {
+void build_profile(sharp::Profile* prof, std::vector<std::string>& row, int idx) {
     float pres = std::stof(row[0]);
     float hght = std::stof(row[1]);
     float tmpc = std::stof(row[2]);
@@ -128,7 +130,12 @@ TEST_CASE("Testing parcel definitions") {
 
     std::string fname = "/users/khalbert/CODEBASE/NSHARP-server/unprocessed/sars_supercell/99050323f0.okc";
     std::string fname2 = "/users/khalbert/Downloads/newSPC.txt";
+    auto start_time = std::chrono::system_clock::now();
     sharp::Profile* prof = read_sounding(fname2);
+    auto end_time = std::chrono::system_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
+
+    std::cout << "Reading file took: " << duration << "ms" << std::endl;
 
     if (prof) {
         sharp::Parcel sfc_pcl;
@@ -140,9 +147,12 @@ TEST_CASE("Testing parcel definitions") {
         sharp::define_parcel(prof, &mu_pcl, sharp::LPL::MU);
         sharp::define_parcel(prof, &ml_pcl, sharp::LPL::ML);
 
+        start_time = std::chrono::system_clock::now();
         sharp::lift_parcel<sharp::lifter_wobus>(lifter, prof, &sfc_pcl);
         sharp::lift_parcel<sharp::lifter_wobus>(lifter, prof, &mu_pcl);
         sharp::lift_parcel<sharp::lifter_wobus>(lifter, prof, &ml_pcl);
+        end_time = std::chrono::system_clock::now();
+        duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
 
         std::cout << "SFC PCL\t";
         std::cout << "LPL Pres: " << sfc_pcl.pres << "\t";
@@ -155,6 +165,8 @@ TEST_CASE("Testing parcel definitions") {
         std::cout << "ML PCL\t";
         std::cout << "LPL Pres: " << ml_pcl.pres << "\t";
         std::cout << "CINH: " << ml_pcl.cinh << std::endl;
+
+        std::cout << "Lifting 3 parcels took: " << duration << "ms" << std::endl;
         
     }
 }
