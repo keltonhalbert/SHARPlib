@@ -13,7 +13,7 @@
 #include "parcel.h"
 
 // splits a string on a delimiter and stores in a vector
-std::vector<std::string> split(std::string s, std::string delimiter) {
+std::vector<std::string> split(std::string& s, std::string delimiter) {
     size_t pos_start = 0;
     size_t pos_end = 0;
     size_t delim_len = delimiter.length();
@@ -178,4 +178,5 @@ TEST_CASE("Testing parcel definitions") {
         std::cout << "Lifting 3 parcels took: " << duration << "us" << std::endl;
         
     }
+    delete prof;
 }
