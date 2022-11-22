@@ -24,11 +24,11 @@ float interp_height(float height_val, const float* height_arr,
 #ifndef NO_QC
     if (height_val == MISSING)
         return MISSING;
-#endif
     // If the height value is beyond the top of the profile, 
     // or below the surface, we can't reasonably extrapolate
     if ((height_val > height_arr[num_levs-1]) || (height_val < height_arr[0]))
         return MISSING;
+#endif
 
     // Find the height levels that our request lies between
     float height_bot = MISSING;
@@ -48,10 +48,12 @@ float interp_height(float height_val, const float* height_arr,
         }
     }
 
+#ifndef NO_QC
     // if we didn't manage to find data, or our
     // profile data is missing, return missing
     if ((data_bot == MISSING) || (data_top == MISSING))
         return MISSING;
+#endif
 
     // normalize the distance between values
     // to a range of 0-1 for the lerp routine
@@ -67,7 +69,6 @@ float interp_pressure(float pressure_val, const float* pressure_arr,
 #ifndef NO_QC
     if (pressure_val == MISSING)
         return MISSING;
-#endif
     // If the pressure value is beyond the top of the profile, 
     // or below the surface, we can't reasonably extrapolate
     if ((pressure_val < pressure_arr[num_levs-1]) || 
@@ -75,6 +76,7 @@ float interp_pressure(float pressure_val, const float* pressure_arr,
         
         return MISSING;
     }
+#endif
 
     // Find the pressure levels that our request lies between
     float pressure_bot = MISSING;
@@ -94,10 +96,12 @@ float interp_pressure(float pressure_val, const float* pressure_arr,
         }
     }
 
+#ifndef NO_QC
     // if we didn't manage to find data, or our
     // profile data is missing, return missing
     if ((data_bot == MISSING) || (data_top == MISSING))
         return MISSING;
+#endif
 
     // In order to linearly interpolate pressure properly, distance needs
     // to be calculated in log10(pressure) coordinates and normalized

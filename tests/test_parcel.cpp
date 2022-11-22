@@ -128,12 +128,13 @@ sharp::Profile* read_sounding(std::string filename) {
 
 TEST_CASE("Testing parcel definitions") {
 
-    std::string fname = "/users/khalbert/CODEBASE/NSHARP-server/unprocessed/sars_supercell/99050323f0.okc";
+    std::string fname1 = "/users/khalbert/CODEBASE/NSHARP-server/unprocessed/sars_supercell/99050323f0.okc";
     std::string fname2 = "/users/khalbert/Downloads/newSPC.txt";
+    std::string fname3 = "/users/khalbert/22112200.KEY";
 
 
     auto start_time = std::chrono::system_clock::now();
-    sharp::Profile* prof = read_sounding(fname);
+    sharp::Profile* prof = read_sounding(fname2);
     auto end_time = std::chrono::system_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
 

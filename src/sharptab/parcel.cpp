@@ -148,8 +148,8 @@ float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl, float tmpc_lcl)
 	// virtual temperature correction. 
     float cinh = 0.0;
 	for (float pbot = pcl->pres; pbot > pres_lcl; pbot -= 10.0) {
-		// don't accidentally go above the LCL
 		float ptop = pbot - 10.0;
+		// don't accidentally go above the LCL
 		if (ptop < pres_lcl) ptop = pres_lcl;
 
         // _pcb - parcel bottom layer
