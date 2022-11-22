@@ -167,8 +167,7 @@ float saturated_lift(float pressure, float theta_sat) {
     }
 #endif
     
-    // this function is about lifting a parcel, so if we are lifting it below
-    // 1000.0 hPa then something is probably wrong
+    // we do not want to go below the 1000.0 hPa reference level
 	if ((std::fabs(pressure - 1000.0) - 0.001) <= 0.0) return theta_sat;
 
 	float pwrp, t1, t2, woto, wotm, wot2, woe2, e1, e2, rate;
@@ -182,9 +181,6 @@ float saturated_lift(float pressure, float theta_sat) {
     // affect low-res soundings, improves convergence on hi-res
 	while (std::fabs(eor) - 0.1 > 0.0) {
         
-        // TO-DO: This section can be optimized because it is
-        // only called once. There is no need to check this
-        // iff condition multiple times to achieve the result.
         if (eor == 999) {                    /* First Pass */
 	        pwrp = std::pow(pressure / 1000.0, ROCP);
             // get the temperature 
