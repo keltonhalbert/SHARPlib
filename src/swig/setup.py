@@ -1,30 +1,40 @@
-from distutils.core import setup, Extension
+import setuptools
 
-compile_args = ['std-c++17']
-swig_files = ['thermo.i', 'winds.i']
+compile_args = ['-std=c++17']
 
-thermo_module = Extension('_sharpcalc_thermo',
+thermo_module = setuptools.Extension('nwsspc.sharp.calc.thermo',
         sources = ['thermo.i',
                    '../sharptab/utils.cpp',   '../sharptab/interp.cpp', 
                    '../sharptab/profile.cpp', '../sharptab/thermo.cpp'],
         include_dirs=['../../include'],
         swig_opts = ['-c++'],
-        extra_args = compile_args
+        extra_compile_args = compile_args
     )
 
-winds_module = Extension('_sharpcalc_winds',
+winds_module = setuptools.Extension('nwsspc.sharp.calc.winds',
         sources=['winds.i',
                  '../sharptab/utils.cpp',   '../sharptab/interp.cpp', 
                  '../sharptab/profile.cpp', '../sharptab/winds.cpp'],
         include_dirs=['../../include'],
         swig_opts = ['-c++'],
-        extra_args = compile_args
+        extra_compile_args = compile_args
 )
 
-setup (name = 'nwsspc.sharp.calc',
-   version = '0.1',
-   author = 'Kelton Halbert',
-   description = """Simple swig example from docs""",
-   ext_modules = [thermo_module, winds_module],
-   py_modules = ['nwsspc.sharp.calc.thermo', 'nwsspc.sharp.calc.winds']
+setuptools.setup(
+	name="nwsspc_sharp_calc", 
+	version="0.0.1",
+	author="Kelton Halbert",
+	author_email="kelton.halbert@noaa.gov",
+	description="Used for processing and serving atmospheric sounding data.",
+	url="https://github.com/keltonhalbert/SHARP-calc.git",
+	packages=setuptools.find_namespace_packages(where="src"),
+    package_dir = {'': 'src', 'sharp': 'src/nwsspc',},
+	classifiers=[
+		"Programming Language :: Python :: 3",
+		"License :: OSI Approved :: Apache 2.0 License",
+		"Operating System :: OS Independent",
+	],
+	python_requires='>=3.9',
+	zip_safe=False,
+    ext_modules = [thermo_module, winds_module],
 )
