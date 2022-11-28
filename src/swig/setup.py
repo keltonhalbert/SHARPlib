@@ -2,7 +2,7 @@ import setuptools
 
 compile_args = ['-std=c++17']
 
-thermo_module = setuptools.Extension('nwsspc.sharp.calc.thermo',
+thermo_module = setuptools.Extension('nwsspc.sharp.calc._thermo',
         sources = ['thermo.i',
                    '../sharptab/utils.cpp',   '../sharptab/interp.cpp', 
                    '../sharptab/profile.cpp', '../sharptab/thermo.cpp'],
@@ -11,7 +11,7 @@ thermo_module = setuptools.Extension('nwsspc.sharp.calc.thermo',
         extra_compile_args = compile_args
     )
 
-winds_module = setuptools.Extension('nwsspc.sharp.calc.winds',
+winds_module = setuptools.Extension('nwsspc.sharp.calc._winds',
         sources=['winds.i',
                  '../sharptab/utils.cpp',   '../sharptab/interp.cpp', 
                  '../sharptab/profile.cpp', '../sharptab/winds.cpp'],
@@ -27,14 +27,11 @@ setuptools.setup(
 	author_email="kelton.halbert@noaa.gov",
 	description="Used for processing and serving atmospheric sounding data.",
 	url="https://github.com/keltonhalbert/SHARP-calc.git",
-	packages=setuptools.find_namespace_packages(where="src"),
-    package_dir = {'': 'src', 'sharp': 'src/nwsspc',},
 	classifiers=[
 		"Programming Language :: Python :: 3",
 		"License :: OSI Approved :: Apache 2.0 License",
 		"Operating System :: OS Independent",
 	],
 	python_requires='>=3.9',
-	zip_safe=False,
     ext_modules = [thermo_module, winds_module],
 )
