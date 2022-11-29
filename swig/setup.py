@@ -2,6 +2,46 @@ import setuptools
 
 compile_args = ['-std=c++17']
 
+interp_module = setuptools.Extension('nwsspc.sharp.calc._interp',
+        sources = ['interp.i',
+                   '../src/sharptab/profile.cpp', '../src/sharptab/utils.cpp',
+                   '../src/sharptab/interp.cpp'],
+        include_dirs=['../include'],
+        swig_opts = ['-c++', '-builtin'],
+        extra_compile_args = compile_args
+    )
+
+
+params_module = setuptools.Extension('nwsspc.sharp.calc._params',
+        sources = ['params.i',
+                   '../src/sharptab/profile.cpp', '../src/sharptab/utils.cpp',
+                   '../src/sharptab/interp.cpp', '../src/sharptab/winds.cpp',
+                   '../src/sharptab/thermo.cpp','../src/sharptab/params.cpp'],
+        include_dirs=['../include'],
+        swig_opts = ['-c++', '-builtin'],
+        extra_compile_args = compile_args
+    )
+
+
+parcel_module = setuptools.Extension('nwsspc.sharp.calc._parcel',
+        sources = ['parcel.i',
+                   '../src/sharptab/profile.cpp', '../src/sharptab/utils.cpp',
+                   '../src/sharptab/interp.cpp', '../src/sharptab/thermo.cpp',
+                   '../src/sharptab/parcel.cpp'],
+        include_dirs=['../include'],
+        swig_opts = ['-c++', '-builtin'],
+        extra_compile_args = compile_args
+    )
+
+profile_module = setuptools.Extension('nwsspc.sharp.calc._profile',
+        sources = ['profile.i',
+                   '../src/sharptab/interp.cpp', '../src/sharptab/utils.cpp',
+                   '../src/sharptab/profile.cpp'],
+        include_dirs=['../include'],
+        swig_opts = ['-c++', '-builtin'],
+        extra_compile_args = compile_args
+    )
+
 thermo_module = setuptools.Extension('nwsspc.sharp.calc._thermo',
         sources = ['thermo.i',
                    '../src/sharptab/utils.cpp',   '../src/sharptab/interp.cpp', 
@@ -18,7 +58,16 @@ winds_module = setuptools.Extension('nwsspc.sharp.calc._winds',
         include_dirs=['../include'],
         swig_opts = ['-c++', '-builtin'],
         extra_compile_args = compile_args
-)
+    )
+
+utils_module = setuptools.Extension('nwsspc.sharp.calc._utils',
+        sources = ['utils.i',
+                   '../src/sharptab/profile.cpp', '../src/sharptab/interp.cpp',
+                   '../src/sharptab/utils.cpp'],
+        include_dirs=['../include'],
+        swig_opts = ['-c++', '-builtin'],
+        extra_compile_args = compile_args
+    )
 
 setuptools.setup(
 	name="nwsspc_sharp_calc", 
@@ -33,5 +82,7 @@ setuptools.setup(
 		"Operating System :: OS Independent",
 	],
 	python_requires='>=3.9',
-    ext_modules = [thermo_module, winds_module],
+    ext_modules = [interp_module, params_module, parcel_module, 
+                   profile_module, thermo_module, winds_module, 
+                   utils_module],
 )
