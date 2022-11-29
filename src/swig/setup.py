@@ -7,7 +7,7 @@ thermo_module = setuptools.Extension('nwsspc.sharp.calc._thermo',
                    '../sharptab/utils.cpp',   '../sharptab/interp.cpp', 
                    '../sharptab/profile.cpp', '../sharptab/thermo.cpp'],
         include_dirs=['../../include'],
-        swig_opts = ['-c++'],
+        swig_opts = ['-c++', '-builtin'],
         extra_compile_args = compile_args
     )
 
@@ -16,7 +16,7 @@ winds_module = setuptools.Extension('nwsspc.sharp.calc._winds',
                  '../sharptab/utils.cpp',   '../sharptab/interp.cpp', 
                  '../sharptab/profile.cpp', '../sharptab/winds.cpp'],
         include_dirs=['../../include'],
-        swig_opts = ['-c++'],
+        swig_opts = ['-c++', '-builtin'],
         extra_compile_args = compile_args
 )
 
