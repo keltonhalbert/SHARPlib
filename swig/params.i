@@ -7,6 +7,7 @@
     #include "../include/utils.h"
     #include "../include/interp.h"
     #include "../include/winds.h"
+    #include "../include/thermo.h"
     #include "../include/params.h"
 %}
 %import "../include/constants.h"
@@ -14,4 +15,5 @@
 %import "../include/interp.h"
 %import "../include/utils.h"
 %import "../include/winds.h"
+%import "../include/thermo.h"
 %include "../include/params.h"
