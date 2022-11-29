@@ -64,7 +64,7 @@ float lcl_temperature(float temperature, float dewpoint) {
        return MISSING;
     } 
 #endif
-	float s, t, dlt;
+	float s, dlt;
 
 	s = temperature - dewpoint;
 	dlt = s * (1.2185 + .001278 * temperature + s * 
@@ -170,7 +170,12 @@ float saturated_lift(float pressure, float theta_sat) {
     // we do not want to go below the 1000.0 hPa reference level
 	if ((std::fabs(pressure - 1000.0) - 0.001) <= 0.0) return theta_sat;
 
-	float pwrp, t1, t2, woto, wotm, wot2, woe2, e1, e2, rate;
+	float pwrp = 0;
+    float t1 = 0; 
+    float t2 = 0; 
+    float e1 = 0;
+    float e2 = 0; 
+    float rate = 0;
 	float eor = 999;
 
     // TO-DO: Pass the 0.1 as an argument or 
@@ -185,8 +190,8 @@ float saturated_lift(float pressure, float theta_sat) {
 	        pwrp = std::pow(pressure / 1000.0, ROCP);
             // get the temperature 
 	        t1 = (theta_sat + ZEROCNK) * pwrp - ZEROCNK;
-	        woto = wobf(t1);
-	        wotm = wobf(theta_sat);
+	        float woto = wobf(t1);
+	        float wotm = wobf(theta_sat);
 	        e1 = woto - wotm;
 	        rate = 1;
         }
@@ -197,8 +202,8 @@ float saturated_lift(float pressure, float theta_sat) {
         }
         t2 = t1 - e1 * rate;
 	    e2 = (t2 + ZEROCNK) / pwrp - ZEROCNK;
-	    wot2 = wobf( t2 );
-	    woe2 = wobf( e2 );
+	    float wot2 = wobf( t2 );
+	    float woe2 = wobf( e2 );
 	    e2 = e2 + wot2 - woe2 - theta_sat;
 	    eor = e2 * rate;
 	}
