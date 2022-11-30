@@ -15,10 +15,11 @@
 #ifndef __SHARP_PARCEL
 #define __SHARP_PARCEL
 
-#include "profile.h"
+#include "constants.h"
 #include "interp.h"
 #include "thermo.h"
 #include "utils.h"
+#include "profile.h"
 
 // Trying to mentally sketch out how I want parcel lifting
 // and CAPE/CINH integration to work. I want it to be modular
