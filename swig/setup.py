@@ -7,7 +7,7 @@ class build_py(_build_py):
         return super().run()
 
 compile_args = ['-std=c++17']
-swig_args = ['-c++', '-builtin']#, '-doxygen']
+swig_args = ['-c++', '-builtin']
 
 interp_module = Extension('nwsspc.sharp.calc._interp',
         sources = ['nwsspc/sharp/calc/interp.i',
