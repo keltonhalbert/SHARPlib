@@ -8,12 +8,6 @@
     #include "../include/interp.h"
     #include "../include/thermo.h"
 %}
-/*
-%include "./numpy.i"
-%init %{
-import_array();
-%}
-*/
 %import "../include/constants.h"
 %import "../include/profile.h"
 %import "../include/interp.h"

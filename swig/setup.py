@@ -7,13 +7,13 @@ class build_py(_build_py):
         return super().run()
 
 compile_args = ['-std=c++17']
+swig_args = ['-c++', '-builtin']#, '-doxygen']
 
 interp_module = Extension('nwsspc.sharp.calc._interp',
         sources = ['nwsspc/sharp/calc/interp.i',
-                   '../src/sharptab/profile.cpp', '../src/sharptab/utils.cpp',
                    '../src/sharptab/interp.cpp'],
         include_dirs=['../include'],
-        swig_opts = ['-c++', '-builtin'],
+        swig_opts = swig_args,
         extra_compile_args = compile_args
     )
 
@@ -23,7 +23,7 @@ params_module = Extension('nwsspc.sharp.calc._params',
                    '../src/sharptab/interp.cpp', '../src/sharptab/winds.cpp',
                    '../src/sharptab/thermo.cpp','../src/sharptab/params.cpp'],
         include_dirs=['../include'],
-        swig_opts = ['-c++', '-builtin'],
+        swig_opts = swig_args,
         extra_compile_args = compile_args
     )
 
@@ -31,45 +31,45 @@ parcel_module = Extension('nwsspc.sharp.calc._parcel',
         sources = ['nwsspc/sharp/calc/parcel.i',
                    '../src/sharptab/profile.cpp', '../src/sharptab/utils.cpp',
                    '../src/sharptab/interp.cpp', '../src/sharptab/thermo.cpp',
-                   '../src/sharptab/parcel.cpp'],
+                   '../src/sharptab/winds.cpp', '../src/sharptab/parcel.cpp'],
         include_dirs=['../include'],
-        swig_opts = ['-c++', '-builtin'],
+        swig_opts = swig_args,
         extra_compile_args = compile_args
     )
 
 profile_module = Extension('nwsspc.sharp.calc._profile',
         sources = ['nwsspc/sharp/calc/profile.i',
                    '../src/sharptab/interp.cpp', '../src/sharptab/utils.cpp',
+                   '../src/sharptab/thermo.cpp','../src/sharptab/winds.cpp',
                    '../src/sharptab/profile.cpp'],
         include_dirs=['../include'],
-        swig_opts = ['-c++', '-builtin'],
+        swig_opts = swig_args,
         extra_compile_args = compile_args
     )
 
 thermo_module = Extension('nwsspc.sharp.calc._thermo',
         sources = ['nwsspc/sharp/calc/thermo.i',
                    '../src/sharptab/utils.cpp',   '../src/sharptab/interp.cpp', 
-                   '../src/sharptab/profile.cpp', '../src/sharptab/thermo.cpp'],
+                   '../src/sharptab/thermo.cpp'],
         include_dirs=['../include'],
-        swig_opts = ['-c++', '-builtin'],
+        swig_opts = swig_args,
         extra_compile_args = compile_args
     )
 
 winds_module = Extension('nwsspc.sharp.calc._winds',
         sources=['nwsspc/sharp/calc/winds.i',
                  '../src/sharptab/utils.cpp',   '../src/sharptab/interp.cpp', 
-                 '../src/sharptab/profile.cpp', '../src/sharptab/winds.cpp'],
+                 '../src/sharptab/winds.cpp'],
         include_dirs=['../include'],
-        swig_opts = ['-c++', '-builtin'],
+        swig_opts = swig_args,
         extra_compile_args = compile_args
     )
 
 utils_module = Extension('nwsspc.sharp.calc._utils',
         sources = ['nwsspc/sharp/calc/utils.i',
-                   '../src/sharptab/profile.cpp', '../src/sharptab/interp.cpp',
-                   '../src/sharptab/utils.cpp'],
+                   '../src/sharptab/interp.cpp', '../src/sharptab/utils.cpp'],
         include_dirs=['../include'],
-        swig_opts = ['-c++', '-builtin'],
+        swig_opts = swig_args,
         extra_compile_args = compile_args
     )
 
