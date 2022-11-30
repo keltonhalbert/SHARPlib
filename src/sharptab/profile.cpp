@@ -12,6 +12,9 @@
  * John Hart and Rich Thompson at SPC. 
  */
 #include "profile.h"
+#include "thermo.h"
+#include "winds.h"
+#include "utils.h"
 
 namespace sharp {
 
@@ -61,6 +64,52 @@ Profile::~Profile() {
     delete[] vvel;
     delete[] theta;
     delete[] theta_e;
+}
+
+Profile* create_profile(float *pres, float *hght, 
+                        float *tmpc, float *dwpc,
+                        float *wspd_or_u, float *wdir_or_v,
+                        int NZ, Source sounding_type, bool windComponents) {
+
+    Profile* prof = new Profile(NZ, sounding_type);
+    
+    for (int k = 0; k < NZ; k++) {
+        prof->pres[k] = pres[k];
+        prof->hght[k] = hght[k];
+        prof->tmpc[k] = tmpc[k];
+        prof->dwpc[k] = dwpc[k];
+
+        float vtmp = virtual_temperature(pres[k], tmpc[k], dwpc[k]);
+        float mixr = mixratio(pres[k], dwpc[k]);
+        float thta = theta(pres[k], tmpc[k], 1000.0);
+        float thte = thetae(pres[k], tmpc[k], dwpc[k]);
+
+        prof->vtmp[k] = vtmp;
+        prof->mixr[k] = mixr;
+        prof->theta[k] = thta;
+        prof->theta_e[k] = thte;
+
+
+        if (windComponents) {
+            prof->uwin[k] = wspd_or_u[k];
+            prof->vwin[k] = wdir_or_v[k];
+
+            WindVector vec = components_to_vector(prof->uwin[k], prof->vwin[k]);
+            prof->wspd[k] = vec.speed;
+            prof->wdir[k] = vec.direction;
+        }
+        else {
+            prof->wspd[k] = wspd_or_u[k];
+            prof->wdir[k] = wdir_or_v[k];
+
+            WindComponents cmp = vector_to_components(prof->wspd[k], 
+                                                      prof->wdir[k]);
+            prof->uwin[k] = cmp.u;
+            prof->vwin[k] = cmp.v;
+        }
+    }
+
+    return prof;
 }
 
 
