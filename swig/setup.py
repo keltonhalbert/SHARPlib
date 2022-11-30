@@ -12,6 +12,13 @@ class build_py(_build_py):
 compile_args = ['-std=c++17']
 swig_args = ['-c++', '-builtin', '-O']
 
+constants_module = Extension('nwsspc.sharp.calc._constants',
+        sources = ['nwsspc/sharp/calc/constants.i'],
+        include_dirs=['../include'],
+        swig_opts = swig_args,
+        extra_compile_args = compile_args
+    )
+
 interp_module = Extension('nwsspc.sharp.calc._interp',
         sources = ['nwsspc/sharp/calc/interp.i',
                    '../src/sharptab/interp.cpp'],
@@ -91,11 +98,10 @@ setup(
 	],
 	python_requires='>=3.9',
     packages = ["nwsspc.sharp.calc"],
-    ext_modules = [interp_module, params_module, parcel_module, 
-                   profile_module, thermo_module, winds_module, 
-                   utils_module],
-    py_modules = ["nwsspc.sharp.calc.interp", "nwsspc.sharp.calc.params",
-                  "nwsspc.sharp.calc.parcel", "nwsspc.sharp.calc.profile",
-                  "nwsspc.sharp.calc.thermo", "nwsspc.sharp.calc.winds",
-                  "nwsspc.sharp.calc.utils"],
+    ext_modules = [constants_module, interp_module, params_module, parcel_module, 
+                   profile_module, thermo_module, winds_module, utils_module],
+    py_modules = ["nwsspc.sharp.calc.constants", "nwsspc.sharp.calc.interp", 
+                  "nwsspc.sharp.calc.params", "nwsspc.sharp.calc.parcel", 
+                  "nwsspc.sharp.calc.profile", "nwsspc.sharp.calc.thermo", 
+                  "nwsspc.sharp.calc.winds", "nwsspc.sharp.calc.utils"],
 )
