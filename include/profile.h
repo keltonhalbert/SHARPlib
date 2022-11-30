@@ -142,6 +142,25 @@ struct Profile {
 
 };
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \breif Creates a Profile from arrays
+ *
+ * \param pres              Array of pressure (hPa)
+ * \param hght              Array of height (meters)
+ * \param tmpc              Array of temperature (degC)
+ * \param dwpc              Array of dewpoiont (degC)
+ * \param wspd_or_u         Array of wind speed or u-component (kts or m/s)
+ * \param wdir_or_v         Array of wind direction or v-component (deg or m/s)
+ * \param NZ                The number of vertical levels
+ * \param sounding_type     The sharp::Source of the profile
+ * \param windComponents    A boolean if winds are vectors or components
+ */
+Profile* create_profile(float *pres, float *hght, 
+                        float *tmpc, float *dwpc,
+                        float *wspd_or_u, float *wdir_or_v,
+                        int NZ, Source sounding_type, bool windComponents); 
 
 } // end namespace sharp
 
