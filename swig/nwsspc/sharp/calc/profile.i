@@ -2,11 +2,6 @@
 %module profile 
 %{
     #define SWIG_FILE_WITH_INIT
-    #include "../include/constants.h"
-    #include "../include/utils.h"
-    #include "../include/interp.h"
-    #include "../include/thermo.h"
-    #include "../include/winds.h"
     #include "../include/profile.h"
 %}
 
@@ -22,10 +17,6 @@ import_array();
             (float *wnd1, int NZ5), (float *wnd2, int NZ6)
         }
 
-%import "../include/constants.h"
-%import "../include/interp.h"
-%import "../include/utils.h"
-%import "../include/thermo.h"
 %import "../include/winds.h"
 
 
