@@ -1,5 +1,8 @@
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_py import build_py as _build_py
+import os
+
+os.environ['CC'] = 'g++'
 
 class build_py(_build_py):
     def run(self):
@@ -7,7 +10,7 @@ class build_py(_build_py):
         return super().run()
 
 compile_args = ['-std=c++17']
-swig_args = ['-c++', '-builtin']
+swig_args = ['-c++', '-builtin', '-O']
 
 interp_module = Extension('nwsspc.sharp.calc._interp',
         sources = ['nwsspc/sharp/calc/interp.i',
