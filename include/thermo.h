@@ -14,6 +14,8 @@
 #ifndef __SHARP_THERMO
 #define __SHARP_THERMO
 
+#include "constants.h"
+#include "interp.h"
 #include "utils.h"
 
 namespace sharp {

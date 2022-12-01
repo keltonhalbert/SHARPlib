@@ -17,6 +17,8 @@
 
 #include <cmath>
 
+#include "constants.h"
+
 namespace sharp {
 
 /**
