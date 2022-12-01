@@ -43,6 +43,14 @@ If you would like a verbose compile process, run the make command in the followi
 make VERBOSE=1
 ```
 
+### Building the Python bindings
+To build the python bindings, simply nagivate to the swig directory and install via pip. The python bindings require having SWIG installed, as well as a C++17 compatible compiler. The bindings will be installed in the following namespace tree: ```nwsspc.sharp.calc```.
+```
+cd swig
+pip install .
+```
+
+
 ### Building the Docs
 To build the HTML documentation pages, simply navigate your terminal to the `docs` directory and run:
 
