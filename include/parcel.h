@@ -391,6 +391,23 @@ void lift_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
 }
 
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * 
+ * \brief Lifts a parcel using the Wobus method of computing moist adiabats 
+ *
+ *
+ * Lifts a parcel from its sharp::LPL to the Equilibrium Level (EL) using the
+ * Wobus method for computing moist adiabats. See sharp::wobf and sharp::wetlift
+ * for implementation details. Attributes such as CAPE, CINH, and specific parcel
+ * levels are stored within the sharp::Parcel. 
+ *
+ * \param prof      A sharp::Profile of atmospheric data
+ * \param pcl       A sharp::Parcel with its sharp::LPL/attributes defined.
+ */
+void parcel_wobf(Profile* prof, Parcel* pcl);
+
+
 } // end namespace sharp
 
 
