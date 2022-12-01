@@ -18,7 +18,7 @@ use_cxx17()
 include_directories(include)
 
 ## add all CPP files as sources
-file(GLOB SOURCES "src/sharplib/*.cpp")
+file(GLOB SOURCES "src/SHARPlib/*.cpp")
 
 ## Add the library build command
 ## The library target is SHARP, we are building a static lib,
