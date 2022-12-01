@@ -2,7 +2,7 @@
 %module interp 
 %{
     #define SWIG_FILE_WITH_INIT
-    #include "../include/interp.h"
+    #include <SHARPlib/interp.h>
 %}
 
 /* Import Numpy Array Functionality */
@@ -81,4 +81,4 @@ float _interp_pressure(float pres_val,
 
 %}
 
-%include "../include/interp.h"
+%include "../include/SHARPlib/interp.h"

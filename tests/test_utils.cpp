@@ -3,7 +3,7 @@
 #include <cmath>
 
 #include "doctest.h"
-#include "utils.h"
+#include <SHARPlib/utils.h>
 
 
 TEST_CASE("Testing HeightLayer structs") {

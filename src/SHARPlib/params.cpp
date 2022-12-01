@@ -11,13 +11,10 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC. 
  */
-#ifndef __SHARP_PARAMS
-#define __SHARP_PARAMS
 
-#include "utils.h"
+#include <SHARPlib/utils.h>
 
 namespace sharp {
-
 
 
 } // end namespace sharp
@@ -29,4 +26,3 @@ namespace sharp::exper {
 } // end namespace sharp::exper
 
 
-#endif

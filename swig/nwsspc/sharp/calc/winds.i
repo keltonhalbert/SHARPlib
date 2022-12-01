@@ -2,9 +2,9 @@
 %module winds 
 %{
     #define SWIG_FILE_WITH_INIT
-    #include "../include/winds.h"
+    #include <SHARPlib/winds.h>
 %}
-%import "../include/utils.h"
+%import "../include/SHARPlib/utils.h"
 
 /* Import Numpy Array Functionality */
 %include "numpy.i"
@@ -125,4 +125,4 @@ float _helicity(sharp::HeightLayer layer_agl, sharp::WindComponents storm_motion
 %}
 
 
-%include "../include/winds.h"
+%include "../include/SHARPlib/winds.h"

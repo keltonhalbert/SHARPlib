@@ -15,9 +15,9 @@
 #include <stdexcept>
 #include <cmath>
 
-#include "constants.h"
-#include "interp.h"
-#include "utils.h"
+#include <SHARPlib/constants.h>
+#include <SHARPlib/interp.h>
+#include <SHARPlib/utils.h>
 
 namespace sharp {
 

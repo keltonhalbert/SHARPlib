@@ -3,8 +3,8 @@
 #include <limits>
 
 #include "doctest.h"
-#include "interp.h"
-#include "constants.h"
+#include <SHARPlib/interp.h>
+#include <SHARPlib/constants.h>
 
 TEST_CASE("Testing lerp (float)") {
 

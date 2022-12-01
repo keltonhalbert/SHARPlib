@@ -2,10 +2,10 @@
 %module profile 
 %{
     #define SWIG_FILE_WITH_INIT
-    #include "../include/profile.h"
+    #include <SHARPlib/profile.h>
 %}
 
-%import "../include/winds.h"
+%import "../include/SHARPlib/winds.h"
 
 /* Import Numpy Array Functionality */
 %include "numpy.i"
@@ -49,4 +49,4 @@ sharp::Profile* _create_profile(float *pres, int NZ1, float *hght, int NZ2,
 
 %}
 
-%include "../include/profile.h"
+%include "../include/SHARPlib/profile.h"

@@ -1,7 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
-#include "thermo.h"
-#include "constants.h"
+#include <SHARPlib/thermo.h>
+#include <SHARPlib/constants.h>
 
 TEST_CASE("Testing theta") {
 
