@@ -12,73 +12,9 @@ import nwsspc.sharp.calc.parcel as parcel
 import nwsspc.sharp.calc.winds as winds
 import nwsspc.sharp.calc.utils as utils
 
-
-def test_interp():
-    pres = np.arange(50.0, 1010.0, 50.0, dtype='float32')[::-1]
-    hght = np.linspace(0, 15000, pres.shape[0]).astype('float32')
-    data = np.linspace(1, 100, pres.shape[0]).astype('float32')
-    
-
-    test_1000hPa = interp.interp_pressure(1000.0, pres, data)
-    test_500hPa = interp.interp_pressure(500.0, pres, data)
-    print(test_1000hPa)
-    print(test_500hPa)
-    print(data[pres==500.0])
-
-    test_100m = interp.interp_height(100.0, hght, data)
-    test_1000m = interp.interp_height(1000.0, hght, data)
-    print(test_100m)
-    print(test_1000m)
-
-def test_utils():
-    pres_layer = utils.PressureLayer(1000.0, 500.0)
-    hght_layer = utils.HeightLayer(100.0, 5000.0)
-
-    pres = np.arange(50.0, 1010.0, 50.0, dtype='float32')[::-1]
-    hght = np.linspace(0, 15000, pres.shape[0]).astype('float32')
-    data = np.linspace(1, 100, pres.shape[0]).astype('float32')
-
-    idx1 = utils.get_layer_index(pres_layer, pres)
-    idx2 = utils.get_layer_index(hght_layer, hght)
-
-    print(idx1.kbot, idx1.ktop)
-    print(idx2.kbot, idx2.ktop)
-
-def test_winds():
-    pres = np.arange(50.0, 1010.0, 50.0, dtype='float32')[::-1]
-    hght = np.linspace(0, 15000, pres.shape[0]).astype('float32')
-    uwin = np.linspace(1, 100, pres.shape[0]).astype('float32')
-    vwin = np.linspace(1, 100, pres.shape[0]).astype('float32')
-
-    pres_layer = utils.PressureLayer(1000.0, 500.0)
-    hght_layer = utils.HeightLayer(0.0, 3000.0)
-    strm_motnv = winds.WindComponents()
-    strm_motnv.u = 10.0
-    strm_motnv.v = 0.0
-
-    comp1 = winds.mean_wind(pres_layer, pres, uwin, vwin)
-    comp2 = winds.mean_wind_npw(pres_layer, pres, uwin, vwin)
-    print(comp1.u, comp1.v)
-    print(comp2.u, comp2.v)
-
-    shear = winds.wind_shear(pres_layer, pres, uwin, vwin)
-    print(shear.u, shear.v)
-
-    helicity = winds.helicity(hght_layer, strm_motnv, hght, uwin, vwin)
-    print(helicity)
-
-def test_thermo():
-    pres = np.arange(50.0, 1010.0, 50.0, dtype='float32')[::-1]
-    hght = np.linspace(0, 15000, pres.shape[0]).astype('float32')
-    tmpc = np.repeat(10.0, pres.shape[0]).astype('float32')
-
-    layer = utils.HeightLayer(0, 3000.0)
-    lapse_rate = thermo.lapse_rate(layer, hght, tmpc)
-    print(lapse_rate)
-
-def test_parcel():
+def load_sounding(filename):
     names = ["pres", "hght", "tmpc", "dwpc", "wdir", "wspd"]
-    snd_df = pd.read_csv("./hires-SPC.txt", delimiter=",", comment="%", names=names, skiprows=5)
+    snd_df = pd.read_csv(filename, delimiter=",", comment="%", names=names, skiprows=5)
 
     pres = snd_df["pres"].to_numpy().astype('float32')
     hght = snd_df["hght"].to_numpy().astype('float32')
@@ -87,14 +23,94 @@ def test_parcel():
     wdir = snd_df["wdir"].to_numpy().astype('float32')
     wspd = snd_df["wspd"].to_numpy().astype('float32')
 
+    ## TO-DO - need a better interface to the API for doing this
+    uwin = np.empty(wspd.shape, dtype="float32")
+    vwin = np.empty(wspd.shape, dtype="float32")
+
+    for idx in range(len(uwin)):
+        comp = winds.vector_to_components(float(wspd[idx]), float(wdir[idx]))
+        uwin[idx] = comp.u
+        vwin[idx] = comp.v
+    
+    return {"pres": pres, "hght": hght, "tmpc": tmpc, "dwpc": dwpc, "wdir": wdir, "wspd": wspd, "uwin": uwin, "vwin": vwin}
+
+
+def test_interp(sounding):
+    print("====================")
+    print("Testing the Interpolation bindings...")
+
+    hght_1000hPa = interp.interp_pressure(1000.0, sounding["pres"], sounding["hght"])
+    hght_500hPa = interp.interp_pressure(500.0, sounding["pres"], sounding["hght"])
+    print("1000 hPa Height: ", hght_1000hPa)
+    print("500 hPa Height: ", hght_500hPa)
+
+    tmpc_1000m = interp.interp_height(1000.0, sounding["hght"], sounding["tmpc"])
+    tmpc_3000m = interp.interp_height(3000.0, sounding["hght"], sounding["tmpc"])
+    print("1 km Temperature: ", tmpc_1000m)
+    print("3 km Temperature: ", tmpc_3000m)
+    print("====================")
+
+def test_utils(sounding):
+
+    print("====================")
+    print("Testing utility bindings...")
+    pres_layer = utils.PressureLayer(1000.0, 500.0)
+    hght_layer = utils.HeightLayer(1000.0, 3000.0)
+
+    idx1 = utils.get_layer_index(pres_layer, sounding["pres"])
+    idx2 = utils.get_layer_index(hght_layer, sounding["hght"])
+
+    print("Pressure Layer: 1000.0 hPa to 500.0 hPa")
+    print("Pressure Layer kbot: ", idx1.kbot, "ktop: ", idx1.ktop)
+
+    print("Height Layer: 1000.0 m to 3000.0 m")
+    print("Height Layer kbot: ", idx2.kbot, "ktop: ", idx2.ktop)
+    print("====================")
+
+def test_winds(sounding):
+
+    print("====================")
+    print("Testing kinematic bindings...")
+    pres_layer = utils.PressureLayer(1000.0, 500.0)
+    hght_layer = utils.HeightLayer(0.0, 3000.0)
+    strm_motnv = winds.WindComponents()
+    strm_motnv.u = 10.0
+    strm_motnv.v = 0.0
+
+    comp1 = winds.mean_wind(pres_layer, sounding["pres"], sounding["uwin"], sounding["vwin"])
+    comp2 = winds.mean_wind_npw(pres_layer, sounding["pres"], sounding["uwin"], sounding["vwin"])
+    print("Pressure Weighted Mean Wind: u = ", comp1.u, "v = ", comp1.v)
+    print("Non-Pressure Weighted Mean Wind: u = ", comp2.u, "v = ", comp2.v)
+
+    shear = winds.wind_shear(pres_layer, sounding["pres"], sounding["uwin"], sounding["vwin"])
+    print("1000 hPa - 500 hPa wind shear: u = ", shear.u, "v = ", shear.v)
+
+    helicity = winds.helicity(hght_layer, strm_motnv, sounding["hght"], sounding["uwin"], sounding["vwin"])
+    print("0-3 km AGL Storm Relative Helicity: ", helicity)
+    print("====================")
+
+def test_thermo(sounding):
+    print("====================")
+    print("Testing thermodynamic bindings...")
+
+    layer = utils.HeightLayer(0, 3000.0)
+    lapse_rate = thermo.lapse_rate(layer, sounding["hght"], sounding["tmpc"])
+    print("0-3km AGL Lapse Rate: ", lapse_rate)
+    print("====================")
+
+def test_parcel(sounding):
+    print("====================")
+    print("Testing parcel bindings...")
 
     ## example of processing a single parcel
-    prof = profile.create_profile(pres, hght, tmpc, dwpc, wspd, wdir, 
+    prof = profile.create_profile(sounding["pres"], sounding["hght"], 
+                                  sounding["tmpc"], sounding["dwpc"], 
+                                  sounding["wspd"], sounding["wdir"], 
                                   profile.Source_Observed, False) 
     pcl = parcel.Parcel()
     parcel.define_parcel(prof, pcl, parcel.LPL_MU)
     parcel.parcel_wobf(prof, pcl)
-    print(pcl.cape, pcl.cinh)
+    print("Most Unstable Parcel: cape = ", pcl.cape, "cinh = ", pcl.cinh)
 
 
     ## example of processing an array of parcels
@@ -111,16 +127,18 @@ def test_parcel():
 
     ## call the parcel routines on each profile/parcel combo
     cape_func(prof_arr, pcl_arr)
-    print(pcl_arr[0].cape, pcl_arr[1].cape)
-    print(pcl_arr[0].cinh, pcl_arr[1].cinh)
+    print("Vectorized Most Unstable CAPE: cape = ", pcl_arr[0].cape, ",", pcl_arr[1].cape, 
+                                          "cinh = ", pcl_arr[0].cinh, ",", pcl_arr[1].cinh)
+    print("====================")
 
 
 def main():
-    test_interp()
-    test_utils()
-    test_winds()
-    test_thermo()
-    test_parcel()
+    sounding = load_sounding("./hires-SPC.txt")
+    test_interp(sounding)
+    test_utils(sounding)
+    test_winds(sounding)
+    test_thermo(sounding)
+    test_parcel(sounding)
 
 if __name__ == "__main__":
     main()
