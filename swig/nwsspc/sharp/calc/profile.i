@@ -37,7 +37,9 @@ sharp::Profile* _create_profile(float *pres, int NZ1, float *hght, int NZ2,
                                 bool windComponents) {
     if ( (NZ1 != NZ2) || (NZ1 != NZ3) || (NZ1 != NZ4) ||
          (NZ1 != NZ5) || (NZ1 != NZ6) ) {
-        PyErr_Format(PyExc_ValueError, "Arrays must be same lenght");
+        PyErr_Format(PyExc_ValueError, 
+                     "Arrays must be same lenght, insead got (%d, %d, %d, %d, %d, %d)",
+                     NZ1, NZ2, NZ3, NZ4, NZ5, NZ6);
         return nullptr;
     }
 
