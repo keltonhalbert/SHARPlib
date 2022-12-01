@@ -87,13 +87,32 @@ def test_parcel():
     wdir = snd_df["wdir"].to_numpy().astype('float32')
     wspd = snd_df["wspd"].to_numpy().astype('float32')
 
+
+    ## example of processing a single parcel
     prof = profile.create_profile(pres, hght, tmpc, dwpc, wspd, wdir, 
                                   profile.Source_Observed, False) 
     pcl = parcel.Parcel()
-
     parcel.define_parcel(prof, pcl, parcel.LPL_MU)
     parcel.parcel_wobf(prof, pcl)
     print(pcl.cape, pcl.cinh)
+
+
+    ## example of processing an array of parcels
+    prof_arr = np.array([prof, prof])
+    pcl_arr = np.array([parcel.Parcel(), parcel.Parcel()])
+
+    ## define the LPL of each parcel
+    for pc, pf in zip(pcl_arr, prof_arr):
+        parcel.define_parcel(pf, pc, parcel.LPL_MU)
+
+    ## turn the parcel lifting routine into 
+    ## something vectorizable by numpy
+    cape_func = np.vectorize(parcel.parcel_wobf)
+
+    ## call the parcel routines on each profile/parcel combo
+    cape_func(prof_arr, pcl_arr)
+    print(pcl_arr[0].cape, pcl_arr[1].cape)
+    print(pcl_arr[0].cinh, pcl_arr[1].cinh)
 
 
 def main():
