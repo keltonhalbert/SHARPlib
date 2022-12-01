@@ -7,10 +7,10 @@
 #include <chrono>
 
 #include "doctest.h"
-#include "constants.h"
-#include "profile.h"
-#include "winds.h"
-#include "parcel.h"
+#include <SHARPlib/constants.h>
+#include <SHARPlib/profile.h>
+#include <SHARPlib/winds.h>
+#include <SHARPlib/parcel.h>
 
 // splits a string on a delimiter and stores in a vector
 std::vector<std::string> split(std::string& s, std::string delimiter) {

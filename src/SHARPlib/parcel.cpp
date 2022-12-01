@@ -12,12 +12,12 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC. 
  */
-#include "constants.h"
-#include "interp.h"
-#include "thermo.h"
-#include "utils.h"
-#include "profile.h"
-#include "parcel.h"
+#include <SHARPlib/constants.h>
+#include <SHARPlib/interp.h>
+#include <SHARPlib/thermo.h>
+#include <SHARPlib/utils.h>
+#include <SHARPlib/profile.h>
+#include <SHARPlib/parcel.h>
 
 namespace sharp {
 

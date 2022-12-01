@@ -16,14 +16,14 @@
 #ifndef __SHARPLIB
 #define __SHARPLIB
 
-#include "constants.h"
-#include "interp.h"
-#include "utils.h"
-#include "thermo.h"
-#include "winds.h"
-#include "profile.h"
-#include "parcel.h"
-#include "params.h"
+#include <SHARPlib/constants.h>
+#include <SHARPlib/interp.h>
+#include <SHARPlib/utils.h>
+#include <SHARPlib/thermo.h>
+#include <SHARPlib/winds.h>
+#include <SHARPlib/profile.h>
+#include <SHARPlib/parcel.h>
+#include <SHARPlib/params.h>
 
 
 #endif

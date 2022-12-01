@@ -1,10 +1,10 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <cmath>
 
-#include "constants.h"
 #include "doctest.h"
-#include "utils.h"
-#include "winds.h"
+#include <SHARPlib/constants.h>
+#include <SHARPlib/utils.h>
+#include <SHARPlib/winds.h>
 
 TEST_CASE("Testing wind components (u,v) operations") {
     sharp::WindComponents s_wind = {0.0, 10.0};

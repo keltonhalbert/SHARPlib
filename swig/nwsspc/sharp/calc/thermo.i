@@ -2,7 +2,7 @@
 %module thermo 
 %{
     #define SWIG_FILE_WITH_INIT
-    #include "../include/thermo.h"
+    #include <SHARPlib/thermo.h>
 %}
 
 /* Import Numpy Array Functionality */
@@ -11,7 +11,7 @@
 import_array();
 %}
 
-%import "../include/utils.h"
+%import "../include/SHARPlib/utils.h"
 
 
 /* Set up an argument typemap for our arrays */
@@ -73,4 +73,4 @@ float _lapse_rate(sharp::PressureLayer layer,
 %}
 
 
-%include "../include/thermo.h"
+%include "../include/SHARPlib/thermo.h"

@@ -2,7 +2,7 @@
 %module utils 
 %{
     #define SWIG_FILE_WITH_INIT
-    #include "../include/utils.h"
+    #include <SHARPlib/utils.h>
 %}
 
 /* Import Numpy Array Functionality */
@@ -25,4 +25,4 @@ import_array();
 %ignore mean_value;
 
 
-%include "../include/utils.h"
+%include "../include/SHARPlib/utils.h"

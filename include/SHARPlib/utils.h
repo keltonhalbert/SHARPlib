@@ -14,8 +14,8 @@
 #ifndef __SHARP_UTILS
 #define __SHARP_UTILS
 
-#include "constants.h"
-#include "interp.h"
+#include <SHARPlib/constants.h>
+#include <SHARPlib/interp.h>
 
 namespace sharp {
 

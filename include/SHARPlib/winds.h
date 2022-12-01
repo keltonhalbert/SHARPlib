@@ -14,9 +14,9 @@
 #ifndef __SHARP_WINDS
 #define __SHARP_WINDS
 
-#include "constants.h"
-#include "interp.h"
-#include "utils.h"
+#include <SHARPlib/constants.h>
+#include <SHARPlib/interp.h>
+#include <SHARPlib/utils.h>
 
 
 namespace sharp {

@@ -14,8 +14,8 @@
 
 #include <cmath>
 
-#include "interp.h"
-#include "constants.h"
+#include <SHARPlib/interp.h>
+#include <SHARPlib/constants.h>
 
 namespace sharp {
 

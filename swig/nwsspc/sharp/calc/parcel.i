@@ -2,7 +2,7 @@
 %module parcel 
 %{
     #define SWIG_FILE_WITH_INIT
-    #include "../include/parcel.h"
+    #include <SHARPlib/parcel.h>
 %}
-%import "../include/profile.h"
-%include "../include/parcel.h"
+%import "../include/SHARPlib/profile.h"
+%include "../include/SHARPlib/parcel.h"
