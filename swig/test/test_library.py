@@ -29,8 +29,8 @@ def load_sounding(filename):
 
     for idx in range(len(uwin)):
         comp = winds.vector_to_components(float(wspd[idx]), float(wdir[idx]))
-        uwin[idx] = comp.u
-        vwin[idx] = comp.v
+        uwin[idx] = comp.u * 0.514444 ## convert to m/s
+        vwin[idx] = comp.v * 0.514444 ## convert to m/s
     
     return {"pres": pres, "hght": hght, "tmpc": tmpc, "dwpc": dwpc, "wdir": wdir, "wspd": wspd, "uwin": uwin, "vwin": vwin}
 
