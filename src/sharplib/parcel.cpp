@@ -13,10 +13,11 @@
  * John Hart and Rich Thompson at SPC. 
  */
 #include "constants.h"
-#include "thermo.h"
 #include "interp.h"
-#include "parcel.h"
+#include "thermo.h"
 #include "utils.h"
+#include "profile.h"
+#include "parcel.h"
 
 namespace sharp {
 

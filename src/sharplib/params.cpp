@@ -12,6 +12,8 @@
  * John Hart and Rich Thompson at SPC. 
  */
 
+#include "utils.h"
+
 namespace sharp {
 
 
