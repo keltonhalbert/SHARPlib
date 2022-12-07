@@ -14,10 +14,18 @@
 #ifndef __SHARP_PARAMS
 #define __SHARP_PARAMS
 
+
+#include <SHARPlib/constants.h>
 #include <SHARPlib/utils.h>
 
 namespace sharp {
 
+
+float energy_helicity_index(float cape, float helicity);
+
+
+float supercell_composite_parameter(float mu_cape, float eff_srh, 
+                                                   float eff_shear);
 
 
 } // end namespace sharp
