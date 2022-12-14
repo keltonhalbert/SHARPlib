@@ -151,9 +151,9 @@ TEST_CASE("Testing parcel definitions") {
         sharp::define_parcel(prof, &ml_pcl, sharp::LPL::ML);
 
         start_time = std::chrono::system_clock::now();
-        sharp::lift_parcel<sharp::lifter_wobus>(lifter, prof, &sfc_pcl);
-        sharp::lift_parcel<sharp::lifter_wobus>(lifter, prof, &mu_pcl);
-        sharp::lift_parcel<sharp::lifter_wobus>(lifter, prof, &ml_pcl);
+        sharp::integrate_parcel<sharp::lifter_wobus>(lifter, prof, &sfc_pcl);
+        sharp::integrate_parcel<sharp::lifter_wobus>(lifter, prof, &mu_pcl);
+        sharp::integrate_parcel<sharp::lifter_wobus>(lifter, prof, &ml_pcl);
         end_time = std::chrono::system_clock::now();
         duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
 

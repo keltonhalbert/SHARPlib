@@ -275,7 +275,7 @@ float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl, float tmpc_lcl)
  * \param pcl       A sharp::Parcel with its sharp::LPL/attributes defined.
  */
 template <typename Lifter>
-void lift_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
+void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
 
     // Lift the parcel from the LPL to the LCL 
     float pres_lcl; 

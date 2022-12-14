@@ -183,7 +183,7 @@ float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl, float tmpc_lcl)
 
 void parcel_wobf(Profile* prof, Parcel* pcl) {
     lifter_wobus lifter;
-    lift_parcel<lifter_wobus>(lifter, prof, pcl);
+    integrate_parcel<lifter_wobus>(lifter, prof, pcl);
     return;
 }
 
