@@ -391,6 +391,7 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
 }
 
 
+template <typename Lifter>
 void integrate_parcel_layer(Lifter liftpcl, Profile* prof, Parcel* pcl, PressureLayer layer) {
     // Lift the parcel from the LPL to the LCL 
     float pres_lcl; 
