@@ -497,13 +497,13 @@ void integrate_parcel_layer(Lifter liftpcl, Profile* prof, Parcel* pcl, Pressure
 
 	// now integrate the last layer using the interpolated
 	// layer top
-	ptop = layer.ptop 
+	ptop = layer.ptop; 
     htop = interp_pressure(ptop, prof->pres, prof->hght, prof->NZ);
 
 	tmpc_pct = liftpcl(pbot, tmpc_pcb, ptop);
 	// parcel is saturated, so temperature and dewpoint are same
 	vtmp_pct = virtual_temperature(ptop, tmpc_pct, tmpc_pct);
-	vtmp_ent = prof->vtmp[k];
+	vtmp_ent = interp_pressure(ptop, prof->pres, prof->vtmp, prof->NZ);
 
 	buoy_bot = buoyancy(vtmp_pcb, vtmp_enb);
 	buoy_top = buoyancy(vtmp_pct, vtmp_ent);
