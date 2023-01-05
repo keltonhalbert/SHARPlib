@@ -349,6 +349,9 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
         }
 
         // check for the LFC
+        // TO-DO: If there is a layer of positive buoyancy between
+        // the LCL and the true LFC, we need to reset CAPE values to
+        // not include that layer. I think. 
         if ((lyre >= 0) && (lyre_last <= 0)) {
             // Set the LFC pressure to the 
             float lfc_pres = pbot;
