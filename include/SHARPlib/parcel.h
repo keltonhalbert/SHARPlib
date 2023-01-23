@@ -21,38 +21,6 @@
 #include <SHARPlib/utils.h>
 #include <SHARPlib/profile.h>
 
-// Trying to mentally sketch out how I want parcel lifting
-// and CAPE/CINH integration to work. I want it to be modular
-// such that different methods of computing moist adiabats can
-// be supported. I want to separate the parcel lifting from the
-// actual numerical integration. I want to be able to store and
-// reuse the temperature/pressure traces of parcel lifting. Need 
-// to support a "fast CAPE/CINH" for effective inflow calculations.
-// 
-//
-// 1) Create the parcel struct
-// 2) Define its starting attributes (MU/ML/SFC/etc)
-// 3) Lift the parcel/compute temperature trace
-// 4) Set LCL/LFC/EL values
-// 5) Integrate CAPE/CINH
-//
-// So, the previous attempt at this workflow didn't work. In order to separate 
-// the lifting of the parcel from the actual integration, it required storing
-// the parcel virtual temperature values at corresponding profile pressure/height
-// levels. Since the size of the profile is initially unknown, and the height of
-// the LCL is unknown, the ultimate size of the parcel temperature, pressure, and
-// height traces would have required heap allocations. This is clearly a terrible
-// idea for a routine that is meant to be called within loops, whether it be the
-// Effective Inflow Layer, or working with gridded data, allocating heap memory
-// with every iteration is just incredibly stupid and slow. 
-//
-// So, after some thinking and research, I think a reasonable solution that
-// gives flexibility for both parcel lifting routines and integration mechanisms
-// is to use C++ functors and tempalte functions. A functor is essentially just
-// an object that overloads the () operator. What's neat is it can be inlined
-// by the compiler, and passed as a template argument to, say, the parcel
-// lifting routine. 
-
 namespace sharp {
 
 ////////////    FUNCTORS    ///////////
@@ -541,6 +509,15 @@ void integrate_parcel_layer(Lifter liftpcl, Profile* prof, Parcel* pcl, Pressure
  */
 void parcel_wobf(Profile* prof, Parcel* pcl);
 
+
+// TO-DO ECAPE: 
+// Step 5 requires a vertical array of integrated MSE, that
+// then gets integrated vertically in Step 6 to get NCAPE. Allocating
+// memory within entrainment_cape would be unwise for gridded data,
+// since calling new/malloc every grid cell is a bad idea for performance. 
+// A reasonable solution could be including some vertical dummy/temproary 
+// arrays within the Parcel or Profile objects, or include MSE as a vertical
+// field that's always available. 
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
