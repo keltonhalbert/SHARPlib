@@ -181,11 +181,18 @@ float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl, float tmpc_lcl)
     return cinh;
 }
 
+
 void parcel_wobf(Profile* prof, Parcel* pcl) {
     lifter_wobus lifter;
     integrate_parcel<lifter_wobus>(lifter, prof, pcl);
     return;
 }
+
+
+float entrainment_cape(Profile* prof, Parcel *pcl) {
+    return MISSING;
+}
+
 
 } // end namespace sharp
 
