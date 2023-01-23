@@ -406,6 +406,19 @@ float buoyancy(float pcl_temperature, float env_temperature) {
 		   (env_temperature + ZEROCNK);
 }
 
+float moist_static_energy(float height, float temperature, float wv_mixratio) {
+#ifndef NO_QC
+    if ((height == MISSING) || (temperature == MISSING) 
+                            || (wv_mixratio == MISSING)) {
+        return MISSING;
+    }
+#endif
+
+    // make sure to convert mixratio from g/kg to kg/kg!
+    return CP_DRYAIR * temperature + LV * (wv_mixratio / 1000.0) + GRAVITY*height;
+
+}
+
 
 } // end namespace sharp
 
