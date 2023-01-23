@@ -431,6 +431,18 @@ float lapse_rate(PressureLayer layer, const float* pressure,
 float buoyancy(float pcl_temperature, float env_temperature);
 
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Compute moist static energy.  
+ *
+ * \param height (meters)
+ * \param temperature (degC)
+ * \param wv_mixratio (g/kg)
+ */
+float moist_static_energy(float *height, float *temperature, float *wv_mixratio);
+
+
 } // end namespace sharp
 
 
