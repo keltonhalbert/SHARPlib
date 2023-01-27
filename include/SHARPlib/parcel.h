@@ -300,6 +300,7 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
     float lyre_last = 0.0;
     float cape = 0.0;
     float cape_old = 0.0;
+	float cinh_old = 0.0;
     float lfc_pres = MISSING;
     float lfc_old = MISSING;
     float el_pres = MISSING;
@@ -336,7 +337,10 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
             pcl->total_cape += lyre;
         }
         else {
-            if (ptop > 500.0) cinh += lyre;
+			if (pcl->lfc_pressure == MISSING) {
+				cinh += lyre;
+			}
+            //if (ptop > 500.0) cinh += lyre;
             pcl->total_cinh += lyre;
         }
 
@@ -374,10 +378,13 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
                 // added a new positive layer, so pull it back out
                 // so we don't accidentally double count later
                 cape_old = cape - lyre;
+				cinh_old = cinh;
                 lfc_old = pcl->lfc_pressure;
+				el_old = pcl->eql_pressure;
 
                 // reset the CAPE and integrate from the new LFC
                 cape = lyre;
+				cinh = pcl->total_cinh;
             }
             if (found) pcl->lfc_pressure = lfc_pres;
         }
@@ -403,20 +410,17 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
 				found = true;
 			}
 
-            if (pcl->eql_pressure != MISSING) {
-                el_old = pcl->eql_pressure;
-                pcl->eql_pressure = el_pres;
-            }
-            
 			if (found) pcl->eql_pressure = el_pres;
 
             // check which CAPE layer should stay?
             if (cape_old > cape) {
                 pcl->lfc_pressure = lfc_old;
                 pcl->eql_pressure = el_old;
+				pcl->total_cinh = cinh_old; 
                 cape = cape_old;
+				cinh = cinh_old;
             }
-            if ((pcl->eql_pressure < pcl->lfc_pressure) && (ptop < 150)) break;
+            if ((pcl->eql_pressure < pcl->lfc_pressure) && (ptop < 200)) break;
         }
 
         // set the top of the current layer to the
