@@ -264,6 +264,7 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
     float tmpc_lcl;
     drylift(pcl->pres, pcl->tmpc, pcl->dwpc, pres_lcl, tmpc_lcl);
 
+	if (pres_lcl > prof->pres[0]) pres_lcl = prof->pres[0];
     pcl->lcl_pressure = pres_lcl;
 
     // get the CINH below the LCL in 10 hPa increments
@@ -339,24 +340,31 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
             pcl->total_cinh += lyre;
         }
 
-        // check for the LFC, including the special case
-        // where the LFC is the LCL
-        if (((lyre >= 0) && (lyre_last <  0)) || 
-            ((lyre >= 0) && (lyre_last == 0) && (pbot == pres_lcl))) {
+        // check for the LFC
+        if ((lyre >= 0) && (lyre_last <=  0)) {
             // Set the LFC pressure to the bottom pressure layer
             lfc_pres = pbot;
-            // TO-DO: Certain profiles (alt1_06_20170430_EF1_35.95_-092.24_107_2017-00569.snd)
-            // struggle if LCL, LFC, and EL are all the first level. 
-
+			bool found = false;
             // if we can't find the LFC within 50 hPa of this level, stop 
             // searching because it's either the surface or further up the
             // profile.
-            while (interp_pressure(lfc_pres, prof->pres, prof->vtmp, prof->NZ) 
-                    > virtual_temperature(lfc_pres,
-                        liftpcl(ptop, tmpc_pct, lfc_pres), 
-                        liftpcl(ptop, tmpc_pct, lfc_pres))) {
-                lfc_pres -= 5;
-            }
+			for (lfc_pres = pbot; lfc_pres > pbot-50.0; lfc_pres-=5.0) {
+				float env_vtmp = interp_pressure(lfc_pres, prof->pres, prof->vtmp, prof->NZ);
+				float pcl_tmpc = liftpcl(ptop, tmpc_pct, lfc_pres);
+				float pcl_vtmp = virtual_temperature(lfc_pres, pcl_tmpc, pcl_tmpc);
+				if (pcl_vtmp > env_vtmp) {
+					found = true;
+					break;
+				}
+			}
+			// reset if we didn't find it 
+			if (!found) {
+				lfc_pres = pbot;
+				found = true;
+			}
+
+			//sanity check against the LCL
+            if (lfc_pres > pres_lcl) lfc_pres = pres_lcl;
 
             // We've already found an LFC candidate - need
             // to keep track of a few things to determine which
@@ -371,35 +379,44 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
                 // reset the CAPE and integrate from the new LFC
                 cape = lyre;
             }
-            if (lfc_pres > pres_lcl) lfc_pres = pres_lcl;
-            pcl->lfc_pressure = lfc_pres;
+            if (found) pcl->lfc_pressure = lfc_pres;
         }
 
         // check for the EL
-        if ((lyre <= 0) && (lyre_last > 0)) {
+        if ((lyre <= 0) && (lyre_last >= 0)) {
             el_pres = pbot;
-            while (interp_pressure(el_pres, prof->pres, prof->vtmp, prof->NZ) 
-                    < virtual_temperature(el_pres,
-                        liftpcl(ptop, tmpc_pct, el_pres), 
-                        liftpcl(ptop, tmpc_pct, el_pres))) {
-                el_pres -= 5;
-            }
+			bool found = false;
+            // if we can't find the EL within 50 hPa of this level, 
+			// stop searching 
+			for (el_pres = pbot; el_pres > pbot-50.0; el_pres-=5.0) {
+				float env_vtmp = interp_pressure(el_pres, prof->pres, prof->vtmp, prof->NZ);
+				float pcl_tmpc = liftpcl(ptop, tmpc_pct, el_pres);
+				float pcl_vtmp = virtual_temperature(el_pres, pcl_tmpc, pcl_tmpc);
+				if (pcl_vtmp < env_vtmp) {
+					found = true;
+					break;
+				}
+			}
+
+			if (!found) {
+				el_pres = pbot;
+				found = true;
+			}
 
             if (pcl->eql_pressure != MISSING) {
                 el_old = pcl->eql_pressure;
                 pcl->eql_pressure = el_pres;
             }
-            else if (pcl->lfc_pressure != MISSING) { 
-                pcl->eql_pressure = el_pres;
-            }
             
+			if (found) pcl->eql_pressure = el_pres;
+
             // check which CAPE layer should stay?
             if (cape_old > cape) {
                 pcl->lfc_pressure = lfc_old;
                 pcl->eql_pressure = el_old;
                 cape = cape_old;
             }
-            if ((pcl->eql_pressure < pcl->lfc_pressure) && (ptop < 200)) break;
+            if ((pcl->eql_pressure < pcl->lfc_pressure) && (ptop < 150)) break;
         }
 
         // set the top of the current layer to the
