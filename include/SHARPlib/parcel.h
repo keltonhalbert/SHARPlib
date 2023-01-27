@@ -15,6 +15,8 @@
 #ifndef __SHARP_PARCEL
 #define __SHARP_PARCEL
 
+#include <iostream>
+
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/thermo.h>
@@ -164,14 +166,26 @@ struct Parcel {
     float mpl_pressure;
 
     /**
-     * \brief Parcel Convective Available Potential Energy (J/kg)
+     * \brief Parcel Convective Available Potential Energy (J/kg) between the LFC and EL
      */
     float cape;
 
     /**
-     * \brief Parcel Convective Inhibition (J/kg)
+     * \brief Parcel Convective Inhibition (J/kg) between the LFC and EL
      */
     float cinh;
+
+    /**
+     * \brief Parcel Convective Available Potnential Energy (J/kg) 
+     * for the total profile depth (all positive areas above LCL)
+     */
+    float total_cape;
+
+    /**
+     * \brief Parcel Convective Inhibition (J/kg) 
+     * for the total profile depth (all negative areas below EL)
+     */
+    float total_cinh;
 
     /**
      * \brief The type of parcel this is
@@ -284,6 +298,13 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
     float lyre = 0.0;
     float lyre_last = 0.0;
     float cape = 0.0;
+    float cape_old = 0.0;
+    float lfc_pres = MISSING;
+    float lfc_old = MISSING;
+    float el_pres = MISSING;
+    float el_old = MISSING;
+    pcl->total_cape = 0.0;
+    pcl->total_cinh = 0.0;
     // iterate from the LCL to the top of the profile
     // -- the +1 takes us to the last level since it is
     // excluded by get_layer_index
@@ -311,18 +332,25 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
 
         if (lyre > 0) {
             cape += lyre;
+            pcl->total_cape += lyre;
         }
         else {
             if (ptop > 500.0) cinh += lyre;
+            pcl->total_cinh += lyre;
         }
 
-        // check for the LFC
-        // TO-DO: If there is a layer of positive buoyancy between
-        // the LCL and the true LFC, we need to reset CAPE values to
-        // not include that layer. I think. 
-        if ((lyre >= 0) && (lyre_last <= 0)) {
-            // Set the LFC pressure to the 
-            float lfc_pres = pbot;
+        // check for the LFC, including the special case
+        // where the LFC is the LCL
+        if (((lyre >= 0) && (lyre_last <  0)) || 
+            ((lyre >= 0) && (lyre_last == 0) && (pbot == pres_lcl))) {
+            // Set the LFC pressure to the bottom pressure layer
+            lfc_pres = pbot;
+            // TO-DO: Certain profiles (alt1_06_20170430_EF1_35.95_-092.24_107_2017-00569.snd)
+            // struggle if LCL, LFC, and EL are all the first level. 
+
+            // if we can't find the LFC within 50 hPa of this level, stop 
+            // searching because it's either the surface or further up the
+            // profile.
             while (interp_pressure(lfc_pres, prof->pres, prof->vtmp, prof->NZ) 
                     > virtual_temperature(lfc_pres,
                         liftpcl(ptop, tmpc_pct, lfc_pres), 
@@ -330,12 +358,26 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
                 lfc_pres -= 5;
             }
 
+            // We've already found an LFC candidate - need
+            // to keep track of a few things to determine which
+            // LFC is the "right one".
+            if (pcl->lfc_pressure != MISSING) {
+                // store the old CAPE value here - we've already
+                // added a new positive layer, so pull it back out
+                // so we don't accidentally double count later
+                cape_old = cape - lyre;
+                lfc_old = pcl->lfc_pressure;
+
+                // reset the CAPE and integrate from the new LFC
+                cape = lyre;
+            }
+            if (lfc_pres > pres_lcl) lfc_pres = pres_lcl;
             pcl->lfc_pressure = lfc_pres;
         }
 
         // check for the EL
-        if ((lyre <= 0) && (lyre_last >= 0)) {
-            float el_pres = pbot;
+        if ((lyre <= 0) && (lyre_last > 0)) {
+            el_pres = pbot;
             while (interp_pressure(el_pres, prof->pres, prof->vtmp, prof->NZ) 
                     < virtual_temperature(el_pres,
                         liftpcl(ptop, tmpc_pct, el_pres), 
@@ -343,8 +385,21 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
                 el_pres -= 5;
             }
 
-            pcl->eql_pressure = el_pres;
-            if ((pcl->eql_pressure < pcl->lfc_pressure) && (ptop < 500)) break;
+            if (pcl->eql_pressure != MISSING) {
+                el_old = pcl->eql_pressure;
+                pcl->eql_pressure = el_pres;
+            }
+            else if (pcl->lfc_pressure != MISSING) { 
+                pcl->eql_pressure = el_pres;
+            }
+            
+            // check which CAPE layer should stay?
+            if (cape_old > cape) {
+                pcl->lfc_pressure = lfc_old;
+                pcl->eql_pressure = el_old;
+                cape = cape_old;
+            }
+            if ((pcl->eql_pressure < pcl->lfc_pressure) && (ptop < 200)) break;
         }
 
         // set the top of the current layer to the
@@ -356,7 +411,14 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
         vtmp_pcb = vtmp_pct;
     }
 
-    if (cape == 0) cinh = 0;
+    if (cape < 1) {
+        cape = 0;
+        cinh = 0;
+    }
+    if (pcl->total_cape < 1) {
+        pcl->total_cape = 0.0;
+        pcl->total_cinh = 0.0;
+    }
     pcl->cinh = cinh;
     pcl->cape = cape;
 }

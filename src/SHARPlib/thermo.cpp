@@ -184,7 +184,7 @@ float saturated_lift(float pressure, float theta_sat) {
     // of the calculation.
     // TO-DO: Default might need to be 0.001 - doesn't appear to
     // affect low-res soundings, improves convergence on hi-res
-	while (std::fabs(eor) - 0.1 > 0.0) {
+	while (std::fabs(eor) - 0.001 > 0.0) {
         
         if (eor == 999) {                    /* First Pass */
 	        pwrp = std::pow(pressure / 1000.0, ROCP);
