@@ -440,7 +440,7 @@ float buoyancy(float pcl_temperature, float env_temperature);
  * \param temperature (degC)
  * \param wv_mixratio (g/kg)
  */
-float moist_static_energy(float *height, float *temperature, float *wv_mixratio);
+float moist_static_energy(float height, float temperature, float wv_mixratio);
 
 
 } // end namespace sharp
