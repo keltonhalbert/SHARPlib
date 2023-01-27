@@ -242,11 +242,17 @@ float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl, float tmpc_lcl)
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  * 
- * \brief Lifts and integrates a parcel to compute various indices
+ * \brief Lifts and integrates a parcel to compute CAPE, CINH, and the LFC/EL heights
  *
  * Lifts a parcel from its sharp::LPL to the top of the given sharp::Profile.
  * Integrates CAPE and CINH, and computes the parcel LCL, LFC, and EL. The
  * virtual temperature correction is used where possible - see Doswell 1994. 
+ *
+ * In edge cases where profiles are close to neutrally buoyant, there can be
+ * multiple layers of buoyancy and therefore multiple LFC/EL candidates. This
+ * algorithm selects the layer with the largest CAPE, and sets the LFC/EL as 
+ * the levels bounding this layer. Total profile buoyancy is also accounted
+ * for to support legacy behavior. 
  *
  * The method of computing the moist adiabats for parcel ascent can be passed
  * to this routine via a functor, meaning that other methods of computing moist
@@ -307,6 +313,7 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
     float el_old = MISSING;
     pcl->total_cape = 0.0;
     pcl->total_cinh = 0.0;
+
     // iterate from the LCL to the top of the profile
     // -- the +1 takes us to the last level since it is
     // excluded by get_layer_index
@@ -337,10 +344,13 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
             pcl->total_cape += lyre;
         }
         else {
+			// we only want to accumulate CINH
+			// between the LCL and LFC. 
 			if (pcl->lfc_pressure == MISSING) {
 				cinh += lyre;
 			}
-            //if (ptop > 500.0) cinh += lyre;
+			// this keeps track of total CINH in case of
+			// multiple LFC heights. 
             pcl->total_cinh += lyre;
         }
 
@@ -349,9 +359,9 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
             // Set the LFC pressure to the bottom pressure layer
             lfc_pres = pbot;
 			bool found = false;
-            // if we can't find the LFC within 50 hPa of this level, stop 
-            // searching because it's either the surface or further up the
-            // profile.
+            // if we can't find the LFC within 50 hPa of this 
+			// level, stop searching because it's either the 
+			// first level or further up the profile.
 			for (lfc_pres = pbot; lfc_pres > pbot-50.0; lfc_pres-=5.0) {
 				float env_vtmp = interp_pressure(lfc_pres, prof->pres, prof->vtmp, prof->NZ);
 				float pcl_tmpc = liftpcl(ptop, tmpc_pct, lfc_pres);
@@ -361,7 +371,9 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
 					break;
 				}
 			}
-			// reset if we didn't find it 
+			// reset to pbot if not found, since
+			// this was the level that triggered 
+			// the LFC condition to begin with.  
 			if (!found) {
 				lfc_pres = pbot;
 				found = true;
@@ -387,14 +399,14 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
 				cinh = pcl->total_cinh;
             }
             if (found) pcl->lfc_pressure = lfc_pres;
-        }
+        } // end LFC check
 
         // check for the EL
         if ((lyre <= 0) && (lyre_last >= 0)) {
             el_pres = pbot;
 			bool found = false;
-            // if we can't find the EL within 50 hPa of this level, 
-			// stop searching 
+            // if we can't find the EL within 50 hPa 
+			// of this level, stop searching 
 			for (el_pres = pbot; el_pres > pbot-50.0; el_pres-=5.0) {
 				float env_vtmp = interp_pressure(el_pres, prof->pres, prof->vtmp, prof->NZ);
 				float pcl_tmpc = liftpcl(ptop, tmpc_pct, el_pres);
@@ -405,6 +417,9 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
 				}
 			}
 
+			// this check, while needed for LFC,
+			// may also be needed for EL but not
+			// entirely sure. 
 			if (!found) {
 				el_pres = pbot;
 				found = true;
@@ -412,7 +427,9 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
 
 			if (found) pcl->eql_pressure = el_pres;
 
-            // check which CAPE layer should stay?
+            // check which CAPE layer should stay,
+			// and keep the layer with the maximum
+			// buoyancy in the profile. 
             if (cape_old > cape) {
                 pcl->lfc_pressure = lfc_old;
                 pcl->eql_pressure = el_old;
@@ -420,8 +437,10 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
                 cape = cape_old;
 				cinh = cinh_old;
             }
+			// no need to keep lifting/integrating past 200 hPa
+			// if these conditions have been met. 
             if ((pcl->eql_pressure < pcl->lfc_pressure) && (ptop < 200)) break;
-        }
+        } // end EL check
 
         // set the top of the current layer to the
         // bottom of the next layer
@@ -430,8 +449,10 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
         vtmp_enb = vtmp_ent;
         tmpc_pcb = tmpc_pct;
         vtmp_pcb = vtmp_pct;
-    }
+    } // end profile iteration
 
+	// truncate CAPE values
+	// below 1 J/kg to zero
     if (cape < 1) {
         cape = 0;
         cinh = 0;
