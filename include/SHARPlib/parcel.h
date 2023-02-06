@@ -355,7 +355,7 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
         }
 
         // check for the LFC
-        if ((lyre >= 0) && (lyre_last <=  0)) {
+        if ((lyre > 0) && (lyre_last <=  0)) {
             // Set the LFC pressure to the bottom pressure layer
             lfc_pres = pbot;
 			bool found = false;
@@ -402,7 +402,7 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
         } // end LFC check
 
         // check for the EL
-        if ((lyre <= 0) && (lyre_last >= 0)) {
+        if ((lyre < 0) && (lyre_last >= 0)) {
             el_pres = pbot;
 			bool found = false;
             // if we can't find the EL within 50 hPa 
