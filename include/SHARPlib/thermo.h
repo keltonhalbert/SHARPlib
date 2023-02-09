@@ -436,11 +436,12 @@ float buoyancy(float pcl_temperature, float env_temperature);
  *
  * \brief Compute moist static energy.  
  *
- * \param height (meters)
- * \param temperature (degC)
- * \param wv_mixratio (g/kg)
+ * \param height AGL (meters)
+ * \param temperature (degK)
+ * \param specific_humidity (kg/kg)
  */
-float moist_static_energy(float height, float temperature, float wv_mixratio);
+float moist_static_energy(float height_agl, float temperature, 
+                          float specific_humidity);
 
 
 } // end namespace sharp

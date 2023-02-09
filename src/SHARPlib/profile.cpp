@@ -39,6 +39,7 @@ Profile::Profile(int num_levs, Source sounding_type) {
     vvel = new float[num_levs];
     theta = new float[num_levs];
     theta_e = new float[num_levs];
+    moist_static_energy = new float[num_levs];
 
     NZ = num_levs;
     snd_type = sounding_type;
@@ -64,6 +65,7 @@ Profile::~Profile() {
     delete[] vvel;
     delete[] theta;
     delete[] theta_e;
+    delete[] moist_static_energy;
 }
 
 Profile* create_profile(float *pres, float *hght, 
@@ -88,6 +90,10 @@ Profile* create_profile(float *pres, float *hght,
         prof->mixr[k] = mixr;
         prof->theta[k] = thta;
         prof->theta_e[k] = thte;
+
+        float specific_humidity = (mixr / 1000.0) / (1 + (mixr / 1000.0));
+        float height_agl = prof->hght[k] - prof->hght[0];
+        prof->moist_static_energy[k] = moist_static_energy(height_agl, prof->tmpc[k] + ZEROCNK, specific_humidity);
 
 
         if (windComponents) {
