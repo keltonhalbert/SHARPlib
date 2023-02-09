@@ -543,13 +543,7 @@ void integrate_parcel_layer(Lifter liftpcl, Profile* prof, Parcel* pcl, Pressure
         }
 
         // check for the LFC
-		// TO-DO: This may not be needed for the buoyancy-layer
-		// type stuff... HOWEVER... if there is a positive layer of
-		// buoyancy above the LCL but below the true LFC, technically it
-		// shouldn't be included in CAPE. So... going to leave this check
-		// for the LFC so that when I inevitably have to debug this, its 
-		// already there and good to go. 
-        if ((lyre >= 0) && (lyre_last <= 0)) {
+        if ((lyre > 0) && (lyre_last <= 0)) {
             // Set the LFC pressure to the 
             float lfc_pres = pbot;
             while (interp_pressure(lfc_pres, prof->pres, prof->vtmp, prof->NZ) 

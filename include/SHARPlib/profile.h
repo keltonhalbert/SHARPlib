@@ -124,6 +124,11 @@ struct Profile {
     float* theta_e;
 
     /**
+     * \brief Vertical array of Moist Static Energy
+     */
+    float* moist_static_energy;
+
+    /**
      * \brief The number of vertical levels present / the length of the arrays. 
      */
     int NZ;
