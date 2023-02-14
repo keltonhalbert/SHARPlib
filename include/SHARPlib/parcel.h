@@ -326,7 +326,7 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
         ptop = prof->pres[k]; 
         htop = prof->hght[k]; 
 
-        tmpc_pct = liftpcl(pbot, tmpc_pcb, ptop);
+        tmpc_pct = liftpcl(pres_lcl, tmpc_lcl, ptop);
         // parcel is saturated, so temperature and dewpoint are same
         vtmp_pct = virtual_temperature(ptop, tmpc_pct, tmpc_pct);
         vtmp_ent = prof->vtmp[k];
@@ -402,12 +402,14 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
         } // end LFC check
 
         // check for the EL
-        if ((lyre < 0) && (lyre_last >= 0)) {
+        if (((lyre < 0) && (lyre_last >= 0)) || 
+            ((ptop == prof->pres[prof->NZ-1]) && (lyre > 0))) {
             el_pres = pbot;
 			bool found = false;
             // if we can't find the EL within 50 hPa 
 			// of this level, stop searching 
-			for (el_pres = pbot; el_pres > pbot-50.0; el_pres-=5.0) {
+			for (el_pres = pbot; el_pres > ptop-50.0; el_pres-=5.0) {
+                if (el_pres < prof->pres[prof->NZ-1]) break;
 				float env_vtmp = interp_pressure(el_pres, prof->pres, prof->vtmp, prof->NZ);
 				float pcl_tmpc = liftpcl(ptop, tmpc_pct, el_pres);
 				float pcl_vtmp = virtual_temperature(el_pres, pcl_tmpc, pcl_tmpc);
@@ -420,7 +422,7 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
 			// this check, while needed for LFC,
 			// may also be needed for EL but not
 			// entirely sure. 
-			if (!found) {
+			if ((!found) && (pbot < pcl->lfc_pressure)) {
 				el_pres = pbot;
 				found = true;
 			}
@@ -430,16 +432,45 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
             // check which CAPE layer should stay,
 			// and keep the layer with the maximum
 			// buoyancy in the profile. 
+            bool swapped = false;
             if (cape_old > cape) {
                 pcl->lfc_pressure = lfc_old;
                 pcl->eql_pressure = el_old;
-				pcl->total_cinh = cinh_old; 
+				cinh = cinh_old; 
                 cape = cape_old;
-				cinh = cinh_old;
+                swapped = true;
             }
-			// no need to keep lifting/integrating past 200 hPa
-			// if these conditions have been met. 
-            if ((pcl->eql_pressure < pcl->lfc_pressure) && (ptop < 200)) break;
+
+            if ((pcl->eql_pressure != MISSING) && (!swapped) && 
+                (pcl->eql_pressure < pcl->lfc_pressure)) {
+                // take off the last layer if positive and
+                // then integrate up to the EL
+                if (lyre > 0) {
+                    cape -= lyre;
+                }
+
+                float el_htop = interp_pressure(pcl->eql_pressure, prof->pres, prof->hght, prof->NZ);
+                float el_tmpc_pct = liftpcl(pres_lcl, tmpc_lcl, pcl->eql_pressure);
+                // parcel is saturated, so temperature and dewpoint are same
+                float el_vtmp_pct = virtual_temperature(pcl->eql_pressure, el_tmpc_pct, el_tmpc_pct);
+                float el_vtmp_ent = interp_pressure(pcl->eql_pressure, prof->pres, prof->vtmp, prof->NZ);
+
+                float el_buoy_bot = buoyancy(vtmp_pcb, vtmp_enb);
+                float el_buoy_top = buoyancy(el_vtmp_pct, el_vtmp_ent);
+
+                float el_dz = el_htop - hbot;
+
+                float el_lyre = ( ( el_buoy_bot + el_buoy_top ) / 2.0 ) * el_dz;
+                if ( el_lyre > 0 ) {
+                    cape += el_lyre;
+                }
+
+                // no need to keep lifting/integrating past 200 hPa
+                // if these conditions have been met. 
+                if (ptop < 200) {
+                    break;
+                }
+            }
         } // end EL check
 
         // set the top of the current layer to the
