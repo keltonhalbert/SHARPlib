@@ -393,11 +393,19 @@ float lapse_rate(PressureLayer layer, const float* pressure,
     h_layer.zbot = interp_pressure(layer.pbot, pressure, height, num_levs);
     h_layer.ztop = interp_pressure(layer.ptop, pressure, height, num_levs);
 
-    // convert to agl
-    h_layer.zbot -= height[0];
-    h_layer.ztop -= height[0];
+    // lower and upper temperature
+    float tmpc_l = interp_pressure(layer.pbot, pressure, temperature, num_levs);
+    float tmpc_u = interp_pressure(layer.ptop, pressure, temperature, num_levs);
 
-    return lapse_rate(h_layer, height, temperature, num_levs);
+#ifndef NO_QC
+    if ((tmpc_l == MISSING) || (tmpc_u == MISSING)) {
+        return MISSING;
+    }
+#endif
+
+    // dT/dz, positive (definition of lapse rate), in km
+    float dz = h_layer.ztop - h_layer.zbot;
+    return ((tmpc_u - tmpc_l) / dz) * -1000.0;
 }
 
 
