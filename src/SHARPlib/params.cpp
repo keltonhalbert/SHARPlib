@@ -85,7 +85,7 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
     // compute MSE_star
     for (int k = 0; k < prof->NZ; k++) {
         // default units are g/kg - convert to kg/kg
-        float rsat = mixratio(prof->pres[k], prof->dwpc[k]) * 1000;
+        float rsat = mixratio(prof->pres[k], prof->dwpc[k]) * 1000.0f;
         float qsat = (1.0 - rsat ) * rsat;
         mse_star[k] = moist_static_energy(prof->hght[k], 
                                     prof->tmpc[k] + ZEROCNK, qsat); 
@@ -95,13 +95,61 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
     float NCAPE = buoyancy_dilution_ncape(prof, pcl,mse_star, mse_bar); 
 
     // Compute the Bunkers non-parcel based storm motion
+    WindComponents strm_mtn = storm_motion_bunkers_np(prof);
+
+    // get the mean 0-1km storm relative wind
+    HeightLayer layer = {prof->hght[0] + 0.0f, prof->hght[0] + 1000.0f};
+    LayerIndex layer_idx = get_layer_index(layer, prof->hght, prof->NZ); 
+
+    // loop from the surface to the last level before 1km AGL. 
+    float V_sr_mean = 0.0;
+    for (int k = 0; k <= layer_idx.ktop; ++k) {
+#ifndef NO_QC
+        if ((prof->uwin[k] == MISSING) || (prof->vwin[k] == MISSING)) {
+            continue;
+        }
+#endif
+        V_sr_mean += vector_magnitude(prof->uwin[k] - strm_mtn.u, 
+                                      prof->vwin[k] - strm_mtn.v); 
+    }
+    float u_1km = interp_height(layer.ztop, prof->hght, prof->uwin, prof->NZ);
+    float v_1km = interp_height(layer.ztop, prof->hght, prof->vwin, prof->NZ);
+
+    V_sr_mean += vector_magnitude(u_1km - strm_mtn.u, v_1km - strm_mtn.v);
+    // the +2 is +1 for swapping from zero-index to size, and then
+    // the last level of the interpolated top. 
+    V_sr_mean = V_sr_mean / (layer_idx.ktop + 2);
 
 
+    // now for all of the ECAPE nonsense
+    float L = 120.0;
+    float H = interp_pressure(pcl->eql_pressure, prof->pres, prof->hght, prof->NZ);
+    float sigma = 1.1;
+    float alpha = 0.8;
+    float pitchfork = (VKSQ * (alpha*alpha) * (PI*PI) * L) / 
+                      (PRANDTL * (sigma*sigma) * H);
+    float V_sr_tilde = V_sr_mean / std::sqrt(2.0f*pcl->cape*pcl->cape);
+    float V_sr_tilde_sq = V_sr_tilde*V_sr_tilde;
+    float N_tilde = NCAPE / pcl->cape;
+
+    float term1 = pitchfork / V_sr_tilde_sq;
+    float term2 = 1.0f + pitchfork + term1*N_tilde;
+    float term3 = 4.0f * term1 * (1.0f - pitchfork * N_tilde);
+    float sqrt_term = term2*term2 + term3;
+
+    // in the case of a negative solution, 
+    // set ECAPE to 0;
+    if (sqrt_term < 0) {
+        return 0;
+    }
+
+    float E_tilde = V_sr_tilde_sq + (-1.0f - pitchfork - (term1)*N_tilde + 
+                    std::sqrt(sqrt_term) ) / ( 2*term1 );
 
     delete[] mse_star;
     delete[] mse_bar;
 
-    return NCAPE;
+    return E_tilde * pcl->cape;
 }
 
 float energy_helicity_index(float cape, float helicity) {
