@@ -15,8 +15,8 @@
 #define __SHARP_PROFILE
 
 #include <SHARPlib/thermo.h>
-#include <SHARPlib/winds.h>
 #include <SHARPlib/utils.h>
+#include <SHARPlib/winds.h>
 
 namespace sharp {
 

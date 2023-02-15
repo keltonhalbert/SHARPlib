@@ -48,6 +48,11 @@ float interp_height(float height_val, const float* height_arr,
         }
     }
 
+    // TO-DO: Need to handle missing values a different way
+    // when working with observed soundings that have missing
+    // winds and such. Approach should be to find the first valid
+    // bottom layer, and if the top is misisng, raise the top until
+    // a valid observation is found and then interpolate linearly. 
 #ifndef NO_QC
     // if we didn't manage to find data, or our
     // profile data is missing, return missing
@@ -96,6 +101,11 @@ float interp_pressure(float pressure_val, const float* pressure_arr,
         }
     }
 
+    // TO-DO: Need to handle missing values a different way
+    // when working with observed soundings that have missing
+    // winds and such. Approach should be to find the first valid
+    // bottom layer, and if the top is misisng, raise the top until
+    // a valid observation is found and then interpolate linearly. 
 #ifndef NO_QC
     // if we didn't manage to find data, or our
     // profile data is missing, return missing

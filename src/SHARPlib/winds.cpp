@@ -226,7 +226,42 @@ WindComponents wind_shear(PressureLayer layer, const float* pres,
 #endif
 
     return {u_top - u_bot, v_top - v_bot};
+}
 
+
+WindComponents wind_shear(HeightLayer layer_agl, const float* height, 
+                          const float* u_wind, const float* v_wind, 
+                          int num_levs) {
+#ifndef NO_QC
+    if ((layer_agl.zbot == MISSING) || (layer_agl.ztop == MISSING))
+        return {MISSING, MISSING};
+#endif
+
+    // bounds checking our layer
+    // requests to the available data
+    // -- since PressureLayer is passed
+    // by value, this does not modify 
+    // the original object
+    if (layer_agl.zbot > height[0])
+        layer_agl.zbot = height[0];
+    if (layer_agl.ztop < height[num_levs-1])
+        layer_agl.ztop = height[num_levs-1];
+
+    float u_bot = interp_height(layer_agl.zbot, height, u_wind, num_levs);
+    float u_top = interp_height(layer_agl.ztop, height, u_wind, num_levs);
+
+    float v_bot = interp_height(layer_agl.zbot, height, v_wind, num_levs);
+    float v_top = interp_height(layer_agl.ztop, height, v_wind, num_levs);
+
+#ifndef NO_QC
+    if ((u_bot == MISSING) || (v_bot == MISSING) ||
+        (u_top == MISSING) || (v_top == MISSING)) {
+
+        return {MISSING, MISSING}; 
+    }
+#endif
+
+    return {u_top - u_bot, v_top - v_bot};
 }
 
 
