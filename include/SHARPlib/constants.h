@@ -39,7 +39,7 @@ namespace sharp {
     static constexpr float GAMMA_D = GRAVITY / CP_DRYAIR;
     static constexpr float PRANDTL = 1. / 3.; // Prandtl number
     static constexpr float VKSQ = 0.18; //  Von Karman constant (k^2)
-    static constexpr float VAPPRES_REF = 611.65; // Reference vapor pressure of water vapor at triple point temperature (Pa? hPa?)
+    static constexpr float VAPPRES_REF = 611.65; // Reference vapor pressure of water vapor at triple point temperature (Pa)
 
 } // end namespace sharp
 

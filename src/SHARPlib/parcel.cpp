@@ -188,9 +188,124 @@ void parcel_wobf(Profile* prof, Parcel* pcl) {
     return;
 }
 
+// NCAPE/buoyancy dilution from Peters et al. 2022
+float buoyancy_dilution_ncape(Profile* prof, Parcel *pcl, 
+                              const float *mse_star, const float *mse_bar) {
+    // this routine requires there to be a defined 
+    // LFC and EL, since these are the integration bounds
+    if ((pcl->lfc_pressure == MISSING) || (pcl->eql_pressure == MISSING)) {
+        return MISSING;
+    }
+
+    // set our integration layer between the LFC and EL,
+    // and get the top and bottom indices of these
+    // layers for iteration
+    PressureLayer integ_layer = {pcl->lfc_pressure, pcl->eql_pressure};
+    LayerIndex integ_idx = get_layer_index(integ_layer, prof->pres, prof->NZ);
+
+
+    // start with the interpolated bottom layer
+    float mse_bar_bot = interp_pressure(integ_layer.pbot, prof->pres, 
+                                        mse_bar, prof->NZ);
+    float mse_star_bot = interp_pressure(integ_layer.pbot, prof->pres, 
+                                         mse_star, prof->NZ);
+    float tmpk_bot = interp_pressure(integ_layer.pbot, prof->pres, 
+                                     prof->tmpc, prof->NZ) + ZEROCNK;
+    float zbot = interp_pressure(integ_layer.pbot, prof->pres, 
+                                 prof->hght, prof->NZ);
+
+    // initialize the top layer variables
+    // to missing - these get set in the loop
+    float mse_bar_top = MISSING;
+    float mse_star_top = MISSING;
+    float tmpk_top = MISSING;
+    float ztop = MISSING;
+    float NCAPE = 0.0;
+
+    // kbot is always the first level above the pressure
+    // value of the bottom layer, and ktop is always
+    // the level just below the top layer
+    for (int k = integ_idx.kbot; k<= integ_idx.ktop; k++) {
+#ifndef NO_QC
+        if ((prof->tmpc[k] == MISSING) || (prof->dwpc[k] == MISSING)) {
+            continue;
+        }
+#endif
+        // get the top-layer values
+        mse_bar_top = mse_bar[k]; 
+        mse_star_top = mse_star[k];
+        tmpk_top = prof->tmpc[k] + ZEROCNK;
+        ztop = prof->hght[k];
+
+        // compute the integrated quantity
+        float mse_diff_bot = (mse_bar_bot - mse_star_bot) / (tmpk_bot);
+        float mse_diff_top = (mse_bar_top - mse_star_top) / (tmpk_top);
+        float dz = ztop - zbot;
+
+        NCAPE += -1.0 * (GRAVITY / CP_DRYAIR) * 
+                 ((mse_diff_bot + mse_diff_top) / 2.0) * dz;
+
+
+        // set the top of the current layer
+        // as the bottom of the next layer
+        mse_bar_bot = mse_bar_top;
+        mse_star_bot = mse_star_top;
+        tmpk_bot = tmpk_top;
+        zbot = ztop;
+    }
+
+    // finish with the interpolated top layer
+    mse_bar_top = interp_pressure(integ_layer.ptop, prof->pres, 
+                                  mse_bar, prof->NZ);
+    mse_star_top = interp_pressure(integ_layer.ptop, prof->pres, 
+                                   mse_star, prof->NZ);
+    ztop = interp_pressure(integ_layer.ptop, prof->pres, prof->hght, prof->NZ);
+    tmpk_top = interp_pressure(integ_layer.ptop, prof->pres, 
+                               prof->tmpc, prof->NZ) + ZEROCNK;
+
+    // compute the integrated quantity
+    float mse_diff_bot = (mse_bar_bot - mse_star_bot) / (tmpk_bot);
+    float mse_diff_top = (mse_bar_top - mse_star_top) / (tmpk_top);
+    float dz = ztop - zbot;
+
+    NCAPE += -1.0 * (GRAVITY / CP_DRYAIR) * 
+             ((mse_diff_bot + mse_diff_top) / 2.0) * dz;
+
+    return NCAPE;
+}
 
 float entrainment_cape(Profile* prof, Parcel *pcl) {
-    return MISSING;
+
+    float *mse_star = new float[prof->NZ];
+    float *mse_bar = new float[prof->NZ];
+
+    // compute MSE_bar
+    mse_bar[0] = prof->moist_static_energy[0];
+    for (int k = 1; k < prof-> NZ; k++) {
+        float mean_mse = 0.0;
+        for (int iz = 0; iz <= k; iz ++) {
+            mean_mse += prof->moist_static_energy[iz];
+        }
+        mse_bar[k] = mean_mse / (k + 1);
+    }
+
+    // compute MSE_star
+    for (int k = 0; k < prof->NZ; k++) {
+        // default units are g/kg - convert to kg/kg
+        float rsat = mixratio(prof->pres[k], prof->dwpc[k]) * 1000;
+        float qsat = (1.0 - rsat ) * rsat;
+        mse_star[k] = moist_static_energy(prof->hght[k], 
+                                    prof->tmpc[k] + ZEROCNK, qsat); 
+    }
+
+    // compute NCAPE
+    float NCAPE = buoyancy_dilution_ncape(prof, pcl,mse_star, mse_bar); 
+
+
+    delete[] mse_star;
+    delete[] mse_bar;
+
+    return NCAPE;
 }
 
 
