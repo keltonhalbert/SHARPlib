@@ -282,6 +282,29 @@ WindComponents wind_shear(PressureLayer layer, const float* pres,
                           const float* u_wind, const float* v_wind, 
                           int num_levs);
 
+
+/**
+ *
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Compue the wind shear for a given sharp::HeightLayer 
+ *
+ * Computes the U and V components of the wind shear over a 
+ * sharp::HeightLayer given the vertical sounding arrays 
+ * of height, u_wind, v_wind, and their length. 
+ *
+ * \param layer     sharp::HeightLayer      
+ * \param height    (meters)
+ * \param u_wind    (kts or m/s)
+ * \param v_wind    (kts or m/s)
+ * \param num_levs  (length of arrays)
+ * \return sharp::WindComponents    {shear_u, shear_v}
+ */
+WindComponents wind_shear(HeightLayer layer_agl, const float* pres,
+                          const float* u_wind, const float* v_wind, 
+                          int num_levs);
+
+
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
