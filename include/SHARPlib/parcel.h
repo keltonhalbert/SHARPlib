@@ -294,7 +294,7 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
     // _pcb - parcel bottom layer
     // _pct - parcel top layer
 
-    float tmpc_pcb = tmpc_lcl;
+    //float tmpc_pcb = tmpc_lcl;
     float vtmp_enb = interp_pressure(pres_lcl, prof->pres, prof->vtmp, prof->NZ);
 	float vtmp_pcb = virtual_temperature(pres_lcl, tmpc_lcl, tmpc_lcl);
 
@@ -419,9 +419,6 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
 				}
 			}
 
-			// this check, while needed for LFC,
-			// may also be needed for EL but not
-			// entirely sure. 
 			if ((!found) && (pbot < pcl->lfc_pressure)) {
 				el_pres = pbot;
 				found = true;
@@ -478,7 +475,7 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
         pbot = ptop;
         hbot = htop;
         vtmp_enb = vtmp_ent;
-        tmpc_pcb = tmpc_pct;
+        //tmpc_pcb = tmpc_pct;
         vtmp_pcb = vtmp_pct;
     } // end profile iteration
 
@@ -647,6 +644,23 @@ void parcel_wobf(Profile* prof, Parcel* pcl);
 // A reasonable solution could be including some vertical dummy/temproary 
 // arrays within the Parcel or Profile objects, or include MSE as a vertical
 // field that's always available. 
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * 
+ * \brief Computes the NCAPE term used in ECAPE 
+ *
+ *
+ * Computes the buoyancy dilution rate (NCAPE) used for evaluating
+ * Entrainment CAPE (ECAPE).
+ *
+ * \param prof      A sharp::Profile of atmospheric data
+ * \param pcl       A sharp::Parcel with its sharp::LPL/attributes defined.
+ * \param mse_star  Vertical array of Saturation Moist Static Energy
+ * \param mse_bar   Vertical array of integrated Moist Static Energy 
+ */
+float buoyancy_dilution_ncape(Profile* prof, Parcel *pcl, 
+                              const float *mse_star, const float *mse_bar);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
