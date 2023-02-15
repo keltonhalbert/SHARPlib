@@ -662,19 +662,6 @@ void parcel_wobf(Profile* prof, Parcel* pcl);
 float buoyancy_dilution_ncape(Profile* prof, Parcel *pcl, 
                               const float *mse_star, const float *mse_bar);
 
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- * 
- * \brief Computes Entrainment CAPE using a previously lifted parcel. 
- *
- *
- * Computes Entrainment CAPE, or ECAPE, as described by Peters et al. 2023,
- * "An analytic formula for entraining CAPE in mid-latitude storm environments".
- *
- * \param prof      A sharp::Profile of atmospheric data
- * \param pcl       A sharp::Parcel with its sharp::LPL/attributes defined.
- */
-float entrainment_cape(Profile* prof, Parcel *pcl);
 
 } // end namespace sharp
 

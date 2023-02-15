@@ -18,6 +18,7 @@
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
 #include <SHARPlib/profile.h>
+#include <SHARPlib/parcel.h>
 
 namespace sharp {
 
@@ -65,6 +66,43 @@ WindComponents storm_motion_bunkers_np(Profile *prof) {
     return {right_storm_u, right_storm_v};
 }
 
+
+float entrainment_cape(Profile* prof, Parcel *pcl) {
+
+    float *mse_star = new float[prof->NZ];
+    float *mse_bar = new float[prof->NZ];
+
+    // compute MSE_bar
+    mse_bar[0] = prof->moist_static_energy[0];
+    for (int k = 1; k < prof-> NZ; k++) {
+        float mean_mse = 0.0;
+        for (int iz = 0; iz <= k; iz ++) {
+            mean_mse += prof->moist_static_energy[iz];
+        }
+        mse_bar[k] = mean_mse / (k + 1);
+    }
+
+    // compute MSE_star
+    for (int k = 0; k < prof->NZ; k++) {
+        // default units are g/kg - convert to kg/kg
+        float rsat = mixratio(prof->pres[k], prof->dwpc[k]) * 1000;
+        float qsat = (1.0 - rsat ) * rsat;
+        mse_star[k] = moist_static_energy(prof->hght[k], 
+                                    prof->tmpc[k] + ZEROCNK, qsat); 
+    }
+
+    // compute NCAPE
+    float NCAPE = buoyancy_dilution_ncape(prof, pcl,mse_star, mse_bar); 
+
+    // Compute the Bunkers non-parcel based storm motion
+
+
+
+    delete[] mse_star;
+    delete[] mse_bar;
+
+    return NCAPE;
+}
 
 float energy_helicity_index(float cape, float helicity) {
 #ifndef NO_QC
