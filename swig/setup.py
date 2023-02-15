@@ -10,7 +10,7 @@ class build_py(_build_py):
         self.run_command("build_ext")
         return super().run()
 
-compile_args = ['-std=c++17']
+compile_args = ['-std=c++14']
 swig_args = ['-c++', '-builtin', '-O']
 
 constants_module = Extension('nwsspc.sharp.calc._constants',
@@ -29,7 +29,7 @@ interp_module = Extension('nwsspc.sharp.calc._interp',
     )
 
 params_module = Extension('nwsspc.sharp.calc._params',
-        sources = ['nwsspc/sharp/calc/params.i',
+        sources = ['nwsspc/sharp/calc/params.i', '../src/SHARPlib/parcel.cpp',
                    '../src/SHARPlib/profile.cpp', '../src/SHARPlib/utils.cpp',
                    '../src/SHARPlib/interp.cpp', '../src/SHARPlib/winds.cpp',
                    '../src/SHARPlib/thermo.cpp','../src/SHARPlib/params.cpp'],
