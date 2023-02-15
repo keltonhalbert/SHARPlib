@@ -82,30 +82,31 @@ Profile* create_profile(float *pres, float *hght,
         prof->dwpc[k] = dwpc[k];
 
         float vtmp = virtual_temperature(pres[k], tmpc[k], dwpc[k]);
-        float mixr = mixratio(pres[k], dwpc[k]);
+        float mixr = mixratio(pres[k], dwpc[k]) / 1000.0f;
         float thta = theta(pres[k], tmpc[k], 1000.0);
         float thte = thetae(pres[k], tmpc[k], dwpc[k]);
 
         prof->vtmp[k] = vtmp;
-        prof->mixr[k] = mixr;
+        prof->mixr[k] = mixr*1000.0;
         prof->theta[k] = thta;
         prof->theta_e[k] = thte;
 
-        float specific_humidity = (mixr / 1000.0) / (1 + (mixr / 1000.0));
+        float specific_humidity = mixr  / (1 + mixr);
         float height_agl = prof->hght[k] - prof->hght[0];
         prof->moist_static_energy[k] = moist_static_energy(height_agl, prof->tmpc[k] + ZEROCNK, specific_humidity);
 
 
         if (windComponents) {
-            prof->uwin[k] = wspd_or_u[k];
-            prof->vwin[k] = wdir_or_v[k];
+            // converting from knots to m/s
+            prof->uwin[k] = wspd_or_u[k] * 0.514444f;
+            prof->vwin[k] = wdir_or_v[k] * 0.514444f;
 
             WindVector vec = components_to_vector(prof->uwin[k], prof->vwin[k]);
             prof->wspd[k] = vec.speed;
             prof->wdir[k] = vec.direction;
         }
         else {
-            prof->wspd[k] = wspd_or_u[k];
+            prof->wspd[k] = wspd_or_u[k] * 0.514444f;
             prof->wdir[k] = wdir_or_v[k];
 
             WindComponents cmp = vector_to_components(prof->wspd[k], 

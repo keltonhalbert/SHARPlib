@@ -52,7 +52,7 @@ WindComponents storm_motion_bunkers_np(Profile *prof) {
                                                     prof->uwin, prof->vwin, 
                                                     prof->NZ); 
 
-    WindComponents mean_wind_0_6000m = mean_wind(layer_tot, prof->pres, 
+    WindComponents mean_wind_0_6000m = mean_wind_npw(layer_tot, prof->pres, 
                                                  prof->uwin, prof->vwin, 
                                                  prof->NZ); 
 
@@ -61,7 +61,7 @@ WindComponents storm_motion_bunkers_np(Profile *prof) {
     float mag = vector_magnitude(shear_u, shear_v);
 
     float right_storm_u = mean_wind_0_6000m.u + ( (deviation / mag) * shear_v); 
-    float right_storm_v = mean_wind_0_6000m.v + ( (deviation / mag) * shear_u); 
+    float right_storm_v = mean_wind_0_6000m.v - ( (deviation / mag) * shear_u); 
 
     return {right_storm_u, right_storm_v};
 }
@@ -85,7 +85,7 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
     // compute MSE_star
     for (int k = 0; k < prof->NZ; k++) {
         // default units are g/kg - convert to kg/kg
-        float rsat = mixratio(prof->pres[k], prof->dwpc[k]) * 1000.0f;
+        float rsat = mixratio(prof->pres[k], prof->dwpc[k]) / 1000.0f;
         float qsat = (1.0 - rsat ) * rsat;
         mse_star[k] = moist_static_energy(prof->hght[k], 
                                     prof->tmpc[k] + ZEROCNK, qsat); 
@@ -93,9 +93,11 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
 
     // compute NCAPE
     float NCAPE = buoyancy_dilution_ncape(prof, pcl,mse_star, mse_bar); 
+    printf("NCAPE = %f\n", NCAPE);
 
     // Compute the Bunkers non-parcel based storm motion
     WindComponents strm_mtn = storm_motion_bunkers_np(prof);
+    printf("Bunkers U = %f, Bunkers V = %f\n", strm_mtn.u, strm_mtn.v);
 
     // get the mean 0-1km storm relative wind
     HeightLayer layer = {prof->hght[0] + 0.0f, prof->hght[0] + 1000.0f};
@@ -119,16 +121,17 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
     // the +2 is +1 for swapping from zero-index to size, and then
     // the last level of the interpolated top. 
     V_sr_mean = V_sr_mean / (layer_idx.ktop + 2);
+    printf("V_sr_mean = %f\n", V_sr_mean);
 
 
     // now for all of the ECAPE nonsense
     float L = 120.0;
     float H = interp_pressure(pcl->eql_pressure, prof->pres, prof->hght, prof->NZ);
-    float sigma = 1.1;
+    float sigma = 1.6;
     float alpha = 0.8;
     float pitchfork = (VKSQ * (alpha*alpha) * (PI*PI) * L) / 
                       (PRANDTL * (sigma*sigma) * H);
-    float V_sr_tilde = V_sr_mean / std::sqrt(2.0f*pcl->cape*pcl->cape);
+    float V_sr_tilde = V_sr_mean / std::sqrt(2.0f*pcl->cape);
     float V_sr_tilde_sq = V_sr_tilde*V_sr_tilde;
     float N_tilde = NCAPE / pcl->cape;
 
@@ -136,6 +139,9 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
     float term2 = 1.0f + pitchfork + term1*N_tilde;
     float term3 = 4.0f * term1 * (1.0f - pitchfork * N_tilde);
     float sqrt_term = term2*term2 + term3;
+
+    printf("H = %f\tpitchfork = %f\n", H, pitchfork);
+    printf("V_sr_tilde = %f\tN_tilde = %f\n", V_sr_tilde, N_tilde);
 
     // in the case of a negative solution, 
     // set ECAPE to 0;
