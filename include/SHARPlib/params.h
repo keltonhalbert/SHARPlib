@@ -20,6 +20,7 @@
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
 #include <SHARPlib/profile.h>
+#include <SHARPlib/parcel.h>
 
 namespace sharp {
 
@@ -46,6 +47,19 @@ namespace sharp {
 WindComponents storm_motion_bunkers_np(Profile *prof);
 
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * 
+ * \brief Computes Entrainment CAPE using a previously lifted parcel. 
+ *
+ *
+ * Computes Entrainment CAPE, or ECAPE, as described by Peters et al. 2023,
+ * "An analytic formula for entraining CAPE in mid-latitude storm environments".
+ *
+ * \param prof      A sharp::Profile of atmospheric data
+ * \param pcl       A sharp::Parcel with its sharp::LPL/attributes defined.
+ */
+float entrainment_cape(Profile* prof, Parcel *pcl);
 
 float energy_helicity_index(float cape, float helicity);
 
