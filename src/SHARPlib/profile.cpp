@@ -82,16 +82,18 @@ Profile* create_profile(float *pres, float *hght,
         prof->dwpc[k] = dwpc[k];
 
         float vtmp = virtual_temperature(pres[k], tmpc[k], dwpc[k]);
-        float mixr = mixratio(pres[k], dwpc[k]) / 1000.0f;
+        float mixr = mixratio(pres[k], dwpc[k]);
         float thta = theta(pres[k], tmpc[k], 1000.0);
         float thte = thetae(pres[k], tmpc[k], dwpc[k]);
 
         prof->vtmp[k] = vtmp;
-        prof->mixr[k] = mixr*1000.0;
+        prof->mixr[k] = mixr;
         prof->theta[k] = thta;
         prof->theta_e[k] = thte;
 
-        float specific_humidity = mixr  / (1 + mixr);
+        float specific_humidity = (mixr / 1000.0)  / (1 + (mixr / 1000.0));
+        if (mixr == MISSING) specific_humidity = MISSING;
+
         float height_agl = prof->hght[k] - prof->hght[0];
         prof->moist_static_energy[k] = moist_static_energy(height_agl, prof->tmpc[k] + ZEROCNK, specific_humidity);
 
