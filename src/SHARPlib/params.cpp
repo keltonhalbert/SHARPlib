@@ -96,9 +96,10 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
         float rsat = mixratio(prof->pres[k], prof->tmpc[k]) / 1000.0f;
         float qsat = (1.0 - rsat ) * rsat;
         //printf("%d %f %f %f %f %f %f\n", k, prof->pres[k], prof->hght[k], prof->tmpc[k], prof->dwpc[k], rsat, qsat);
-        mse_star[k] = moist_static_energy(prof->hght[k], 
+        mse_star[k] = moist_static_energy(prof->hght[k] - prof->hght[0], 
                                     prof->tmpc[k] + ZEROCNK, qsat); 
         //printf("mse_star[%d] = %f\n", k, mse_star[k]);
+        //printf("mse[%d] = %f\n", k, prof->moist_static_energy[k]);
     }
 
     // compute NCAPE
