@@ -108,7 +108,7 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
 
     // Compute the Bunkers non-parcel based storm motion
     WindComponents strm_mtn = storm_motion_bunkers_np(prof);
-    //printf("Bunkers U = %f, Bunkers V = %f\n", strm_mtn.u, strm_mtn.v);
+    printf("Bunkers U = %f, Bunkers V = %f\n", strm_mtn.u, strm_mtn.v);
 
     // get the mean 0-1km storm relative wind
     HeightLayer layer = {prof->hght[0] + 0.0f, prof->hght[0] + 1000.0f};
@@ -132,7 +132,7 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
     // the +2 is +1 for swapping from zero-index to size, and then
     // the last level of the interpolated top. 
     V_sr_mean = V_sr_mean / (layer_idx.ktop + 2);
-    //printf("V_sr_mean = %f\n", V_sr_mean);
+    printf("V_sr_mean = %f\n", V_sr_mean);
 
 
     // now for all of the ECAPE nonsense
