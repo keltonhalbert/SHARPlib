@@ -347,9 +347,6 @@ float helicity(HeightLayer layer_agl, WindComponents storm_motion,
  * motion, especially when considering elevated convection. That method can
  * be found in params.cpp/.h.
  *
- * TO-DO: Need both left and right motions handled, currently only handles 
- * the right movers.
- *
  * \param pressure  Vertical array of Air Pressure (hPa)
  * \param height    Vertical array of heights (meters)
  * \param u_wind    Vertical array of U wind components (m/s)
