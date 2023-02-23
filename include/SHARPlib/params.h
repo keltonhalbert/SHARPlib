@@ -24,28 +24,6 @@
 
 namespace sharp {
 
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Estimates supercell storm motion using the Bunkers et al. 2000 method.
- *
- * Estimates supercell storm motion using the Bunkers et al. 2000 method
- * described in the following paper: 
- *      https://doi.org/10.1175/1520-0434(2000)015<0061:PSMUAN>2.0.CO;2
- *
- * This does not use any of the updated methods described by Bunkers et al. 2014,
- * which uses Effective Inflow Layer metricks to get better estimates of storm
- * motion, especially when considering elevated convection. That method can
- * be found in params.cpp/.h.
- *
- * TO-DO: Need both left and right motions handled, currently only handles 
- * the right movers.
- *
- * \param prof  sharp::Profile of atmospheric data
- * \return sharp::WindComponents    {u_storm, v_storm}
- */
-WindComponents storm_motion_bunkers_np(Profile *prof);
-
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO

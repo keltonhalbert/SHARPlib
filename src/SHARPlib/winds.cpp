@@ -333,6 +333,49 @@ float helicity(HeightLayer layer_agl, WindComponents storm_motion,
     return layer_helicity; 
 }
 
+WindComponents storm_motion_bunkers_np(const float *pressure,
+        const float *height, const float *u_wind, const float *v_wind,
+        int num_levs) {
+    // derived storm deviation from the mean wind
+    // given in m/s 
+    float deviation = 7.5;
+
+    // get the pressure values of the AGL heights required
+    float pressure_sfc = pressure[0];
+    float pressure_500m = interp_height(height[0]+500.0, height, 
+                                        pressure, num_levs);
+    float pressure_5500m = interp_height(height[0]+5500.0, height, 
+                                         pressure, num_levs);
+    float pressure_6000m = interp_height(height[0]+6000.0, height, 
+                                         pressure, num_levs);
+
+    // set up the layers
+    PressureLayer layer_lo = {pressure_sfc, pressure_500m};
+    PressureLayer layer_hi = {pressure_5500m, pressure_6000m};
+    PressureLayer layer_tot = {pressure_sfc, pressure_6000m};
+
+
+    // get the mean wind of these two layers
+    WindComponents mean_wind_0_500m = mean_wind(layer_lo, pressure, 
+                                          u_wind, v_wind,num_levs); 
+
+    WindComponents mean_wind_5500_6000m = mean_wind(layer_hi, pressure, 
+                                             u_wind, v_wind, num_levs); 
+
+    WindComponents mean_wind_0_6000m = mean_wind_npw(layer_tot, 
+                           pressure, u_wind, v_wind, num_levs); 
+
+    float shear_u = mean_wind_5500_6000m.u - mean_wind_0_500m.u;
+    float shear_v = mean_wind_5500_6000m.v - mean_wind_0_500m.v;
+    float mag = vector_magnitude(shear_u, shear_v);
+
+    float right_storm_u = mean_wind_0_6000m.u + \
+                          ( (deviation / mag) * shear_v); 
+    float right_storm_v = mean_wind_0_6000m.v - \
+                          ( (deviation / mag) * shear_u); 
+
+    return {right_storm_u, right_storm_v};
+}
 
 } // end namespace sharp
 
