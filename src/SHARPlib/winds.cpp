@@ -335,7 +335,7 @@ float helicity(HeightLayer layer_agl, WindComponents storm_motion,
 
 WindComponents storm_motion_bunkers_np(const float *pressure,
         const float *height, const float *u_wind, const float *v_wind,
-        int num_levs) {
+        int num_levs, bool leftMover) {
     // derived storm deviation from the mean wind
     // given in m/s 
     float deviation = 7.5;
@@ -369,12 +369,19 @@ WindComponents storm_motion_bunkers_np(const float *pressure,
     float shear_v = mean_wind_5500_6000m.v - mean_wind_0_500m.v;
     float mag = vector_magnitude(shear_u, shear_v);
 
-    float right_storm_u = mean_wind_0_6000m.u + \
-                          ( (deviation / mag) * shear_v); 
-    float right_storm_v = mean_wind_0_6000m.v - \
-                          ( (deviation / mag) * shear_u); 
+    float storm_u = MISSING;
+    float storm_v = MISSING;
+    if (leftMover) {
+        storm_u = mean_wind_0_6000m.u - ( (deviation / mag) * shear_v); 
+        storm_v = mean_wind_0_6000m.v + ( (deviation / mag) * shear_u); 
+    }
 
-    return {right_storm_u, right_storm_v};
+    else {
+        storm_u = mean_wind_0_6000m.u + ( (deviation / mag) * shear_v); 
+        storm_v = mean_wind_0_6000m.v - ( (deviation / mag) * shear_u); 
+    }
+
+    return {storm_u, storm_v};
 }
 
 } // end namespace sharp

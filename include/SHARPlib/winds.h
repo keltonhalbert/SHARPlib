@@ -354,12 +354,13 @@ float helicity(HeightLayer layer_agl, WindComponents storm_motion,
  * \param height    Vertical array of heights (meters)
  * \param u_wind    Vertical array of U wind components (m/s)
  * \param v_wind    Vertical array of V wind components (m/s)
- * \param num_levs  The number of vertical levels in the arrays. 
+ * \param num_levs  The number of vertical levels in the arrays 
+ * \param leftMover Boolean flag to return left or right mover
  * \return sharp::WindComponents    {u_storm, v_storm}
  */
 WindComponents storm_motion_bunkers_np(const float *pressure,
         const float *height, const float *u_wind, const float *v_wind,
-        int num_levs);
+        int num_levs, bool leftMover);
 
 
 } // end namespace sharp
