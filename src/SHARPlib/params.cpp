@@ -22,6 +22,91 @@
 
 namespace sharp {
 
+
+PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh, 
+                                     float cinh_thresh) {
+    // TO-DO: At some point, this will need to be
+    // templated or generalized to take other parcel 
+    // lifters once things progress to that level...
+    lifter_wobus lifter;
+
+    // create our parcel objects
+    Parcel mupcl;
+    Parcel sbpcl;
+    Parcel pcl;
+
+    // find the most unstable parcel
+    define_parcel(prof, &mupcl, LPL::MU);
+    integrate_parcel<lifter_wobus>(lifter, prof, &mupcl);
+
+    // find the sfc parcel to check against the MU
+    // parcel, since sometimes the max Theta-E parcel
+    // has less CAPE than the surface parcel
+    define_parcel(prof, &sbpcl, LPL::SFC);
+    integrate_parcel<lifter_wobus>(lifter, prof, &sbpcl);
+
+    if (sbpcl.cape > mupcl.cape) {
+        pcl = sbpcl;
+    }
+    else {
+        pcl = mupcl;
+    }
+
+    float cape = pcl.cape;
+    float cinh = pcl.cinh;
+
+    if ((cape < cape_thresh) || (cinh < cinh_thresh)) {
+        return {MISSING, MISSING};
+    }
+
+    float eff_pbot = MISSING;
+    float eff_ptop = MISSING;
+
+    // search for the effective inflow bottom
+    for (int k = 0; k < prof->NZ-1; k++) {
+#ifndef NO_QC
+        if ((prof->tmpc[k] == MISSING) || (prof->dwpc[k] == MISSING)) {
+            continue;
+        }
+#endif
+        Parcel effpcl;
+        effpcl.pres = prof->pres[k];
+        effpcl.tmpc = prof->tmpc[k];
+        effpcl.dwpc = prof->dwpc[k]; 
+        integrate_parcel<lifter_wobus>(lifter, prof, &effpcl);
+
+        if ((effpcl.cape >= cape_thresh) && (effpcl.cinh >= cinh_thresh)) {
+            eff_pbot = effpcl.pres;
+            break;
+        }
+    }
+
+    if (eff_pbot == MISSING) return {MISSING, MISSING};
+
+    for (int k = 0; k < prof->NZ-1; k++) {
+#ifndef NO_QC
+        if ((prof->tmpc[k] == MISSING) || (prof->dwpc[k] == MISSING)) {
+            continue;
+        }
+#endif
+        if (prof->pres[k] >= eff_pbot) continue;
+
+        Parcel effpcl;
+        effpcl.pres = prof->pres[k];
+        effpcl.tmpc = prof->tmpc[k];
+        effpcl.dwpc = prof->dwpc[k]; 
+        integrate_parcel<lifter_wobus>(lifter, prof, &effpcl);
+
+        if ((effpcl.cape >= cape_thresh) && (effpcl.cinh >= cinh_thresh)) {
+            eff_ptop = effpcl.pres;
+            break;
+        }
+    }
+
+    return {eff_pbot, eff_ptop};
+}
+
+
 float entrainment_cape(Profile* prof, Parcel *pcl) {
 
     float *mse_star = new float[prof->NZ];
