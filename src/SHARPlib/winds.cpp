@@ -265,9 +265,6 @@ WindComponents wind_shear(HeightLayer layer_agl, const float* height,
 }
 
 
-// TO-DO: Right now it is unclear whether the base usings of
-// u_wind and v_wind should be knots or m/s. Need to clarify
-// design here and update documentation accordingly. 
 float helicity(HeightLayer layer_agl, WindComponents storm_motion,
                const float* height, const float* u_wind, 
                const float* v_wind, int num_levs) {
@@ -371,11 +368,11 @@ WindComponents storm_motion_bunkers_np(const float *pressure,
 
     float storm_u = MISSING;
     float storm_v = MISSING;
+
     if (leftMover) {
         storm_u = mean_wind_0_6000m.u - ( (deviation / mag) * shear_v); 
         storm_v = mean_wind_0_6000m.v + ( (deviation / mag) * shear_u); 
     }
-
     else {
         storm_u = mean_wind_0_6000m.u + ( (deviation / mag) * shear_v); 
         storm_v = mean_wind_0_6000m.v - ( (deviation / mag) * shear_u); 
