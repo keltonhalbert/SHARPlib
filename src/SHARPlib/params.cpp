@@ -63,7 +63,7 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
 
     // Compute the Bunkers non-parcel based storm motion
     WindComponents strm_mtn = storm_motion_bunkers_np(prof->pres, prof->hght,
-                                            prof->uwin, prof->vwin, prof->NZ);
+                                  prof->uwin, prof->vwin, prof->NZ, 0);
     //printf("Bunkers U = %f, Bunkers V = %f\n", strm_mtn.u, strm_mtn.v);
 
     // get the mean 0-1km storm relative wind
