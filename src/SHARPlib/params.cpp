@@ -22,51 +22,6 @@
 
 namespace sharp {
 
-
-WindComponents storm_motion_bunkers_np(Profile *prof) {
-    // derived storm deviation from the mean wind
-    // given in m/s 
-    float deviation = 7.5;
-
-    // get the pressure values of the AGL heights required
-    float pressure_sfc = prof->pres[0];
-    float pressure_500m = interp_height(prof->hght[0] + 500.0, 
-                                        prof->hght, prof->pres, prof->NZ);
-    float pressure_5500m = interp_height(prof->hght[0] + 5500.0, 
-                                         prof->hght, prof->pres, prof->NZ);
-    float pressure_6000m = interp_height(prof->hght[0] + 6000.0, 
-                                         prof->hght, prof->pres, prof->NZ);
-
-    // set up the layers
-    PressureLayer layer_lo = {pressure_sfc, pressure_500m};
-    PressureLayer layer_hi = {pressure_5500m, pressure_6000m};
-    PressureLayer layer_tot = {pressure_sfc, pressure_6000m};
-
-
-    // get the mean wind of these two layers
-    WindComponents mean_wind_0_500m = mean_wind(layer_lo, prof->pres, 
-                                                prof->uwin, prof->vwin, 
-                                                prof->NZ); 
-
-    WindComponents mean_wind_5500_6000m = mean_wind(layer_hi, prof->pres, 
-                                                    prof->uwin, prof->vwin, 
-                                                    prof->NZ); 
-
-    WindComponents mean_wind_0_6000m = mean_wind_npw(layer_tot, prof->pres, 
-                                                 prof->uwin, prof->vwin, 
-                                                 prof->NZ); 
-
-    float shear_u = mean_wind_5500_6000m.u - mean_wind_0_500m.u;
-    float shear_v = mean_wind_5500_6000m.v - mean_wind_0_500m.v;
-    float mag = vector_magnitude(shear_u, shear_v);
-
-    float right_storm_u = mean_wind_0_6000m.u + ( (deviation / mag) * shear_v); 
-    float right_storm_v = mean_wind_0_6000m.v - ( (deviation / mag) * shear_u); 
-
-    return {right_storm_u, right_storm_v};
-}
-
-
 float entrainment_cape(Profile* prof, Parcel *pcl) {
 
     float *mse_star = new float[prof->NZ];
@@ -107,8 +62,9 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
     //printf("NCAPE = %f\n", NCAPE);
 
     // Compute the Bunkers non-parcel based storm motion
-    WindComponents strm_mtn = storm_motion_bunkers_np(prof);
-    printf("Bunkers U = %f, Bunkers V = %f\n", strm_mtn.u, strm_mtn.v);
+    WindComponents strm_mtn = storm_motion_bunkers_np(prof->pres, prof->hght,
+                                            prof->uwin, prof->vwin, prof->NZ);
+    //printf("Bunkers U = %f, Bunkers V = %f\n", strm_mtn.u, strm_mtn.v);
 
     // get the mean 0-1km storm relative wind
     HeightLayer layer = {prof->hght[0] + 0.0f, prof->hght[0] + 1000.0f};
@@ -132,7 +88,7 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
     // the +2 is +1 for swapping from zero-index to size, and then
     // the last level of the interpolated top. 
     V_sr_mean = V_sr_mean / (layer_idx.ktop + 2);
-    printf("V_sr_mean = %f\n", V_sr_mean);
+    //printf("V_sr_mean = %f\n", V_sr_mean);
 
 
     // now for all of the ECAPE nonsense

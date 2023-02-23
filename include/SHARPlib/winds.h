@@ -333,6 +333,35 @@ float helicity(HeightLayer layer_agl, WindComponents storm_motion,
                const float* v_wind, int num_levs);
 
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Estimates supercell storm motion using the Bunkers et al. 2000 method.
+ *
+ * Estimates supercell storm motion using the Bunkers et al. 2000 method
+ * described in the following paper: 
+ *      https://doi.org/10.1175/1520-0434(2000)015<0061:PSMUAN>2.0.CO;2
+ *
+ * This does not use any of the updated methods described by Bunkers et al. 2014,
+ * which uses Effective Inflow Layer metricks to get better estimates of storm
+ * motion, especially when considering elevated convection. That method can
+ * be found in params.cpp/.h.
+ *
+ * TO-DO: Need both left and right motions handled, currently only handles 
+ * the right movers.
+ *
+ * \param pressure  Vertical array of Air Pressure (hPa)
+ * \param height    Vertical array of heights (meters)
+ * \param u_wind    Vertical array of U wind components (m/s)
+ * \param v_wind    Vertical array of V wind components (m/s)
+ * \param num_levs  The number of vertical levels in the arrays. 
+ * \return sharp::WindComponents    {u_storm, v_storm}
+ */
+WindComponents storm_motion_bunkers_np(const float *pressure,
+        const float *height, const float *u_wind, const float *v_wind,
+        int num_levs);
+
+
 } // end namespace sharp
 
 
