@@ -25,6 +25,10 @@
 namespace sharp {
 
 
+PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh, 
+                                     float cinh_thresh);
+
+
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  * 
