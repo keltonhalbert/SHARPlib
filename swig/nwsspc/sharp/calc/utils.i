@@ -5,6 +5,17 @@
     #include <SHARPlib/utils.h>
 %}
 
+%include exception.i
+
+%exception {
+    try {
+        $action
+    }
+    catch (const std::runtime_error& e) {
+        SWIG_exception(SWIG_RuntimeError, e.what());
+    }
+}
+
 /* Import Numpy Array Functionality */
 %include "numpy.i"
 %init %{
