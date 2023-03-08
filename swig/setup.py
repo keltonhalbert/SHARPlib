@@ -10,12 +10,11 @@ class build_py(_build_py):
         self.run_command("build_ext")
         return super().run()
 
-compile_args = ['-std=c++14']
+compile_args = ['-std=c++17']
 swig_args = ['-c++', '-builtin', '-O']
 
 constants_module = Extension('nwsspc.sharp.calc._constants',
         sources = ['nwsspc/sharp/calc/constants.i'],
-        include_dirs=['../include', numpy.get_include()],
         swig_opts = swig_args,
         extra_compile_args = compile_args
     )
@@ -23,7 +22,6 @@ constants_module = Extension('nwsspc.sharp.calc._constants',
 interp_module = Extension('nwsspc.sharp.calc._interp',
         sources = ['nwsspc/sharp/calc/interp.i',
                    '../src/SHARPlib/interp.cpp'],
-        include_dirs=['../include', numpy.get_include()],
         swig_opts = swig_args,
         extra_compile_args = compile_args
     )
@@ -33,7 +31,6 @@ params_module = Extension('nwsspc.sharp.calc._params',
                    '../src/SHARPlib/profile.cpp', '../src/SHARPlib/utils.cpp',
                    '../src/SHARPlib/interp.cpp', '../src/SHARPlib/winds.cpp',
                    '../src/SHARPlib/thermo.cpp','../src/SHARPlib/params.cpp'],
-        include_dirs=['../include', numpy.get_include()],
         swig_opts = swig_args,
         extra_compile_args = compile_args
     )
@@ -43,7 +40,6 @@ parcel_module = Extension('nwsspc.sharp.calc._parcel',
                    '../src/SHARPlib/profile.cpp', '../src/SHARPlib/utils.cpp',
                    '../src/SHARPlib/interp.cpp', '../src/SHARPlib/thermo.cpp',
                    '../src/SHARPlib/winds.cpp', '../src/SHARPlib/parcel.cpp'],
-        include_dirs=['../include', numpy.get_include()],
         swig_opts = swig_args,
         extra_compile_args = compile_args
     )
@@ -53,7 +49,6 @@ profile_module = Extension('nwsspc.sharp.calc._profile',
                    '../src/SHARPlib/interp.cpp', '../src/SHARPlib/utils.cpp',
                    '../src/SHARPlib/thermo.cpp','../src/SHARPlib/winds.cpp',
                    '../src/SHARPlib/profile.cpp'],
-        include_dirs=['../include', numpy.get_include()],
         swig_opts = swig_args,
         extra_compile_args = compile_args
     )
@@ -62,7 +57,6 @@ thermo_module = Extension('nwsspc.sharp.calc._thermo',
         sources = ['nwsspc/sharp/calc/thermo.i',
                    '../src/SHARPlib/utils.cpp',   '../src/SHARPlib/interp.cpp', 
                    '../src/SHARPlib/thermo.cpp'],
-        include_dirs=['../include', numpy.get_include()],
         swig_opts = swig_args,
         extra_compile_args = compile_args
     )
@@ -71,7 +65,6 @@ winds_module = Extension('nwsspc.sharp.calc._winds',
         sources=['nwsspc/sharp/calc/winds.i',
                  '../src/SHARPlib/utils.cpp',   '../src/SHARPlib/interp.cpp', 
                  '../src/SHARPlib/winds.cpp'],
-        include_dirs=['../include', numpy.get_include()],
         swig_opts = swig_args,
         extra_compile_args = compile_args
     )
@@ -79,7 +72,6 @@ winds_module = Extension('nwsspc.sharp.calc._winds',
 utils_module = Extension('nwsspc.sharp.calc._utils',
         sources = ['nwsspc/sharp/calc/utils.i',
                    '../src/SHARPlib/interp.cpp', '../src/SHARPlib/utils.cpp'],
-        include_dirs=['../include', numpy.get_include()],
         swig_opts = swig_args,
         extra_compile_args = compile_args
     )
@@ -99,6 +91,7 @@ setup(
 	],
 	python_requires='>=3.9',
     packages = ["nwsspc.sharp.calc"],
+    include_dirs=[numpy.get_include(), "../include", "../external/fmt/include"],
     ext_modules = [constants_module, interp_module, params_module, parcel_module, 
                    profile_module, thermo_module, winds_module, utils_module],
     py_modules = ["nwsspc.sharp.calc.constants", "nwsspc.sharp.calc.interp", 
