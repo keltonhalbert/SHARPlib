@@ -13,18 +13,24 @@
  * John Hart and Rich Thompson at SPC. 
  */
 #include <stdexcept>
+#include <string>
 #include <cmath>
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/utils.h>
 
+#define FMT_HEADER_ONLY
+#include <fmt/core.h>
+
 namespace sharp {
 
 
 HeightLayer::HeightLayer(float bot, float top, float delta) {
     if (bot > top) {
-        throw std::range_error("RangeError: The top of the height layer must be > the bottom of the height layer.");
+        throw std::range_error(
+            fmt::format("RangeError: The top of the height layer must be > the bottom of the height layer. Got hbot: {0} and htop: {1}", bot, top)
+        );
     }
     zbot = bot;
     ztop = top;
@@ -54,7 +60,9 @@ PressureLayer::PressureLayer(float bot, float top, float delta) {
 
 PressureLayer::PressureLayer(float bot, float top) {
     if (bot < top) {
-        throw std::range_error("RangeError: The top of the pressure layer must be < the bottom of the pressure layer.");
+        throw std::range_error(
+            fmt::format("RangeError: The bottom of the pressure layer must be > the top of the pressure layer. Got pbot: {0} and ptop: {1}", bot, top)
+        );
     }
     pbot = bot;
     ptop = top;
