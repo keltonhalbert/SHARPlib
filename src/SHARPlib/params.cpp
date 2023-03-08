@@ -59,11 +59,13 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
         return {MISSING, MISSING};
     }
 
+    int eff_kbot = 0;
+    int eff_ktop = 0;
     float eff_pbot = MISSING;
     float eff_ptop = MISSING;
 
     // search for the effective inflow bottom
-    for (int k = 0; k < prof->NZ-1; k++) {
+    for (int k = 0; k <= prof->NZ-1; k++) {
 #ifndef NO_QC
         if ((prof->tmpc[k] == MISSING) || (prof->dwpc[k] == MISSING)) {
             continue;
@@ -77,19 +79,19 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
 
         if ((effpcl.cape >= cape_thresh) && (effpcl.cinh >= cinh_thresh)) {
             eff_pbot = effpcl.pres;
+            eff_kbot = k;
             break;
         }
     }
 
     if (eff_pbot == MISSING) return {MISSING, MISSING};
 
-    for (int k = 0; k < prof->NZ-1; k++) {
+    for (int k = eff_kbot+1; k <= prof->NZ-1; k++) {
 #ifndef NO_QC
         if ((prof->tmpc[k] == MISSING) || (prof->dwpc[k] == MISSING)) {
             continue;
         }
 #endif
-        if (prof->pres[k] >= eff_pbot) continue;
 
         Parcel effpcl;
         effpcl.pres = prof->pres[k];
@@ -97,7 +99,7 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
         effpcl.dwpc = prof->dwpc[k]; 
         integrate_parcel<lifter_wobus>(lifter, prof, &effpcl);
 
-        if ((effpcl.cape >= cape_thresh) && (effpcl.cinh >= cinh_thresh)) {
+        if ((effpcl.cape < cape_thresh) || (effpcl.cinh < cinh_thresh)) {
             eff_ptop = effpcl.pres;
             break;
         }
