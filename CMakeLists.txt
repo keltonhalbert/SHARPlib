@@ -16,6 +16,8 @@ use_cxx17()
 
 ## Bring the headers into the project
 include_directories(include)
+include_directories(external/fmt/include EXCLUDE_FROM_ALL)
+#add_subdirectory(external/fmt EXCLUDE_FROM_ALL)
 
 ## add all CPP files as sources
 file(GLOB SOURCES "src/SHARPlib/*.cpp")
@@ -24,6 +26,8 @@ file(GLOB SOURCES "src/SHARPlib/*.cpp")
 ## The library target is SHARP, we are building a static lib,
 ## and the sources are proviced
 add_library(SHARP STATIC ${SOURCES})
+
+##target_link_libraries(SHARP PRIVATE fmt)
 
 ## We are telling the build process that the SHARP library
 ## should use the C++ linker, and setting compile options
