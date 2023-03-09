@@ -336,6 +336,37 @@ float helicity(HeightLayer layer_agl, WindComponents storm_motion,
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
+ * \brief Computes the Storm Relative Helicity (SRH) over a given sharp::PressureLayer.
+ *
+ * Computes the Storm Relative Helicity (SRH) over a given sharp::PressureLayer
+ * using storm motion vector components stored in sharp::WindComponents. This 
+ * integration occurs over the given arrays of height, u_wind, and v_wind, 
+ * with num_levs elements in each. The integration only uses interpolation
+ * for the top and bottom of the specified layer, and uses raw data levels 
+ * for everything else. 
+ *
+ * The sharp::PressureLayer implementation of helicity is a wrapper around
+ * the sharp::HeightLayer version. The values in sharp::PressureLayer are 
+ * interpolated to height AGL (m) and then passed to the helicity function 
+ * that works in height coordinates. 
+ *
+ * \param layer_agl     sharp::PressureLayer   {bottom, top}
+ * \param storm_motion  sharp::WindComonents {storm_u, storm_v}
+ * \param pressure      (hPa)
+ * \param height        (meters)
+ * \param u_wind        (m/s??)
+ * \param v_wind        (m/s??)
+ * \param num_levs      (length of arrays)
+ *
+ */
+float helicity(PressureLayer layer, WindComponents storm_motion,
+               const float* pressure, const float* height,
+               const float* u_wind, const float* v_wind, int num_levs);
+
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
  * \brief Estimates supercell storm motion using the Bunkers et al. 2000 method.
  *
  * Estimates supercell storm motion using the Bunkers et al. 2000 method
