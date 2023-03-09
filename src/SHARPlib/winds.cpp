@@ -330,6 +330,18 @@ float helicity(HeightLayer layer_agl, WindComponents storm_motion,
     return layer_helicity; 
 }
 
+float helicity(PressureLayer layer, WindComponents storm_motion,
+               const float* pressure, const float* height, 
+               const float* u_wind, const float* v_wind, int num_levs) {
+ 
+    float hbot = interp_pressure(layer.pbot, pressure, height, num_levs);
+    float htop = interp_pressure(layer.ptop, pressure, height, num_levs);
+
+    HeightLayer layer_agl = {hbot-height[0], htop-height[0]};
+
+    return helicity(layer_agl, storm_motion, height, u_wind, v_wind, num_levs);
+}
+
 WindComponents storm_motion_bunkers_np(const float *pressure,
         const float *height, const float *u_wind, const float *v_wind,
         int num_levs, bool leftMover) {
