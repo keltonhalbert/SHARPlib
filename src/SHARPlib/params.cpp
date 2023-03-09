@@ -60,7 +60,6 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
     }
 
     int eff_kbot = 0;
-    int eff_ktop = 0;
     float eff_pbot = MISSING;
     float eff_ptop = MISSING;
 
