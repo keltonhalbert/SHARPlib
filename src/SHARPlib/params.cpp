@@ -159,11 +159,71 @@ WindComponents storm_motion_bunkers_np(const float *pressure,
 }
 
 
-WindComponents storm_motion_bunkers(const float* pressure, const float* height,
-                                    const float* u_wind, const float* v_wind, 
-                                    int num_levs, bool leftMover) {
+WindComponents storm_motion_bunkers(Profile* prof, bool leftMover) {
 
-    return {MISSING, MISSING};
+    Parcel pcl;
+    Parcel sbpcl;
+    Parcel mupcl;
+    lifter_wobus lifter;
+
+    define_parcel(prof, &sbpcl, LPL::SFC);
+    define_parcel(prof, &mupcl, LPL::MU);
+
+    integrate_parcel<lifter_wobus>(lifter, prof, &sbpcl);
+    integrate_parcel<lifter_wobus>(lifter, prof, &mupcl);
+
+    if (sbpcl.cape > mupcl.cape) {
+        pcl = sbpcl;
+    }
+    else {
+        pcl = mupcl;
+    }
+
+    if (pcl.eql_pressure == MISSING) {
+        return storm_motion_bunkers_np(prof->pres, prof->hght, 
+                                       prof->uwin, prof->vwin, 
+                                       prof->NZ, leftMover);
+    }
+
+    PressureLayer eil = effective_inflow_layer(prof, 100.0, -250.0);
+    float eql_pres = pcl.eql_pressure;
+
+    if ((eil.pbot == MISSING) || (eil.ptop == MISSING)) {
+        return storm_motion_bunkers_np(prof->pres, prof->hght, 
+                                       prof->uwin, prof->vwin, 
+                                       prof->NZ, leftMover);
+    }
+
+    float eil_hb = interp_pressure(eil.pbot, prof->pres, prof->hght, prof->NZ);
+    float eql_ht = interp_pressure(eql_pres, prof->pres, prof->hght, prof->NZ);
+
+    float htop = eil_hb + 0.65*(eql_ht - eil_hb);
+    float ptop = interp_height(htop, prof->hght, prof->pres, prof->NZ);
+
+    if (0.65*(eql_ht - eil_hb) < 3000.0) {
+        return storm_motion_bunkers_np(prof->pres, prof->hght, 
+                                       prof->uwin, prof->vwin, 
+                                       prof->NZ, leftMover);
+    }
+
+    PressureLayer layer = {eil.pbot, ptop};
+
+    WindComponents eil_mnw = mean_wind(layer, prof->pres, 
+                                      prof->uwin, prof->vwin, prof->NZ); 
+    WindComponents eil_shr = wind_shear(layer, prof->pres,
+                                      prof->uwin, prof->vwin, prof->NZ);
+
+    if ((eil_shr.u != MISSING) && (eil_shr.v != MISSING)) {
+        float d = 7.5; // m/s deviation
+        float shr_spd = vector_magnitude(eil_shr.u, eil_shr.v);
+        float storm_u = eil_mnw.u + ((d / shr_spd) * eil_shr.v);
+        float storm_v = eil_mnw.v - ((d / shr_spd) * eil_shr.u);
+
+        return {storm_u, storm_v};
+    }
+    else { 
+        return {MISSING, MISSING};
+    }
 }
 
 

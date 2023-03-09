@@ -55,9 +55,7 @@ WindComponents storm_motion_bunkers_np(const float *pressure,
         int num_levs, bool leftMover);
 
 
-WindComponents storm_motion_bunkers(const float* pressure, const float* height,
-                                    const float* u_wind, const float* v_wind, 
-                                    int num_levs, bool leftMover);
+WindComponents storm_motion_bunkers(Profile* prof, bool leftMover);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
