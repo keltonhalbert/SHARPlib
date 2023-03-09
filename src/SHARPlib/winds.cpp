@@ -325,7 +325,7 @@ float helicity(HeightLayer layer_agl, WindComponents storm_motion,
     srv_top -= storm_motion.v;
     
     // integrate the final layer
-    layer_helicity = (sru_top * srv_bot) - (sru_bot * srv_top); 
+    layer_helicity += (sru_top * srv_bot) - (sru_bot * srv_top); 
 
     return layer_helicity; 
 }
