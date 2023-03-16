@@ -328,8 +328,12 @@ float mean_value(PressureLayer layer,   const float* pressure,
     LayerIndex layer_idx = get_layer_index(layer, pressure, num_levs);
 
     // start with interpolated bottom layer
-    float data_sum = interp_pressure(layer.pbot, pressure, data_arr, num_levs);
-    float count = 1.0;
+    float val_bot = interp_pressure(layer.pbot, pressure, data_arr, num_levs);
+    float val_top = MISSING;
+    float pbot = layer.pbot;
+    float ptop = 0.0;
+    float avg_val = 0.0;
+    float weight = 0.0;
 
     for (int k = layer_idx.kbot; k <= layer_idx.ktop; k++) {
 #ifndef NO_QC
@@ -337,19 +341,26 @@ float mean_value(PressureLayer layer,   const float* pressure,
             continue;
         }
 #endif
-        data_sum += data_arr[k]; 
-        count += 1.0;
+        val_top = data_arr[k];
+        ptop = pressure[k];
+        avg_val += ((val_top + val_bot) / 2.0) * (pbot - ptop);
+        weight += (pbot - ptop);
+        
+        val_bot = val_top;
+        pbot = ptop;
     }
+    
+    val_top = interp_pressure(layer.ptop, pressure, data_arr, num_levs);
+    ptop = layer.ptop;
 
-    // finish with interpolated top layer
-    data_sum += interp_pressure(layer.ptop, pressure, data_arr, num_levs);
-    count += 1.0;
+    avg_val += ((val_top + val_bot) / 2.0) * (pbot - ptop);
+    weight += (pbot - ptop);
 
-    return data_sum / count;
+    return avg_val / weight;
 }
 
 
-float mean_value(HeightLayer layer,     const float* height, 
+float mean_value(HeightLayer layer, const float* height, const float* pressure,
                  const float* data_arr, int num_levs) {
 #ifndef NO_QC
     if ((layer.zbot == MISSING) || (layer.ztop == MISSING)) {
@@ -357,29 +368,12 @@ float mean_value(HeightLayer layer,     const float* height,
     }
 #endif
 
-    // Get the vertical array indices corresponding to our layer,
-    // while also bounds checking our search.
-    LayerIndex layer_idx = get_layer_index(layer, height, num_levs);
+    float pbot = interp_height(layer.zbot, height, pressure, num_levs);
+    float ptop = interp_height(layer.ztop, height, pressure, num_levs);
 
-    // start with interpolated bottom layer
-    float data_sum = interp_height(layer.zbot, height, data_arr, num_levs);
-    float count = 1.0;
+    PressureLayer pres_layer = {pbot, ptop};
 
-    for (int k = layer_idx.kbot; k <= layer_idx.ktop; k++) {
-#ifndef NO_QC
-        if ((height[k] == MISSING) || (data_arr[k] == MISSING)) {
-            continue;
-        }
-#endif
-        data_sum += data_arr[k]; 
-        count += 1.0;
-    }
-
-    // finish with interpolated top layer
-    data_sum += interp_height(layer.ztop, height, data_arr, num_levs);
-    count += 1.0;
-
-    return data_sum / count;
+    return mean_value(pres_layer, pressure, data_arr, num_levs);
 }
 
 
