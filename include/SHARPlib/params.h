@@ -25,6 +25,25 @@
 namespace sharp {
 
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Computes the Effective Inflow Layer for a given atmospheric sounding.
+ *
+ * Computes the Effective Inflow Layer, or the layer of the atmosphere believed
+ * to be the primary source of inflow for supercell thunderstorms. The Effective
+ * Inflow Layer, and its use in computing shear and storm relative helicity, is 
+ * described by Thompson et al. 2007:
+ *     https://www.spc.noaa.gov/publications/thompson/effective.pdf
+ *
+ * Standard/default values for cape_thresh and cinh_thresh have been 
+ * experimentally determined to be cape_thresh = 100 J/kg and 
+ * cinh_thresh = -250 J/kg.
+ * 
+ * \param Profile       sharp::Profile of atmospheric data
+ * \param cape_thresh   The CAPE threshold that defines the EIL. Default is 100 J/kg.
+ * \param cinh_thresh   The CINH threshold that defines the EIL. Default is -250 J/kg.
+ */
 PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh, 
                                      float cinh_thresh);
 
@@ -39,8 +58,7 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
  *
  * This does not use any of the updated methods described by Bunkers et al. 2014,
  * which uses Effective Inflow Layer metricks to get better estimates of storm
- * motion, especially when considering elevated convection. That method can
- * be found in params.cpp/.h.
+ * motion, especially when considering elevated convection.
  *
  * \param pressure  Vertical array of Air Pressure (hPa)
  * \param height    Vertical array of heights (meters)
@@ -55,6 +73,26 @@ WindComponents storm_motion_bunkers_np(const float *pressure,
         int num_levs, bool leftMover);
 
 
+/**
+ *  \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ *  \brief Estimates supercell storm motion by using the Bunkers et al. 2014 method.
+ *
+ *  Estimates supercell storm motion using the Bunkers et al. 2014 method
+ *  described in the following paper:
+ *      https://doi.org/10.1175/WAF-D-21-0153.1
+ *
+ *  This method is parcel based, using a mean-wind vector defined as the 
+ *  pressure-weighted mean wind between the Effective Inflow Layer surface 
+ *  (see sharp::effective_inflow_layer) and 65% of the depth between that 
+ *  surface and the most-unstable parcel's Equilibrium Level. This method
+ *  produces the same storm motion estimate for surface based supercells,
+ *  and captures the motion of elevated supercells much better than 
+ *  the Bunkers 2000 method. 
+ *
+ *  \param Profile      sharp::Profile of atmospheric data
+ *  \param leftMover    Boolean flag for left or right deviant supercell
+ */
 WindComponents storm_motion_bunkers(Profile* prof, bool leftMover);
 
 /**
