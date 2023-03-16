@@ -80,7 +80,7 @@ WindComponents storm_motion_bunkers_np(const float *pressure,
  *
  *  Estimates supercell storm motion using the Bunkers et al. 2014 method
  *  described in the following paper:
- *      https://doi.org/10.1175/WAF-D-21-0153.1
+ *      http://nwafiles.nwas.org/jom/articles/2014/2014-JOM11/2014-JOM11.pdf
  *
  *  This method is parcel based, using a mean-wind vector defined as the 
  *  pressure-weighted mean wind between the Effective Inflow Layer surface 
