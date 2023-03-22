@@ -126,6 +126,35 @@ LayerIndex get_layer_index(HeightLayer& layer,
     return {lower_idx, upper_idx};
 }
 
+PressureLayer height_layer_to_pressure(HeightLayer layer, 
+                const float* pressure, const float* height, 
+                int num_levs, bool isAGL) {
+
+    if (isAGL) {
+        layer.zbot += height[0];
+        layer.ztop += height[0];
+    }
+
+    float pbot = interp_height(layer.zbot, height, pressure, num_levs);
+    float ptop = interp_height(layer.ztop, height, pressure, num_levs);
+    
+    return {pbot, ptop};
+}
+
+HeightLayer pressure_layer_to_height(PressureLayer layer, 
+                const float* pressure, const float* height, 
+                int num_levs, bool toAGL) {
+    float zbot = interp_pressure(layer.pbot, pressure, height, num_levs);
+    float ztop = interp_pressure(layer.ptop, pressure, height, num_levs);
+
+    if (toAGL) {
+        zbot -= height[0];
+        ztop -= height[0];
+    }
+
+    return {zbot, ztop};
+}
+
 
 float max_value(PressureLayer layer,   const float* pressure, 
                 const float* data_arr, int num_levs,
@@ -360,18 +389,18 @@ float mean_value(PressureLayer layer,   const float* pressure,
 }
 
 
-float mean_value(HeightLayer layer, const float* height, const float* pressure,
+float mean_value(HeightLayer layer_agl, const float* height, const float* pressure,
                  const float* data_arr, int num_levs) {
 #ifndef NO_QC
-    if ((layer.zbot == MISSING) || (layer.ztop == MISSING)) {
+    if ((layer_agl.zbot == MISSING) || (layer_agl.ztop == MISSING)) {
         return MISSING;
     }
 #endif
 
-    float pbot = interp_height(layer.zbot, height, pressure, num_levs);
-    float ptop = interp_height(layer.ztop, height, pressure, num_levs);
-
-    PressureLayer pres_layer = {pbot, ptop};
+    PressureLayer pres_layer = height_layer_to_pressure(
+                                layer_agl, pressure, height,
+                                num_levs, true
+                            );
 
     return mean_value(pres_layer, pressure, data_arr, num_levs);
 }

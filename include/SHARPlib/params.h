@@ -54,7 +54,7 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
  *
  * Estimates supercell storm motion using the Bunkers et al. 2000 method
  * described in the following paper: 
- *      https://doi.org/10.1175/1520-0434(2000)015<0061:PSMUAN>2.0.CO;2
+ *     https://doi.org/10.1175/1520-0434(2000)015%3C0061:PSMUAN%3E2.0.CO;2 
  *
  * This does not use any of the updated methods described by Bunkers et al. 2014,
  * which uses Effective Inflow Layer metricks to get better estimates of storm
@@ -80,7 +80,7 @@ WindComponents storm_motion_bunkers_np(const float *pressure,
  *
  *  Estimates supercell storm motion using the Bunkers et al. 2014 method
  *  described in the following paper:
- *      http://nwafiles.nwas.org/jom/articles/2014/2014-JOM11/2014-JOM11.pdf
+ *      http://dx.doi.org/10.15191/nwajom.2014.0211 
  *
  *  This method is parcel based, using a mean-wind vector defined as the 
  *  pressure-weighted mean wind between the Effective Inflow Layer surface 

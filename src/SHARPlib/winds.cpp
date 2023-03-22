@@ -124,11 +124,6 @@ WindComponents mean_wind(PressureLayer layer, const float* pres,
         return {MISSING, MISSING};
 #endif
 
-    // bounds checking our layer
-    // requests to the available data
-    // -- since PressureLayer is passed
-    // by value, this does not modify 
-    // the original object
     if (layer.pbot > pres[0])
         layer.pbot = pres[0];
 
@@ -201,11 +196,6 @@ WindComponents wind_shear(PressureLayer layer, const float* pres,
         return {MISSING, MISSING};
 #endif
 
-    // bounds checking our layer
-    // requests to the available data
-    // -- since PressureLayer is passed
-    // by value, this does not modify 
-    // the original object
     if (layer.pbot > pres[0])
         layer.pbot = pres[0];
     if (layer.ptop < pres[num_levs-1])
@@ -237,14 +227,9 @@ WindComponents wind_shear(HeightLayer layer_agl, const float* height,
         return {MISSING, MISSING};
 #endif
 
-    // bounds checking our layer
-    // requests to the available data
-    // -- since PressureLayer is passed
-    // by value, this does not modify 
-    // the original object
-    if (layer_agl.zbot > height[0])
+    if (layer_agl.zbot < height[0])
         layer_agl.zbot = height[0];
-    if (layer_agl.ztop < height[num_levs-1])
+    if (layer_agl.ztop > height[num_levs-1])
         layer_agl.ztop = height[num_levs-1];
 
     float u_bot = interp_height(layer_agl.zbot, height, u_wind, num_levs);
@@ -278,8 +263,6 @@ float helicity(HeightLayer layer_agl, WindComponents storm_motion,
 #endif
 
     // get the height in MSL by adding the surface height
-    // -- modifying in this function does not modify
-    // original layer struct since it is passed by value
     layer_agl.zbot += height[0];
     layer_agl.ztop += height[0];
 
@@ -334,11 +317,10 @@ float helicity(PressureLayer layer, WindComponents storm_motion,
                const float* pressure, const float* height, 
                const float* u_wind, const float* v_wind, int num_levs) {
  
-    float hbot = interp_pressure(layer.pbot, pressure, height, num_levs);
-    float htop = interp_pressure(layer.ptop, pressure, height, num_levs);
-
-    HeightLayer layer_agl = {hbot-height[0], htop-height[0]};
-
+    HeightLayer layer_agl = pressure_layer_to_height(
+                                layer, pressure, height,
+                                num_levs, true
+                            );
     return helicity(layer_agl, storm_motion, height, u_wind, v_wind, num_levs);
 }
 
