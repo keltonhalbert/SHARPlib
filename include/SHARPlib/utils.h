@@ -145,6 +145,50 @@ LayerIndex get_layer_index(HeightLayer& layer,
                            const float* height, int num_levs);
 
 
+/*
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Converts a sharp::HeightLayer to a sharp::PressureLayer
+ *
+ * Converts a sharp::HeightLayer to a sharp::PressureLayer via 
+ * interpolation, with a flag to signal whether the input layer is 
+ * in meters AGL or meters MSL. 
+ *
+ * \param layer     sharp::HeightLayer to convert (meters)
+ * \param pressure  Vertical array of pressure (hPa)
+ * \param height    Vertical array of height (meters)
+ * \param num_levs  Length of arrays
+ * \param isAGL     Flag signaling whether the input layer is AGL or MSL
+ *
+ * \return  sharp::PressureLayer
+ */
+PressureLayer height_layer_to_pressure(HeightLayer layer, 
+                const float* pressure, const float* height, 
+                int num_levs, bool isAGL);
+
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Converts a sharp::PressureLayer to a sharp::HeightLayer
+ *
+ * Converts a sharp::PressureLayer to a sharp::HeightLayer via
+ * interpolation, with the obtion of returning the layer in meters
+ * AGL or MSL. 
+ *
+ * \param layer     sharp::PressureLayer to convert (hPa)
+ * \param pressure  Vertical array of pressure (hPa)
+ * \param height    Vertical array of height (meters)
+ * \param num_levs  Length of arrays
+ * \param toAGL     Flag signaling whether to return meters AGL or MSL
+ *
+ * \return sharp::HeightLayer
+ */
+HeightLayer pressure_layer_to_height(PressureLayer layer, 
+                const float* pressure, const float* height, 
+                int num_levs, bool toAGL);
+
+
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
