@@ -107,52 +107,62 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
     return {eff_pbot, eff_ptop};
 }
 
-WindComponents storm_motion_bunkers_np(const float *pressure,
-        const float *height, const float *u_wind, const float *v_wind,
-        int num_levs, bool leftMover) {
-    // derived storm deviation from the mean wind
-    // given in m/s 
-    float deviation = 7.5;
+WindComponents storm_motion_bunkers(Profile *prof, 
+                HeightLayer mean_wind_layer_agl, 
+                HeightLayer wind_shear_layer_agl, 
+                bool leftMover, bool pressureWeighted) {
 
-    // get the pressure values of the AGL heights required
-    float pressure_sfc = pressure[0];
-    float pressure_500m = interp_height(height[0]+500.0, height, 
-                                        pressure, num_levs);
-    float pressure_5500m = interp_height(height[0]+5500.0, height, 
-                                         pressure, num_levs);
-    float pressure_6000m = interp_height(height[0]+6000.0, height, 
-                                         pressure, num_levs);
+    float deviation = 7.5; // deviation from mean wind in m/s
 
-    // set up the layers
-    PressureLayer layer_lo = {pressure_sfc, pressure_500m};
-    PressureLayer layer_hi = {pressure_5500m, pressure_6000m};
-    PressureLayer layer_tot = {pressure_sfc, pressure_6000m};
+    PressureLayer mw_lyr = height_layer_to_pressure(
+                mean_wind_layer_agl, prof->pres,
+                prof->hght, prof->NZ, true);
 
+    WindComponents layer_mean_wind = {MISSING, MISSING};
+    if (pressureWeighted) {
+        layer_mean_wind = mean_wind(mw_lyr, prof->pres, 
+                prof->uwin, prof->vwin, prof->NZ); 
+    }
+    else {
+        layer_mean_wind = mean_wind_npw(mw_lyr, prof->pres, 
+                prof->uwin, prof->vwin, prof->NZ); 
+    }
 
-    // get the mean wind of these two layers
-    WindComponents mean_wind_0_500m = mean_wind_npw(layer_lo, pressure, 
-                                          u_wind, v_wind,num_levs); 
+    // The shear is computed by finding the 500m deep
+    // mean winds at the top and bottom of the wind_shear_layer
+    // and then differencing the two. Means are not pressure weighted
+    // for the non-parcel based method.  
+    HeightLayer h_layer_lo = {wind_shear_layer_agl.zbot, 
+                              wind_shear_layer_agl.zbot + 500.0f};
+    HeightLayer h_layer_hi = {wind_shear_layer_agl.ztop - 500.0f,
+                              wind_shear_layer_agl.ztop};
 
-    WindComponents mean_wind_5500_6000m = mean_wind_npw(layer_hi, pressure, 
-                                             u_wind, v_wind, num_levs); 
+    PressureLayer p_layer_lo = height_layer_to_pressure(
+                h_layer_lo, prof->pres, prof->hght,
+                prof->NZ, true);
+    PressureLayer p_layer_hi = height_layer_to_pressure(
+                h_layer_hi, prof->pres, prof->hght,
+                prof->NZ, true);
 
-    WindComponents mean_wind_0_6000m = mean_wind_npw(layer_tot, 
-                           pressure, u_wind, v_wind, num_levs); 
+    WindComponents winds_lo = mean_wind_npw(
+                p_layer_lo, prof->pres, prof->uwin, prof->vwin, prof->NZ);
+    WindComponents winds_hi = mean_wind_npw(
+                p_layer_hi, prof->pres, prof->uwin, prof->vwin, prof->NZ);
 
-    float shear_u = mean_wind_5500_6000m.u - mean_wind_0_500m.u;
-    float shear_v = mean_wind_5500_6000m.v - mean_wind_0_500m.v;
+    float shear_u = winds_hi.u - winds_lo.u;
+    float shear_v = winds_hi.v - winds_lo.v;
     float mag = vector_magnitude(shear_u, shear_v);
 
     float storm_u = MISSING;
     float storm_v = MISSING;
 
     if (leftMover) {
-        storm_u = mean_wind_0_6000m.u - ( (deviation / mag) * shear_v); 
-        storm_v = mean_wind_0_6000m.v + ( (deviation / mag) * shear_u); 
+        storm_u = layer_mean_wind.u - ( (deviation / mag) * shear_v); 
+        storm_v = layer_mean_wind.v + ( (deviation / mag) * shear_u); 
     }
     else {
-        storm_u = mean_wind_0_6000m.u + ( (deviation / mag) * shear_v); 
-        storm_v = mean_wind_0_6000m.v - ( (deviation / mag) * shear_u); 
+        storm_u = layer_mean_wind.u + ( (deviation / mag) * shear_v); 
+        storm_v = layer_mean_wind.v - ( (deviation / mag) * shear_u); 
     }
 
     return {storm_u, storm_v};
@@ -180,9 +190,8 @@ WindComponents storm_motion_bunkers(Profile* prof, bool leftMover) {
     }
 
     if (pcl.eql_pressure == MISSING) {
-        return storm_motion_bunkers_np(prof->pres, prof->hght, 
-                                       prof->uwin, prof->vwin, 
-                                       prof->NZ, leftMover);
+        return storm_motion_bunkers(prof, 
+                {0.0, 6000.0}, {0.0, 6000.0}, leftMover, false);
     }
 
     // set up the layers
@@ -190,56 +199,27 @@ WindComponents storm_motion_bunkers(Profile* prof, bool leftMover) {
     float eql_pres = pcl.eql_pressure;
 
     if ((eil.pbot == MISSING) || (eil.ptop == MISSING)) {
-        return storm_motion_bunkers_np(prof->pres, prof->hght, 
-                                       prof->uwin, prof->vwin, 
-                                       prof->NZ, leftMover);
+        return storm_motion_bunkers(prof, 
+                {0.0, 6000.0}, {0.0, 6000.0}, leftMover, false);
     }
 
-    float eil_hb = interp_pressure(eil.pbot, prof->pres, prof->hght, prof->NZ);
+    HeightLayer eil_hght = pressure_layer_to_height(
+            eil, prof->pres, prof->hght, prof->NZ, true); 
+
     float eql_ht = interp_pressure(eql_pres, prof->pres, prof->hght, prof->NZ);
+    // get AGL
+    eql_ht -= prof->hght[0];
+    float htop = 0.65*(eql_ht - eil_hght.zbot);
 
-    float htop = eil_hb + 0.65*(eql_ht - eil_hb);
-    float ptop = interp_height(htop, prof->hght, prof->pres, prof->NZ);
-
-    if (0.65*(eql_ht - eil_hb) < 3000.0) {
-        return storm_motion_bunkers_np(prof->pres, prof->hght, 
-                                       prof->uwin, prof->vwin, 
-                                       prof->NZ, leftMover);
+    if ((htop < 3000.0) || (eil_hght.zbot > htop)) {
+        return storm_motion_bunkers(prof, 
+                {0.0, 6000.0}, {0.0, 6000.0}, leftMover, false);
     }
 
-    // get the pressure values of the AGL heights required
-    float pressure_sfc = prof->pres[0];
-    float pressure_500m = interp_height(prof->hght[0]+500.0, prof->hght, 
-                                        prof->pres, prof->NZ);
-    float pressure_5500m = interp_height(prof->hght[0]+5500.0, prof->hght, 
-                                         prof->pres, prof->NZ);
-    float pressure_6000m = interp_height(prof->hght[0]+6000.0, prof->hght, 
-                                         prof->pres, prof->NZ);
+    HeightLayer mw_layer = {eil_hght.zbot, htop};
+    HeightLayer shr_layer = {0, 6000.0};
 
-    PressureLayer layer = {eil.pbot, ptop};
-    PressureLayer layer_lo = {pressure_sfc, pressure_500m};
-    PressureLayer layer_hi = {pressure_5500m, pressure_6000m};
-
-    // get the mean wind of these two layers
-    WindComponents mean_wind_0_500m = mean_wind_npw(layer_lo, prof->pres, 
-                                          prof->uwin, prof->vwin, prof->NZ); 
-
-    WindComponents mean_wind_5500_6000m = mean_wind_npw(layer_hi, prof->pres, 
-                                             prof->uwin, prof->vwin, prof->NZ); 
-
-    float shear_u = mean_wind_5500_6000m.u - mean_wind_0_500m.u;
-    float shear_v = mean_wind_5500_6000m.v - mean_wind_0_500m.v;
-    float mag = vector_magnitude(shear_u, shear_v);
-
-
-    WindComponents eil_mnw = mean_wind(layer, prof->pres, 
-                                      prof->uwin, prof->vwin, prof->NZ); 
-
-    float d = 7.5; // m/s deviation
-    float storm_u = eil_mnw.u + ((d / mag) * shear_v);
-    float storm_v = eil_mnw.v - ((d / mag) * shear_u);
-
-    return {storm_u, storm_v};
+    return storm_motion_bunkers(prof, mw_layer, shr_layer, leftMover, true);
 }
 
 
@@ -283,8 +263,8 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
     //printf("NCAPE = %f\n", NCAPE);
 
     // Compute the Bunkers non-parcel based storm motion
-    WindComponents strm_mtn = storm_motion_bunkers_np(prof->pres, prof->hght,
-                                  prof->uwin, prof->vwin, prof->NZ, 0);
+    WindComponents strm_mtn =  storm_motion_bunkers(prof, 
+            {0.0, 6000.0}, {0.0, 6000.0}, false, false);
     //printf("Bunkers U = %f, Bunkers V = %f\n", strm_mtn.u, strm_mtn.v);
 
     // get the mean 0-1km storm relative wind

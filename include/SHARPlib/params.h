@@ -47,6 +47,7 @@ namespace sharp {
 PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh, 
                                      float cinh_thresh);
 
+
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
@@ -60,17 +61,17 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
  * which uses Effective Inflow Layer metricks to get better estimates of storm
  * motion, especially when considering elevated convection.
  *
- * \param pressure  Vertical array of Air Pressure (hPa)
- * \param height    Vertical array of heights (meters)
- * \param u_wind    Vertical array of U wind components (m/s)
- * \param v_wind    Vertical array of V wind components (m/s)
- * \param num_levs  The number of vertical levels in the arrays 
- * \param leftMover Boolean flag to return left or right mover
+ * \param prof                  sharp::Profile of atmospheric data
+ * \param mean_wind_layer_agl   sharp::HeightLayer (agl) for mean wind
+ * \param wind_shear_layer_agl  sharp::HeightLayer (agl) for wind shear
+ * \param leftMover             Boolean flag to return left or right mover
+ * \param pressureWeighted      Boolean flag for whether or not to weight mean
  * \return sharp::WindComponents    {u_storm, v_storm}
  */
-WindComponents storm_motion_bunkers_np(const float *pressure,
-        const float *height, const float *u_wind, const float *v_wind,
-        int num_levs, bool leftMover);
+WindComponents storm_motion_bunkers(Profile *prof, 
+                HeightLayer mean_wind_layer_agl, 
+                HeightLayer wind_shear_layer_agl, 
+                bool leftMover, bool pressureWeighted);
 
 
 /**
@@ -94,6 +95,7 @@ WindComponents storm_motion_bunkers_np(const float *pressure,
  *  \param leftMover    Boolean flag for left or right deviant supercell
  */
 WindComponents storm_motion_bunkers(Profile* prof, bool leftMover);
+
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
