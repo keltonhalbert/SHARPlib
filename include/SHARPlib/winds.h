@@ -300,7 +300,7 @@ WindComponents wind_shear(PressureLayer layer, const float* pres,
  * \param num_levs  (length of arrays)
  * \return sharp::WindComponents    {shear_u, shear_v}
  */
-WindComponents wind_shear(HeightLayer layer_agl, const float* pres,
+WindComponents wind_shear(HeightLayer layer_agl, const float* height,
                           const float* u_wind, const float* v_wind, 
                           int num_levs);
 

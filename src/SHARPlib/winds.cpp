@@ -227,6 +227,10 @@ WindComponents wind_shear(HeightLayer layer_agl, const float* height,
         return {MISSING, MISSING};
 #endif
 
+    // AGL to MSL
+    layer_agl.zbot += height[0];
+    layer_agl.ztop += height[0];
+
     if (layer_agl.zbot < height[0])
         layer_agl.zbot = height[0];
     if (layer_agl.ztop > height[num_levs-1])
