@@ -358,6 +358,23 @@ float supercell_composite_parameter(float mu_cape, float eff_srh,
     return mu_cape_term * eff_srh_term * eff_shear_term;
 }
 
+float significant_tornado_parameter_fixed(float sb_cape, float sb_lcl_hght,
+                                          float storm_relative_helicity_0_1_km,
+                                          float bulk_wind_diff_0_6_km) {
+    float lcl_term = ((2000.0 - sb_lcl_hght) / 1000.0 );
+    if (sb_lcl_hght < 1000.0) lcl_term = 1.0;
+    else if (sb_lcl_hght > 2000.0) lcl_term = 0.0;
+
+    if (bulk_wind_diff_0_6_km > 30.0) bulk_wind_diff_0_6_km = 30.0;
+    else if (bulk_wind_diff_0_6_km < 12.5) bulk_wind_diff_0_6_km = 0.0;
+
+    float bwd6_term = bulk_wind_diff_0_6_km / 20.0;
+    float cape_term = sb_cape / 1500.0;
+    float srh_term = storm_relative_helicity_0_1_km / 150.0;
+
+    return cape_term * lcl_term * srh_term * bwd6_term;
+}
+
 
 } // end namespace sharp
 
