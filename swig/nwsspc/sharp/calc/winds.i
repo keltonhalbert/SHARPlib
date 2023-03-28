@@ -114,6 +114,21 @@ sharp::WindComponents _wind_shear(sharp::PressureLayer layer,
     return sharp::wind_shear(layer, pres, u_wind, v_wind, NZ1);
 }
 
+sharp::WindComponents _wind_shear(sharp::HeightLayer layer, 
+                 const float* height, int NZ1,
+                 const float* u_wind, int NZ2,
+                 const float* v_wind, int NZ3) {
+    if ((NZ1 != NZ2) || (NZ1 != NZ3)) {
+        PyErr_Format(
+            PyExc_ValueError, "Arrays must be same length, got (%d, %d, %d)",
+            NZ1, NZ2, NZ3
+        );
+        return sharp::WindComponents();
+    }
+    
+    return sharp::wind_shear(layer, height, u_wind, v_wind, NZ1);
+}
+
 float _helicity(sharp::HeightLayer layer_agl, sharp::WindComponents storm_motion,
                const float* height, int NZ1,
                const float* u_wind, int NZ2,
