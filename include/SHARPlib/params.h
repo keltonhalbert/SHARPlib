@@ -118,9 +118,9 @@ float energy_helicity_index(float cape, float helicity);
 float supercell_composite_parameter(float mu_cape, float eff_srh, 
                                                    float eff_shear);
 
-float significant_tornado_parameter_fixed(float sb_cape, float sb_lcl_hght,
-                                          float storm_relative_helicity_0_1_km, 
-                                          float bulk_wind_diff_0_6_km);
+float significant_tornado_parameter(Profile* prof, Parcel pcl,
+                                    float storm_relative_helicity, 
+                                    float bulk_wind_difference);
 
 
 } // end namespace sharp

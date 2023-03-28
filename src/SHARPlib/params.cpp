@@ -358,21 +358,39 @@ float supercell_composite_parameter(float mu_cape, float eff_srh,
     return mu_cape_term * eff_srh_term * eff_shear_term;
 }
 
-float significant_tornado_parameter_fixed(float sb_cape, float sb_lcl_hght,
-                                          float storm_relative_helicity_0_1_km,
-                                          float bulk_wind_diff_0_6_km) {
-    float lcl_term = ((2000.0 - sb_lcl_hght) / 1000.0 );
-    if (sb_lcl_hght < 1000.0) lcl_term = 1.0;
-    else if (sb_lcl_hght > 2000.0) lcl_term = 0.0;
+float significant_tornado_parameter(Profile* prof, Parcel pcl,
+                                    float storm_relative_helicity,
+                                    float bulk_wind_difference) {
+    float cinh_term, lcl_term, shear_term, srh_term, cape_term;
+    if (pcl.cape == MISSING) return MISSING;
 
-    if (bulk_wind_diff_0_6_km > 30.0) bulk_wind_diff_0_6_km = 30.0;
-    else if (bulk_wind_diff_0_6_km < 12.5) bulk_wind_diff_0_6_km = 0.0;
+    if (pcl.cinh >= -50.0) cinh_term = 1.0;
+    else if (pcl.cinh < -200.0) cinh_term = 0.0;
+    else cinh_term = ((200.0 + pcl.cinh)/150.0);
 
-    float bwd6_term = bulk_wind_diff_0_6_km / 20.0;
-    float cape_term = sb_cape / 1500.0;
-    float srh_term = storm_relative_helicity_0_1_km / 150.0;
 
-    return cape_term * lcl_term * srh_term * bwd6_term;
+    float lcl_hght = interp_pressure(pcl.lcl_pressure, prof->pres, 
+                                            prof->hght, prof->NZ); 
+    lcl_hght -= prof->hght[0]; // convert to AGL
+
+    // units of comparisons are meters
+    if (lcl_hght < 1000.0) lcl_term = 1.0;
+    else if (lcl_hght > 2000.0) lcl_term = 0.0;
+    else lcl_term = ((2000.0 - lcl_hght) / 1000.0 );
+
+    // units of comparisons are m/s
+    if (bulk_wind_difference > 30.0) shear_term = 1.5; 
+    else if (bulk_wind_difference < 12.5) shear_term = 0.0;
+    else shear_term = bulk_wind_difference / 20.0;
+
+    if (storm_relative_helicity == MISSING) srh_term = 0.0;
+    else srh_term = storm_relative_helicity / 150.0;
+
+    cape_term = pcl.cape / 1500.0;
+
+    float stp = cape_term * cinh_term * lcl_term * srh_term * shear_term;
+    if (stp < 0) stp = 0;
+    return stp;
 }
 
 
