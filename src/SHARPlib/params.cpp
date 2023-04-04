@@ -230,20 +230,28 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
 
     // compute MSE_bar
     mse_bar[0] = prof->moist_static_energy[0];
-    for (int k = 1; k < prof-> NZ; k++) {
-        float mean_mse = 0.0;
-        int missing_counter = 0;
-        for (int iz = 0; iz <= k; iz ++) {
+    for (int k = 1; k < prof->NZ; k++) {
+        float lyr_bot = mse_bar[0];
+        float pbot = prof->pres[0];
+        float lyr_top = MISSING;
+        float ptop = MISSING;
+        float dp = 0.0;
+
+        float lyr_mean = 0.0;
+        float weight = 0.0;
+        for (int iz = 1; iz <= k; iz++) {
             if (prof->moist_static_energy[iz] == MISSING) {
-                missing_counter += 1;
                 continue;
             }
-            else {
-                mean_mse += prof->moist_static_energy[iz];
-            }
+
+            lyr_top = prof->moist_static_energy[iz];
+            ptop = prof->pres[iz];
+            dp = pbot - ptop;
+            
+            lyr_mean += ((lyr_top + lyr_bot) / 2.0) * dp;
         }
-        mse_bar[k] = mean_mse / (k + 1 - missing_counter);
-        //printf("mse_bar[%d] = %f\n", k, mse_bar[k]);
+
+        mse_bar[k] = lyr_mean / weight;
     }
 
     // compute MSE_star
