@@ -238,13 +238,13 @@ float buoyancy_dilution_ncape(Profile* prof, Parcel *pcl,
         ztop = prof->hght[k];
 
         // compute the integrated quantity
-        float mse_diff_bot = (mse_bar_bot - mse_star_bot) / (tmpk_bot);
-        float mse_diff_top = (mse_bar_top - mse_star_top) / (tmpk_top);
+        float mse_diff_bot = -1.0 * (GRAVITY / (CP_DRYAIR * tmpk_bot)) * \
+                                    (mse_bar_bot - mse_star_bot);
+        float mse_diff_top = -1.0 * (GRAVITY / (CP_DRYAIR * tmpk_top)) * \
+                                    (mse_bar_top - mse_star_top);
         float dz = ztop - zbot;
 
-        NCAPE += -1.0 * (GRAVITY / CP_DRYAIR) * 
-                 ((mse_diff_bot + mse_diff_top) / 2.0) * dz;
-
+        NCAPE += ((mse_diff_bot + mse_diff_top) / 2.0) * dz;
 
         // set the top of the current layer
         // as the bottom of the next layer
@@ -264,12 +264,13 @@ float buoyancy_dilution_ncape(Profile* prof, Parcel *pcl,
                                prof->tmpc, prof->NZ) + ZEROCNK;
 
     // compute the integrated quantity
-    float mse_diff_bot = (mse_bar_bot - mse_star_bot) / (tmpk_bot);
-    float mse_diff_top = (mse_bar_top - mse_star_top) / (tmpk_top);
+    float mse_diff_bot = -1.0 * (GRAVITY / (CP_DRYAIR * tmpk_bot)) * \
+                                (mse_bar_bot - mse_star_bot);
+    float mse_diff_top = -1.0 * (GRAVITY / (CP_DRYAIR * tmpk_top)) * \
+                                (mse_bar_top - mse_star_top);
     float dz = ztop - zbot;
 
-    NCAPE += -1.0 * (GRAVITY / CP_DRYAIR) * 
-             ((mse_diff_bot + mse_diff_top) / 2.0) * dz;
+    NCAPE += ((mse_diff_bot + mse_diff_top) / 2.0) * dz;
 
     return NCAPE;
 }
