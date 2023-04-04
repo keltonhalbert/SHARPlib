@@ -15,6 +15,7 @@
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
 #include <SHARPlib/utils.h>
+#include <iostream>
 
 namespace sharp {
 
@@ -91,7 +92,7 @@ Profile* create_profile(float *pres, float *hght,
         prof->theta[k] = thta;
         prof->theta_e[k] = thte;
 
-        float specific_humidity = (mixr / 1000.0)  / (1 + (mixr / 1000.0));
+        float specific_humidity = (1.0 - (mixr / 1000.0))*(mixr/1000.0);
         if (mixr == MISSING) specific_humidity = MISSING;
 
         float height_agl = prof->hght[k] - prof->hght[0];

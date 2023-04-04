@@ -231,9 +231,9 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
     // compute MSE_bar
     mse_bar[0] = prof->moist_static_energy[0];
     for (int k = 1; k < prof->NZ; k++) {
-        float lyr_bot = mse_bar[0];
-        float pbot = prof->pres[0];
+        float lyr_bot = prof->moist_static_energy[0];
         float lyr_top = MISSING;
+        float pbot = prof->pres[0];
         float ptop = MISSING;
         float dp = 0.0;
 
@@ -249,6 +249,10 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
             dp = pbot - ptop;
             
             lyr_mean += ((lyr_top + lyr_bot) / 2.0) * dp;
+            weight += dp;
+
+            lyr_bot = lyr_top;
+            pbot = ptop;
         }
 
         mse_bar[k] = lyr_mean / weight;
@@ -259,11 +263,9 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
         // default units are g/kg - convert to kg/kg
         float rsat = mixratio(prof->pres[k], prof->tmpc[k]) / 1000.0f;
         float qsat = (1.0 - rsat ) * rsat;
+        float height_agl = prof->hght[k] - prof->hght[0];
         //printf("%d %f %f %f %f %f %f\n", k, prof->pres[k], prof->hght[k], prof->tmpc[k], prof->dwpc[k], rsat, qsat);
-        mse_star[k] = moist_static_energy(prof->hght[k] - prof->hght[0], 
-                                    prof->tmpc[k] + ZEROCNK, qsat); 
-        //printf("mse_star[%d] = %f\n", k, mse_star[k]);
-        //printf("mse[%d] = %f\n", k, prof->moist_static_energy[k]);
+        mse_star[k] = moist_static_energy(height_agl, prof->tmpc[k] + ZEROCNK, qsat); 
     }
 
     // compute NCAPE
@@ -281,6 +283,7 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
 
     // loop from the surface to the last level before 1km AGL. 
     float V_sr_mean = 0.0;
+    int count = 0;
     for (int k = 0; k <= layer_idx.ktop; ++k) {
 #ifndef NO_QC
         if ((prof->uwin[k] == MISSING) || (prof->vwin[k] == MISSING)) {
@@ -289,6 +292,7 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
 #endif
         V_sr_mean += vector_magnitude(prof->uwin[k] - strm_mtn.u, 
                                       prof->vwin[k] - strm_mtn.v); 
+        count += 1;
     }
     float u_1km = interp_height(layer.ztop, prof->hght, prof->uwin, prof->NZ);
     float v_1km = interp_height(layer.ztop, prof->hght, prof->vwin, prof->NZ);
@@ -296,13 +300,13 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
     V_sr_mean += vector_magnitude(u_1km - strm_mtn.u, v_1km - strm_mtn.v);
     // the +2 is +1 for swapping from zero-index to size, and then
     // the last level of the interpolated top. 
-    V_sr_mean = V_sr_mean / (layer_idx.ktop + 2);
+    V_sr_mean = V_sr_mean / ( count + 1);
     //printf("V_sr_mean = %f\n", V_sr_mean);
 
 
     // now for all of the ECAPE nonsense
     float L = 120.0;
-    float H = interp_pressure(pcl->eql_pressure, prof->pres, prof->hght, prof->NZ);
+    float H = interp_pressure(pcl->eql_pressure, prof->pres, prof->hght, prof->NZ) - prof->hght[0];
     float sigma = 1.6;
     float alpha = 0.8;
     float pitchfork = (VKSQ * (alpha*alpha) * (PI*PI) * L) / 
