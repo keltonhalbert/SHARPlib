@@ -26,6 +26,59 @@ import_array();
 %apply (float* IN_ARRAY1, int DIM1) { (const float* pressure, int num_levs) };
 %apply (float* IN_ARRAY1, int DIM1) { (const float* height, int num_levs) };
 
+%apply (float* IN_ARRAY1, int DIM1) {
+        (const float* pressure, int NZ1),
+        (const float* height, int NZ2)
+};
+
+%rename (pressure_layer_to_height) _pres_lyr_to_hght;
+%rename (height_layer_to_pressure) _hght_lyr_to_pres;
+%ignore pressure_layer_to_height;
+%ignore height_layer_to_pressure;
+
+%exception _pres_lyr_to_hght {
+    $action
+    if (PyErr_Occurred()) SWIG_fail;
+}
+
+%exception _hght_lyr_to_pres {
+    $action
+    if (PyErr_Occurred()) SWIG_fail;
+}
+
+%inline %{
+
+sharp::HeightLayer _pres_lyr_to_hght(sharp::PressureLayer layer,
+                            const float* pressure, int NZ1,
+                            const float* height, int NZ2,
+                            bool toAGL) {
+    if ((NZ1 != NZ2)) {
+        PyErr_Format(
+            PyExc_ValueError, "Arrays must be same length, got (%d, %d,)",
+            NZ1, NZ2
+        );
+        return {sharp::MISSING, sharp::MISSING};
+    }
+
+    return sharp::pressure_layer_to_height(layer, pressure, height, NZ1, toAGL);
+}
+
+sharp::PressureLayer _hght_lyr_to_pres(sharp::HeightLayer layer,
+                            const float* pressure, int NZ1,
+                            const float* height, int NZ2,
+                            bool isAGL) {
+    if ((NZ1 != NZ2)) {
+        PyErr_Format(
+            PyExc_ValueError, "Arrays must be same length, got (%d, %d,)",
+            NZ1, NZ2
+        );
+        return {sharp::MISSING, sharp::MISSING};
+    }
+
+    return sharp::height_layer_to_pressure(layer, pressure, height, NZ1, isAGL);
+}
+
+%}
 
 /** 
  * These functions are unecessary,
