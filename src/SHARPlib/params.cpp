@@ -24,7 +24,7 @@ namespace sharp {
 
 
 PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh, 
-                                     float cinh_thresh) {
+                                     float cinh_thresh) noexcept {
     // TO-DO: At some point, this will need to be
     // templated or generalized to take other parcel 
     // lifters once things progress to that level...
@@ -110,7 +110,7 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
 WindComponents storm_motion_bunkers(Profile *prof, 
                 HeightLayer mean_wind_layer_agl, 
                 HeightLayer wind_shear_layer_agl, 
-                bool leftMover, bool pressureWeighted) {
+                bool leftMover, bool pressureWeighted) noexcept {
 
     float deviation = 7.5; // deviation from mean wind in m/s
 
@@ -169,7 +169,7 @@ WindComponents storm_motion_bunkers(Profile *prof,
 }
 
 
-WindComponents storm_motion_bunkers(Profile* prof, bool leftMover) {
+WindComponents storm_motion_bunkers(Profile* prof, bool leftMover) noexcept {
 
     Parcel pcl;
     Parcel sbpcl;
@@ -223,7 +223,7 @@ WindComponents storm_motion_bunkers(Profile* prof, bool leftMover) {
 }
 
 
-float entrainment_cape(Profile* prof, Parcel *pcl) {
+float entrainment_cape(Profile* prof, Parcel *pcl) noexcept {
 
     float *mse_star = new float[prof->NZ];
     float *mse_bar = new float[prof->NZ];
@@ -269,7 +269,7 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
     }
 
     // compute NCAPE
-    float NCAPE = buoyancy_dilution_ncape(prof, pcl,mse_star, mse_bar); 
+    float NCAPE = buoyancy_dilution(prof, pcl,mse_star, mse_bar); 
     //printf("NCAPE = %f\n", NCAPE);
 
     // Compute the Bunkers non-parcel based storm motion
@@ -338,7 +338,7 @@ float entrainment_cape(Profile* prof, Parcel *pcl) {
     return E_tilde * pcl->cape;
 }
 
-float energy_helicity_index(float cape, float helicity) {
+float energy_helicity_index(float cape, float helicity) noexcept {
 #ifndef NO_QC
     if ((cape == MISSING) || (helicity == MISSING)) {
         return MISSING;
@@ -349,7 +349,7 @@ float energy_helicity_index(float cape, float helicity) {
 
 
 float supercell_composite_parameter(float mu_cape, float eff_srh,
-                                                   float eff_shear) {
+                                    float eff_shear) noexcept {
 #ifndef NO_QC
     if ((mu_cape == MISSING) || (eff_srh == MISSING) || (eff_shear == MISSING)) {
         return MISSING;
@@ -372,7 +372,7 @@ float supercell_composite_parameter(float mu_cape, float eff_srh,
 
 float significant_tornado_parameter(Profile* prof, Parcel pcl,
                                     float storm_relative_helicity,
-                                    float bulk_wind_difference) {
+                                    float bulk_wind_difference) noexcept {
     float cinh_term, lcl_term, shear_term, srh_term, cape_term;
     if (pcl.cape == MISSING) return MISSING;
 

@@ -20,7 +20,7 @@
 namespace sharp {
 
 float interp_height(float height_val, const float* height_arr, 
-                    const float* data_arr, int num_levs) {
+                    const float* data_arr, int num_levs) noexcept {
 #ifndef NO_QC
     if (height_val == MISSING)
         return MISSING;
@@ -70,7 +70,7 @@ float interp_height(float height_val, const float* height_arr,
 
 
 float interp_pressure(float pressure_val, const float* pressure_arr,
-                      const float* data_arr, int num_levs) {
+                      const float* data_arr, int num_levs) noexcept {
 #ifndef NO_QC
     if (pressure_val == MISSING)
         return MISSING;

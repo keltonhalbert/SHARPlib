@@ -45,7 +45,7 @@ namespace sharp {
  * \param cinh_thresh   The CINH threshold that defines the EIL. Default is -250 J/kg.
  */
 PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh, 
-                                     float cinh_thresh);
+                                     float cinh_thresh) noexcept;
 
 
 /**
@@ -71,7 +71,7 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
 WindComponents storm_motion_bunkers(Profile *prof, 
                 HeightLayer mean_wind_layer_agl, 
                 HeightLayer wind_shear_layer_agl, 
-                bool leftMover, bool pressureWeighted);
+                bool leftMover, bool pressureWeighted) noexcept;
 
 
 /**
@@ -94,7 +94,7 @@ WindComponents storm_motion_bunkers(Profile *prof,
  *  \param Profile      sharp::Profile of atmospheric data
  *  \param leftMover    Boolean flag for left or right deviant supercell
  */
-WindComponents storm_motion_bunkers(Profile* prof, bool leftMover);
+WindComponents storm_motion_bunkers(Profile* prof, bool leftMover) noexcept;
 
 
 /**
@@ -109,18 +109,18 @@ WindComponents storm_motion_bunkers(Profile* prof, bool leftMover);
  * \param prof      A sharp::Profile of atmospheric data
  * \param pcl       A sharp::Parcel with its sharp::LPL/attributes defined.
  */
-float entrainment_cape(Profile* prof, Parcel *pcl);
+float entrainment_cape(Profile* prof, Parcel *pcl) noexcept;
 
 
-float energy_helicity_index(float cape, float helicity);
+float energy_helicity_index(float cape, float helicity) noexcept;
 
 
 float supercell_composite_parameter(float mu_cape, float eff_srh, 
-                                                   float eff_shear);
+                                    float eff_shear) noexcept;
 
 float significant_tornado_parameter(Profile* prof, Parcel pcl,
                                     float storm_relative_helicity, 
-                                    float bulk_wind_difference);
+                                    float bulk_wind_difference) noexcept;
 
 
 } // end namespace sharp

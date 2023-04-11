@@ -48,7 +48,7 @@ Parcel::Parcel() {
  * \param pcl
  *
  */
-void _sfc(Profile* prof, Parcel* pcl) {
+void _sfc(Profile* prof, Parcel* pcl)  noexcept {
             pcl->pres = prof->pres[0];
             pcl->tmpc = prof->tmpc[0];
             pcl->dwpc = prof->dwpc[0]; 
@@ -64,7 +64,7 @@ void _sfc(Profile* prof, Parcel* pcl) {
  * \param pcl
  *
  */
-void _mu(Profile* prof, Parcel* pcl) {
+void _mu(Profile* prof, Parcel* pcl) noexcept {
     // Search for the most unstable parcel in the bottom
     // 300 hPa of the profile
     PressureLayer mu_layer(prof->pres[0], prof->pres[0]-300.0);
@@ -86,7 +86,7 @@ void _mu(Profile* prof, Parcel* pcl) {
  * \param pcl
  *
  */
-void _ml(Profile* prof, Parcel* pcl) {
+void _ml(Profile* prof, Parcel* pcl) noexcept {
     PressureLayer mix_layer(prof->pres[0], prof->pres[0]-100.0);
 
     // get the mean attributes of the lowest 100 hPa
@@ -102,7 +102,7 @@ void _ml(Profile* prof, Parcel* pcl) {
 }
 
 
-void define_parcel(Profile* prof, Parcel* pcl, LPL source) {
+void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept {
     pcl->source = source;
 
     if (source == LPL::SFC) {
@@ -136,7 +136,8 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) {
 }
 
 
-float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl, float tmpc_lcl) {
+float cinh_below_lcl(Profile* prof, Parcel* pcl, 
+                     float pres_lcl, float tmpc_lcl) noexcept {
     // get the virtual temoerature of the LCL
     float vtmp_lcl = virtual_temperature(pres_lcl, tmpc_lcl, tmpc_lcl);
 
@@ -182,15 +183,16 @@ float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl, float tmpc_lcl)
 }
 
 
-void parcel_wobf(Profile* prof, Parcel* pcl) {
+void parcel_wobf(Profile* prof, Parcel* pcl) noexcept {
     lifter_wobus lifter;
     integrate_parcel<lifter_wobus>(lifter, prof, pcl);
     return;
 }
 
 // NCAPE/buoyancy dilution from Peters et al. 2022
-float buoyancy_dilution_ncape(Profile* prof, Parcel *pcl, 
-                              const float *mse_star, const float *mse_bar) {
+float buoyancy_dilution(Profile* prof, Parcel *pcl, 
+                        const float *mse_star, 
+                        const float *mse_bar) noexcept{
     // this routine requires there to be a defined 
     // LFC and EL, since these are the integration bounds
     if ((pcl->lfc_pressure == MISSING) || (pcl->eql_pressure == MISSING)) {
