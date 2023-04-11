@@ -2,10 +2,10 @@
 %module profile 
 %{
     #define SWIG_FILE_WITH_INIT
-    #include <SHARPlib/profile.h>
+    #include <SHARPlib/SHARPlib.h>
+
 %}
 
-%import "../include/SHARPlib/winds.h"
 
 /* Import Numpy Array Functionality */
 %include "numpy.i"
