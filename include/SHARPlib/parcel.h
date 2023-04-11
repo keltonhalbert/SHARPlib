@@ -53,7 +53,7 @@ struct lifter_wobus {
      * \param tmpc      Initial parcel temperature (degC)
      * \param new_pres  Final level of parcel after lift (hPa)
      */
-    float operator()(float pres, float tmpc, float new_pres) const { 
+    float operator()(float pres, float tmpc, float new_pres) const noexcept { 
         return wetlift(pres, tmpc, new_pres);
     }
 };
@@ -216,7 +216,7 @@ struct Parcel {
  * \param pcl       sharp::Parcel
  * \param source    sharp::LPL
  */
-void define_parcel(Profile* prof, Parcel* pcl, LPL source);
+void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept;
 
 
 /**
@@ -236,7 +236,8 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source);
  * \param tmpc_lcl  Temperature at LCL (degC)
  * \return Convective Inhibition (CINH; J/kg) below the LCL
  */
-float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl, float tmpc_lcl);
+float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl, 
+                     float tmpc_lcl) noexcept;
 
 
 /**
@@ -263,7 +264,7 @@ float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl, float tmpc_lcl)
  * \param pcl       A sharp::Parcel with its sharp::LPL/attributes defined.
  */
 template <typename Lifter>
-void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
+void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) noexcept {
 
     // Lift the parcel from the LPL to the LCL 
     float pres_lcl; 
@@ -495,7 +496,8 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) {
 
 
 template <typename Lifter>
-void integrate_parcel_layer(Lifter liftpcl, Profile* prof, Parcel* pcl, PressureLayer layer) {
+void integrate_parcel_layer(Lifter liftpcl, Profile* prof, Parcel* pcl, 
+        PressureLayer layer) noexcept {
     // Lift the parcel from the LPL to the LCL 
     float pres_lcl; 
     float tmpc_lcl;
@@ -633,7 +635,7 @@ void integrate_parcel_layer(Lifter liftpcl, Profile* prof, Parcel* pcl, Pressure
  * \param prof      A sharp::Profile of atmospheric data
  * \param pcl       A sharp::Parcel with its sharp::LPL/attributes defined.
  */
-void parcel_wobf(Profile* prof, Parcel* pcl);
+void parcel_wobf(Profile* prof, Parcel* pcl) noexcept;
 
 
 // TO-DO ECAPE: 
@@ -648,7 +650,7 @@ void parcel_wobf(Profile* prof, Parcel* pcl);
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  * 
- * \brief Computes the NCAPE term used in ECAPE 
+ * \brief Computes the NCAPE term used for ECAPE 
  *
  *
  * Computes the buoyancy dilution rate (NCAPE) used for evaluating
@@ -659,8 +661,9 @@ void parcel_wobf(Profile* prof, Parcel* pcl);
  * \param mse_star  Vertical array of Saturation Moist Static Energy
  * \param mse_bar   Vertical array of integrated Moist Static Energy 
  */
-float buoyancy_dilution_ncape(Profile* prof, Parcel *pcl, 
-                              const float *mse_star, const float *mse_bar);
+float buoyancy_dilution(Profile* prof, Parcel *pcl, 
+                        const float *mse_star, 
+                        const float *mse_bar) noexcept;
 
 
 } // end namespace sharp

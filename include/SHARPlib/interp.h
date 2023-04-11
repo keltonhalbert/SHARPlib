@@ -114,7 +114,7 @@ lerp(float __a, float __b, float __t) noexcept
  * \return              The value of data_arr at the requested height_val.
  */
 float interp_height(float height_val, const float* height_arr, 
-                    const float* data_arr, int num_levs);
+                    const float* data_arr, int num_levs) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -137,7 +137,7 @@ float interp_height(float height_val, const float* height_arr,
  * \return                The value of data_arr at the requested pressure_val.
  */
 float interp_pressure(float pressure_val, const float* pressure_arr,
-                      const float* data_arr, int num_levs);
+                      const float* data_arr, int num_levs) noexcept;
 
 } // end namespace sharp
 

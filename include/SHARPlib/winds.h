@@ -81,7 +81,7 @@ struct WindComponents {
  * \param wind_direction (degrees from North)
  * \return u_component   (distance / time)
  */
-float u_component(float wind_speed, float wind_direction);
+float u_component(float wind_speed, float wind_direction) noexcept;
 
 
 /**
@@ -97,7 +97,7 @@ float u_component(float wind_speed, float wind_direction);
  * \param wind_direction (degrees from North)
  * \return v_component   (distance / time)
  */
-float v_component(float wind_speed, float wind_direction);
+float v_component(float wind_speed, float wind_direction) noexcept;
 
 
 /**
@@ -113,7 +113,7 @@ float v_component(float wind_speed, float wind_direction);
  * \param v_comp            (distance / time)
  * \return wind_direction   (degrees from North)
  */
-float vector_angle(float u_comp, float v_comp);
+float vector_angle(float u_comp, float v_comp) noexcept;
 
 
 /**
@@ -129,7 +129,7 @@ float vector_angle(float u_comp, float v_comp);
  * \param v_comp        (distance / time)
  * \return wind_speed   (distance / time)
  */
-float vector_magnitude(float u_comp, float v_comp);
+float vector_magnitude(float u_comp, float v_comp) noexcept;
 
 
 /**
@@ -151,7 +151,7 @@ float vector_magnitude(float u_comp, float v_comp);
  * \param v_comp        (distance / time)
  * \return wind_speed   (distance / time)
  */
-float vector_magnitude_precise(float u_comp, float v_comp);
+float vector_magnitude_precise(float u_comp, float v_comp) noexcept;
 
 
 /**
@@ -168,7 +168,7 @@ float vector_magnitude_precise(float u_comp, float v_comp);
  * \param v_comp                (distance / time)
  * \return sharp::WindVector    {wind_speed, wind_direction}
  */
-WindVector components_to_vector(float u_comp, float v_comp);
+WindVector components_to_vector(float u_comp, float v_comp) noexcept;
 
 
 /**
@@ -184,7 +184,7 @@ WindVector components_to_vector(float u_comp, float v_comp);
  * \param comp                  sharp::WindComponents {u, v} 
  * \return sharp::WindVector    {wind_speed, wind_direction}
  */
-WindVector components_to_vector(WindComponents comp);
+WindVector components_to_vector(WindComponents comp) noexcept;
 
 
 /**
@@ -200,7 +200,8 @@ WindVector components_to_vector(WindComponents comp);
  * \param wind_direction            (degrees from North)
  * \return sharp::WindComponents    {u_comp, v_comp}
  */
-WindComponents vector_to_components(float wind_speed, float wind_direction);
+WindComponents vector_to_components(float wind_speed, 
+                                    float wind_direction) noexcept;
 
 
 /**
@@ -215,7 +216,7 @@ WindComponents vector_to_components(float wind_speed, float wind_direction);
  * \param   vect    sharp::WindVector {speed, direction}
  * \return  sharp::WindComponents    {u_comp, v_comp}
  */
-WindComponents vector_to_components(WindVector vect);
+WindComponents vector_to_components(WindVector vect) noexcept;
 
 
 /**
@@ -236,7 +237,7 @@ WindComponents vector_to_components(WindVector vect);
  */
 WindComponents mean_wind(PressureLayer layer, const float* pres,
                          const float* u_wind, const float* v_wind,
-                         int num_levs);
+                         int num_levs) noexcept;
 
 
 /**
@@ -258,7 +259,7 @@ WindComponents mean_wind(PressureLayer layer, const float* pres,
  */
 WindComponents mean_wind_npw(PressureLayer layer, const float* pres,
                              const float* u_wind, const float* v_wind, 
-                             int num_levs);
+                             int num_levs) noexcept;
 
 
 /**
@@ -280,7 +281,7 @@ WindComponents mean_wind_npw(PressureLayer layer, const float* pres,
  */
 WindComponents wind_shear(PressureLayer layer, const float* pres,
                           const float* u_wind, const float* v_wind, 
-                          int num_levs);
+                          int num_levs) noexcept;
 
 
 /**
@@ -302,7 +303,7 @@ WindComponents wind_shear(PressureLayer layer, const float* pres,
  */
 WindComponents wind_shear(HeightLayer layer_agl, const float* height,
                           const float* u_wind, const float* v_wind, 
-                          int num_levs);
+                          int num_levs) noexcept;
 
 
 /**
@@ -330,7 +331,7 @@ WindComponents wind_shear(HeightLayer layer_agl, const float* height,
  */
 float helicity(HeightLayer layer_agl, WindComponents storm_motion,
                const float* height, const float* u_wind,
-               const float* v_wind, int num_levs);
+               const float* v_wind, int num_levs) noexcept;
 
 
 /**
@@ -361,7 +362,8 @@ float helicity(HeightLayer layer_agl, WindComponents storm_motion,
  */
 float helicity(PressureLayer layer, WindComponents storm_motion,
                const float* pressure, const float* height,
-               const float* u_wind, const float* v_wind, int num_levs);
+               const float* u_wind, const float* v_wind, 
+               int num_levs) noexcept;
 
 
 } // end namespace sharp

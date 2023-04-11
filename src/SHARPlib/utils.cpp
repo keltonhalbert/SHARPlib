@@ -74,7 +74,7 @@ PressureLayer::PressureLayer(float bot, float top) {
 }
 
 LayerIndex get_layer_index(PressureLayer& layer, 
-                           const float* pressure, int num_levs) {
+                           const float* pressure, int num_levs) noexcept {
     // bounds check our search, modifying
     // our PressureLayer if need be.
     if ((layer.pbot > pressure[0])) {
@@ -103,7 +103,7 @@ LayerIndex get_layer_index(PressureLayer& layer,
 
 
 LayerIndex get_layer_index(HeightLayer& layer, 
-                           const float* height, int num_levs) {
+                           const float* height, int num_levs) noexcept {
     // bounds check our search, modifying
     // our PressureLayer if need be. 
     if ((layer.zbot < height[0])) {
@@ -132,7 +132,7 @@ LayerIndex get_layer_index(HeightLayer& layer,
 
 PressureLayer height_layer_to_pressure(HeightLayer layer, 
                 const float* pressure, const float* height, 
-                int num_levs, bool isAGL) {
+                int num_levs, bool isAGL) noexcept {
 
     if (isAGL) {
         layer.zbot += height[0];
@@ -147,7 +147,7 @@ PressureLayer height_layer_to_pressure(HeightLayer layer,
 
 HeightLayer pressure_layer_to_height(PressureLayer layer, 
                 const float* pressure, const float* height, 
-                int num_levs, bool toAGL) {
+                int num_levs, bool toAGL) noexcept {
     float zbot = interp_pressure(layer.pbot, pressure, height, num_levs);
     float ztop = interp_pressure(layer.ptop, pressure, height, num_levs);
 
@@ -162,7 +162,7 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
 
 float max_value(PressureLayer layer,   const float* pressure, 
                 const float* data_arr, int num_levs,
-                float* pres_of_max) {
+                float* pres_of_max) noexcept {
 #ifndef NO_QC
     if ((layer.pbot == MISSING) || (layer.ptop == MISSING)) {
         return MISSING;
@@ -209,7 +209,7 @@ float max_value(PressureLayer layer,   const float* pressure,
 
 float max_value(HeightLayer layer,     const float* height,
                 const float* data_arr, int num_levs,
-                float* hght_of_max) {
+                float* hght_of_max) noexcept {
 #ifndef NO_QC
     if ((layer.zbot == MISSING) || (layer.ztop == MISSING)) {
         return MISSING;
@@ -256,7 +256,7 @@ float max_value(HeightLayer layer,     const float* height,
 
 float min_value(PressureLayer layer,   const float* pressure,
                 const float* data_arr, int num_levs,
-                float* pres_of_min) {
+                float* pres_of_min) noexcept {
 #ifndef NO_QC
     if ((layer.pbot == MISSING) || (layer.ptop == MISSING)) {
         return MISSING;
@@ -303,7 +303,7 @@ float min_value(PressureLayer layer,   const float* pressure,
 
 float min_value(HeightLayer layer,     const float* height,
                 const float* data_arr, int num_levs,
-                float* hght_of_min) {
+                float* hght_of_min) noexcept {
 #ifndef NO_QC
     if ((layer.zbot == MISSING) || (layer.ztop == MISSING)) {
         return MISSING;
@@ -349,7 +349,7 @@ float min_value(HeightLayer layer,     const float* height,
 
 
 float mean_value(PressureLayer layer,   const float* pressure,
-                 const float* data_arr, int num_levs) {
+                 const float* data_arr, int num_levs) noexcept {
 #ifndef NO_QC
     if ((layer.pbot == MISSING) || (layer.ptop == MISSING)) {
         return MISSING;
@@ -393,8 +393,9 @@ float mean_value(PressureLayer layer,   const float* pressure,
 }
 
 
-float mean_value(HeightLayer layer_agl, const float* height, const float* pressure,
-                 const float* data_arr, int num_levs) {
+float mean_value(HeightLayer layer_agl, const float* height, 
+                 const float* pressure, const float* data_arr, 
+                 int num_levs) noexcept {
 #ifndef NO_QC
     if ((layer_agl.zbot == MISSING) || (layer_agl.ztop == MISSING)) {
         return MISSING;
