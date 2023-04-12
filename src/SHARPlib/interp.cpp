@@ -13,9 +13,12 @@
  */
 
 #include <cmath>
+#include <functional>
+#include <iostream>
 
 #include <SHARPlib/interp.h>
 #include <SHARPlib/constants.h>
+#include <SHARPlib/algorithms.h>
 
 namespace sharp {
 
@@ -30,29 +33,28 @@ float interp_height(float height_val, const float* height_arr,
         return MISSING;
 #endif
 
-    // Find the height levels that our request lies between
-    float height_bot = MISSING;
-    float height_top = MISSING;
-    float data_bot = MISSING;
-    float data_top = MISSING;
-    for (int k = 0; k < num_levs-1; k++) {
-        height_bot = height_arr[k];
-        height_top = height_arr[k+1];
-        
-        // If we have found our height levels, 
-        // load the data levels and exit the loop
-        if ((height_bot <= height_val) && (height_top >= height_val)) {
-            data_bot = data_arr[k];
-            data_top = data_arr[k+1];
+    auto comp = std::less<float>();
+    int idx_bot = lower_bound(height_arr, num_levs, height_val, comp);
+    int idx_top = upper_bound(height_arr, num_levs, height_val, comp);
+
+    if ((height_arr[idx_bot] > height_val) && (idx_bot > 0))
+        idx_bot -= 1;
+
+    for (; idx_bot > 0; --idx_bot) {
+        if (data_arr[idx_bot] != MISSING)
             break;
-        }
     }
 
-    // TO-DO: Need to handle missing values a different way
-    // when working with observed soundings that have missing
-    // winds and such. Approach should be to find the first valid
-    // bottom layer, and if the top is misisng, raise the top until
-    // a valid observation is found and then interpolate linearly. 
+    for (; idx_top < num_levs; ++idx_top) {
+        if (data_arr[idx_top] != MISSING)
+            break;
+    }
+
+    float height_bot = height_arr[idx_bot];
+    float height_top = height_arr[idx_top];
+    float data_bot = data_arr[idx_bot];
+    float data_top = data_arr[idx_top];
+    
 #ifndef NO_QC
     // if we didn't manage to find data, or our
     // profile data is missing, return missing
@@ -83,29 +85,28 @@ float interp_pressure(float pressure_val, const float* pressure_arr,
     }
 #endif
 
-    // Find the pressure levels that our request lies between
-    float pressure_bot = MISSING;
-    float pressure_top = MISSING;
-    float data_bot = MISSING;
-    float data_top = MISSING;
-    for (int k = 0; k < num_levs-1; k++) {
-        pressure_bot = pressure_arr[k];
-        pressure_top = pressure_arr[k+1];
-        
-        // If we have found our pressure levels, 
-        // load the data levels and exit the loop
-        if ((pressure_bot >= pressure_val) && (pressure_top <= pressure_val)) {
-            data_bot = data_arr[k];
-            data_top = data_arr[k+1];
+    auto comp = std::greater<float>();
+    int idx_bot = lower_bound(pressure_arr, num_levs, pressure_val, comp);
+    int idx_top = upper_bound(pressure_arr, num_levs, pressure_val, comp);
+
+    if ((pressure_arr[idx_bot] < pressure_val) && (idx_bot > 0))
+        idx_bot -= 1;
+
+    for (; idx_bot > 0; --idx_bot) {
+        if (data_arr[idx_bot] != MISSING)
             break;
-        }
     }
 
-    // TO-DO: Need to handle missing values a different way
-    // when working with observed soundings that have missing
-    // winds and such. Approach should be to find the first valid
-    // bottom layer, and if the top is misisng, raise the top until
-    // a valid observation is found and then interpolate linearly. 
+    for (; idx_top < num_levs; ++idx_top) {
+        if (data_arr[idx_top] != MISSING)
+            break;
+    }
+
+    float pressure_bot = pressure_arr[idx_bot];
+    float pressure_top = pressure_arr[idx_top];
+    float data_bot = data_arr[idx_bot];
+    float data_top = data_arr[idx_top];
+    
 #ifndef NO_QC
     // if we didn't manage to find data, or our
     // profile data is missing, return missing
