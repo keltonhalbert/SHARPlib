@@ -12,10 +12,12 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC. 
  */
+#include <functional>
 #include <stdexcept>
 #include <string>
 #include <cmath>
 
+#include <SHARPlib/algorithms.h>
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/utils.h>
@@ -86,17 +88,19 @@ LayerIndex get_layer_index(PressureLayer& layer,
 
     // find the lowest observation, excluding
     // the exact level for interpolation reasons
-    int lower_idx = 0;
-    while (pressure[lower_idx] >= layer.pbot) {
-        lower_idx++;
-    }
+    auto cmp = std::greater<float>();
+    int lower_idx = lower_bound(pressure, num_levs, layer.pbot, cmp);
+    int upper_idx = upper_bound(pressure, num_levs, layer.ptop, cmp);
+    printf("First: %d %d\n", lower_idx, upper_idx);
+
+    if ((pressure[lower_idx] >= layer.pbot) && (lower_idx < num_levs - 1))
+        lower_idx += 1;
 
     // find the highest observation, excluding
     // the exact level for interpolation reasons
-    int upper_idx = num_levs-1;
-    while (pressure[upper_idx] <= layer.ptop) {
-        upper_idx--;
-    }
+    if ((pressure[upper_idx] <= layer.ptop) && (upper_idx > 0))
+       upper_idx -= 1; 
+    printf("Second: %d %d\n", lower_idx, upper_idx);
 
     return {lower_idx, upper_idx};
 }
@@ -115,17 +119,15 @@ LayerIndex get_layer_index(HeightLayer& layer,
 
     // find the lowest observation, excluding
     // the exact level for interpolation reasons
-    int lower_idx = 0;
-    while (height[lower_idx] <= layer.zbot) {
-        lower_idx++;
-    }
+    int lower_idx = lower_bound(height, num_levs, layer.zbot);
+    if ((height[lower_idx] <= layer.zbot) && (lower_idx < num_levs -1))
+        lower_idx += 1;
 
     // find the highest observation, excluding
     // the exact level for interpolation reasons
-    int upper_idx = num_levs-1;
-    while (height[upper_idx] >= layer.ztop) {
-        upper_idx--;
-    }
+    int upper_idx = upper_bound(height, num_levs, layer.ztop);
+    if ((height[upper_idx] >= layer.ztop) && (upper_idx > 0))
+        upper_idx -= 1;
 
     return {lower_idx, upper_idx};
 }
