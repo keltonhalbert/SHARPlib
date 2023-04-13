@@ -131,7 +131,7 @@ TEST_CASE("Testing parcel definitions") {
     std::string fname1 = "/users/khalbert/CODEBASE/NSHARP-server/unprocessed/sars_supercell/99050323f0.okc";
     std::string fname2 = "/users/khalbert/Downloads/newSPC.txt";
     std::string fname3 = "/users/khalbert/22112200.KEY";
-	std::string fname4 = "home/kthalbert/CODEBASE/SHARP-calc/swig/test/hires-SPC.txt"
+	std::string fname4 = "home/kthalbert/CODEBASE/SHARP-calc/swig/test/hires-SPC.txt";
 
 
     auto start_time = std::chrono::system_clock::now();
