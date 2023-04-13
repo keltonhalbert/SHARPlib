@@ -166,6 +166,10 @@ float max_value(HeightLayer layer, const float* height,
 }
 
 
+// TO-DO: Need to unify/templatify the mean_value functions, 
+// and also need to rename min_value, max_value, and mean_value
+// to layer_min, layer_max, and layer_mean to better reflect
+// the intent and design of the functions
 float mean_value(PressureLayer layer,   const float* pressure,
                  const float* data_arr, int num_levs) noexcept {
 #ifndef NO_QC
