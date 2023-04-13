@@ -188,58 +188,123 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
                 const float* pressure, const float* height, 
                 int num_levs, bool toAGL) noexcept;
 
-
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- * \brief Returns the maximim value in the given pressure layer. 
+ * \brief Template for finding min/max value over sharp::PressureLayer 
  *
- * Returns the maximum value observed within the given data array
- * over the given sharp::PressureLayer. The function bounds checks
- * the sharp::PressureLayer by calling sharp::get_layer_index.
+ * This tempalte function contains the algorithm for searching for either
+ * the minimum or maximum value over a given sharp::PressureLayer. This
+ * function is wrapped by the sharp::min_value and sharp::max_value
+ * functions, which pass the appropriate comparitor to the template. 
  *
- * If pres_of_max is not a nullptr, then the pointer will be 
- * dereferenced and filled with the pressure of the maximum
+ * If pr_min_or_max is not a nullptr, then the pointer will be 
+ * dereferenced and filled with the pressure of the maximum/minum
  * value. 
  *
  * \param layer         (sharp::PressureLayer)  {pbot, ptop}
  * \param pressure      (hPa)
  * \param data_arr      (data array to find max on)
- * \param num_levs      (length of arrays)
- * \param pres_of_max   (Pressure level of max val; hpa)
- * \return max_value
+ * \param N             (length of arrays)
+ * \param pr_min_or_max (Pressure level of min/max val; hpa)
+ * \return minmax_value
  *
  */
-float max_value(PressureLayer layer,   const float* pressure,
-                const float* data_arr, int num_levs,
-                float* pres_of_max) noexcept; 
+template <typename C>
+constexpr float minmax_value(PressureLayer layer, const float* pressure, 
+                   const float* data_arr, int N, float* pr_min_or_max,
+                   C comp) noexcept {
+    
+#ifndef NO_QC
+    if ((layer.pbot == MISSING) || (layer.ptop == MISSING)) {
+        return MISSING;
+    }
+#endif
 
+    LayerIndex layer_idx = get_layer_index(layer, pressure, N);
+
+    float min_or_max = interp_pressure(layer.pbot, pressure, data_arr, N);
+
+    if (pr_min_or_max)
+        *pr_min_or_max = layer.pbot;
+
+    for (int k = layer_idx.kbot; k <= layer_idx.ktop; ++k) {
+        float val = data_arr[k];    
+        if (comp(val, min_or_max)) {
+            min_or_max = val;
+            if (pr_min_or_max)
+                *pr_min_or_max = pressure[k];
+        } 
+    }
+
+    float val = interp_pressure(layer.ptop, pressure, data_arr, N);
+    if (comp(val, min_or_max)) {
+        min_or_max = val;
+        if (pr_min_or_max)
+            *pr_min_or_max = layer.ptop;
+    }
+
+    return min_or_max;
+}
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- * \brief Returns the maximim value in the given height layer.  
+ * \brief Template for finding min/max value over sharp::HeightLayer 
  *
- * Returns the maximum value observed within the given data array
- * over the given sharp::HeightLayer. The function bounds checks
- * the sharp::HeightLayer by calling sharp::get_layer_index.
+ * This tempalte function contains the algorithm for searching for either
+ * the minimum or maximum value over a given sharp::HeightLayer. This
+ * function is wrapped by the sharp::min_value and sharp::max_value
+ * functions, which pass the appropriate comparitor to the template. 
  *
- * If hght_of_max is not a nullptr, then the pointer will be 
- * dereferenced and filled with the height of the maximum
+ * If ht_min_or_max is not a nullptr, then the pointer will be 
+ * dereferenced and filled with the height of the maximum/minum
  * value. 
  *
  * \param layer         (sharp::HeightLayer)  {zbot, ztop}
  * \param height        (meters)
  * \param data_arr      (data array to find max on)
- * \param num_levs      (length of arrays)
- * \param hght_of_max   (Height level of max val; meters)
- * \return max_value
+ * \param N             (length of arrays)
+ * \param ht_min_or_max (Height level of min/max val; hpa)
+ * \return minmax_value
  *
  */
-float max_value(HeightLayer layer,     const float* height,
-                const float* data_arr, int num_levs,
-                float* hght_of_max) noexcept ;
+template <typename C>
+constexpr float minmax_value(HeightLayer layer, const float* height, 
+                   const float* data_arr, int N, float* ht_min_or_max,
+                   C comp) noexcept {
+    
+#ifndef NO_QC
+    if ((layer.zbot == MISSING) || (layer.ztop == MISSING)) {
+        return MISSING;
+    }
+#endif
 
+    LayerIndex layer_idx = get_layer_index(layer, height, N);
+
+    float min_or_max = interp_height(layer.zbot, height, data_arr, N);
+
+    if (ht_min_or_max)
+        *ht_min_or_max = layer.zbot;
+
+    for (int k = layer_idx.kbot; k <= layer_idx.ktop; ++k) {
+        float val = data_arr[k];    
+        if (comp(val, min_or_max)) {
+            min_or_max = val;
+            if (ht_min_or_max)
+                *ht_min_or_max = height[k];
+        } 
+    }
+
+    float val = interp_height(layer.ztop, height, data_arr, N);
+    if (comp(val, min_or_max)) {
+        min_or_max = val;
+        if (ht_min_or_max)
+            *ht_min_or_max = layer.ztop;
+    }
+
+    return min_or_max;
+}
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -257,15 +322,14 @@ float max_value(HeightLayer layer,     const float* height,
  * \param layer         (sharp::PressureLayer)  {pbot, ptop}
  * \param pressure      (hPa)
  * \param data_arr      (data array to find min on)
- * \param num_levs      (length of arrays)
+ * \param N             (length of arrays)
  * \param pres_of_min   (Pressure level of min val; hPa)
  * \return min_value
  *
  */
-float min_value(PressureLayer layer,   const float* pressure,
-                const float* data_arr, int num_levs,
-                float* pres_of_min) noexcept;
-
+float min_value(PressureLayer layer, const float* pressure,
+                const float* data_arr, int N, 
+                float* pres_of_min=nullptr) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -283,14 +347,65 @@ float min_value(PressureLayer layer,   const float* pressure,
  * \param layer         (sharp::HeightLayer)  {zbot, ztop}
  * \param height        (meters)
  * \param data_arr      (data array to find min on)
- * \param num_levs      (length of arrays)
+ * \param N             (length of arrays)
  * \param hght_of_min   (Height level of min val; meters)
  * \return min_value
  *
  */
-float min_value(HeightLayer layer,     const float* height,
-                const float* data_arr, int num_levs,
-                float* hght_of_min) noexcept; 
+float min_value(HeightLayer layer, const float* height,
+                const float* data_arr, int N, 
+                float* hght_of_min=nullptr) noexcept;
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Returns the maximim value in the given pressure layer. 
+ *
+ * Returns the maximum value observed within the given data array
+ * over the given sharp::PressureLayer. The function bounds checks
+ * the sharp::PressureLayer by calling sharp::get_layer_index.
+ *
+ * If pres_of_max is not a nullptr, then the pointer will be 
+ * dereferenced and filled with the pressure of the maximum
+ * value. 
+ *
+ * \param layer         (sharp::PressureLayer)  {pbot, ptop}
+ * \param pressure      (hPa)
+ * \param data_arr      (data array to find max on)
+ * \param N             (length of arrays)
+ * \param pres_of_max   (Pressure level of max val; hpa)
+ * \return max_value
+ *
+ */
+float max_value(PressureLayer layer, const float* pressure,
+                const float* data_arr, int N, 
+                float* pres_of_max=nullptr) noexcept;
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Returns the maximim value in the given height layer.  
+ *
+ * Returns the maximum value observed within the given data array
+ * over the given sharp::HeightLayer. The function bounds checks
+ * the sharp::HeightLayer by calling sharp::get_layer_index.
+ *
+ * If hght_of_max is not a nullptr, then the pointer will be 
+ * dereferenced and filled with the height of the maximum
+ * value. 
+ *
+ * \param layer         (sharp::HeightLayer)  {zbot, ztop}
+ * \param height        (meters)
+ * \param data_arr      (data array to find max on)
+ * \param N             (length of arrays)
+ * \param hght_of_max   (Height level of max val; meters)
+ * \return max_value
+ *
+ */
+float max_value(HeightLayer layer, const float* height,
+                const float* data_arr, int N, 
+                float* hght_of_max=nullptr) noexcept;
+
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
