@@ -191,7 +191,7 @@ WindComponents storm_motion_bunkers(Profile* prof, bool leftMover) noexcept {
 
     if (pcl.eql_pressure == MISSING) {
         return storm_motion_bunkers(prof, 
-                {0.0, 6000.0}, {0.0, 6000.0}, leftMover, false);
+                {0.0, 6000.0}, {0.0, 6000.0}, leftMover);
     }
 
     // set up the layers
@@ -200,7 +200,7 @@ WindComponents storm_motion_bunkers(Profile* prof, bool leftMover) noexcept {
 
     if ((eil.pbot == MISSING) || (eil.ptop == MISSING)) {
         return storm_motion_bunkers(prof, 
-                {0.0, 6000.0}, {0.0, 6000.0}, leftMover, false);
+                {0.0, 6000.0}, {0.0, 6000.0}, leftMover);
     }
 
     HeightLayer eil_hght = pressure_layer_to_height(
@@ -213,7 +213,7 @@ WindComponents storm_motion_bunkers(Profile* prof, bool leftMover) noexcept {
 
     if ((htop < 3000.0) || (eil_hght.zbot > htop)) {
         return storm_motion_bunkers(prof, 
-                {0.0, 6000.0}, {0.0, 6000.0}, leftMover, false);
+                {0.0, 6000.0}, {0.0, 6000.0}, leftMover);
     }
 
     HeightLayer mw_layer = {eil_hght.zbot, htop};

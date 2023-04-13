@@ -71,7 +71,7 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
 WindComponents storm_motion_bunkers(Profile *prof, 
                 HeightLayer mean_wind_layer_agl, 
                 HeightLayer wind_shear_layer_agl, 
-                bool leftMover, bool pressureWeighted) noexcept;
+                bool leftMover=false, bool pressureWeighted=false) noexcept;
 
 
 /**
@@ -94,7 +94,7 @@ WindComponents storm_motion_bunkers(Profile *prof,
  *  \param Profile      sharp::Profile of atmospheric data
  *  \param leftMover    Boolean flag for left or right deviant supercell
  */
-WindComponents storm_motion_bunkers(Profile* prof, bool leftMover) noexcept;
+WindComponents storm_motion_bunkers(Profile* prof, bool leftMover=false) noexcept;
 
 
 /**
