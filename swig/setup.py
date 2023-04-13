@@ -10,7 +10,7 @@ class build_py(_build_py):
         self.run_command("build_ext")
         return super().run()
 
-compile_args = ['-std=c++17']
+compile_args = ['-std=c++17']#, '-DNO_QC']
 swig_args = ['-c++', '-builtin', '-O']
 
 constants_module = Extension('nwsspc.sharp.calc._constants',
