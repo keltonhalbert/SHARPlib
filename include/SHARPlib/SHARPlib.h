@@ -60,15 +60,18 @@ Profile* create_profile(float *pres, float *hght,
 
         if (windComponents) {
             // converting from knots to m/s
-            prof->uwin[k] = wspd_or_u[k] * 0.514444f;
-            prof->vwin[k] = wdir_or_v[k] * 0.514444f;
+            prof->uwin[k] = wspd_or_u[k];
+            prof->vwin[k] = wdir_or_v[k];
+            if (prof->uwin[k] != MISSING) prof->uwin[k] *= 0.514444f;
+            if (prof->vwin[k] != MISSING) prof->vwin[k] *= 0.514444f;
 
             WindVector vec = components_to_vector(prof->uwin[k], prof->vwin[k]);
             prof->wspd[k] = vec.speed;
             prof->wdir[k] = vec.direction;
         }
         else {
-            prof->wspd[k] = wspd_or_u[k] * 0.514444f;
+            prof->wspd[k] = wspd_or_u[k];
+            if (prof->wspd[k] != MISSING) prof->wspd[k] *= 0.514444f;
             prof->wdir[k] = wdir_or_v[k];
 
             WindComponents cmp = vector_to_components(prof->wspd[k], 
