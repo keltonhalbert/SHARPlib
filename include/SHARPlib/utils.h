@@ -41,10 +41,9 @@ struct HeightLayer {
     /**
      * \brief The height interval with which to iterate over the layer (meters) 
      */
-    float dz = 100.0;
+    float dz;
 
-    HeightLayer(float bot, float top, float delta);
-    HeightLayer(float bot, float top);
+    HeightLayer(float bot, float top, float delta=100.0);
 };
 
 
@@ -71,9 +70,8 @@ struct PressureLayer {
     /**
      * \brief The pressure interval with which to iterate over the layer (hPa)
      */
-    float dp = 1;
-    PressureLayer(float bot, float top, float delta);
-    PressureLayer(float bot, float top);
+    float dp;
+    PressureLayer(float bot, float top, float delta=10);
 };
 
 
@@ -116,7 +114,8 @@ struct LayerIndex {
  *
  */
 LayerIndex get_layer_index(PressureLayer& layer, 
-                           const float* pressure, int num_levs) noexcept; 
+                           const float* pressure, 
+                           int num_levs) noexcept; 
 
 
 /**
@@ -142,7 +141,8 @@ LayerIndex get_layer_index(PressureLayer& layer,
  *
  */
 LayerIndex get_layer_index(HeightLayer& layer, 
-                           const float* height, int num_levs) noexcept;
+                           const float* height, 
+                           int num_levs) noexcept;
 
 
 /*
@@ -158,13 +158,13 @@ LayerIndex get_layer_index(HeightLayer& layer,
  * \param pressure  Vertical array of pressure (hPa)
  * \param height    Vertical array of height (meters)
  * \param num_levs  Length of arrays
- * \param isAGL     Flag signaling whether the input layer is AGL or MSL
+ * \param isAGL     Flag whether the input layer is AGL or MSL (default: false)
  *
  * \return  sharp::PressureLayer
  */
 PressureLayer height_layer_to_pressure(HeightLayer layer, 
                 const float* pressure, const float* height, 
-                int num_levs, bool isAGL) noexcept;
+                int num_levs, bool isAGL=false) noexcept;
 
 
 /**
@@ -180,13 +180,13 @@ PressureLayer height_layer_to_pressure(HeightLayer layer,
  * \param pressure  Vertical array of pressure (hPa)
  * \param height    Vertical array of height (meters)
  * \param num_levs  Length of arrays
- * \param toAGL     Flag signaling whether to return meters AGL or MSL
+ * \param toAGL     Flag whether to return meters AGL or MSL (default: false)
  *
  * \return sharp::HeightLayer
  */
 HeightLayer pressure_layer_to_height(PressureLayer layer, 
                 const float* pressure, const float* height, 
-                int num_levs, bool toAGL) noexcept;
+                int num_levs, bool toAGL=false) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO

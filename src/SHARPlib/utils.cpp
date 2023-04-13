@@ -39,18 +39,6 @@ HeightLayer::HeightLayer(float bot, float top, float delta) {
 }
 
 
-HeightLayer::HeightLayer(float bot, float top) {
-    if (bot > top) {
-        throw std::range_error(
-            fmt::format("RangeError: The top of the height layer must be > the bottom of the height layer. Got hbot: {0} and htop: {1}", bot, top)
-        );
-    }
-    zbot = bot;
-    ztop = top;
-    dz = 100.0;
-}
-
-
 PressureLayer::PressureLayer(float bot, float top, float delta) {
     if (bot < top) {
         throw std::range_error(
@@ -63,20 +51,9 @@ PressureLayer::PressureLayer(float bot, float top, float delta) {
 }
 
 
-PressureLayer::PressureLayer(float bot, float top) {
-    if (bot < top) {
-        throw std::range_error(
-            fmt::format("RangeError: The bottom of the pressure layer must be > the top of the pressure layer. Got pbot: {0} and ptop: {1}", bot, top)
-        );
-    }
-    pbot = bot;
-    ptop = top;
-    dp = 1;
-}
-
-
 LayerIndex get_layer_index(PressureLayer& layer, 
-                           const float* pressure, int num_levs) noexcept {
+                           const float* pressure, 
+                           int num_levs) noexcept {
     // bounds check our search, modifying
     // our PressureLayer if need be.
     if ((layer.pbot > pressure[0])) {
@@ -102,7 +79,8 @@ LayerIndex get_layer_index(PressureLayer& layer,
 }
 
 LayerIndex get_layer_index(HeightLayer& layer, 
-                           const float* height, int num_levs) noexcept {
+                           const float* height, 
+                           int num_levs) noexcept {
     // bounds check our search, modifying
     // our PressureLayer if need be. 
     if ((layer.zbot < height[0])) {
