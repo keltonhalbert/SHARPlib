@@ -14,7 +14,6 @@
 
 #include <cmath>
 #include <functional>
-#include <iostream>
 
 #include <SHARPlib/interp.h>
 #include <SHARPlib/constants.h>
@@ -40,6 +39,7 @@ float interp_height(float height_val, const float* height_arr,
     if ((height_arr[idx_bot] > height_val) && (idx_bot > 0))
         idx_bot -= 1;
 
+#ifndef NO_QC
     for (; idx_bot > 0; --idx_bot) {
         if (data_arr[idx_bot] != MISSING)
             break;
@@ -49,6 +49,7 @@ float interp_height(float height_val, const float* height_arr,
         if (data_arr[idx_top] != MISSING)
             break;
     }
+#endif
 
     float height_bot = height_arr[idx_bot];
     float height_top = height_arr[idx_top];
@@ -92,6 +93,7 @@ float interp_pressure(float pressure_val, const float* pressure_arr,
     if ((pressure_arr[idx_bot] < pressure_val) && (idx_bot > 0))
         idx_bot -= 1;
 
+#ifndef NO_QC
     for (; idx_bot > 0; --idx_bot) {
         if (data_arr[idx_bot] != MISSING)
             break;
@@ -101,6 +103,7 @@ float interp_pressure(float pressure_val, const float* pressure_arr,
         if (data_arr[idx_top] != MISSING)
             break;
     }
+#endif
 
     float pressure_bot = pressure_arr[idx_bot];
     float pressure_top = pressure_arr[idx_top];
