@@ -14,7 +14,6 @@
  */
 #include <functional>
 #include <stdexcept>
-#include <string>
 #include <cmath>
 
 #include <SHARPlib/algorithms.h>
@@ -75,6 +74,7 @@ PressureLayer::PressureLayer(float bot, float top) {
     dp = 1;
 }
 
+
 LayerIndex get_layer_index(PressureLayer& layer, 
                            const float* pressure, int num_levs) noexcept {
     // bounds check our search, modifying
@@ -86,25 +86,20 @@ LayerIndex get_layer_index(PressureLayer& layer,
         layer.ptop = pressure[num_levs-1];
     }
 
-    // find the lowest observation, excluding
-    // the exact level for interpolation reasons
     auto cmp = std::greater<float>();
     int lower_idx = lower_bound(pressure, num_levs, layer.pbot, cmp);
     int upper_idx = upper_bound(pressure, num_levs, layer.ptop, cmp);
-    printf("First: %d %d\n", lower_idx, upper_idx);
 
-    if ((pressure[lower_idx] >= layer.pbot) && (lower_idx < num_levs - 1))
+    if ((pressure[lower_idx] >= layer.pbot) && (lower_idx < num_levs - 1)) {
         lower_idx += 1;
+	}
 
-    // find the highest observation, excluding
-    // the exact level for interpolation reasons
-    if ((pressure[upper_idx] <= layer.ptop) && (upper_idx > 0))
+    if ((pressure[upper_idx] <= layer.ptop) && (upper_idx > 0)) {
        upper_idx -= 1; 
-    printf("Second: %d %d\n", lower_idx, upper_idx);
+	}
 
     return {lower_idx, upper_idx};
 }
-
 
 LayerIndex get_layer_index(HeightLayer& layer, 
                            const float* height, int num_levs) noexcept {
@@ -117,20 +112,19 @@ LayerIndex get_layer_index(HeightLayer& layer,
         layer.ztop = height[num_levs-1];
     }
 
-    // find the lowest observation, excluding
-    // the exact level for interpolation reasons
     int lower_idx = lower_bound(height, num_levs, layer.zbot);
-    if ((height[lower_idx] <= layer.zbot) && (lower_idx < num_levs -1))
-        lower_idx += 1;
-
-    // find the highest observation, excluding
-    // the exact level for interpolation reasons
     int upper_idx = upper_bound(height, num_levs, layer.ztop);
-    if ((height[upper_idx] >= layer.ztop) && (upper_idx > 0))
+    if ((height[lower_idx] <= layer.zbot) && (lower_idx < num_levs -1)) {
+        lower_idx += 1;
+	}
+
+    if ((height[upper_idx] >= layer.ztop) && (upper_idx > 0)) {
         upper_idx -= 1;
+	}
 
     return {lower_idx, upper_idx};
 }
+
 
 PressureLayer height_layer_to_pressure(HeightLayer layer, 
                 const float* pressure, const float* height, 
