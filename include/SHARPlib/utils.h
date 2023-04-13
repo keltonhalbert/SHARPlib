@@ -409,6 +409,10 @@ float max_value(HeightLayer layer, const float* height,
                 float* hght_of_max=nullptr) noexcept;
 
 
+// TO-DO: Need to unify/templatify the mean_value functions, 
+// and also need to rename min_value, max_value, and mean_value
+// to layer_min, layer_max, and layer_mean to better reflect
+// the intent and design of the functions
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
