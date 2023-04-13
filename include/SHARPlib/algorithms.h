@@ -16,7 +16,6 @@
 #define __SHARP_ALGORITHMS
 
 #include <functional>
-#include <iostream>
 
 namespace sharp {
 
@@ -48,7 +47,7 @@ int lower_bound(const T* array, int N, T value, C cmp=C{}) {
     
     int idx = 0;
     int first = 0;
-    int count = N;
+    int count = N-1;
 
     while (count > 0) {
         idx = first;
@@ -96,11 +95,8 @@ int upper_bound(const T* array, int N, T value, C cmp=C{}) {
 
     int idx = 0;
     int first = 0;
-    int count = N;
+    int count = N-1;
 
-    // TO-DO:
-    // I have an overflow here somewhere... need to 
-    // figure that out -_-
     while (count > 0) {
         idx = first;
         int step = count / 2;
@@ -118,7 +114,6 @@ int upper_bound(const T* array, int N, T value, C cmp=C{}) {
 
     return first;
 }
-
 
 
 } // end namespace sharp
