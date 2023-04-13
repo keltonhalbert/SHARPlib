@@ -207,6 +207,7 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
  * \param data_arr      (data array to find max on)
  * \param N             (length of arrays)
  * \param pr_min_or_max (Pressure level of min/max val; hpa)
+ * \param comp          Comparitor (i.e. std::less or std::greater)
  * \return minmax_value
  *
  */
@@ -266,6 +267,7 @@ constexpr float minmax_value(PressureLayer layer, const float* pressure,
  * \param data_arr      (data array to find max on)
  * \param N             (length of arrays)
  * \param ht_min_or_max (Height level of min/max val; hpa)
+ * \param comp          Comparitor (i.e. std::less or std::greater)
  * \return minmax_value
  *
  */
