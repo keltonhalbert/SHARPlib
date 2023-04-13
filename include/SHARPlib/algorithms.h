@@ -43,7 +43,7 @@ namespace sharp {
  * \param cmp       The comparitor 
  */
 template <typename T, typename C = std::less<>>
-int lower_bound(const T* array, int N, T value, C cmp=C{}) {
+inline constexpr int lower_bound(const T* array, int N, T value, C cmp=C{}) noexcept {
     
     int idx = 0;
     int first = 0;
@@ -91,7 +91,7 @@ int lower_bound(const T* array, int N, T value, C cmp=C{}) {
  * \param cmp       The comparitor 
  */
 template <typename T, typename C = std::less<>>
-int upper_bound(const T* array, int N, T value, C cmp=C{}) {
+inline constexpr int upper_bound(const T* array, int N, T value, C cmp=C{}) noexcept {
 
     int idx = 0;
     int first = 0;

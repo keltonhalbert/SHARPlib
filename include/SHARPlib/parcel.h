@@ -15,7 +15,6 @@
 #ifndef __SHARP_PARCEL
 #define __SHARP_PARCEL
 
-#include <iostream>
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
