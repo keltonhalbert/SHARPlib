@@ -225,6 +225,10 @@ WindComponents storm_motion_bunkers(Profile* prof, bool leftMover) noexcept {
 
 float entrainment_cape(Profile* prof, Parcel *pcl) noexcept {
 
+	if ((pcl->lfc_pressure == MISSING) || (pcl->lfc_pressure == MISSING)) {
+		return 0.0;
+	}
+
     float *mse_star = new float[prof->NZ];
     float *mse_bar = new float[prof->NZ];
 
