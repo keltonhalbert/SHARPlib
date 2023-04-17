@@ -28,7 +28,7 @@ interp_module = Extension('nwsspc.sharp.calc._interp',
 
 params_module = Extension('nwsspc.sharp.calc._params',
         sources = ['nwsspc/sharp/calc/params.i', '../src/SHARPlib/parcel.cpp',
-                   '../src/SHARPlib/profile.cpp', '../src/SHARPlib/utils.cpp',
+                   '../src/SHARPlib/profile.cpp', '../src/SHARPlib/layer.cpp',
                    '../src/SHARPlib/interp.cpp', '../src/SHARPlib/winds.cpp',
                    '../src/SHARPlib/thermo.cpp','../src/SHARPlib/params.cpp'],
         swig_opts = swig_args,
@@ -37,7 +37,7 @@ params_module = Extension('nwsspc.sharp.calc._params',
 
 parcel_module = Extension('nwsspc.sharp.calc._parcel',
         sources = ['nwsspc/sharp/calc/parcel.i',
-                   '../src/SHARPlib/profile.cpp', '../src/SHARPlib/utils.cpp',
+                   '../src/SHARPlib/profile.cpp', '../src/SHARPlib/layer.cpp',
                    '../src/SHARPlib/interp.cpp', '../src/SHARPlib/thermo.cpp',
                    '../src/SHARPlib/winds.cpp', '../src/SHARPlib/parcel.cpp'],
         swig_opts = swig_args,
@@ -46,7 +46,7 @@ parcel_module = Extension('nwsspc.sharp.calc._parcel',
 
 profile_module = Extension('nwsspc.sharp.calc._profile',
         sources = ['nwsspc/sharp/calc/profile.i',
-                   '../src/SHARPlib/interp.cpp', '../src/SHARPlib/utils.cpp',
+                   '../src/SHARPlib/interp.cpp', '../src/SHARPlib/layer.cpp',
                    '../src/SHARPlib/thermo.cpp','../src/SHARPlib/winds.cpp',
                    '../src/SHARPlib/profile.cpp'],
         swig_opts = swig_args,
@@ -55,7 +55,7 @@ profile_module = Extension('nwsspc.sharp.calc._profile',
 
 thermo_module = Extension('nwsspc.sharp.calc._thermo',
         sources = ['nwsspc/sharp/calc/thermo.i',
-                   '../src/SHARPlib/utils.cpp',   '../src/SHARPlib/interp.cpp', 
+                   '../src/SHARPlib/layer.cpp',   '../src/SHARPlib/interp.cpp', 
                    '../src/SHARPlib/thermo.cpp'],
         swig_opts = swig_args,
         extra_compile_args = compile_args
@@ -63,15 +63,15 @@ thermo_module = Extension('nwsspc.sharp.calc._thermo',
 
 winds_module = Extension('nwsspc.sharp.calc._winds',
         sources=['nwsspc/sharp/calc/winds.i',
-                 '../src/SHARPlib/utils.cpp',   '../src/SHARPlib/interp.cpp', 
+                 '../src/SHARPlib/layer.cpp',   '../src/SHARPlib/interp.cpp', 
                  '../src/SHARPlib/winds.cpp'],
         swig_opts = swig_args,
         extra_compile_args = compile_args
     )
 
-utils_module = Extension('nwsspc.sharp.calc._utils',
-        sources = ['nwsspc/sharp/calc/utils.i',
-                   '../src/SHARPlib/interp.cpp', '../src/SHARPlib/utils.cpp'],
+layer_module = Extension('nwsspc.sharp.calc._layer',
+        sources = ['nwsspc/sharp/calc/layer.i',
+                   '../src/SHARPlib/interp.cpp', '../src/SHARPlib/layer.cpp'],
         swig_opts = swig_args,
         extra_compile_args = compile_args
     )
@@ -93,9 +93,9 @@ setup(
     packages = ["nwsspc.sharp.calc"],
     include_dirs=[numpy.get_include(), "../include", "../external/fmt/include"],
     ext_modules = [constants_module, interp_module, params_module, parcel_module, 
-                   profile_module, thermo_module, winds_module, utils_module],
+                   profile_module, thermo_module, winds_module, layer_module],
     py_modules = ["nwsspc.sharp.calc.constants", "nwsspc.sharp.calc.interp", 
                   "nwsspc.sharp.calc.params", "nwsspc.sharp.calc.parcel", 
                   "nwsspc.sharp.calc.profile", "nwsspc.sharp.calc.thermo", 
-                  "nwsspc.sharp.calc.winds", "nwsspc.sharp.calc.utils"],
+                  "nwsspc.sharp.calc.winds", "nwsspc.sharp.calc.layer"],
 )
