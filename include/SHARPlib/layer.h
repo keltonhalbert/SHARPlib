@@ -14,6 +14,8 @@
 #ifndef __SHARP_LAYERS
 #define __SHARP_LAYERS
 
+#include <functional>
+
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 
@@ -57,7 +59,7 @@ struct HeightLayer {
 	/**
 	 * \brief The coordinate system of the layer
 	 */
-	LayerCoordinate coord;
+	static constexpr LayerCoordinate coord = LayerCoordinate::height;
 
     HeightLayer(float bot, float top, float delta=100.0);
 };
@@ -91,7 +93,7 @@ struct PressureLayer {
 	/**
 	 * \brief The coordinate system of the layer
 	 */
-	LayerCoordinate coord;
+	static constexpr LayerCoordinate coord = LayerCoordinate::pressure;
 
     PressureLayer(float bot, float top, float delta=-10);
 };
@@ -137,9 +139,9 @@ struct LayerIndex {
  *
  * \return       sharp::LayerIndex {kbot, ktop}
  */
-template <typename _L, typename _Cb, typename _Ct>
-LayerIndex get_layer_index(_L& layer, const float* coord, int N,
-						   _Cb bottom_comp, _Ct top_comp) noexcept {
+template <typename L, typename Cb, typename Ct>
+constexpr LayerIndex get_layer_index(L& layer, const float* coord, int N,
+									 const Cb bottom_comp, const Ct top_comp) noexcept {
 
 	if (bottom_comp(layer.bottom, coord[0])) {
 		layer.bottom = coord[0];
@@ -189,8 +191,8 @@ LayerIndex get_layer_index(_L& layer, const float* coord, int N,
  *
  */
 LayerIndex get_layer_index(PressureLayer& layer, 
-                           const float* pressure, 
-                           int num_levs) noexcept; 
+          			       const float* pressure, 
+                    	   int num_levs) noexcept; 
 
 
 /**
@@ -266,30 +268,30 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- * \brief Template for finding min/max value over sharp::PressureLayer 
+ * \brief Template for min/max value over sharp::PressureLayer or sharp::HeightLayer 
  *
  * This tempalte function contains the algorithm for searching for either
- * the minimum or maximum value over a given sharp::PressureLayer. This
- * function is wrapped by the sharp::min_value and sharp::max_value
+ * the minimum or maximum value over a given sharp::PressureLayer or sharp::HeightLayer. 
+ * This function is wrapped by the sharp::min_value and sharp::max_value
  * functions, which pass the appropriate comparitor to the template. 
  *
- * If pr_min_or_max is not a nullptr, then the pointer will be 
- * dereferenced and filled with the pressure of the maximum/minum
+ * If lvl_min_or_max is not a nullptr, then the pointer will be 
+ * dereferenced and filled with the pressure or height of the maximum/minum
  * value. 
  *
- * \param layer         (sharp::PressureLayer)  {bottom, top}
- * \param pressure      (hPa)
- * \param data_arr      (data array to find max on)
- * \param N             (length of arrays)
- * \param pr_min_or_max (Pressure level of min/max val; hpa)
- * \param comp          Comparitor (i.e. std::less or std::greater)
+ * \param layer          (sharp::PressureLayer or sharp::HeightLayer)  {bottom, top}
+ * \param coord_arr      (pressure or height)
+ * \param data_arr       (data array to find max on)
+ * \param N              (length of arrays)
+ * \param lvl_min_or_max (level of min/max val; hpa)
+ * \param comp           Comparitor (i.e. std::less or std::greater)
  * \return minmax_value
  *
  */
-template <typename C>
-constexpr float layer_minmax(PressureLayer layer, const float* pressure, 
-                   const float* data_arr, int N, float* pr_min_or_max,
-                   C comp) noexcept {
+template <typename L, typename C>
+constexpr float layer_minmax(L layer, const float* coord_arr, 
+                   const float* data_arr, int N, float* lvl_min_or_max,
+                   const C comp) noexcept {
     
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
@@ -297,87 +299,40 @@ constexpr float layer_minmax(PressureLayer layer, const float* pressure,
     }
 #endif
 
-    LayerIndex layer_idx = get_layer_index(layer, pressure, N);
+    LayerIndex layer_idx = get_layer_index(layer, coord_arr, N);
 
-    float min_or_max = interp_pressure(layer.bottom, pressure, data_arr, N);
+	float min_or_max = MISSING;
+	if (layer.coord == LayerCoordinate::pressure) {
+    	min_or_max = interp_pressure(layer.bottom, coord_arr, data_arr, N);
+	}
+	else {
+		min_or_max = interp_height(layer.bottom, coord_arr, data_arr, N);
+	}
 
-    if (pr_min_or_max)
-        *pr_min_or_max = layer.bottom;
-
-    for (int k = layer_idx.kbot; k <= layer_idx.ktop; ++k) {
-        float val = data_arr[k];    
-        if (comp(val, min_or_max)) {
-            min_or_max = val;
-            if (pr_min_or_max)
-                *pr_min_or_max = pressure[k];
-        } 
-    }
-
-    float val = interp_pressure(layer.top, pressure, data_arr, N);
-    if (comp(val, min_or_max)) {
-        min_or_max = val;
-        if (pr_min_or_max)
-            *pr_min_or_max = layer.top;
-    }
-
-    return min_or_max;
-}
-
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Template for finding min/max value over sharp::HeightLayer 
- *
- * This tempalte function contains the algorithm for searching for either
- * the minimum or maximum value over a given sharp::HeightLayer. This
- * function is wrapped by the sharp::min_value and sharp::max_value
- * functions, which pass the appropriate comparitor to the template. 
- *
- * If ht_min_or_max is not a nullptr, then the pointer will be 
- * dereferenced and filled with the height of the maximum/minum
- * value. 
- *
- * \param layer         (sharp::HeightLayer)  {bottom, top}
- * \param height        (meters)
- * \param data_arr      (data array to find max on)
- * \param N             (length of arrays)
- * \param ht_min_or_max (Height level of min/max val; hpa)
- * \param comp          Comparitor (i.e. std::less or std::greater)
- * \return minmax_value
- *
- */
-template <typename C>
-constexpr float layer_minmax(HeightLayer layer, const float* height, 
-                   const float* data_arr, int N, float* ht_min_or_max,
-                   C comp) noexcept {
-    
-#ifndef NO_QC
-    if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
-        return MISSING;
-    }
-#endif
-
-    LayerIndex layer_idx = get_layer_index(layer, height, N);
-
-    float min_or_max = interp_height(layer.bottom, height, data_arr, N);
-
-    if (ht_min_or_max)
-        *ht_min_or_max = layer.bottom;
+    if (lvl_min_or_max)
+        *lvl_min_or_max = layer.bottom;
 
     for (int k = layer_idx.kbot; k <= layer_idx.ktop; ++k) {
         float val = data_arr[k];    
         if (comp(val, min_or_max)) {
             min_or_max = val;
-            if (ht_min_or_max)
-                *ht_min_or_max = height[k];
+            if (lvl_min_or_max)
+                *lvl_min_or_max = coord_arr[k];
         } 
     }
 
-    float val = interp_height(layer.top, height, data_arr, N);
-    if (comp(val, min_or_max)) {
-        min_or_max = val;
-        if (ht_min_or_max)
-            *ht_min_or_max = layer.top;
+	float top_val = MISSING;
+	if (layer.coord == LayerCoordinate::pressure) {
+    	top_val = interp_pressure(layer.top, coord_arr, data_arr, N);
+	}
+	else {
+		top_val = interp_height(layer.top, coord_arr, data_arr, N);
+	}
+
+    if (comp(top_val, min_or_max)) {
+        min_or_max = top_val;
+        if (lvl_min_or_max)
+            *lvl_min_or_max = layer.top;
     }
 
     return min_or_max;
@@ -404,34 +359,13 @@ constexpr float layer_minmax(HeightLayer layer, const float* height,
  * \return layer_min
  *
  */
-float layer_min(PressureLayer layer, const float* pressure,
-                const float* data_arr, int N, 
-                float* pres_of_min=nullptr) noexcept;
-
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Returns the minimum value in the given height layer.  
- *
- * Returns the minimum value observed within the given data array
- * over the given sharp::HeightLayer. The function bounds checks
- * the sharp::HeightLayer by calling sharp::get_layer_indices.
- *
- * If hght_of_min is not a nullptr, then the pointer will be 
- * dereferenced and filled with the height of the minimum
- * value. 
- *
- * \param layer         (sharp::HeightLayer)  {bottom, top}
- * \param height        (meters)
- * \param data_arr      (data array to find min on)
- * \param N             (length of arrays)
- * \param hght_of_min   (Height level of min val; meters)
- * \return layer_min
- *
- */
-float layer_min(HeightLayer layer, const float* height,
-                const float* data_arr, int N, 
-                float* hght_of_min=nullptr) noexcept;
+template <typename L>
+constexpr float layer_min(L layer, const float* coord_arr,
+				const float* data_arr, int N,
+				float* lvl_of_min=nullptr) noexcept {
+	constexpr auto comp = std::less<float>();
+	return layer_minmax(layer, coord_arr, data_arr, N, lvl_of_min, comp);
+}
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -454,34 +388,14 @@ float layer_min(HeightLayer layer, const float* height,
  * \return layer_max
  *
  */
-float layer_max(PressureLayer layer, const float* pressure,
-                const float* data_arr, int N, 
-                float* pres_of_max=nullptr) noexcept;
+template <typename L>
+constexpr float layer_max(L layer, const float* coord_arr,
+				const float* data_arr, int N,
+				float* lvl_of_max=nullptr) noexcept {
+	constexpr auto comp = std::greater<float>();
+	return layer_minmax(layer, coord_arr, data_arr, N, lvl_of_max, comp);
+}	
 
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Returns the maximim value in the given height layer.  
- *
- * Returns the maximum value observed within the given data array
- * over the given sharp::HeightLayer. The function bounds checks
- * the sharp::HeightLayer by calling sharp::get_layer_index.
- *
- * If hght_of_max is not a nullptr, then the pointer will be 
- * dereferenced and filled with the height of the maximum
- * value. 
- *
- * \param layer         (sharp::HeightLayer)  {bottom, top}
- * \param height        (meters)
- * \param data_arr      (data array to find max on)
- * \param N             (length of arrays)
- * \param hght_of_max   (Height level of max val; meters)
- * \return layer_max
- *
- */
-float layer_max(HeightLayer layer, const float* height,
-                const float* data_arr, int N, 
-                float* hght_of_max=nullptr) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
