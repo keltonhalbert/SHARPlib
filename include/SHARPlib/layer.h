@@ -326,7 +326,7 @@ constexpr float layer_minmax(HeightLayer layer, const float* height,
  * \param data_arr      (data array to find min on)
  * \param N             (length of arrays)
  * \param pres_of_min   (Pressure level of min val; hPa)
- * \return min_value
+ * \return layer_min
  *
  */
 float layer_min(PressureLayer layer, const float* pressure,
@@ -351,7 +351,7 @@ float layer_min(PressureLayer layer, const float* pressure,
  * \param data_arr      (data array to find min on)
  * \param N             (length of arrays)
  * \param hght_of_min   (Height level of min val; meters)
- * \return min_value
+ * \return layer_min
  *
  */
 float layer_min(HeightLayer layer, const float* height,
@@ -376,7 +376,7 @@ float layer_min(HeightLayer layer, const float* height,
  * \param data_arr      (data array to find max on)
  * \param N             (length of arrays)
  * \param pres_of_max   (Pressure level of max val; hpa)
- * \return max_value
+ * \return layer_max
  *
  */
 float layer_max(PressureLayer layer, const float* pressure,
@@ -401,18 +401,13 @@ float layer_max(PressureLayer layer, const float* pressure,
  * \param data_arr      (data array to find max on)
  * \param N             (length of arrays)
  * \param hght_of_max   (Height level of max val; meters)
- * \return max_value
+ * \return layer_max
  *
  */
 float layer_max(HeightLayer layer, const float* height,
                 const float* data_arr, int N, 
                 float* hght_of_max=nullptr) noexcept;
 
-
-// TO-DO: Need to unify/templatify the mean_value functions, 
-// and also need to rename min_value, max_value, and mean_value
-// to layer_min, layer_max, and layer_mean to better reflect
-// the intent and design of the functions
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
@@ -425,10 +420,10 @@ float layer_max(HeightLayer layer, const float* height,
  * \param pressure  (vertical pressure array; hPa)
  * \param data_arr  (The data for which to compute a mean)
  * \param num_levs  (length of pressure and data arrays)
- * \return mean_value
+ * \return layer_mean 
  *
  */
-float mean_value(PressureLayer layer,   const float* pressure,
+float layer_mean(PressureLayer layer,   const float* pressure,
                  const float* data_arr, int num_levs) noexcept;
 
 
@@ -447,10 +442,10 @@ float mean_value(PressureLayer layer,   const float* pressure,
  * \param pressure  (vertical pressure array; hPa)
  * \param data_arr  (The data for which to compute a mean)
  * \param num_levs  (length of pressure and data arrays)
- * \return mean_value
+ * \return layer_mean 
  *
  */
-float mean_value(HeightLayer layer, const float* height, const float* pressure,
+float layer_mean(HeightLayer layer, const float* height, const float* pressure,
                  const float* data_arr, int num_levs) noexcept;
 
 

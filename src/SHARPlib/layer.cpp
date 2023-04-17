@@ -165,12 +165,7 @@ float layer_max(HeightLayer layer, const float* height,
     return layer_minmax(layer, height, data_arr, N, hght_of_max, comp);
 }
 
-
-// TO-DO: Need to unify/templatify the mean_value functions, 
-// and also need to rename min_value, max_value, and mean_value
-// to layer_min, layer_max, and layer_mean to better reflect
-// the intent and design of the functions
-float mean_value(PressureLayer layer,   const float* pressure,
+float layer_mean(PressureLayer layer,   const float* pressure,
                  const float* data_arr, int num_levs) noexcept {
 #ifndef NO_QC
     if ((layer.pbot == MISSING) || (layer.ptop == MISSING)) {
@@ -215,7 +210,7 @@ float mean_value(PressureLayer layer,   const float* pressure,
 }
 
 
-float mean_value(HeightLayer layer_agl, const float* height, 
+float layer_mean(HeightLayer layer_agl, const float* height, 
                  const float* pressure, const float* data_arr, 
                  int num_levs) noexcept {
 #ifndef NO_QC
@@ -229,7 +224,7 @@ float mean_value(HeightLayer layer_agl, const float* height,
                                 num_levs, true
                             );
 
-    return mean_value(pres_layer, pressure, data_arr, num_levs);
+    return layer_mean(pres_layer, pressure, data_arr, num_levs);
 }
 
 
