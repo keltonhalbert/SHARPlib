@@ -15,7 +15,7 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/thermo.h>
-#include <SHARPlib/utils.h>
+#include <SHARPlib/layer.h>
 #include <SHARPlib/profile.h>
 #include <SHARPlib/parcel.h>
 
@@ -69,9 +69,9 @@ void _mu(Profile* prof, Parcel* pcl) noexcept {
     // 300 hPa of the profile
     PressureLayer mu_layer(prof->pres[0], prof->pres[0]-300.0);
 
-    // max_value returns the max, and will set the pressure
+    // layer_max returns the max, and will set the pressure
     // of the max via a pointer to a float. 
-    max_value(mu_layer, prof->pres, prof->theta_e, prof->NZ, &(pcl->pres));
+    layer_max(mu_layer, prof->pres, prof->theta_e, prof->NZ, &(pcl->pres));
     pcl->tmpc = interp_pressure(pcl->pres, prof->pres, prof->tmpc, prof->NZ);
     pcl->dwpc = interp_pressure(pcl->pres, prof->pres, prof->dwpc, prof->NZ);
 }

@@ -18,7 +18,7 @@
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
-#include <SHARPlib/utils.h>
+#include <SHARPlib/layer.h>
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
 #include <SHARPlib/profile.h>

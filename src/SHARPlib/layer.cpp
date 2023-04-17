@@ -19,7 +19,7 @@
 #include <SHARPlib/algorithms.h>
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
-#include <SHARPlib/utils.h>
+#include <SHARPlib/layer.h>
 
 #define FMT_HEADER_ONLY
 #include <fmt/core.h>
@@ -133,36 +133,36 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
     return {zbot, ztop};
 }
 
-float min_value(PressureLayer layer, const float* pressure,
+float layer_min(PressureLayer layer, const float* pressure,
                 const float* data_arr, int N, 
                 float* pres_of_min) noexcept {
 
     auto comp = std::less<float>();
-    return minmax_value(layer, pressure, data_arr, N, pres_of_min, comp);
+    return layer_minmax(layer, pressure, data_arr, N, pres_of_min, comp);
 }
 
-float min_value(HeightLayer layer, const float* height,
+float layer_min(HeightLayer layer, const float* height,
                 const float* data_arr, int N, 
                 float* hght_of_min) noexcept {
 
     auto comp = std::less<float>();
-    return minmax_value(layer, height, data_arr, N, hght_of_min, comp);
+    return layer_minmax(layer, height, data_arr, N, hght_of_min, comp);
 }
 
-float max_value(PressureLayer layer, const float* pressure,
+float layer_max(PressureLayer layer, const float* pressure,
                 const float* data_arr, int N, 
                 float* pres_of_max) noexcept {
 
     auto comp = std::greater<float>();
-    return minmax_value(layer, pressure, data_arr, N, pres_of_max, comp);
+    return layer_minmax(layer, pressure, data_arr, N, pres_of_max, comp);
 }
 
-float max_value(HeightLayer layer, const float* height,
+float layer_max(HeightLayer layer, const float* height,
                 const float* data_arr, int N, 
                 float* hght_of_max) noexcept {
 
     auto comp = std::greater<float>();
-    return minmax_value(layer, height, data_arr, N, hght_of_max, comp);
+    return layer_minmax(layer, height, data_arr, N, hght_of_max, comp);
 }
 
 

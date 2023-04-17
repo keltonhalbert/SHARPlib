@@ -58,6 +58,6 @@ add_subdirectory(tests)
 add_test(NAME sharp_thermo COMMAND test_sharp_thermo)
 add_test(NAME sharp_interp COMMAND test_sharp_interp)
 add_test(NAME sharp_parcel COMMAND test_sharp_parcel)
-add_test(NAME sharp_utils COMMAND test_sharp_utils)
+add_test(NAME sharp_layer COMMAND test_sharp_layer)
 add_test(NAME sharp_winds COMMAND test_sharp_winds)
 

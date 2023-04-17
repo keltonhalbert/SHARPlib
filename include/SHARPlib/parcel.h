@@ -19,7 +19,7 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/thermo.h>
-#include <SHARPlib/utils.h>
+#include <SHARPlib/layer.h>
 #include <SHARPlib/profile.h>
 
 namespace sharp {
