@@ -19,26 +19,15 @@
 
 namespace sharp {
 
-
+/*
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Enum defining the coordinate system of a layer
+ *
+ */
 enum class LayerCoordinate {
 	height = 0,
 	pressure = 1,
-};
-
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief A simple structure of two named integer indices for the top and bottom of a layer.
- * This generic type is not meant to be directly accessed or used, and sharp::HeightLayer
- * and sharp::PressureLayer should be used instead. These automatically set the 
- * LayerCoordinate variable. 
- *
- */
-struct _Layer {
-	float bottom;
-	float top;
-	float delta;
-	LayerCoordinate coord;
 };
 
 /**
@@ -48,7 +37,7 @@ struct _Layer {
  * \brief A simple structure of two named floats that represent a height layer. 
  *
  */
-struct HeightLayer : _Layer {
+struct HeightLayer {
 
     /**
      * \brief The bottom of the height layer (meters)
@@ -65,6 +54,11 @@ struct HeightLayer : _Layer {
      */
     float delta;
 
+	/**
+	 * \brief The coordinate system of the layer
+	 */
+	LayerCoordinate coord;
+
     HeightLayer(float bot, float top, float delta=100.0);
 };
 
@@ -77,7 +71,7 @@ struct HeightLayer : _Layer {
  * \brief A simple structure of two named floats that represent a pressure layer. 
  *
  */
-struct PressureLayer : _Layer {
+struct PressureLayer {
 
     /**
      * \brief The bottom of the pressure layer (hPa)
@@ -93,13 +87,22 @@ struct PressureLayer : _Layer {
      * \brief The pressure interval with which to iterate over the layer (hPa)
      */
     float delta;
+
+	/**
+	 * \brief The coordinate system of the layer
+	 */
+	LayerCoordinate coord;
+
     PressureLayer(float bot, float top, float delta=-10);
 };
 
 
 /**
+ *
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
  * \brief A simple structure of two named integer indices for the top and bottom of a layer
+ *
  */
 struct LayerIndex {
     /**
@@ -112,6 +115,56 @@ struct LayerIndex {
      */
     int ktop;
 };
+
+
+/*
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Returns the array indices corresponding to the given layer.
+ *
+ * This template function encapsulates the algorithm that both bounds
+ * checks layer operations and returns the array indices to the corresponding
+ * coordinate array, excluding the top and bottom of the layer. This behaviour
+ * is due to the fact many algorithms used will get the interpolated top and 
+ * bottom values of the layer, meaning for looping purposes we only want the 
+ * inner range of indices. 
+ *
+ * \param layer	 (sharp::HeightLayer or sharp::PressureLayer) {bottom, top}
+ * \param coord  (height or pressure)
+ * \param N      (length of array)
+ * \param bottom_comp (function comparing the layer bottom to the coordinate array)
+ * \param top_comp    (function comparing the layer top to the coordinate array)
+ *
+ * \return       sharp::LayerIndex {kbot, ktop}
+ */
+template <typename _L, typename _Cb, typename _Ct>
+LayerIndex get_layer_index(_L& layer, const float* coord, int N,
+						   _Cb bottom_comp, _Ct top_comp) noexcept {
+
+	if (bottom_comp(layer.bottom, coord[0])) {
+		layer.bottom = coord[0];
+	}
+
+	if (top_comp(layer.top, coord[N-1])) {
+		layer.top = coord[N-1];
+	}
+
+	// whether pressure or height coordiantes, the bottom
+	// comparitor passed to the function will determine 
+	// how to search
+	int lower_idx = lower_bound(coord, N, layer.bottom, bottom_comp);
+	int upper_idx = upper_bound(coord, N, layer.top, bottom_comp);
+
+	if ((bottom_comp(coord[lower_idx], layer.bottom)) && (lower_idx < N-1)) {
+		++lower_idx;
+	}
+
+	if ((top_comp(coord[upper_idx], layer.top)) && (upper_idx > 0)) {
+		--upper_idx;
+	}
+
+	return {lower_idx, upper_idx};
+}
 
 
 /**
