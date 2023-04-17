@@ -90,9 +90,9 @@ void _ml(Profile* prof, Parcel* pcl) noexcept {
     PressureLayer mix_layer(prof->pres[0], prof->pres[0]-100.0);
 
     // get the mean attributes of the lowest 100 hPa
-    float mean_mixr = mean_value(mix_layer, prof->pres, 
+    float mean_mixr = layer_mean(mix_layer, prof->pres, 
                                  prof->mixr, prof->NZ);
-    float mean_thta = mean_value(mix_layer, prof->pres, 
+    float mean_thta = layer_mean(mix_layer, prof->pres, 
                                  prof->theta, prof->NZ);
 
     // set the parcel attributes
