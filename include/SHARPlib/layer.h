@@ -20,6 +20,27 @@
 namespace sharp {
 
 
+enum class LayerCoordinate {
+	height = 0,
+	pressure = 1,
+};
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief A simple structure of two named integer indices for the top and bottom of a layer.
+ * This generic type is not meant to be directly accessed or used, and sharp::HeightLayer
+ * and sharp::PressureLayer should be used instead. These automatically set the 
+ * LayerCoordinate variable. 
+ *
+ */
+struct _Layer {
+	float bottom;
+	float top;
+	float delta;
+	LayerCoordinate coord;
+};
+
 /**
  *
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -27,7 +48,7 @@ namespace sharp {
  * \brief A simple structure of two named floats that represent a height layer. 
  *
  */
-struct HeightLayer {
+struct HeightLayer : _Layer {
 
     /**
      * \brief The bottom of the height layer (meters)
@@ -56,7 +77,7 @@ struct HeightLayer {
  * \brief A simple structure of two named floats that represent a pressure layer. 
  *
  */
-struct PressureLayer {
+struct PressureLayer : _Layer {
 
     /**
      * \brief The bottom of the pressure layer (hPa)
@@ -72,7 +93,7 @@ struct PressureLayer {
      * \brief The pressure interval with which to iterate over the layer (hPa)
      */
     float delta;
-    PressureLayer(float bot, float top, float delta=10);
+    PressureLayer(float bot, float top, float delta=-10);
 };
 
 

@@ -36,6 +36,7 @@ HeightLayer::HeightLayer(float bottom, float top, float delta) {
     this->bottom = bottom;
     this->top = top;
 	this->delta = delta;
+	this->coord = LayerCoordinate::height;
 }
 
 
@@ -48,6 +49,7 @@ PressureLayer::PressureLayer(float bottom, float top, float delta) {
     this->bottom = bottom;
     this->top = top;
     this->delta = delta;
+	this->coord = LayerCoordinate::pressure;
 }
 
 
@@ -66,7 +68,6 @@ LayerIndex get_layer_index(PressureLayer& layer,
     auto cmp = std::greater<float>();
     int lower_idx = lower_bound(pressure, num_levs, layer.bottom, cmp);
     int upper_idx = upper_bound(pressure, num_levs, layer.top, cmp);
-	printf("layer.bottom: %f, layer.top: %f, lower_idx: %d, upper_idx: %d\n", layer.bottom, layer.top, lower_idx, upper_idx);
 
     if ((pressure[lower_idx] >= layer.bottom) && (lower_idx < num_levs - 1)) {
         lower_idx += 1;
