@@ -1,8 +1,8 @@
-/* File: utils.i */
-%module utils 
+/* File: layer.i */
+%module layer 
 %{
     #define SWIG_FILE_WITH_INIT
-    #include <SHARPlib/utils.h>
+    #include <SHARPlib/layer.h>
 %}
 
 %include exception.i
@@ -89,4 +89,4 @@ sharp::PressureLayer _hght_lyr_to_pres(sharp::HeightLayer layer,
 %ignore mean_value;
 
 
-%include "../include/SHARPlib/utils.h"
+%include "../include/SHARPlib/layer.h"
