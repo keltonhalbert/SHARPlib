@@ -140,7 +140,7 @@ WindComponents mean_wind(PressureLayer layer, const float* pres,
         u_sum += interp_pressure(pr_lvl, pres, u_wind, num_levs) * pr_lvl; 
         v_sum += interp_pressure(pr_lvl, pres, v_wind, num_levs) * pr_lvl; 
         weight += pr_lvl;
-        pr_lvl -= layer.delta;
+        pr_lvl += layer.delta;
     }
 
     float mean_u = u_sum / weight;
@@ -178,7 +178,7 @@ WindComponents mean_wind_npw(PressureLayer layer, const float* pres,
         u_sum += interp_pressure(pr_lvl, pres, u_wind, num_levs);
         v_sum += interp_pressure(pr_lvl, pres, v_wind, num_levs);
         weight += 1; 
-        pr_lvl -= layer.delta;
+        pr_lvl += layer.delta;
     }
 
     float mean_u = u_sum / weight;

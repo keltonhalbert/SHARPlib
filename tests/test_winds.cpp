@@ -146,9 +146,9 @@ TEST_CASE("Testing mean wind calculations") {
     }
 
 
-    sharp::PressureLayer layer1 = {1000.0, 800.0, 1};
-    sharp::PressureLayer layer2 = {1000.0, 500.0, 1};
-    sharp::PressureLayer layer3 = {1000.0, 100.0, 1};
+    sharp::PressureLayer layer1 = {1000.0, 800.0, -1};
+    sharp::PressureLayer layer2 = {1000.0, 500.0, -1};
+    sharp::PressureLayer layer3 = {1000.0, 100.0, -1};
 
     auto mean_layer1 = sharp::mean_wind(layer1, pres, u_wind, v_wind, NZ);
     auto mean_layer2 = sharp::mean_wind(layer2, pres, u_wind, v_wind, NZ);
