@@ -36,7 +36,6 @@ HeightLayer::HeightLayer(float bottom, float top, float delta) {
     this->bottom = bottom;
     this->top = top;
 	this->delta = delta;
-	this->coord = LayerCoordinate::height;
 }
 
 
@@ -49,25 +48,22 @@ PressureLayer::PressureLayer(float bottom, float top, float delta) {
     this->bottom = bottom;
     this->top = top;
     this->delta = delta;
-	this->coord = LayerCoordinate::pressure;
 }
 
 LayerIndex get_layer_index(PressureLayer& layer, const float* pressure, int N) noexcept {
 
-	auto bottom_comp = std::greater_equal<float>();
-	auto top_comp = std::less_equal<float>();
+	constexpr auto bottom_comp = std::greater_equal<float>();
+	constexpr auto top_comp = std::less_equal<float>();
 
-	LayerIndex idx = get_layer_index(layer, pressure, N, bottom_comp, top_comp);
-	return {idx.kbot, idx.ktop};
+	return get_layer_index(layer, pressure, N, bottom_comp, top_comp);
 }
 
 LayerIndex get_layer_index(HeightLayer& layer, const float* height, int N) noexcept {
 
-	auto bottom_comp = std::less_equal<float>();
-	auto top_comp = std::greater_equal<float>();
+	constexpr auto bottom_comp = std::less_equal<float>();
+	constexpr auto top_comp = std::greater_equal<float>();
 
-	LayerIndex idx = get_layer_index(layer, height, N, bottom_comp, top_comp);
-	return {idx.kbot, idx.ktop};
+	return get_layer_index(layer, height, N, bottom_comp, top_comp);
 }
 
 
@@ -98,38 +94,6 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
     }
 
     return {zbot, ztop};
-}
-
-float layer_min(PressureLayer layer, const float* pressure,
-                const float* data_arr, int N, 
-                float* pres_of_min) noexcept {
-
-    auto comp = std::less<float>();
-    return layer_minmax(layer, pressure, data_arr, N, pres_of_min, comp);
-}
-
-float layer_min(HeightLayer layer, const float* height,
-                const float* data_arr, int N, 
-                float* hght_of_min) noexcept {
-
-    auto comp = std::less<float>();
-    return layer_minmax(layer, height, data_arr, N, hght_of_min, comp);
-}
-
-float layer_max(PressureLayer layer, const float* pressure,
-                const float* data_arr, int N, 
-                float* pres_of_max) noexcept {
-
-    auto comp = std::greater<float>();
-    return layer_minmax(layer, pressure, data_arr, N, pres_of_max, comp);
-}
-
-float layer_max(HeightLayer layer, const float* height,
-                const float* data_arr, int N, 
-                float* hght_of_max) noexcept {
-
-    auto comp = std::greater<float>();
-    return layer_minmax(layer, height, data_arr, N, hght_of_max, comp);
 }
 
 float layer_mean(PressureLayer layer,   const float* pressure,
