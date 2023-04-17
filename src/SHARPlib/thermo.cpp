@@ -332,26 +332,26 @@ float thetae(float pressure, float temperature, float dewpoint) noexcept {
 float lapse_rate(HeightLayer layer_agl, const float* height, 
                  const float* temperature, int num_levs) noexcept {
 #ifndef NO_QC
-    if ((layer_agl.zbot == MISSING) || (layer_agl.ztop == MISSING)) {
+    if ((layer_agl.bottom == MISSING) || (layer_agl.top == MISSING)) {
         return MISSING;
     }
 #endif
 
     // convert from agl to msl
-    layer_agl.zbot += height[0];
-    layer_agl.ztop += height[0];
+    layer_agl.bottom += height[0];
+    layer_agl.top += height[0];
 
     // bounds check the height layer 
-    if (layer_agl.zbot < height[0]) {
-        layer_agl.zbot = height[0];
+    if (layer_agl.bottom < height[0]) {
+        layer_agl.bottom = height[0];
     }
-    if (layer_agl.ztop > height[num_levs-1]) {
-        layer_agl.ztop = height[num_levs-1];
+    if (layer_agl.top > height[num_levs-1]) {
+        layer_agl.top = height[num_levs-1];
     }
 
     // lower and upper temperature
-    float tmpc_l = interp_height(layer_agl.zbot, height, temperature, num_levs);
-    float tmpc_u = interp_height(layer_agl.ztop, height, temperature, num_levs);
+    float tmpc_l = interp_height(layer_agl.bottom, height, temperature, num_levs);
+    float tmpc_u = interp_height(layer_agl.top, height, temperature, num_levs);
 #ifndef NO_QC
     if ((tmpc_l == MISSING) || (tmpc_u == MISSING)) {
         return MISSING;
@@ -359,7 +359,7 @@ float lapse_rate(HeightLayer layer_agl, const float* height,
 #endif
 
     // dT/dz, positive (definition of lapse rate), in km
-    float dz = layer_agl.ztop - layer_agl.zbot;
+    float dz = layer_agl.top - layer_agl.bottom;
     return ((tmpc_u - tmpc_l) / dz) * -1000.0;
 }
 
@@ -368,17 +368,17 @@ float lapse_rate(PressureLayer layer, const float* pressure,
                  const float* height, const float* temperature,
                  int num_levs) noexcept {
 #ifndef NO_QC
-    if ((layer.pbot == MISSING) || (layer.ptop == MISSING)) {
+    if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
         return MISSING;
     }
 #endif
 
     // bounds check the pressure layer 
-    if (layer.pbot > pressure[0]) {
-        layer.pbot = pressure[0];
+    if (layer.bottom > pressure[0]) {
+        layer.bottom = pressure[0];
     }
-    if (layer.ptop < pressure[num_levs-1]) {
-        layer.ptop = pressure[num_levs-1];
+    if (layer.top < pressure[num_levs-1]) {
+        layer.top = pressure[num_levs-1];
     }
 
     HeightLayer h_layer = pressure_layer_to_height(

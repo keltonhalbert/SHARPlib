@@ -207,13 +207,13 @@ float buoyancy_dilution(Profile* prof, Parcel *pcl,
 
 
     // start with the interpolated bottom layer
-    float mse_bar_bot = interp_pressure(integ_layer.pbot, prof->pres, 
+    float mse_bar_bot = interp_pressure(integ_layer.bottom, prof->pres, 
                                         mse_bar, prof->NZ);
-    float mse_star_bot = interp_pressure(integ_layer.pbot, prof->pres, 
+    float mse_star_bot = interp_pressure(integ_layer.bottom, prof->pres, 
                                          mse_star, prof->NZ);
-    float tmpk_bot = interp_pressure(integ_layer.pbot, prof->pres, 
+    float tmpk_bot = interp_pressure(integ_layer.bottom, prof->pres, 
                                      prof->tmpc, prof->NZ) + ZEROCNK;
-    float zbot = interp_pressure(integ_layer.pbot, prof->pres, 
+    float zbot = interp_pressure(integ_layer.bottom, prof->pres, 
                                  prof->hght, prof->NZ);
 
     // initialize the top layer variables
@@ -257,12 +257,12 @@ float buoyancy_dilution(Profile* prof, Parcel *pcl,
     }
 
     // finish with the interpolated top layer
-    mse_bar_top = interp_pressure(integ_layer.ptop, prof->pres, 
+    mse_bar_top = interp_pressure(integ_layer.top, prof->pres, 
                                   mse_bar, prof->NZ);
-    mse_star_top = interp_pressure(integ_layer.ptop, prof->pres, 
+    mse_star_top = interp_pressure(integ_layer.top, prof->pres, 
                                    mse_star, prof->NZ);
-    ztop = interp_pressure(integ_layer.ptop, prof->pres, prof->hght, prof->NZ);
-    tmpk_top = interp_pressure(integ_layer.ptop, prof->pres, 
+    ztop = interp_pressure(integ_layer.top, prof->pres, prof->hght, prof->NZ);
+    tmpk_top = interp_pressure(integ_layer.top, prof->pres, 
                                prof->tmpc, prof->NZ) + ZEROCNK;
 
     // compute the integrated quantity

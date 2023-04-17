@@ -505,7 +505,7 @@ void integrate_parcel_layer(Lifter liftpcl, Profile* prof, Parcel* pcl,
     pcl->lcl_pressure = pres_lcl;
 
 	// if the LCL is above the entirety of our layer, then we need to change things up
-	if (pres_lcl < layer.ptop) {
+	if (pres_lcl < layer.top) {
 		pcl->cape = 0;
 		pcl->cinh = 0;
 		return;
@@ -513,7 +513,7 @@ void integrate_parcel_layer(Lifter liftpcl, Profile* prof, Parcel* pcl,
 
     // define the parcel saturated lift layer to be
     // from the LCL to the top of the layer we are integrating 
-    PressureLayer sat_layer(pres_lcl, layer.ptop);
+    PressureLayer sat_layer(pres_lcl, layer.top);
 
     // excludes the indices that would correspond to the exact top and
     // bottom of this layer - default is that bottom and top is interpolated
@@ -544,7 +544,7 @@ void integrate_parcel_layer(Lifter liftpcl, Profile* prof, Parcel* pcl,
     float lyre_last = 0.0;
     float cape = 0.0;
     // iterate from the LCL to the top of the layer. Excludes
-	// layer.ptop so that we can interpoalte the last layer.  
+	// layer.top so that we can interpoalte the last layer.  
     for (int k = sat_index.kbot; k <= sat_index.ktop; k++) {
 #ifndef NO_QC
         if (prof->tmpc[k] == MISSING) {
@@ -596,7 +596,7 @@ void integrate_parcel_layer(Lifter liftpcl, Profile* prof, Parcel* pcl,
 
 	// now integrate the last layer using the interpolated
 	// layer top
-	ptop = layer.ptop; 
+	ptop = layer.top; 
     htop = interp_pressure(ptop, prof->pres, prof->hght, prof->NZ);
 
 	tmpc_pct = liftpcl(pbot, tmpc_pcb, ptop);

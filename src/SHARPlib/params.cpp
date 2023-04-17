@@ -132,10 +132,10 @@ WindComponents storm_motion_bunkers(Profile *prof,
     // mean winds at the top and bottom of the wind_shear_layer
     // and then differencing the two. Means are not pressure weighted
     // for the non-parcel based method.  
-    HeightLayer h_layer_lo = {wind_shear_layer_agl.zbot, 
-                              wind_shear_layer_agl.zbot + 500.0f};
-    HeightLayer h_layer_hi = {wind_shear_layer_agl.ztop - 500.0f,
-                              wind_shear_layer_agl.ztop};
+    HeightLayer h_layer_lo = {wind_shear_layer_agl.bottom, 
+                              wind_shear_layer_agl.bottom + 500.0f};
+    HeightLayer h_layer_hi = {wind_shear_layer_agl.top - 500.0f,
+                              wind_shear_layer_agl.top};
 
     PressureLayer p_layer_lo = height_layer_to_pressure(
                 h_layer_lo, prof->pres, prof->hght,
@@ -198,7 +198,7 @@ WindComponents storm_motion_bunkers(Profile* prof, bool leftMover) noexcept {
     PressureLayer eil = effective_inflow_layer(prof, 100.0, -250.0);
     float eql_pres = pcl.eql_pressure;
 
-    if ((eil.pbot == MISSING) || (eil.ptop == MISSING)) {
+    if ((eil.bottom == MISSING) || (eil.top == MISSING)) {
         return storm_motion_bunkers(prof, 
                 {0.0, 6000.0}, {0.0, 6000.0}, leftMover, false);
     }
@@ -209,14 +209,14 @@ WindComponents storm_motion_bunkers(Profile* prof, bool leftMover) noexcept {
     float eql_ht = interp_pressure(eql_pres, prof->pres, prof->hght, prof->NZ);
     // get AGL
     eql_ht -= prof->hght[0];
-    float htop = 0.65*(eql_ht - eil_hght.zbot);
+    float htop = 0.65*(eql_ht - eil_hght.bottom);
 
-    if ((htop < 3000.0) || (eil_hght.zbot > htop)) {
+    if ((htop < 3000.0) || (eil_hght.bottom > htop)) {
         return storm_motion_bunkers(prof, 
                 {0.0, 6000.0}, {0.0, 6000.0}, leftMover, false);
     }
 
-    HeightLayer mw_layer = {eil_hght.zbot, htop};
+    HeightLayer mw_layer = {eil_hght.bottom, htop};
     HeightLayer shr_layer = {0, 6000.0};
 
     return storm_motion_bunkers(prof, mw_layer, shr_layer, leftMover, true);
@@ -294,8 +294,8 @@ float entrainment_cape(Profile* prof, Parcel *pcl) noexcept {
                                       prof->vwin[k] - strm_mtn.v); 
         count += 1;
     }
-    float u_1km = interp_height(layer.ztop, prof->hght, prof->uwin, prof->NZ);
-    float v_1km = interp_height(layer.ztop, prof->hght, prof->vwin, prof->NZ);
+    float u_1km = interp_height(layer.top, prof->hght, prof->uwin, prof->NZ);
+    float v_1km = interp_height(layer.top, prof->hght, prof->vwin, prof->NZ);
 
     V_sr_mean += vector_magnitude(u_1km - strm_mtn.u, v_1km - strm_mtn.v);
     // the +2 is +1 for swapping from zero-index to size, and then
