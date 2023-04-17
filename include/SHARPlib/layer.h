@@ -19,6 +19,7 @@
 
 namespace sharp {
 
+
 /**
  *
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -31,17 +32,17 @@ struct HeightLayer {
     /**
      * \brief The bottom of the height layer (meters)
      */
-    float zbot;
+    float bottom;
 
     /**
      * \brief The top of the height layer (meters)
      */
-    float ztop;
+    float top;
 
     /**
      * \brief The height interval with which to iterate over the layer (meters) 
      */
-    float dz;
+    float delta;
 
     HeightLayer(float bot, float top, float delta=100.0);
 };
@@ -60,17 +61,17 @@ struct PressureLayer {
     /**
      * \brief The bottom of the pressure layer (hPa)
      */
-    float pbot;
+    float bottom;
 
     /**
      * \brief The top of the pressure layer (hPa)
      */
-    float ptop;
+    float top;
 
     /**
      * \brief The pressure interval with which to iterate over the layer (hPa)
      */
-    float dp;
+    float delta;
     PressureLayer(float bot, float top, float delta=10);
 };
 
@@ -107,7 +108,7 @@ struct LayerIndex {
  * and top of a layer is computed by interpolation by default, since
  * it may or may not be present. 
  *
- * \param layer     (sharp::PressureLayer)  {pbot, ptop}
+ * \param layer     (sharp::PressureLayer)  {bottom, top}
  * \param pressure  (hPa)
  * \param num_levs  (length of array)
  * \return          sharp::LayerIndex       {kbot, ktop}
@@ -134,7 +135,7 @@ LayerIndex get_layer_index(PressureLayer& layer,
  * it may or may not be present. 
  *
  *
- * \param layer     (sharp::HeightLayer)    {zbot, ztop}
+ * \param layer     (sharp::HeightLayer)    {bottom, top}
  * \param height    (meters)
  * \param num_levs  (length of array)
  * \return          sharp::LayerIndex       {kbot, ktop}
@@ -202,7 +203,7 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
  * dereferenced and filled with the pressure of the maximum/minum
  * value. 
  *
- * \param layer         (sharp::PressureLayer)  {pbot, ptop}
+ * \param layer         (sharp::PressureLayer)  {bottom, top}
  * \param pressure      (hPa)
  * \param data_arr      (data array to find max on)
  * \param N             (length of arrays)
@@ -217,17 +218,17 @@ constexpr float layer_minmax(PressureLayer layer, const float* pressure,
                    C comp) noexcept {
     
 #ifndef NO_QC
-    if ((layer.pbot == MISSING) || (layer.ptop == MISSING)) {
+    if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
         return MISSING;
     }
 #endif
 
     LayerIndex layer_idx = get_layer_index(layer, pressure, N);
 
-    float min_or_max = interp_pressure(layer.pbot, pressure, data_arr, N);
+    float min_or_max = interp_pressure(layer.bottom, pressure, data_arr, N);
 
     if (pr_min_or_max)
-        *pr_min_or_max = layer.pbot;
+        *pr_min_or_max = layer.bottom;
 
     for (int k = layer_idx.kbot; k <= layer_idx.ktop; ++k) {
         float val = data_arr[k];    
@@ -238,11 +239,11 @@ constexpr float layer_minmax(PressureLayer layer, const float* pressure,
         } 
     }
 
-    float val = interp_pressure(layer.ptop, pressure, data_arr, N);
+    float val = interp_pressure(layer.top, pressure, data_arr, N);
     if (comp(val, min_or_max)) {
         min_or_max = val;
         if (pr_min_or_max)
-            *pr_min_or_max = layer.ptop;
+            *pr_min_or_max = layer.top;
     }
 
     return min_or_max;
@@ -262,7 +263,7 @@ constexpr float layer_minmax(PressureLayer layer, const float* pressure,
  * dereferenced and filled with the height of the maximum/minum
  * value. 
  *
- * \param layer         (sharp::HeightLayer)  {zbot, ztop}
+ * \param layer         (sharp::HeightLayer)  {bottom, top}
  * \param height        (meters)
  * \param data_arr      (data array to find max on)
  * \param N             (length of arrays)
@@ -277,17 +278,17 @@ constexpr float layer_minmax(HeightLayer layer, const float* height,
                    C comp) noexcept {
     
 #ifndef NO_QC
-    if ((layer.zbot == MISSING) || (layer.ztop == MISSING)) {
+    if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
         return MISSING;
     }
 #endif
 
     LayerIndex layer_idx = get_layer_index(layer, height, N);
 
-    float min_or_max = interp_height(layer.zbot, height, data_arr, N);
+    float min_or_max = interp_height(layer.bottom, height, data_arr, N);
 
     if (ht_min_or_max)
-        *ht_min_or_max = layer.zbot;
+        *ht_min_or_max = layer.bottom;
 
     for (int k = layer_idx.kbot; k <= layer_idx.ktop; ++k) {
         float val = data_arr[k];    
@@ -298,11 +299,11 @@ constexpr float layer_minmax(HeightLayer layer, const float* height,
         } 
     }
 
-    float val = interp_height(layer.ztop, height, data_arr, N);
+    float val = interp_height(layer.top, height, data_arr, N);
     if (comp(val, min_or_max)) {
         min_or_max = val;
         if (ht_min_or_max)
-            *ht_min_or_max = layer.ztop;
+            *ht_min_or_max = layer.top;
     }
 
     return min_or_max;
@@ -321,7 +322,7 @@ constexpr float layer_minmax(HeightLayer layer, const float* height,
  * dereferenced and filled with the pressure of the minimum
  * value. 
  *
- * \param layer         (sharp::PressureLayer)  {pbot, ptop}
+ * \param layer         (sharp::PressureLayer)  {bottom, top}
  * \param pressure      (hPa)
  * \param data_arr      (data array to find min on)
  * \param N             (length of arrays)
@@ -346,7 +347,7 @@ float layer_min(PressureLayer layer, const float* pressure,
  * dereferenced and filled with the height of the minimum
  * value. 
  *
- * \param layer         (sharp::HeightLayer)  {zbot, ztop}
+ * \param layer         (sharp::HeightLayer)  {bottom, top}
  * \param height        (meters)
  * \param data_arr      (data array to find min on)
  * \param N             (length of arrays)
@@ -371,7 +372,7 @@ float layer_min(HeightLayer layer, const float* height,
  * dereferenced and filled with the pressure of the maximum
  * value. 
  *
- * \param layer         (sharp::PressureLayer)  {pbot, ptop}
+ * \param layer         (sharp::PressureLayer)  {bottom, top}
  * \param pressure      (hPa)
  * \param data_arr      (data array to find max on)
  * \param N             (length of arrays)
@@ -396,7 +397,7 @@ float layer_max(PressureLayer layer, const float* pressure,
  * dereferenced and filled with the height of the maximum
  * value. 
  *
- * \param layer         (sharp::HeightLayer)  {zbot, ztop}
+ * \param layer         (sharp::HeightLayer)  {bottom, top}
  * \param height        (meters)
  * \param data_arr      (data array to find max on)
  * \param N             (length of arrays)
@@ -416,7 +417,7 @@ float layer_max(HeightLayer layer, const float* height,
  * Computes the mean value of a given array of data and corresponding 
  * pressure coordinates over the given sharp::PressureLayer.
  *
- * \param layer     (sharp::PressureLayer)  {pbot, ptop}
+ * \param layer     (sharp::PressureLayer)  {bottom, top}
  * \param pressure  (vertical pressure array; hPa)
  * \param data_arr  (The data for which to compute a mean)
  * \param num_levs  (length of pressure and data arrays)
@@ -437,7 +438,7 @@ float layer_mean(PressureLayer layer,   const float* pressure,
  * just a fancy wrapper around the implementation that uses 
  * sharp::PressureLayer. 
  *
- * \param layer     (sharp::PressureLayer)  {pbot, ptop}
+ * \param layer     (sharp::PressureLayer)  {bottom, top}
  * \param height    (vertical height array; meters)
  * \param pressure  (vertical pressure array; hPa)
  * \param data_arr  (The data for which to compute a mean)

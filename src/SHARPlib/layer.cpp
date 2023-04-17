@@ -27,27 +27,27 @@
 namespace sharp {
 
 
-HeightLayer::HeightLayer(float bot, float top, float delta) {
-    if (bot > top) {
+HeightLayer::HeightLayer(float bottom, float top, float delta) {
+    if (bottom > top) {
         throw std::range_error(
-            fmt::format("RangeError: The top of the height layer must be > the bottom of the height layer. Got hbot: {0} and htop: {1}", bot, top)
+            fmt::format("RangeError: The top of the height layer must be > the bottom of the height layer. Got hbot: {0} and htop: {1}", bottom, top)
         );
     }
-    zbot = bot;
-    ztop = top;
-    dz = delta;
+    this->bottom = bottom;
+    this->top = top;
+	this->delta = delta;
 }
 
 
-PressureLayer::PressureLayer(float bot, float top, float delta) {
-    if (bot < top) {
+PressureLayer::PressureLayer(float bottom, float top, float delta) {
+    if (bottom < top) {
         throw std::range_error(
-            fmt::format("RangeError: The bottom of the pressure layer must be > the top of the pressure layer. Got pbot: {0} and ptop: {1}", bot, top)
+            fmt::format("RangeError: The bottom of the pressure layer must be > the top of the pressure layer. Got pbot: {0} and ptop: {1}", bottom, top)
         );
     }
-    pbot = bot;
-    ptop = top;
-    dp = delta;
+    this->bottom = bottom;
+    this->top = top;
+    this->delta = delta;
 }
 
 
@@ -56,22 +56,23 @@ LayerIndex get_layer_index(PressureLayer& layer,
                            int num_levs) noexcept {
     // bounds check our search, modifying
     // our PressureLayer if need be.
-    if ((layer.pbot > pressure[0])) {
-        layer.pbot = pressure[0];
+    if ((layer.bottom > pressure[0])) {
+        layer.bottom = pressure[0];
     }
-    if ((layer.ptop < pressure[num_levs-1])) {
-        layer.ptop = pressure[num_levs-1];
+    if ((layer.top < pressure[num_levs-1])) {
+        layer.top = pressure[num_levs-1];
     }
 
     auto cmp = std::greater<float>();
-    int lower_idx = lower_bound(pressure, num_levs, layer.pbot, cmp);
-    int upper_idx = upper_bound(pressure, num_levs, layer.ptop, cmp);
+    int lower_idx = lower_bound(pressure, num_levs, layer.bottom, cmp);
+    int upper_idx = upper_bound(pressure, num_levs, layer.top, cmp);
+	printf("layer.bottom: %f, layer.top: %f, lower_idx: %d, upper_idx: %d\n", layer.bottom, layer.top, lower_idx, upper_idx);
 
-    if ((pressure[lower_idx] >= layer.pbot) && (lower_idx < num_levs - 1)) {
+    if ((pressure[lower_idx] >= layer.bottom) && (lower_idx < num_levs - 1)) {
         lower_idx += 1;
 	}
 
-    if ((pressure[upper_idx] <= layer.ptop) && (upper_idx > 0)) {
+    if ((pressure[upper_idx] <= layer.top) && (upper_idx > 0)) {
        upper_idx -= 1; 
 	}
 
@@ -83,20 +84,20 @@ LayerIndex get_layer_index(HeightLayer& layer,
                            int num_levs) noexcept {
     // bounds check our search, modifying
     // our PressureLayer if need be. 
-    if ((layer.zbot < height[0])) {
-        layer.zbot = height[0];
+    if ((layer.bottom < height[0])) {
+        layer.bottom = height[0];
     }
-    if ((layer.ztop > height[num_levs-1])) {
-        layer.ztop = height[num_levs-1];
+    if ((layer.top > height[num_levs-1])) {
+        layer.top = height[num_levs-1];
     }
 
-    int lower_idx = lower_bound(height, num_levs, layer.zbot);
-    int upper_idx = upper_bound(height, num_levs, layer.ztop);
-    if ((height[lower_idx] <= layer.zbot) && (lower_idx < num_levs -1)) {
+    int lower_idx = lower_bound(height, num_levs, layer.bottom);
+    int upper_idx = upper_bound(height, num_levs, layer.top);
+    if ((height[lower_idx] <= layer.bottom) && (lower_idx < num_levs -1)) {
         lower_idx += 1;
 	}
 
-    if ((height[upper_idx] >= layer.ztop) && (upper_idx > 0)) {
+    if ((height[upper_idx] >= layer.top) && (upper_idx > 0)) {
         upper_idx -= 1;
 	}
 
@@ -109,12 +110,12 @@ PressureLayer height_layer_to_pressure(HeightLayer layer,
                 int num_levs, bool isAGL) noexcept {
 
     if (isAGL) {
-        layer.zbot += height[0];
-        layer.ztop += height[0];
+        layer.bottom += height[0];
+        layer.top += height[0];
     }
 
-    float pbot = interp_height(layer.zbot, height, pressure, num_levs);
-    float ptop = interp_height(layer.ztop, height, pressure, num_levs);
+    float pbot = interp_height(layer.bottom, height, pressure, num_levs);
+    float ptop = interp_height(layer.top, height, pressure, num_levs);
     
     return {pbot, ptop};
 }
@@ -122,8 +123,8 @@ PressureLayer height_layer_to_pressure(HeightLayer layer,
 HeightLayer pressure_layer_to_height(PressureLayer layer, 
                 const float* pressure, const float* height, 
                 int num_levs, bool toAGL) noexcept {
-    float zbot = interp_pressure(layer.pbot, pressure, height, num_levs);
-    float ztop = interp_pressure(layer.ptop, pressure, height, num_levs);
+    float zbot = interp_pressure(layer.bottom, pressure, height, num_levs);
+    float ztop = interp_pressure(layer.top, pressure, height, num_levs);
 
     if (toAGL) {
         zbot -= height[0];
@@ -168,7 +169,7 @@ float layer_max(HeightLayer layer, const float* height,
 float layer_mean(PressureLayer layer,   const float* pressure,
                  const float* data_arr, int num_levs) noexcept {
 #ifndef NO_QC
-    if ((layer.pbot == MISSING) || (layer.ptop == MISSING)) {
+    if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
         return MISSING;
     }
 #endif
@@ -178,9 +179,9 @@ float layer_mean(PressureLayer layer,   const float* pressure,
     LayerIndex layer_idx = get_layer_index(layer, pressure, num_levs);
 
     // start with interpolated bottom layer
-    float val_bot = interp_pressure(layer.pbot, pressure, data_arr, num_levs);
+    float val_bot = interp_pressure(layer.bottom, pressure, data_arr, num_levs);
     float val_top = MISSING;
-    float pbot = layer.pbot;
+    float pbot = layer.bottom;
     float ptop = 0.0;
     float avg_val = 0.0;
     float weight = 0.0;
@@ -200,8 +201,8 @@ float layer_mean(PressureLayer layer,   const float* pressure,
         pbot = ptop;
     }
     
-    val_top = interp_pressure(layer.ptop, pressure, data_arr, num_levs);
-    ptop = layer.ptop;
+    val_top = interp_pressure(layer.top, pressure, data_arr, num_levs);
+    ptop = layer.top;
 
     avg_val += ((val_top + val_bot) / 2.0) * (pbot - ptop);
     weight += (pbot - ptop);
@@ -214,7 +215,7 @@ float layer_mean(HeightLayer layer_agl, const float* height,
                  const float* pressure, const float* data_arr, 
                  int num_levs) noexcept {
 #ifndef NO_QC
-    if ((layer_agl.zbot == MISSING) || (layer_agl.ztop == MISSING)) {
+    if ((layer_agl.bottom == MISSING) || (layer_agl.top == MISSING)) {
         return MISSING;
     }
 #endif
