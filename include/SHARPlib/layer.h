@@ -1,6 +1,6 @@
 /**
  * \file
- * \brief Utilities and structures useful for grouping objects, conducting QC, and things that otherwise don't have a home.  
+ * \brief Data structures and functions for performing operations over atmospheric layers.  
  * \author  
  *   Kelton Halbert                  \n
  *   Email: kelton.halbert@noaa.gov  \n
@@ -11,8 +11,8 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC. 
  */
-#ifndef __SHARP_UTILS
-#define __SHARP_UTILS
+#ifndef __SHARP_LAYERS
+#define __SHARP_LAYERS
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
@@ -212,7 +212,7 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
  *
  */
 template <typename C>
-constexpr float minmax_value(PressureLayer layer, const float* pressure, 
+constexpr float layer_minmax(PressureLayer layer, const float* pressure, 
                    const float* data_arr, int N, float* pr_min_or_max,
                    C comp) noexcept {
     
@@ -272,7 +272,7 @@ constexpr float minmax_value(PressureLayer layer, const float* pressure,
  *
  */
 template <typename C>
-constexpr float minmax_value(HeightLayer layer, const float* height, 
+constexpr float layer_minmax(HeightLayer layer, const float* height, 
                    const float* data_arr, int N, float* ht_min_or_max,
                    C comp) noexcept {
     
@@ -329,7 +329,7 @@ constexpr float minmax_value(HeightLayer layer, const float* height,
  * \return min_value
  *
  */
-float min_value(PressureLayer layer, const float* pressure,
+float layer_min(PressureLayer layer, const float* pressure,
                 const float* data_arr, int N, 
                 float* pres_of_min=nullptr) noexcept;
 
@@ -354,7 +354,7 @@ float min_value(PressureLayer layer, const float* pressure,
  * \return min_value
  *
  */
-float min_value(HeightLayer layer, const float* height,
+float layer_min(HeightLayer layer, const float* height,
                 const float* data_arr, int N, 
                 float* hght_of_min=nullptr) noexcept;
 
@@ -379,7 +379,7 @@ float min_value(HeightLayer layer, const float* height,
  * \return max_value
  *
  */
-float max_value(PressureLayer layer, const float* pressure,
+float layer_max(PressureLayer layer, const float* pressure,
                 const float* data_arr, int N, 
                 float* pres_of_max=nullptr) noexcept;
 
@@ -404,7 +404,7 @@ float max_value(PressureLayer layer, const float* pressure,
  * \return max_value
  *
  */
-float max_value(HeightLayer layer, const float* height,
+float layer_max(HeightLayer layer, const float* height,
                 const float* data_arr, int N, 
                 float* hght_of_max=nullptr) noexcept;
 
