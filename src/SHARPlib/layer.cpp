@@ -52,57 +52,22 @@ PressureLayer::PressureLayer(float bottom, float top, float delta) {
 	this->coord = LayerCoordinate::pressure;
 }
 
+LayerIndex get_layer_index(PressureLayer& layer, const float* pressure, int N) noexcept {
 
-LayerIndex get_layer_index(PressureLayer& layer, 
-                           const float* pressure, 
-                           int num_levs) noexcept {
-    // bounds check our search, modifying
-    // our PressureLayer if need be.
-    if ((layer.bottom > pressure[0])) {
-        layer.bottom = pressure[0];
-    }
-    if ((layer.top < pressure[num_levs-1])) {
-        layer.top = pressure[num_levs-1];
-    }
+	auto bottom_comp = std::greater_equal<float>();
+	auto top_comp = std::less_equal<float>();
 
-    auto cmp = std::greater<float>();
-    int lower_idx = lower_bound(pressure, num_levs, layer.bottom, cmp);
-    int upper_idx = upper_bound(pressure, num_levs, layer.top, cmp);
-
-    if ((pressure[lower_idx] >= layer.bottom) && (lower_idx < num_levs - 1)) {
-        lower_idx += 1;
-	}
-
-    if ((pressure[upper_idx] <= layer.top) && (upper_idx > 0)) {
-       upper_idx -= 1; 
-	}
-
-    return {lower_idx, upper_idx};
+	LayerIndex idx = get_layer_index(layer, pressure, N, bottom_comp, top_comp);
+	return {idx.kbot, idx.ktop};
 }
 
-LayerIndex get_layer_index(HeightLayer& layer, 
-                           const float* height, 
-                           int num_levs) noexcept {
-    // bounds check our search, modifying
-    // our PressureLayer if need be. 
-    if ((layer.bottom < height[0])) {
-        layer.bottom = height[0];
-    }
-    if ((layer.top > height[num_levs-1])) {
-        layer.top = height[num_levs-1];
-    }
+LayerIndex get_layer_index(HeightLayer& layer, const float* height, int N) noexcept {
 
-    int lower_idx = lower_bound(height, num_levs, layer.bottom);
-    int upper_idx = upper_bound(height, num_levs, layer.top);
-    if ((height[lower_idx] <= layer.bottom) && (lower_idx < num_levs -1)) {
-        lower_idx += 1;
-	}
+	auto bottom_comp = std::less_equal<float>();
+	auto top_comp = std::greater_equal<float>();
 
-    if ((height[upper_idx] >= layer.top) && (upper_idx > 0)) {
-        upper_idx -= 1;
-	}
-
-    return {lower_idx, upper_idx};
+	LayerIndex idx = get_layer_index(layer, height, N, bottom_comp, top_comp);
+	return {idx.kbot, idx.ktop};
 }
 
 
