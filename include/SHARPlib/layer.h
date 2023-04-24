@@ -396,6 +396,91 @@ constexpr float layer_max(L layer, const float* coord_arr,
 	return layer_minmax(layer, coord_arr, data_arr, N, lvl_of_max, comp);
 }	
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Returns a trapezoidal integration of the given layer.
+ *
+ * Returns a trapezoidal integration of the given data array over the
+ * given sharp::PressureLayer or sharp::HeightLayer. Includes additional
+ * default argument that determines whether this is a weighted average
+ * or not. 
+ *
+ * \param layer          (sharp::PressureLayer or sharp::HeightLayer)  {bottom, top}
+ * \param var_array      (data array to integrate)
+ * \param coord_array    (coordinate array to integrate over)
+ * \param N              (length of arrays)
+ * \param weighted       (bool; default=false)
+ *
+ * \return integrated_value
+ */
+template <typename T, typename L>
+constexpr T integrate_layer_trapz(L layer, const T* var_array, 
+		                          const T* coord_array, int N,
+								  const bool weighted=false) noexcept {
+
+	T var_bottom = MISSING; 
+	T coord_bottom = layer.bottom; 
+
+	T var_top = MISSING;
+	T coord_top = MISSING;
+
+	if constexpr (layer.coord == LayerCoordinate::height) {
+		var_bottom = interp_height(layer.bottom, coord_array, var_array, N);
+	}
+	else {
+		var_bottom = interp_pressure(layer.bottom, coord_array, var_array, N);
+	}
+
+	T integrated = 0.0;
+	T weights = 0.0;
+	
+	LayerIndex idx = get_layer_index(layer, coord_array, N);
+
+	for (int k = idx.kbot; k <= idx.ktop; ++k) {
+#ifndef NO_QC
+		if (var_array[k] == MISSING) {
+			continue;
+		}
+#endif
+
+		var_top = var_array[k]; 
+		coord_top = coord_array[k];
+
+		integrated += ((var_top + var_bottom) / 2.0) * (coord_top - coord_bottom);
+		if (weighted) {
+			weights += (coord_top - coord_bottom);
+		}
+
+
+		var_bottom = var_top;
+		coord_bottom = coord_top;
+	}
+
+	// interpolated top of layer	
+	if constexpr (layer.coord == LayerCoordinate::height) {
+		var_top = interp_height(layer.top, coord_array, var_array, N);
+	}
+	else {
+		var_top = interp_pressure(layer.top, coord_array, var_array, N);
+	}
+	coord_top = layer.top;
+
+	integrated += ((var_top + var_bottom) / 2.0) * (coord_top - coord_bottom);
+
+	if (weighted) {
+		weights += (coord_top - coord_bottom);
+	}
+
+	if constexpr(layer.coord == LayerCoordinate::pressure) {
+		integrated *= -1.0;
+		weights *= -1.0;
+	}
+
+	if (weighted) integrated /= weights;
+
+	return integrated;
+}
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
