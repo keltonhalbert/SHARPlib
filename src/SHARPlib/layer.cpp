@@ -97,67 +97,53 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
 }
 
 float layer_mean(PressureLayer layer,   const float* pressure,
-                 const float* data_arr, int num_levs) noexcept {
+				 const float* data_arr, int num_levs) noexcept {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
         return MISSING;
     }
 #endif
 
-    // Get the vertical array indices corresponding to our layer,
-    // while also bounds checking our search.
-    LayerIndex layer_idx = get_layer_index(layer, pressure, num_levs);
+	if (layer.bottom > pressure[0]) {
+		layer.bottom = pressure[0];
+	}
 
-    // start with interpolated bottom layer
-    float val_bot = interp_pressure(layer.bottom, pressure, data_arr, num_levs);
-    float val_top = MISSING;
-    float pbot = layer.bottom;
-    float ptop = 0.0;
-    float avg_val = 0.0;
-    float weight = 0.0;
+	if (layer.top < pressure[num_levs - 1]) {
+		layer.top = pressure[num_levs - 1];
+	}
 
-    for (int k = layer_idx.kbot; k <= layer_idx.ktop; k++) {
-#ifndef NO_QC
-        if ((pressure[k] == MISSING) || (data_arr[k] == MISSING)) {
-            continue;
-        }
-#endif
-        val_top = data_arr[k];
-        ptop = pressure[k];
-        avg_val += ((val_top + val_bot) / 2.0) * (pbot - ptop);
-        weight += (pbot - ptop);
-        
-        val_bot = val_top;
-        pbot = ptop;
-    }
-    
-    val_top = interp_pressure(layer.top, pressure, data_arr, num_levs);
-    ptop = layer.top;
-
-    avg_val += ((val_top + val_bot) / 2.0) * (pbot - ptop);
-    weight += (pbot - ptop);
-
-    return avg_val / weight;
+	return integrate_layer_trapz(layer, data_arr, pressure, num_levs, true);
 }
 
-
-float layer_mean(HeightLayer layer_agl, const float* height, 
-                 const float* pressure, const float* data_arr, 
-                 int num_levs) noexcept {
+float layer_mean(HeightLayer layer,     const float* height,
+				 const float* pressure, const float* data_arr, 
+				 int num_levs, const bool isAGL=false) noexcept {
 #ifndef NO_QC
-    if ((layer_agl.bottom == MISSING) || (layer_agl.top == MISSING)) {
+    if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
         return MISSING;
     }
 #endif
 
+	if (isAGL) {
+		layer.bottom += height[0];
+		layer.top += height[0];
+	}
+
+	if (layer.bottom < height[0]) {
+		layer.bottom = height[0];
+	}
+
+	if (layer.top > height[num_levs - 1]) {
+		layer.top = height[num_levs - 1];
+	}
+
     PressureLayer pres_layer = height_layer_to_pressure(
-                                layer_agl, pressure, height,
-                                num_levs, true
+                                layer, pressure, height,
+                                num_levs, false
                             );
 
-    return layer_mean(pres_layer, pressure, data_arr, num_levs);
+	return integrate_layer_trapz(pres_layer, data_arr, pressure, num_levs, true);
 }
-
 
 } // end namespace sharp
 

@@ -36,8 +36,17 @@ float interp_height(float height_val, const float* height_arr,
     int idx_bot = lower_bound(height_arr, num_levs, height_val, comp);
     int idx_top = upper_bound(height_arr, num_levs, height_val, comp);
 
-    if ((height_arr[idx_bot] > height_val) && (idx_bot > 0))
+    if ((height_arr[idx_bot] > height_val) && (idx_bot > 0)) {
         idx_bot -= 1;
+	}
+
+	if ((idx_bot == idx_top) && (height_arr[idx_bot] == height_val)) {
+		return data_arr[idx_bot];
+	}
+
+	else if (idx_bot == idx_top) {
+		return MISSING;
+	}
 
 #ifndef NO_QC
     for (; idx_bot > 0; --idx_bot) {
@@ -90,8 +99,17 @@ float interp_pressure(float pressure_val, const float* pressure_arr,
     int idx_bot = lower_bound(pressure_arr, num_levs, pressure_val, comp);
     int idx_top = upper_bound(pressure_arr, num_levs, pressure_val, comp);
 
-    if ((pressure_arr[idx_bot] < pressure_val) && (idx_bot > 0))
+    if ((pressure_arr[idx_bot] < pressure_val) && (idx_bot > 0)) {
         idx_bot -= 1;
+	}
+
+	if ((idx_bot == idx_top) && (pressure_arr[idx_bot] == pressure_val)) {
+		return data_arr[idx_bot];
+	}
+
+	else if (idx_bot == idx_top) {
+		return MISSING;
+	}
 
 #ifndef NO_QC
     for (; idx_bot > 0; --idx_bot) {
