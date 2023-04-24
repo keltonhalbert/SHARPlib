@@ -115,6 +115,34 @@ inline constexpr int upper_bound(const T* array, int N, T value, C cmp=C{}) noex
     return first;
 }
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief A kernel that computes the area under a curve using the trapezoidal rule.
+ *
+ * This is a function kernel that integrates an area using the trapezoidal rule. 
+ * This function does not do the actual integration over an array, but is meant
+ * to be wrapped by any function that does so. 
+ *
+ * \param var_top      The top value of the variable to integrate
+ * \param var_bottom   The bottom value of the variable to integrate
+ * \param coord_top    The top value of the coordinate to integrate
+ * \param coord_bottom The bottom value of the coordinate to integrate
+ * \param weights      The weights to accumulate
+ * \param weighted     Whether or not to accumulate weights
+ * \return             The area under the curve
+ */
+template <typename _T>
+inline constexpr _T __integ_trapz(_T var_top, _T var_bottom, 
+		                       _T coord_top, _T coord_bottom, 
+							   _T& weights, bool weighted=false) noexcept {
+	if (weighted) {
+		weights += coord_top - coord_bottom;
+	}
+	return ((var_top + var_bottom) / 2.0) * (coord_top - coord_bottom);
+
+}
+
 
 } // end namespace sharp
 
