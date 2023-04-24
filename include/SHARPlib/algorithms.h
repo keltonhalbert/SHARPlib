@@ -140,7 +140,6 @@ inline constexpr _T __integ_trapz(_T var_top, _T var_bottom,
 		weights += coord_top - coord_bottom;
 	}
 	return ((var_top + var_bottom) / 2.0) * (coord_top - coord_bottom);
-
 }
 
 

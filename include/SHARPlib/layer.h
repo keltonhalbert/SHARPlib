@@ -303,11 +303,14 @@ constexpr float layer_minmax(L layer, const float* coord_arr,
     LayerIndex layer_idx = get_layer_index(layer, coord_arr, N);
 
 	float min_or_max = MISSING;
-	if (layer.coord == LayerCoordinate::pressure) {
+	float top_val = MISSING;
+	if constexpr (layer.coord == LayerCoordinate::pressure) {
     	min_or_max = interp_pressure(layer.bottom, coord_arr, data_arr, N);
+    	top_val = interp_pressure(layer.top, coord_arr, data_arr, N);
 	}
 	else {
 		min_or_max = interp_height(layer.bottom, coord_arr, data_arr, N);
+		top_val = interp_height(layer.top, coord_arr, data_arr, N);
 	}
 
     if (lvl_min_or_max)
@@ -321,14 +324,6 @@ constexpr float layer_minmax(L layer, const float* coord_arr,
                 *lvl_min_or_max = coord_arr[k];
         } 
     }
-
-	float top_val = MISSING;
-	if (layer.coord == LayerCoordinate::pressure) {
-    	top_val = interp_pressure(layer.top, coord_arr, data_arr, N);
-	}
-	else {
-		top_val = interp_height(layer.top, coord_arr, data_arr, N);
-	}
 
     if (comp(top_val, min_or_max)) {
         min_or_max = top_val;
