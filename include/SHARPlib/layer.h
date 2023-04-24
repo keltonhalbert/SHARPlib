@@ -16,6 +16,7 @@
 
 #include <functional>
 
+#include <SHARPlib/algorithms.h>
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 
@@ -425,15 +426,20 @@ constexpr T integrate_layer_trapz(L layer, const T* var_array,
 	T var_top = MISSING;
 	T coord_top = MISSING;
 
-	if constexpr (layer.coord == LayerCoordinate::height) {
-		var_bottom = interp_height(layer.bottom, coord_array, var_array, N);
-	}
-	else {
-		var_bottom = interp_pressure(layer.bottom, coord_array, var_array, N);
-	}
+	T var_lyr_top = MISSING;
+	T coord_lyr_top = layer.top;
 
 	T integrated = 0.0;
 	T weights = 0.0;
+
+	if constexpr (layer.coord == LayerCoordinate::height) {
+		var_bottom = interp_height(layer.bottom, coord_array, var_array, N);
+		var_lyr_top = interp_height(layer.top, coord_array, var_array, N);
+	}
+	else {
+		var_bottom = interp_pressure(layer.bottom, coord_array, var_array, N);
+		var_lyr_top = interp_pressure(layer.top, coord_array, var_array, N);
+	}
 	
 	LayerIndex idx = get_layer_index(layer, coord_array, N);
 
@@ -447,30 +453,18 @@ constexpr T integrate_layer_trapz(L layer, const T* var_array,
 		var_top = var_array[k]; 
 		coord_top = coord_array[k];
 
-		integrated += ((var_top + var_bottom) / 2.0) * (coord_top - coord_bottom);
-		if (weighted) {
-			weights += (coord_top - coord_bottom);
-		}
-
+		integrated += __integ_trapz(var_top, var_bottom, 
+				                    coord_top, coord_bottom, 
+						  		    weights, weighted);
 
 		var_bottom = var_top;
 		coord_bottom = coord_top;
 	}
 
 	// interpolated top of layer	
-	if constexpr (layer.coord == LayerCoordinate::height) {
-		var_top = interp_height(layer.top, coord_array, var_array, N);
-	}
-	else {
-		var_top = interp_pressure(layer.top, coord_array, var_array, N);
-	}
-	coord_top = layer.top;
-
-	integrated += ((var_top + var_bottom) / 2.0) * (coord_top - coord_bottom);
-
-	if (weighted) {
-		weights += (coord_top - coord_bottom);
-	}
+	integrated += __integ_trapz(var_lyr_top, var_bottom, 
+					  		    coord_lyr_top, coord_bottom, 
+							    weights, weighted);
 
 	if constexpr(layer.coord == LayerCoordinate::pressure) {
 		integrated *= -1.0;
