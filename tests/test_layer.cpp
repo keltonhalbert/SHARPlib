@@ -97,4 +97,21 @@ TEST_CASE("Testing layer_min over height layer") {
     CHECK(sharp::layer_min(layer4, hght, data, 10) ==  -7.5);
 }
 
+TEST_CASE("Testing layer_mean over a pressure layer") {
+
+	float pres[10] = { 1000.0, 900.0, 800.0, 700.0, 600.0,
+		500.0, 400.0, 300.0, 200.0, 100.0 };
+
+	float data[10] = { 0, 0, 0, 0, 10, 0, 0, 0, 0, 0 };
+
+	sharp::PressureLayer layer1(1000.0, 600.0); // max at top of layer
+	sharp::PressureLayer layer2(1100.0, 50.0);  // out of bounds recovery
+	sharp::PressureLayer layer3(1000.0, 100.0);  // full layer 
+	
+	CHECK(sharp::layer_mean(layer1, pres, data, 10) == 1.25);
+	CHECK(sharp::layer_mean(layer2, pres, data, 10) == doctest::Approx(1.1111));
+	CHECK(sharp::layer_mean(layer3, pres, data, 10) == doctest::Approx(1.1111));
+
+}
+
 
