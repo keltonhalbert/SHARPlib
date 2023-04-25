@@ -427,6 +427,8 @@ constexpr T integrate_layer_trapz(L layer, const T* var_array,
 	T integrated = 0.0;
 	T weights = 0.0;
 
+	// using constexpr means that this if statement optimizes
+	// away at compile time since the layer coordinate is known
 	if constexpr (layer.coord == LayerCoordinate::height) {
 		var_bottom = interp_height(layer.bottom, coord_array, var_array, N);
 		var_lyr_top = interp_height(layer.top, coord_array, var_array, N);
