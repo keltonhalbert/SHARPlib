@@ -238,6 +238,24 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept;
 float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl, 
                      float tmpc_lcl) noexcept;
 
+// To-Do: Lift a parcel and fill either a buoyancy array
+// or a dummy array(s) with the buoyancy data. 
+template <typename Lft>
+void lift_parcel(Lifter lifpcl, Profile* prof, Parcel* pcl) noexcept {
+
+    // We want to compute buoyancy from the LPL to the top of the
+    // available data in the profile. 
+    PressureLayer pcl_lyr = {pcl->pres, prof->pres[prof->NZ-1]};
+
+    // the layer index excludes the top and bottom for interpolation reasons
+    LayerIndex lyr_idx = get_layer_index(pcl_lyr, prof->pres, prof->NZ);
+
+    // fill the array with the parcel buoyancy
+    for (int k = lyr_idx.kbot; k <= lyr_idx.ktop; ++k) {
+        // do-stuff-here
+    }
+
+}
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
