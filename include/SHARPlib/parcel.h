@@ -242,19 +242,43 @@ float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl,
 // or a dummy array(s) with the buoyancy data. 
 template <typename Lft>
 void lift_parcel(Lft lifpcl, Profile* prof, Parcel* pcl) noexcept {
+    // Lift the parcel from the LPL to the LCL 
+    float pres_lcl; 
+    float tmpc_lcl;
+    float thetav_lcl;
 
-    // We want to compute buoyancy from the LPL to the top of the
-    // available data in the profile. 
-    PressureLayer pcl_lyr = {pcl->pres, prof->pres[prof->NZ-1]};
+    drylift(pcl->pres, pcl->tmpc, pcl->dwpc, pres_lcl, tmpc_lcl);
+    thetav_lcl = theta(
+        pres_lcl, 
+        virtual_temperature(
+            pcl->pres, 
+            tmpc_lcl, 
+            tmpc_lcl
+        ),
+        1000.0
+    );
+    
 
-    // the layer index excludes the top and bottom for interpolation reasons
-    LayerIndex lyr_idx = get_layer_index(pcl_lyr, prof->pres, prof->NZ);
+    // define the dry and saturated lift layers
+    PressureLayer dry_lyr = {pcl->pres, pcl->lcl_pressure};
+    PressureLayer sat_lyr = {pcl->lcl_pressure, prof->pres[prof->NZ-1]};
 
-    // fill the array with the parcel buoyancy
-    for (int k = lyr_idx.kbot; k <= lyr_idx.ktop; ++k) {
-        // do-stuff-here
+    // the LayerIndex excludes the top and bottom for interpolation reasons
+    LayerIndex dry_idx = get_layer_index(dry_lyr, prof->pres, prof->NZ);
+    LayerIndex sat_idx = get_layer_index(sat_lyr, prof->pres, prof->NZ);
+
+    // virtual potential temperature (Theta-V)
+    // is conserved for a parcels dry ascent to the LCL
+    for (int k = dry_idx.kbot, k <= dry_idx.ktop; ++k) {
+        // compute below-lcl buoyancy here
+        // To-Do: Perhaps this section is what can be
+        // passed to below_lcl_cinh? 
     }
 
+    // fill the array with the moist parcel buoyancy
+    for (int k = sat_idx.kbot; k <= sat_idx.ktop; ++k) {
+        // compute above-lcl buoyancy here
+    }
 }
 
 /**
