@@ -241,7 +241,7 @@ float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl,
 // To-Do: Lift a parcel and fill either a buoyancy array
 // or a dummy array(s) with the buoyancy data. 
 template <typename Lft>
-void lift_parcel(Lifter lifpcl, Profile* prof, Parcel* pcl) noexcept {
+void lift_parcel(Lft lifpcl, Profile* prof, Parcel* pcl) noexcept {
 
     // We want to compute buoyancy from the LPL to the top of the
     // available data in the profile. 
