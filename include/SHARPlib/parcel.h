@@ -269,7 +269,7 @@ void lift_parcel(Lft lifpcl, Profile* prof, Parcel* pcl) noexcept {
 
     // virtual potential temperature (Theta-V)
     // is conserved for a parcels dry ascent to the LCL
-    for (int k = dry_idx.kbot, k <= dry_idx.ktop; ++k) {
+    for (int k = dry_idx.kbot; k <= dry_idx.ktop; ++k) {
         // compute below-lcl buoyancy here
         // To-Do: Perhaps this section is what can be
         // passed to below_lcl_cinh? 
