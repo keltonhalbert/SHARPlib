@@ -241,7 +241,7 @@ float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl,
 // To-Do: Lift a parcel and fill either a buoyancy array
 // or a dummy array(s) with the buoyancy data. 
 template <typename Lft>
-void lift_parcel(Lft lifpcl, Profile* prof, Parcel* pcl) noexcept {
+void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     // Lift the parcel from the LPL to the LCL 
     float pres_lcl; 
     float tmpc_lcl;
@@ -256,8 +256,7 @@ void lift_parcel(Lft lifpcl, Profile* prof, Parcel* pcl) noexcept {
             tmpc_lcl
         ),
         1000.0
-    );
-    
+    ); 
 
     // define the dry and saturated lift layers
     PressureLayer dry_lyr = {pcl->pres, pcl->lcl_pressure};
@@ -271,13 +270,27 @@ void lift_parcel(Lft lifpcl, Profile* prof, Parcel* pcl) noexcept {
     // is conserved for a parcels dry ascent to the LCL
     for (int k = dry_idx.kbot; k <= dry_idx.ktop; ++k) {
         // compute below-lcl buoyancy here
-        // To-Do: Perhaps this section is what can be
-        // passed to below_lcl_cinh? 
+        float pcl_pres = prof->pres[k];
+
+        float env_vtmp = prof->vtmp[k];
+        float pcl_vtmp = theta(1000.0, thetav_lcl, pcl_pres);
+        prof->buoyancy[k] = buoyancy(pcl_vtmp, env_vtmp);
+        // To-Do: Since get_layer_index excludes the exact 
+        // top and bottom, I need to double check that the logic
+        // and/or interpolation on buoyancy at these levels
+        // works or makes sense
     }
 
     // fill the array with the moist parcel buoyancy
     for (int k = sat_idx.kbot; k <= sat_idx.ktop; ++k) {
         // compute above-lcl buoyancy here
+        float pcl_pres = prof->pres[k];
+        float pcl_tmpc = liftpcl(pres_lcl, tmpc_lcl, pcl_pres);
+        // parcel is saturated, so temperature and dewpoint are same
+        float pcl_vtmp = virtual_temperature(pcl_pres, pcl_tmpc, pcl_tmpc);
+        float env_vtmp = prof->vtmp[k];
+
+        prof->buoyancy[k] = buoyancy(pcl_vtmp, env_vtmp);
     }
 }
 

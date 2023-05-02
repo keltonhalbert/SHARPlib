@@ -37,6 +37,7 @@ Profile::Profile(int num_levs, Source sounding_type) {
     theta = new float[num_levs];
     theta_e = new float[num_levs];
     moist_static_energy = new float[num_levs];
+    buoyancy = new float[num_levs];
 
     NZ = num_levs;
     snd_type = sounding_type;
@@ -63,6 +64,7 @@ Profile::~Profile() {
     delete[] theta;
     delete[] theta_e;
     delete[] moist_static_energy;
+    delete[] buoyancy;
 }
 
 } // end namespace sharp
