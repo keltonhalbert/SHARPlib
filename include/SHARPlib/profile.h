@@ -124,6 +124,11 @@ struct Profile {
      */
     float* moist_static_energy;
 
+    /*
+     * \brief Buoyancy for a lifted parcel. 
+     */
+    float* buoyancy;
+
     /**
      * \brief The number of vertical levels present / the length of the arrays. 
      */
