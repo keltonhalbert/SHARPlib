@@ -135,6 +135,34 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept {
     }
 }
 
+void find_lfc_el(Parcel* pcl, LayerIndex lyr_idx, 
+              float* pres_arr, float* buoy_arr, int NZ) noexcept {
+    float lfc_pres = MISSING;
+    float eql_pres = MISSING;
+
+    if (lyr_idx.kbot != 0) --lyr_idx.kbot;
+
+    for (int k = lyr_idx.kbot; k < lyr_idx.ktop; ++k) {
+        float pbot = pres_arr[k];
+        float buoy_bot = buoy_arr[k];
+        float buoy_top = buoy_arr[k+1];
+        if ((buoy_bot < 0) && (buoy_top >= 0)) {
+            for (lfc_pres = pbot+5.0f; lfc_pres > pbot-5.0; lfc_pres -=1.0) {
+                float buoy = interp_pressure(lfc_pres, pres_arr, buoy_arr, NZ);
+                if (buoy > 0) break;
+            }
+        }
+        if ((buoy_bot > 0) && (buoy_top <= 0)) {
+            for (eql_pres = pbot+5.0f; eql_pres > pbot-5.0; eql_pres -=1.0) {
+                float buoy = interp_pressure(eql_pres, pres_arr, buoy_arr, NZ);
+                if (buoy < 0) break;
+            } 
+        }
+    }
+    pcl->lfc_pressure = lfc_pres;
+    pcl->eql_pressure = eql_pres;
+}
+
 
 float cinh_below_lcl(Profile* prof, Parcel* pcl, 
                      float pres_lcl, float tmpc_lcl) noexcept {

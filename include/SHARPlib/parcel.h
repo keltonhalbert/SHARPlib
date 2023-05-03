@@ -238,6 +238,9 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept;
  */
 float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl, 
                      float tmpc_lcl) noexcept;
+
+void find_lfc_el(Parcel* pcl, LayerIndex lyr_idx, 
+              float* pres_arr, float* buoy_arr, int NZ) noexcept;
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
@@ -248,6 +251,7 @@ float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl,
  * LCL to the top of the profile. This fills the buoyancy array
  * within a sharp::Profile, and that buoyancy array can be used 
  * to find the LFC, EL, and integrate CAPE over various layers.  
+ *
  */
 template <typename Lft>
 void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
@@ -292,6 +296,14 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
         float env_vtmp = prof->vtmp[k];
 
         prof->buoyancy[k] = buoyancy(pcl_vtmp, env_vtmp);
+    }
+    find_lfc_el(pcl, sat_idx, prof->pres, prof->buoyancy, prof->NZ);
+    PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
+    if ((lfc_el.bottom != MISSING) && (lfc_el.top != MISSING)) {
+        HeightLayer lfc_el_hght = pressure_layer_to_height(lfc_el, prof->pres, prof->hght, prof->NZ);
+        float CAPE = integrate_layer_trapz(lfc_el_hght, prof->buoyancy, prof->hght,
+                        prof->NZ);
+        printf("%f %f %f J/kg\n", lfc_el.bottom, lfc_el.top, CAPE);
     }
 }
 
