@@ -137,9 +137,9 @@ inline constexpr _T __integ_trapz(_T var_top, _T var_bottom,
 		                       _T coord_top, _T coord_bottom, 
 							   _T& weights, bool weighted=false) noexcept {
 	if (weighted) {
-		weights += coord_top - coord_bottom;
+		weights += (coord_top - coord_bottom);
 	}
-	return ((var_top + var_bottom) / 2.0) * (coord_top - coord_bottom);
+	return ((var_top + var_bottom) / 2.0f) * (coord_top - coord_bottom);
 }
 
 
