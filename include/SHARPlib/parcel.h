@@ -21,6 +21,7 @@
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/layer.h>
 #include <SHARPlib/profile.h>
+#include <iostream>
 
 namespace sharp {
 
@@ -237,26 +238,31 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept;
  */
 float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl, 
                      float tmpc_lcl) noexcept;
-
-// To-Do: Lift a parcel and fill either a buoyancy array
-// or a dummy array(s) with the buoyancy data. 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Lifts a parcel to compute buoyancy
+ *
+ * Lifts a parcel dry adiabatically from its sharp::LPL to its
+ * LCL dry adiabatically, and then moist adiabatically from the
+ * LCL to the top of the profile. This fills the buoyancy array
+ * within a sharp::Profile, and that buoyancy array can be used 
+ * to find the LFC, EL, and integrate CAPE over various layers.  
+ */
 template <typename Lft>
 void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     // Lift the parcel from the LPL to the LCL 
     float pres_lcl; 
     float tmpc_lcl;
-    float thetav_lcl;
 
     drylift(pcl->pres, pcl->tmpc, pcl->dwpc, pres_lcl, tmpc_lcl);
-    thetav_lcl = theta(
-        pres_lcl, 
-        virtual_temperature(
-            pcl->pres, 
-            tmpc_lcl, 
-            tmpc_lcl
-        ),
-        1000.0
-    ); 
+    pcl->lcl_pressure = pres_lcl;
+
+    float thetav_lcl = theta(
+            pres_lcl, 
+            virtual_temperature(pcl->pres, tmpc_lcl, tmpc_lcl),
+            1000.0
+        ); 
 
     // define the dry and saturated lift layers
     PressureLayer dry_lyr = {pcl->pres, pcl->lcl_pressure};
@@ -266,19 +272,14 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     LayerIndex dry_idx = get_layer_index(dry_lyr, prof->pres, prof->NZ);
     LayerIndex sat_idx = get_layer_index(sat_lyr, prof->pres, prof->NZ);
 
+    // Fill the array with dry parcel buoyancy.
     // virtual potential temperature (Theta-V)
     // is conserved for a parcels dry ascent to the LCL
     for (int k = dry_idx.kbot; k <= dry_idx.ktop; ++k) {
-        // compute below-lcl buoyancy here
         float pcl_pres = prof->pres[k];
-
         float env_vtmp = prof->vtmp[k];
         float pcl_vtmp = theta(1000.0, thetav_lcl, pcl_pres);
         prof->buoyancy[k] = buoyancy(pcl_vtmp, env_vtmp);
-        // To-Do: Since get_layer_index excludes the exact 
-        // top and bottom, I need to double check that the logic
-        // and/or interpolation on buoyancy at these levels
-        // works or makes sense
     }
 
     // fill the array with the moist parcel buoyancy
