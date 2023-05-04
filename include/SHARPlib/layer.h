@@ -14,6 +14,7 @@
 #ifndef __SHARP_LAYERS
 #define __SHARP_LAYERS
 
+#include <cmath>
 #include <functional>
 
 #include <SHARPlib/algorithms.h>
@@ -400,20 +401,24 @@ constexpr float layer_max(L layer, const float* coord_arr,
  * Returns a trapezoidal integration of the given data array over the
  * given sharp::PressureLayer or sharp::HeightLayer. Includes additional
  * default argument that determines whether this is a weighted average
- * or not. 
+ * or not. The sign of the integration may be passed as well, i.e. 
+ * integrating only positive or negative values, by passing a 1 or -1 to
+ * integ_sign.
  *
  * \param layer          (sharp::PressureLayer or sharp::HeightLayer)  {bottom, top}
  * \param var_array      (data array to integrate)
  * \param coord_array    (coordinate array to integrate over)
  * \param N              (length of arrays)
  * \param weighted       (bool; default=false)
+ * \param integ_sign	 (int; default=0)
  *
  * \return integrated_value
  */
 template <typename T, typename L>
 constexpr T integrate_layer_trapz(L layer, const T* var_array, 
 		                          const T* coord_array, int N,
-								  const bool weighted=false) noexcept {
+								  const bool weighted=false,
+								  const int integ_sign=0) noexcept {
 
 	T var_bottom = MISSING; 
 	T coord_bottom = layer.bottom; 
@@ -439,7 +444,6 @@ constexpr T integrate_layer_trapz(L layer, const T* var_array,
 	}
 	
 	LayerIndex idx = get_layer_index(layer, coord_array, N);
-
 	for (int k = idx.kbot; k <= idx.ktop; ++k) {
 #ifndef NO_QC
 		if (var_array[k] == MISSING) {
@@ -450,18 +454,25 @@ constexpr T integrate_layer_trapz(L layer, const T* var_array,
 		var_top = var_array[k]; 
 		coord_top = coord_array[k];
 
-		integrated += __integ_trapz(var_top, var_bottom, 
+		T layer_avg = __integ_trapz(var_top, var_bottom, 
 				                    coord_top, coord_bottom, 
 						  		    weights, weighted);
+
+		if ((integ_sign == 0) || (std::signbit(integ_sign) == std::signbit(layer_avg))) { 
+			integrated += layer_avg;
+		}
 
 		var_bottom = var_top;
 		coord_bottom = coord_top;
 	}
 
 	// interpolated top of layer	
-	integrated += __integ_trapz(var_lyr_top, var_bottom, 
+	T layer_avg = __integ_trapz(var_lyr_top, var_bottom, 
 					  		    coord_lyr_top, coord_bottom, 
 							    weights, weighted);
+	if ((integ_sign == 0) || (std::signbit(integ_sign) == std::signbit(layer_avg))) { 
+		integrated += layer_avg;
+	}
 
 	if constexpr(layer.coord == LayerCoordinate::pressure) {
 		integrated *= -1.0;
@@ -469,7 +480,6 @@ constexpr T integrate_layer_trapz(L layer, const T* var_array,
 	}
 
 	if (weighted) integrated /= weights;
-
 	return integrated;
 }
 
