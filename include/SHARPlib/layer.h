@@ -417,8 +417,8 @@ constexpr float layer_max(L layer, const float* coord_arr,
 template <typename T, typename L>
 constexpr T integrate_layer_trapz(L layer, const T* var_array, 
 		                          const T* coord_array, int N,
-								  const bool weighted=false,
-								  const int integ_sign=0) noexcept {
+								  const int integ_sign=0,
+								  const bool weighted=false) noexcept {
 
 	T var_bottom = MISSING; 
 	T coord_bottom = layer.bottom; 
@@ -458,7 +458,8 @@ constexpr T integrate_layer_trapz(L layer, const T* var_array,
 				                    coord_top, coord_bottom, 
 						  		    weights, weighted);
 
-		if ((integ_sign == 0) || (std::signbit(integ_sign) == std::signbit(layer_avg))) { 
+		if ((integ_sign == 0) || 
+            (std::signbit(integ_sign) == std::signbit(layer_avg))) { 
 			integrated += layer_avg;
 		}
 
@@ -470,7 +471,8 @@ constexpr T integrate_layer_trapz(L layer, const T* var_array,
 	T layer_avg = __integ_trapz(var_lyr_top, var_bottom, 
 					  		    coord_lyr_top, coord_bottom, 
 							    weights, weighted);
-	if ((integ_sign == 0) || (std::signbit(integ_sign) == std::signbit(layer_avg))) { 
+	if ((integ_sign == 0) || 
+        (std::signbit(integ_sign) == std::signbit(layer_avg))) { 
 		integrated += layer_avg;
 	}
 

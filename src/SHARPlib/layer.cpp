@@ -112,7 +112,9 @@ float layer_mean(PressureLayer layer,   const float* pressure,
 		layer.top = pressure[num_levs - 1];
 	}
 
-	return integrate_layer_trapz(layer, data_arr, pressure, num_levs, true);
+    float mean = integrate_layer_trapz(layer, data_arr, pressure, 
+                                       num_levs, 0, true);
+	return mean;
 }
 
 float layer_mean(HeightLayer layer,     const float* height,
@@ -142,7 +144,9 @@ float layer_mean(HeightLayer layer,     const float* height,
                                 num_levs, false
                             );
 
-	return integrate_layer_trapz(pres_layer, data_arr, pressure, num_levs, true);
+    float mean = integrate_layer_trapz(pres_layer, data_arr, pressure, 
+                                       num_levs, 0, true); 
+	return mean;
 }
 
 } // end namespace sharp
