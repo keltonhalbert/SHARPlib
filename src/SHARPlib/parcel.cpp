@@ -129,22 +129,33 @@ void find_lfc_el(Parcel* pcl, LayerIndex lyr_idx, float* pres_arr,
 
     if (lyr_idx.kbot != 0) --lyr_idx.kbot;
 
+    // Find the location of maximum buoyancy.
+    // This is a LFC-EL sanity check to make sure
+    // we are getting deep moist convection
+    float pmax = MISSING;
+    PressureLayer plyr = {pres_arr[0], pres_arr[NZ - 1]};
+    layer_max(plyr, pres_arr, buoy_arr, NZ, &pmax);
+
     for (int k = lyr_idx.kbot; k < lyr_idx.ktop; ++k) {
         float pbot = pres_arr[k];
         float ptop = pres_arr[k + 1];
         float buoy_bot = buoy_arr[k];
         float buoy_top = buoy_arr[k + 1];
-        if ((buoy_bot < 0) && (buoy_top >= 0)) {
+        if ((buoy_top >= 0) && (buoy_bot < 0)) {
             for (lfc_pres = pbot; lfc_pres > ptop; lfc_pres -= 1.0) {
                 float buoy = interp_pressure(lfc_pres, pres_arr, buoy_arr, NZ);
                 if (buoy > 0) break;
             }
         }
-        if ((buoy_bot > 0) && (buoy_top <= 0)) {
+        if ((buoy_top <= 0) && (buoy_bot > 0)) {
             for (eql_pres = pbot; eql_pres > ptop; eql_pres -= 1.0) {
                 float buoy = interp_pressure(eql_pres, pres_arr, buoy_arr, NZ);
                 if (buoy < 0) break;
             }
+        }
+        if ((lfc_pres != MISSING) && (eql_pres != MISSING) &&
+            (lfc_pres > pmax) && (eql_pres < pmax)) {
+            break;
         }
     }
     pcl->lfc_pressure = lfc_pres;
