@@ -1,7 +1,8 @@
 /**
  * \file
- * \brief Routines used to compute kinematic attributes and indices of vertical sounding profiles
- * \author  
+ * \brief Routines used to compute kinematic attributes and indices<!--
+ * --> of vertical sounding profiles
+ * \author
  *   Kelton Halbert                  \n
  *   Email: kelton.halbert@noaa.gov  \n
  *   License: Apache 2.0             \n
@@ -9,70 +10,58 @@
  *
  * Written for the NWS Storm Predidiction Center \n
  * Based on NSHARP routines originally written by
- * John Hart and Rich Thompson at SPC. 
+ * John Hart and Rich Thompson at SPC.
  */
-#include <cmath>
-
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
 #include <SHARPlib/winds.h>
 
-namespace sharp {
+#include <cmath>
 
+namespace sharp {
 
 float u_component(float wind_speed, float wind_direction) noexcept {
 #ifndef NO_QC
-    if ((wind_direction == MISSING) || (wind_speed == MISSING))
-        return MISSING;
+    if ((wind_direction == MISSING) || (wind_speed == MISSING)) return MISSING;
 #endif
     wind_direction *= (PI / 180.0);
     return -1.0 * wind_speed * std::sin(wind_direction);
 }
 
-
 float v_component(float wind_speed, float wind_direction) noexcept {
 #ifndef NO_QC
-    if ((wind_direction == MISSING) || (wind_speed == MISSING))
-        return MISSING;
+    if ((wind_direction == MISSING) || (wind_speed == MISSING)) return MISSING;
 #endif
     wind_direction *= (PI / 180.0);
     return -1.0 * wind_speed * std::cos(wind_direction);
 }
 
-
 float vector_angle(float u_comp, float v_comp) noexcept {
 #ifndef NO_QC
-    if ((u_comp == MISSING) || (v_comp == MISSING))
-        return MISSING;
+    if ((u_comp == MISSING) || (v_comp == MISSING)) return MISSING;
 #endif
-    if ((u_comp == 0) && (v_comp == 0))
-        return 0;
+    if ((u_comp == 0) && (v_comp == 0)) return 0;
 
-    float wind_direction = std::atan2( -1*u_comp, -1*v_comp) * (180.0 / PI);
+    float wind_direction = std::atan2(-1 * u_comp, -1 * v_comp) * (180.0 / PI);
     if (wind_direction < 0) wind_direction += 360.0;
     if (wind_direction < TOL) wind_direction = 0;
-    return wind_direction; 
+    return wind_direction;
 }
-
 
 float vector_magnitude(float u_comp, float v_comp) noexcept {
 #ifndef NO_QC
-    if ((u_comp == MISSING) || (v_comp == MISSING))
-        return MISSING;
+    if ((u_comp == MISSING) || (v_comp == MISSING)) return MISSING;
 #endif
     return std::sqrt((u_comp * u_comp) + (v_comp * v_comp));
 }
 
-
 float vector_magnitude_precise(float u_comp, float v_comp) noexcept {
 #ifndef NO_QC
-    if ((u_comp == MISSING) || (v_comp == MISSING))
-        return MISSING;
+    if ((u_comp == MISSING) || (v_comp == MISSING)) return MISSING;
 #endif
     return std::hypot(u_comp, v_comp);
 }
-
 
 WindVector components_to_vector(float u_comp, float v_comp) noexcept {
     float wind_speed = vector_magnitude(u_comp, v_comp);
@@ -81,7 +70,6 @@ WindVector components_to_vector(float u_comp, float v_comp) noexcept {
     return {wind_speed, wind_direction};
 }
 
-
 WindVector components_to_vector(WindComponents comp) noexcept {
     float wind_speed = vector_magnitude(comp.u, comp.v);
     float wind_direction = vector_angle(comp.u, comp.v);
@@ -89,12 +77,11 @@ WindVector components_to_vector(WindComponents comp) noexcept {
     return {wind_speed, wind_direction};
 }
 
-
-WindComponents vector_to_components(float wind_speed, float wind_direction) 
-                                                                noexcept {
+WindComponents vector_to_components(float wind_speed,
+                                    float wind_direction) noexcept {
 #ifndef NO_QC
     if ((wind_direction == MISSING) || (wind_speed == MISSING))
-        return {MISSING, MISSING}; 
+        return {MISSING, MISSING};
 #endif
     wind_direction *= (PI / 180.0);
     float u_comp = -1.0 * wind_speed * std::sin(wind_direction);
@@ -103,11 +90,10 @@ WindComponents vector_to_components(float wind_speed, float wind_direction)
     return {u_comp, v_comp};
 }
 
-
 WindComponents vector_to_components(WindVector vect) noexcept {
 #ifndef NO_QC
     if ((vect.speed == MISSING) || (vect.direction == MISSING))
-        return {MISSING, MISSING}; 
+        return {MISSING, MISSING};
 #endif
     float wind_direction = vect.direction * (PI / 180.0);
     float u_comp = -1.0 * vect.speed * std::sin(wind_direction);
@@ -116,29 +102,25 @@ WindComponents vector_to_components(WindVector vect) noexcept {
     return {u_comp, v_comp};
 }
 
-
 WindComponents mean_wind(PressureLayer layer, const float* pres,
-                         const float* u_wind, const float* v_wind, 
+                         const float* u_wind, const float* v_wind,
                          int num_levs) noexcept {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING))
         return {MISSING, MISSING};
 #endif
 
-    if (layer.bottom > pres[0])
-        layer.bottom = pres[0];
+    if (layer.bottom > pres[0]) layer.bottom = pres[0];
 
-    if (layer.top < pres[num_levs-1])
-        layer.top = pres[num_levs-1];
-
+    if (layer.top < pres[num_levs - 1]) layer.top = pres[num_levs - 1];
 
     float pr_lvl = layer.bottom;
     float u_sum = 0;
     float v_sum = 0;
     float weight = 0;
-    while(pr_lvl >= layer.top) {
-        u_sum += interp_pressure(pr_lvl, pres, u_wind, num_levs) * pr_lvl; 
-        v_sum += interp_pressure(pr_lvl, pres, v_wind, num_levs) * pr_lvl; 
+    while (pr_lvl >= layer.top) {
+        u_sum += interp_pressure(pr_lvl, pres, u_wind, num_levs) * pr_lvl;
+        v_sum += interp_pressure(pr_lvl, pres, v_wind, num_levs) * pr_lvl;
         weight += pr_lvl;
         pr_lvl += layer.delta;
     }
@@ -146,12 +128,11 @@ WindComponents mean_wind(PressureLayer layer, const float* pres,
     float mean_u = u_sum / weight;
     float mean_v = v_sum / weight;
 
-    return {mean_u, mean_v}; 
+    return {mean_u, mean_v};
 }
 
-
 WindComponents mean_wind_npw(PressureLayer layer, const float* pres,
-                             const float* u_wind, const float* v_wind, 
+                             const float* u_wind, const float* v_wind,
                              int num_levs) noexcept {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING))
@@ -161,46 +142,39 @@ WindComponents mean_wind_npw(PressureLayer layer, const float* pres,
     // bounds checking our layer
     // requests to the available data
     // -- since PressureLayer is passed
-    // by value, this does not modify 
+    // by value, this does not modify
     // the original object
-    if (layer.bottom > pres[0])
-        layer.bottom = pres[0];
+    if (layer.bottom > pres[0]) layer.bottom = pres[0];
 
-    if (layer.top < pres[num_levs-1])
-        layer.top = pres[num_levs-1];
-
+    if (layer.top < pres[num_levs - 1]) layer.top = pres[num_levs - 1];
 
     float pr_lvl = layer.bottom;
     float u_sum = 0;
     float v_sum = 0;
     float weight = 0;
-    while(pr_lvl >= layer.top) {
+    while (pr_lvl >= layer.top) {
         u_sum += interp_pressure(pr_lvl, pres, u_wind, num_levs);
         v_sum += interp_pressure(pr_lvl, pres, v_wind, num_levs);
-        weight += 1; 
+        weight += 1;
         pr_lvl += layer.delta;
     }
 
     float mean_u = u_sum / weight;
     float mean_v = v_sum / weight;
 
-    return {mean_u, mean_v}; 
-
+    return {mean_u, mean_v};
 }
 
-
-WindComponents wind_shear(PressureLayer layer, const float* pres, 
-                          const float* u_wind, const float* v_wind, 
+WindComponents wind_shear(PressureLayer layer, const float* pres,
+                          const float* u_wind, const float* v_wind,
                           int num_levs) noexcept {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING))
         return {MISSING, MISSING};
 #endif
 
-    if (layer.bottom > pres[0])
-        layer.bottom = pres[0];
-    if (layer.top < pres[num_levs-1])
-        layer.top = pres[num_levs-1];
+    if (layer.bottom > pres[0]) layer.bottom = pres[0];
+    if (layer.top < pres[num_levs - 1]) layer.top = pres[num_levs - 1];
 
     float u_bot = interp_pressure(layer.bottom, pres, u_wind, num_levs);
     float u_top = interp_pressure(layer.top, pres, u_wind, num_levs);
@@ -209,19 +183,17 @@ WindComponents wind_shear(PressureLayer layer, const float* pres,
     float v_top = interp_pressure(layer.top, pres, v_wind, num_levs);
 
 #ifndef NO_QC
-    if ((u_bot == MISSING) || (v_bot == MISSING) ||
-        (u_top == MISSING) || (v_top == MISSING)) {
-
-        return {MISSING, MISSING}; 
+    if ((u_bot == MISSING) || (v_bot == MISSING) || (u_top == MISSING) ||
+        (v_top == MISSING)) {
+        return {MISSING, MISSING};
     }
 #endif
 
     return {u_top - u_bot, v_top - v_bot};
 }
 
-
-WindComponents wind_shear(HeightLayer layer_agl, const float* height, 
-                          const float* u_wind, const float* v_wind, 
+WindComponents wind_shear(HeightLayer layer_agl, const float* height,
+                          const float* u_wind, const float* v_wind,
                           int num_levs) noexcept {
 #ifndef NO_QC
     if ((layer_agl.bottom == MISSING) || (layer_agl.top == MISSING))
@@ -232,10 +204,9 @@ WindComponents wind_shear(HeightLayer layer_agl, const float* height,
     layer_agl.bottom += height[0];
     layer_agl.top += height[0];
 
-    if (layer_agl.bottom < height[0])
-        layer_agl.bottom = height[0];
-    if (layer_agl.top > height[num_levs-1])
-        layer_agl.top = height[num_levs-1];
+    if (layer_agl.bottom < height[0]) layer_agl.bottom = height[0];
+    if (layer_agl.top > height[num_levs - 1])
+        layer_agl.top = height[num_levs - 1];
 
     float u_bot = interp_height(layer_agl.bottom, height, u_wind, num_levs);
     float u_top = interp_height(layer_agl.top, height, u_wind, num_levs);
@@ -244,20 +215,18 @@ WindComponents wind_shear(HeightLayer layer_agl, const float* height,
     float v_top = interp_height(layer_agl.top, height, v_wind, num_levs);
 
 #ifndef NO_QC
-    if ((u_bot == MISSING) || (v_bot == MISSING) ||
-        (u_top == MISSING) || (v_top == MISSING)) {
-
-        return {MISSING, MISSING}; 
+    if ((u_bot == MISSING) || (v_bot == MISSING) || (u_top == MISSING) ||
+        (v_top == MISSING)) {
+        return {MISSING, MISSING};
     }
 #endif
 
     return {u_top - u_bot, v_top - v_bot};
 }
 
-
 float helicity(HeightLayer layer_agl, WindComponents storm_motion,
-               const float* height, const float* u_wind, 
-               const float* v_wind, int num_levs) noexcept {
+               const float* height, const float* u_wind, const float* v_wind,
+               int num_levs) noexcept {
 #ifndef NO_QC
     if ((storm_motion.u == MISSING) || (storm_motion.v == MISSING)) {
         return MISSING;
@@ -272,7 +241,7 @@ float helicity(HeightLayer layer_agl, WindComponents storm_motion,
     layer_agl.top += height[0];
 
     // Get the vertical array indices corresponding to our layer,
-    // while also bounds checking our search. Indices exclude the 
+    // while also bounds checking our search. Indices exclude the
     // top and bottom layers that will be interpolated.
     LayerIndex layer_idx = get_layer_index(layer_agl, height, num_levs);
 
@@ -298,7 +267,7 @@ float helicity(HeightLayer layer_agl, WindComponents storm_motion,
         srv_top = v_wind[k] - storm_motion.v;
 
         // integrate layer
-        layer_helicity += (sru_top * srv_bot) - (sru_bot * srv_top); 
+        layer_helicity += (sru_top * srv_bot) - (sru_bot * srv_top);
         // set the top to be the bottom
         // of the next layer
         sru_bot = sru_top;
@@ -311,32 +280,21 @@ float helicity(HeightLayer layer_agl, WindComponents storm_motion,
     srv_top = interp_height(layer_agl.top, height, v_wind, num_levs);
     sru_top -= storm_motion.u;
     srv_top -= storm_motion.v;
-    
-    // integrate the final layer
-    layer_helicity += (sru_top * srv_bot) - (sru_bot * srv_top); 
 
-    return layer_helicity; 
+    // integrate the final layer
+    layer_helicity += (sru_top * srv_bot) - (sru_bot * srv_top);
+
+    return layer_helicity;
 }
 
 float helicity(PressureLayer layer, WindComponents storm_motion,
-               const float* pressure, const float* height, 
-               const float* u_wind, const float* v_wind, 
-               int num_levs) noexcept {
- 
-    HeightLayer layer_agl = pressure_layer_to_height(
-                                layer, pressure, height,
-                                num_levs, true
-                            );
+               const float* pressure, const float* height, const float* u_wind,
+               const float* v_wind, int num_levs) noexcept {
+    HeightLayer layer_agl =
+        pressure_layer_to_height(layer, pressure, height, num_levs, true);
     return helicity(layer_agl, storm_motion, height, u_wind, v_wind, num_levs);
 }
 
+}  // end namespace sharp
 
-} // end namespace sharp
-
-
-namespace sharp::exper {
-
-
-} // end namespace sharp::exper
-
-
+namespace sharp::exper {}  // end namespace sharp::exper
