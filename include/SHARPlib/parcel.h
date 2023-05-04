@@ -299,14 +299,16 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     }
     find_lfc_el(pcl, sat_idx, prof->pres, prof->buoyancy, prof->NZ);
     PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
-	PressureLayer lpl_lcl = {pcl->pres, pcl->lcl_pressure};
+	PressureLayer lpl_lfc = {pcl->pres, pcl->lfc_pressure};
     if ((lfc_el.bottom != MISSING) && (lfc_el.top != MISSING)) {
-        HeightLayer lfc_el_hght = pressure_layer_to_height(lfc_el, prof->pres, prof->hght, prof->NZ);
-		HeightLayer lpl_lcl_hght = pressure_layer_to_height(lpl_lcl, prof->pres, prof->hght, prof->NZ);
-		float CINH = integrate_layer_trapz(lpl_lcl_hght, prof->buoyancy, prof->hght,
-						prof->NZ, false, -1);
-        float CAPE = integrate_layer_trapz(lfc_el_hght, prof->buoyancy, prof->hght,
-                        prof->NZ, false, 1);
+        HeightLayer lfc_el_ht = pressure_layer_to_height(lfc_el, prof->pres, 
+                                                          prof->hght, prof->NZ);
+		HeightLayer lpl_lfc_ht = pressure_layer_to_height(lpl_lfc, prof->pres, 
+                                                          prof->hght, prof->NZ);
+		float CINH = integrate_layer_trapz(lpl_lfc_ht, prof->buoyancy, 
+                prof->hght, prof->NZ, -1);
+        float CAPE = integrate_layer_trapz(lfc_el_ht, prof->buoyancy, 
+                prof->hght, prof->NZ, 1);
         printf("%f %f %f J/kg %f J/kg\n", lfc_el.bottom, lfc_el.top, CAPE, CINH);
     }
 }
