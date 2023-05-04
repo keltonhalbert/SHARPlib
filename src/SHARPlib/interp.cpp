@@ -31,7 +31,7 @@ float interp_height(float height_val, const float* height_arr,
         return MISSING;
 #endif
 
-    auto comp = std::less<float>();
+    constexpr auto comp = std::less<float>();
     int idx_bot = lower_bound(height_arr, num_levs, height_val, comp);
     int idx_top = upper_bound(height_arr, num_levs, height_val, comp);
 
@@ -88,7 +88,7 @@ float interp_pressure(float pressure_val, const float* pressure_arr,
     }
 #endif
 
-    auto comp = std::greater<float>();
+    constexpr auto comp = std::greater<float>();
     int idx_bot = lower_bound(pressure_arr, num_levs, pressure_val, comp);
     int idx_top = upper_bound(pressure_arr, num_levs, pressure_val, comp);
 
