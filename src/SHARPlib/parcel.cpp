@@ -144,16 +144,17 @@ void find_lfc_el(Parcel* pcl, LayerIndex lyr_idx,
 
     for (int k = lyr_idx.kbot; k < lyr_idx.ktop; ++k) {
         float pbot = pres_arr[k];
+		float ptop = pres_arr[k+1];
         float buoy_bot = buoy_arr[k];
         float buoy_top = buoy_arr[k+1];
         if ((buoy_bot < 0) && (buoy_top >= 0)) {
-            for (lfc_pres = pbot+5.0f; lfc_pres > pbot-5.0; lfc_pres -=1.0) {
+            for (lfc_pres = pbot; lfc_pres > ptop; lfc_pres -=1.0) {
                 float buoy = interp_pressure(lfc_pres, pres_arr, buoy_arr, NZ);
                 if (buoy > 0) break;
             }
         }
         if ((buoy_bot > 0) && (buoy_top <= 0)) {
-            for (eql_pres = pbot+5.0f; eql_pres > pbot-5.0; eql_pres -=1.0) {
+            for (eql_pres = pbot; eql_pres > ptop; eql_pres -=1.0) {
                 float buoy = interp_pressure(eql_pres, pres_arr, buoy_arr, NZ);
                 if (buoy < 0) break;
             } 
