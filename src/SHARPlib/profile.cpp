@@ -1,7 +1,8 @@
 /**
  * \file
- * \brief Data structures for containing data from vertical atmospheric sounding profiles 
- * \author  
+ * \brief Data structures for containing data from vertical atmospheric<!--
+ * --> sounding profiles
+ * \author
  *   Kelton Halbert                  \n
  *   Email: kelton.halbert@noaa.gov  \n
  *   License: Apache 2.0             \n
@@ -9,7 +10,7 @@
  *
  * Written for the NWS Storm Predidiction Center \n
  * Based on NSHARP routines originally written by
- * John Hart and Rich Thompson at SPC. 
+ * John Hart and Rich Thompson at SPC.
  */
 #include <SHARPlib/profile.h>
 
@@ -18,7 +19,7 @@ namespace sharp {
 /*
  * Construct a new Profile who's arrays have a length
  * of num_levs, and an integer describing what kind
- * of sounding it is (oberved, model, etc). 
+ * of sounding it is (oberved, model, etc).
  */
 Profile::Profile(int num_levs, Source sounding_type) {
     pres = new float[num_levs];
@@ -45,7 +46,7 @@ Profile::Profile(int num_levs, Source sounding_type) {
 
 /*
  * Handle the memory management of deallocating
- * arrays when we destroy a Profile. 
+ * arrays when we destroy a Profile.
  */
 Profile::~Profile() {
     delete[] pres;
@@ -67,12 +68,6 @@ Profile::~Profile() {
     delete[] buoyancy;
 }
 
-} // end namespace sharp
+}  // end namespace sharp
 
-
-namespace sharp::exper {
-
-
-} // end namespace sharp::exper
-
-
+namespace sharp::exper {}  // end namespace sharp::exper
