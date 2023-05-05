@@ -235,8 +235,8 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept;
 float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl,
                      float tmpc_lcl) noexcept;
 
-void find_lfc_el(Parcel* pcl, LayerIndex lyr_idx, float* pres_arr,
-                 float* buoy_arr, int NZ) noexcept;
+void find_lfc_el(Parcel* pcl, float* pres_arr, float* buoy_arr,
+                 int NZ) noexcept;
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
@@ -294,24 +294,6 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
         float buoy = buoyancy(pcl_vtmp, env_vtmp);
 		prof->buoyancy[k] = buoy;
     }
-
-    find_lfc_el(pcl, sat_idx, prof->pres, prof->buoyancy, prof->NZ);
-	/*
-    if ((pcl->lfc_pressure != MISSING) && (pcl->eql_pressure != MISSING)) {
-		PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
-		PressureLayer lpl_lfc = {pcl->pres, pcl->lfc_pressure};
-        HeightLayer lfc_el_ht =
-            pressure_layer_to_height(lfc_el, prof->pres, prof->hght, prof->NZ);
-        HeightLayer lpl_lfc_ht =
-            pressure_layer_to_height(lpl_lfc, prof->pres, prof->hght, prof->NZ);
-        float CINH = integrate_layer_trapz(lpl_lfc_ht, prof->buoyancy,
-                                           prof->hght, prof->NZ, -1);
-        float CAPE = integrate_layer_trapz(lfc_el_ht, prof->buoyancy,
-                                           prof->hght, prof->NZ, 1);
-		pcl->cape = CAPE;
-		pcl->cinh = CINH;
-    }
-	*/
 }
 
 /**
