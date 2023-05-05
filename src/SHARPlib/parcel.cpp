@@ -122,19 +122,21 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept {
     }
 }
 
-void find_lfc_el(Parcel* pcl, LayerIndex lyr_idx, float* pres_arr,
-                 float* buoy_arr, int NZ) noexcept {
+void find_lfc_el(Parcel* pcl, float* pres_arr, float* buoy_arr,
+                 int NZ) noexcept {
     float lfc_pres = MISSING;
     float eql_pres = MISSING;
 
+    PressureLayer sat_lyr = {pcl->lcl_pressure, pres_arr[NZ - 1]};
+    // The LayerIndex excludes the top and bottom for interpolation reasons
+    LayerIndex lyr_idx = get_layer_index(sat_lyr, pres_arr, NZ);
     if (lyr_idx.kbot != 0) --lyr_idx.kbot;
 
     // Find the location of maximum buoyancy.
     // This is a LFC-EL sanity check to make sure
     // we are getting deep moist convection
     float pmax = MISSING;
-    PressureLayer plyr = {pres_arr[0], pres_arr[NZ - 1]};
-    float maxval = layer_max(plyr, pres_arr, buoy_arr, NZ, &pmax);
+    layer_max(sat_lyr, pres_arr, buoy_arr, NZ, &pmax);
 
     for (int k = lyr_idx.kbot; k <= lyr_idx.ktop; ++k) {
         float pbot = pres_arr[k];
@@ -153,15 +155,13 @@ void find_lfc_el(Parcel* pcl, LayerIndex lyr_idx, float* pres_arr,
                 if (buoy < 0) break;
             }
         }
-        if ((lfc_pres != MISSING) && (eql_pres != MISSING) && (eql_pres <= pmax)) {
+        if ((lfc_pres != MISSING) && (eql_pres != MISSING) &&
+            (eql_pres <= pmax)) {
             break;
         }
     }
     pcl->lfc_pressure = lfc_pres;
     pcl->eql_pressure = eql_pres;
-    if ((lfc_pres <= eql_pres) && (lfc_pres != MISSING) && (eql_pres != MISSING))
-        printf("lfc: %f eql: %f pmax: %f buoy: %f\n", pcl->lfc_pressure, pcl->eql_pressure, pmax,
-               maxval);
 }
 
 float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl,
@@ -221,6 +221,23 @@ void parcel_wobf(Profile* prof, Parcel* pcl) noexcept {
 void parcel_wobf_new(Profile* prof, Parcel* pcl) noexcept {
     constexpr lifter_wobus lifter;
     lift_parcel(lifter, prof, pcl);
+
+    find_lfc_el(pcl, prof->pres, prof->buoyancy, prof->NZ);
+
+    if ((pcl->lfc_pressure != MISSING) && (pcl->eql_pressure != MISSING)) {
+		PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
+		PressureLayer lpl_lfc = {pcl->pres, pcl->lfc_pressure};
+        HeightLayer lfc_el_ht =
+            pressure_layer_to_height(lfc_el, prof->pres, prof->hght, prof->NZ);
+        HeightLayer lpl_lfc_ht =
+            pressure_layer_to_height(lpl_lfc, prof->pres, prof->hght, prof->NZ);
+        float CINH = integrate_layer_trapz(lpl_lfc_ht, prof->buoyancy,
+                                           prof->hght, prof->NZ, -1);
+        float CAPE = integrate_layer_trapz(lfc_el_ht, prof->buoyancy,
+                                           prof->hght, prof->NZ, 1);
+		pcl->cape = CAPE;
+		pcl->cinh = CINH;
+    }
     return;
 }
 
