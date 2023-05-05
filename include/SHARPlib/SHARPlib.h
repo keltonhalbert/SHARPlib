@@ -55,6 +55,8 @@ Profile *create_profile(float *pres, float *hght, float *tmpc, float *dwpc,
         prof->moist_static_energy[k] = moist_static_energy(
             height_agl, prof->tmpc[k] + ZEROCNK, specific_humidity);
 
+		prof->buoyancy[k] = 0.0;
+
         if (windComponents) {
             // converting from knots to m/s
             prof->uwin[k] = wspd_or_u[k];
