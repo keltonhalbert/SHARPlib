@@ -268,6 +268,12 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     LayerIndex dry_idx = get_layer_index(dry_lyr, prof->pres, prof->NZ);
     LayerIndex sat_idx = get_layer_index(sat_lyr, prof->pres, prof->NZ);
 
+	// zero out any residual buoyancy from
+	// other parcels that may have been lifted
+	for (int k = 0; k < dry_idx.kbot; ++k) {
+		prof->buoyancy[k] = 0.0;
+	}
+
     // Fill the array with dry parcel buoyancy.
     // Virtual potential temperature (Theta-V)
     // is conserved for a parcels dry ascent to the LCL
@@ -278,20 +284,21 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     }
 
     // fill the array with the moist parcel buoyancy
-    for (int k = sat_idx.kbot; k <= sat_idx.ktop; ++k) {
+    for (int k = sat_idx.kbot; k < sat_idx.ktop; ++k) {
         // compute above-lcl buoyancy here
         float pcl_pres = prof->pres[k];
         float pcl_tmpc = liftpcl(pres_lcl, tmpc_lcl, pcl_pres);
         // parcel is saturated, so temperature and dewpoint are same
         float pcl_vtmp = virtual_temperature(pcl_pres, pcl_tmpc, pcl_tmpc);
         float env_vtmp = prof->vtmp[k];
-        prof->buoyancy[k] = buoyancy(pcl_vtmp, env_vtmp);
+        float buoy = buoyancy(pcl_vtmp, env_vtmp);
+		prof->buoyancy[k] = buoy;
     }
 
     find_lfc_el(pcl, sat_idx, prof->pres, prof->buoyancy, prof->NZ);
-    PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
-    PressureLayer lpl_lfc = {pcl->pres, pcl->lfc_pressure};
-    if ((lfc_el.bottom != MISSING) && (lfc_el.top != MISSING)) {
+    if ((pcl->lfc_pressure != MISSING) && (pcl->eql_pressure != MISSING)) {
+		PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
+		PressureLayer lpl_lfc = {pcl->pres, pcl->lfc_pressure};
         HeightLayer lfc_el_ht =
             pressure_layer_to_height(lfc_el, prof->pres, prof->hght, prof->NZ);
         HeightLayer lpl_lfc_ht =
@@ -300,8 +307,8 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
                                            prof->hght, prof->NZ, -1);
         float CAPE = integrate_layer_trapz(lfc_el_ht, prof->buoyancy,
                                            prof->hght, prof->NZ, 1);
-        printf("%f %f %f J/kg %f J/kg\n", lfc_el.bottom, lfc_el.top, CAPE,
-               CINH);
+		pcl->cape = CAPE;
+		pcl->cinh = CINH;
     }
 }
 
@@ -582,6 +589,9 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) noexcept {
  * \param pcl       A sharp::Parcel with its sharp::LPL/attributes defined.
  */
 void parcel_wobf(Profile* prof, Parcel* pcl) noexcept;
+
+
+void parcel_wobf_new(Profile* prof, Parcel* pcl) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO

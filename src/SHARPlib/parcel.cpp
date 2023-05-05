@@ -134,32 +134,34 @@ void find_lfc_el(Parcel* pcl, LayerIndex lyr_idx, float* pres_arr,
     // we are getting deep moist convection
     float pmax = MISSING;
     PressureLayer plyr = {pres_arr[0], pres_arr[NZ - 1]};
-    layer_max(plyr, pres_arr, buoy_arr, NZ, &pmax);
+    float maxval = layer_max(plyr, pres_arr, buoy_arr, NZ, &pmax);
 
-    for (int k = lyr_idx.kbot; k < lyr_idx.ktop; ++k) {
+    for (int k = lyr_idx.kbot; k <= lyr_idx.ktop; ++k) {
         float pbot = pres_arr[k];
         float ptop = pres_arr[k + 1];
         float buoy_bot = buoy_arr[k];
         float buoy_top = buoy_arr[k + 1];
         if ((buoy_top >= 0) && (buoy_bot < 0)) {
-            for (lfc_pres = pbot; lfc_pres > ptop; lfc_pres -= 1.0) {
+            for (lfc_pres = pbot; lfc_pres >= ptop; lfc_pres -= 1.0) {
                 float buoy = interp_pressure(lfc_pres, pres_arr, buoy_arr, NZ);
                 if (buoy > 0) break;
             }
         }
-        if ((buoy_top <= 0) && (buoy_bot > 0)) {
-            for (eql_pres = pbot; eql_pres > ptop; eql_pres -= 1.0) {
+        if ((lfc_pres != MISSING) && (buoy_top < 0) && (buoy_bot >= 0)) {
+            for (eql_pres = pbot; eql_pres >= ptop; eql_pres -= 1.0) {
                 float buoy = interp_pressure(eql_pres, pres_arr, buoy_arr, NZ);
                 if (buoy < 0) break;
             }
         }
-        if ((lfc_pres != MISSING) && (eql_pres != MISSING) &&
-            (lfc_pres > pmax) && (eql_pres < pmax)) {
+        if ((lfc_pres != MISSING) && (eql_pres != MISSING) && (eql_pres <= pmax)) {
             break;
         }
     }
     pcl->lfc_pressure = lfc_pres;
     pcl->eql_pressure = eql_pres;
+    if ((lfc_pres < eql_pres) && (lfc_pres != MISSING) && (eql_pres != MISSING))
+        printf("lfc: %f eql: %f pmax: %f buoy: %f\n", pcl->lfc_pressure, pcl->eql_pressure, pmax,
+               maxval);
 }
 
 float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl,
@@ -211,8 +213,14 @@ float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl,
 }
 
 void parcel_wobf(Profile* prof, Parcel* pcl) noexcept {
-    lifter_wobus lifter;
-    integrate_parcel<lifter_wobus>(lifter, prof, pcl);
+    constexpr lifter_wobus lifter;
+    integrate_parcel(lifter, prof, pcl);
+    return;
+}
+
+void parcel_wobf_new(Profile* prof, Parcel* pcl) noexcept {
+    constexpr lifter_wobus lifter;
+    lift_parcel(lifter, prof, pcl);
     return;
 }
 
