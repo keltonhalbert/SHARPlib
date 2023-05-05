@@ -230,6 +230,8 @@ void drylift(float pressure, float temperature, float dewpoint,
     temperature_at_lcl = lcl_temperature(temperature, dewpoint);
     pressure_at_lcl = theta_level(pcl_theta, temperature_at_lcl);
 
+	if (pressure_at_lcl > pressure) pressure_at_lcl = pressure;
+
     return;
 }
 

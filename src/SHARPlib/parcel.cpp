@@ -141,13 +141,13 @@ void find_lfc_el(Parcel* pcl, LayerIndex lyr_idx, float* pres_arr,
         float ptop = pres_arr[k + 1];
         float buoy_bot = buoy_arr[k];
         float buoy_top = buoy_arr[k + 1];
-        if ((buoy_top >= 0) && (buoy_bot < 0)) {
+        if ((buoy_top > 0) && (buoy_bot <= 0)) {
             for (lfc_pres = pbot; lfc_pres >= ptop; lfc_pres -= 1.0) {
                 float buoy = interp_pressure(lfc_pres, pres_arr, buoy_arr, NZ);
                 if (buoy > 0) break;
             }
         }
-        if ((lfc_pres != MISSING) && (buoy_top < 0) && (buoy_bot >= 0)) {
+        if ((lfc_pres != MISSING) && (buoy_top <= 0) && (buoy_bot > 0)) {
             for (eql_pres = pbot; eql_pres >= ptop; eql_pres -= 1.0) {
                 float buoy = interp_pressure(eql_pres, pres_arr, buoy_arr, NZ);
                 if (buoy < 0) break;
@@ -159,7 +159,7 @@ void find_lfc_el(Parcel* pcl, LayerIndex lyr_idx, float* pres_arr,
     }
     pcl->lfc_pressure = lfc_pres;
     pcl->eql_pressure = eql_pres;
-    if ((lfc_pres < eql_pres) && (lfc_pres != MISSING) && (eql_pres != MISSING))
+    if ((lfc_pres <= eql_pres) && (lfc_pres != MISSING) && (eql_pres != MISSING))
         printf("lfc: %f eql: %f pmax: %f buoy: %f\n", pcl->lfc_pressure, pcl->eql_pressure, pmax,
                maxval);
 }

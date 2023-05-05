@@ -296,6 +296,7 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     }
 
     find_lfc_el(pcl, sat_idx, prof->pres, prof->buoyancy, prof->NZ);
+	/*
     if ((pcl->lfc_pressure != MISSING) && (pcl->eql_pressure != MISSING)) {
 		PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
 		PressureLayer lpl_lfc = {pcl->pres, pcl->lfc_pressure};
@@ -310,6 +311,7 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
 		pcl->cape = CAPE;
 		pcl->cinh = CINH;
     }
+	*/
 }
 
 /**
