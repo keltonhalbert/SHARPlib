@@ -124,9 +124,6 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept {
 
 void find_lfc_el(Parcel* pcl, float* pres_arr, float* buoy_arr,
                  int NZ) noexcept {
-    float lfc_pres = MISSING;
-    float eql_pres = MISSING;
-
     PressureLayer sat_lyr = {pcl->lcl_pressure, pres_arr[NZ - 1]};
     // The LayerIndex excludes the top and bottom for interpolation reasons
     LayerIndex lyr_idx = get_layer_index(sat_lyr, pres_arr, NZ);
@@ -134,9 +131,16 @@ void find_lfc_el(Parcel* pcl, float* pres_arr, float* buoy_arr,
 
     // Find the location of maximum buoyancy.
     // This is a LFC-EL sanity check to make sure
-    // we are getting deep moist convection
+    // we are getting the bounds for deep moist convection
     float pmax = MISSING;
-    layer_max(sat_lyr, pres_arr, buoy_arr, NZ, &pmax);
+    float val = layer_max(sat_lyr, pres_arr, buoy_arr, NZ, &pmax);
+
+    // check if the buoyancy at the LCL in case this is also
+    // the LFC, which is an edge case the below algorithm 
+    // struggles with. 
+    float lcl_buoy = interp_pressure(sat_lyr.bottom, pres_arr, buoy_arr, NZ);
+    float lfc_pres = (lcl_buoy > 0) ? sat_lyr.bottom : MISSING;
+    float eql_pres = MISSING;
 
     for (int k = lyr_idx.kbot; k <= lyr_idx.ktop; ++k) {
         float pbot = pres_arr[k];
