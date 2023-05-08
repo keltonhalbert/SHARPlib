@@ -63,8 +63,8 @@ void _sfc(Profile* prof, Parcel* pcl) noexcept {
  */
 void _mu(Profile* prof, Parcel* pcl) noexcept {
     // Search for the most unstable parcel in the bottom
-    // 300 hPa of the profile
-    PressureLayer mu_layer(prof->pres[0], prof->pres[0] - 300.0);
+    // 400 hPa of the profile
+    PressureLayer mu_layer(prof->pres[0], prof->pres[0] - 400.0);
 
     // layer_max returns the max, and will set the pressure
     // of the max via a pointer to a float.
