@@ -122,46 +122,59 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept {
     }
 }
 
-void find_lfc_el(Parcel* pcl, float* pres_arr, float* buoy_arr,
+void find_lfc_el(Parcel* pcl, float* pres_arr, float* hght_arr, float* buoy_arr,
                  int NZ) noexcept {
     PressureLayer sat_lyr = {pcl->lcl_pressure, pres_arr[NZ - 1]};
-    // The LayerIndex excludes the top and bottom for interpolation reasons
     LayerIndex lyr_idx = get_layer_index(sat_lyr, pres_arr, NZ);
     if (lyr_idx.kbot != 0) --lyr_idx.kbot;
 
-    // Find the location of maximum buoyancy.
-    // This is a LFC-EL sanity check to make sure
-    // we are getting the bounds for deep moist convection
-    float pmax = MISSING;
-    float val = layer_max(sat_lyr, pres_arr, buoy_arr, NZ, &pmax);
-
-    // check if the buoyancy at the LCL in case this is also
-    // the LFC, which is an edge case the below algorithm 
-    // struggles with. 
+    // check if the buoyancy at the LCL in case this is also the LFC,
     float lcl_buoy = interp_pressure(sat_lyr.bottom, pres_arr, buoy_arr, NZ);
     float lfc_pres = (lcl_buoy > 0) ? sat_lyr.bottom : MISSING;
     float eql_pres = MISSING;
+    float pos_buoy = 0.0;
+
+    float lfc_pres_last = MISSING;
+    float eql_pres_last = MISSING;
+    float pos_buoy_last = 0.0;
 
     for (int k = lyr_idx.kbot; k <= lyr_idx.ktop; ++k) {
         float pbot = pres_arr[k];
         float ptop = pres_arr[k + 1];
         float buoy_bot = buoy_arr[k];
         float buoy_top = buoy_arr[k + 1];
+        float dz = hght_arr[k+1] - hght_arr[k];
+        float avg_buoy = (buoy_top + buoy_bot) / 2.0;
         if ((buoy_top > 0) && (buoy_bot <= 0)) {
+            if (lfc_pres != MISSING) {
+                pos_buoy_last = pos_buoy;
+                lfc_pres_last = lfc_pres;
+                eql_pres_last = eql_pres;
+                pos_buoy = 0.0;  // reset
+            }
             for (lfc_pres = pbot; lfc_pres >= ptop; lfc_pres -= 1.0) {
                 float buoy = interp_pressure(lfc_pres, pres_arr, buoy_arr, NZ);
                 if (buoy > 0) break;
             }
         }
-        if ((lfc_pres != MISSING) && (buoy_top <= 0) && (buoy_bot > 0)) {
+
+        if ((lfc_pres != MISSING) && (avg_buoy > 0.0)) {
+            pos_buoy += dz*avg_buoy;
+        }
+
+        if ((lfc_pres != MISSING) && (buoy_top < 0) && (buoy_bot >= 0)) {
             for (eql_pres = pbot; eql_pres >= ptop; eql_pres -= 1.0) {
                 float buoy = interp_pressure(eql_pres, pres_arr, buoy_arr, NZ);
                 if (buoy < 0) break;
             }
+            if (pos_buoy_last > pos_buoy) {
+                lfc_pres = lfc_pres_last;
+                eql_pres = eql_pres_last;
+                pos_buoy = pos_buoy_last;
+            }
         }
-        if ((lfc_pres != MISSING) && (eql_pres != MISSING) &&
-            (eql_pres <= pmax)) {
-            break;
+        if ((ptop == pres_arr[NZ - 1]) && (buoy_top > 0)) {
+            eql_pres = ptop;
         }
     }
     pcl->lfc_pressure = lfc_pres;
@@ -226,7 +239,7 @@ void parcel_wobf_new(Profile* prof, Parcel* pcl) noexcept {
     constexpr lifter_wobus lifter;
     lift_parcel(lifter, prof, pcl);
 
-    find_lfc_el(pcl, prof->pres, prof->buoyancy, prof->NZ);
+    find_lfc_el(pcl, prof->pres, prof->hght, prof->buoyancy, prof->NZ);
 
     if ((pcl->lfc_pressure != MISSING) && (pcl->eql_pressure != MISSING)) {
 		PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
