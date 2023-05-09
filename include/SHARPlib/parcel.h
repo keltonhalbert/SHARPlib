@@ -235,7 +235,7 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept;
 float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl,
                      float tmpc_lcl) noexcept;
 
-void find_lfc_el(Parcel* pcl, float* pres_arr, float* buoy_arr,
+void find_lfc_el(Parcel* pcl, float* pres_arr, float*hght_arr, float* buoy_arr,
                  int NZ) noexcept;
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -284,7 +284,7 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     }
 
     // fill the array with the moist parcel buoyancy
-    for (int k = sat_idx.kbot; k < sat_idx.ktop; ++k) {
+    for (int k = sat_idx.kbot; k < prof->NZ; ++k) {
         // compute above-lcl buoyancy here
         float pcl_pres = prof->pres[k];
         float pcl_tmpc = liftpcl(pres_lcl, tmpc_lcl, pcl_pres);
