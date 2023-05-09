@@ -122,6 +122,8 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept {
     }
 }
 
+// To-Do: Make the LFC and EL search configurable by the user,
+// i.e. base it off of max CAPE, lowest LFC, or highest LFC
 void find_lfc_el(Parcel* pcl, float* pres_arr, float* hght_arr, float* buoy_arr,
                  int NZ) noexcept {
     PressureLayer sat_lyr = {pcl->lcl_pressure, pres_arr[NZ - 1]};
