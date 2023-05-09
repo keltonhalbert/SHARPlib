@@ -141,6 +141,7 @@ void find_lfc_el(Parcel* pcl, float* pres_arr, float* hght_arr, float* buoy_arr,
     float pos_buoy_last = 0.0;
 
     for (int k = lyr_idx.kbot; k <= lyr_idx.ktop; ++k) {
+        // To-Do: Make it a 3-point search? 4-point search?
         float pbot = pres_arr[k];
         float ptop = pres_arr[k + 1];
         float buoy_bot = buoy_arr[k];
