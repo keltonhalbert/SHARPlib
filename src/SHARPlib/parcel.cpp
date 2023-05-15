@@ -122,6 +122,14 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept {
     }
 }
 
+inline bool __find_lfc(float lyr_1, float lyr_2) {
+    return ((lyr_1 <= 0) && (lyr_2 > 0));
+}
+
+inline bool __find_el(float lyr_1, float lyr_2) {
+    return ((lyr_1 >= 0) && (lyr_2 < 0)) ; 
+}
+
 // To-Do: Make the LFC and EL search configurable by the user,
 // i.e. base it off of max CAPE, lowest LFC, or highest LFC
 void find_lfc_el(Parcel* pcl, float* pres_arr, float* hght_arr, float* buoy_arr,
@@ -134,39 +142,41 @@ void find_lfc_el(Parcel* pcl, float* pres_arr, float* hght_arr, float* buoy_arr,
     float lcl_buoy = interp_pressure(sat_lyr.bottom, pres_arr, buoy_arr, NZ);
     float lfc_pres = (lcl_buoy > 0) ? sat_lyr.bottom : MISSING;
     float eql_pres = MISSING;
-    float pos_buoy = 0.0;
 
+    float pos_buoy = 0.0;
     float lfc_pres_last = MISSING;
     float eql_pres_last = MISSING;
     float pos_buoy_last = 0.0;
 
-    for (int k = lyr_idx.kbot; k <= lyr_idx.ktop; ++k) {
-        // To-Do: Make it a 3-point search? 4-point search?
+    printf("LCL Pres: %f\tLCL Buoy: %f\n", sat_lyr.bottom, lcl_buoy);
+    for (int k = lyr_idx.kbot; k <= lyr_idx.ktop-1; ++k) {
         float pbot = pres_arr[k];
-        float ptop = pres_arr[k + 1];
-        float buoy_bot = buoy_arr[k];
-        float buoy_top = buoy_arr[k + 1];
-        float dz = hght_arr[k+1] - hght_arr[k];
-        float avg_buoy = (buoy_top + buoy_bot) / 2.0;
-        if ((buoy_top > 0) && (buoy_bot <= 0)) {
+        float ptop = pres_arr[k+2];
+        float lyr_bot = (buoy_arr[k] + buoy_arr[k+1]) / 2.0;
+        float lyr_top = (buoy_arr[k+1] + buoy_arr[k+2]) / 2.0;
+        printf("%d %f %f %f %f %d %d\n", k, pbot, ptop, lyr_bot, lyr_top,
+                __find_lfc(lyr_bot, lyr_top),
+                __find_el(lyr_bot, lyr_top));
+
+        if (__find_lfc(lyr_bot, lyr_top)) {
             if (lfc_pres != MISSING) {
                 pos_buoy_last = pos_buoy;
                 lfc_pres_last = lfc_pres;
                 eql_pres_last = eql_pres;
-                pos_buoy = 0.0;  // reset
+                pos_buoy = 0.0;
             }
-            for (lfc_pres = pbot; lfc_pres >= ptop; lfc_pres -= 1.0) {
+            for (lfc_pres = pbot; lfc_pres > ptop; lfc_pres -= 1.0) {
                 float buoy = interp_pressure(lfc_pres, pres_arr, buoy_arr, NZ);
                 if (buoy > 0) break;
             }
         }
 
-        if ((lfc_pres != MISSING) && (avg_buoy > 0.0)) {
-            pos_buoy += dz*avg_buoy;
+        if ((lfc_pres != MISSING) && (lyr_bot > 0.0)) {
+            pos_buoy += (hght_arr[k+1] - hght_arr[k]) * lyr_bot;
         }
 
-        if ((lfc_pres != MISSING) && (buoy_top < 0) && (buoy_bot >= 0)) {
-            for (eql_pres = pbot; eql_pres >= ptop; eql_pres -= 1.0) {
+        if ((lfc_pres != MISSING) && (__find_el(lyr_bot, lyr_top))) {
+            for (eql_pres = ptop; eql_pres <= pbot; eql_pres += 1.0) {
                 float buoy = interp_pressure(eql_pres, pres_arr, buoy_arr, NZ);
                 if (buoy < 0) break;
             }
@@ -176,9 +186,7 @@ void find_lfc_el(Parcel* pcl, float* pres_arr, float* hght_arr, float* buoy_arr,
                 pos_buoy = pos_buoy_last;
             }
         }
-        if ((ptop == pres_arr[NZ - 1]) && (buoy_top > 0)) {
-            eql_pres = ptop;
-        }
+        if ((k + 2 == NZ - 1) && (lyr_top > 0)) eql_pres = pres_arr[NZ - 1];
     }
     pcl->lfc_pressure = lfc_pres;
     pcl->eql_pressure = eql_pres;
