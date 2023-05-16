@@ -27,7 +27,7 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
     // TO-DO: At some point, this will need to be
     // templated or generalized to take other parcel
     // lifters once things progress to that level...
-    lifter_wobus lifter;
+    constexpr lifter_wobus lifter;
 
     // create our parcel objects
     Parcel mupcl;
@@ -36,13 +36,15 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
 
     // find the most unstable parcel
     define_parcel(prof, &mupcl, LPL::MU);
-    integrate_parcel<lifter_wobus>(lifter, prof, &mupcl);
+    lift_parcel(lifter, prof, &mupcl);
+    cape_cinh(prof, &mupcl);
 
     // find the sfc parcel to check against the MU
     // parcel, since sometimes the max Theta-E parcel
     // has less CAPE than the surface parcel
     define_parcel(prof, &sbpcl, LPL::SFC);
-    integrate_parcel<lifter_wobus>(lifter, prof, &sbpcl);
+    lift_parcel(lifter, prof, &sbpcl);
+    cape_cinh(prof, &sbpcl);
 
     if (sbpcl.cape > mupcl.cape) {
         pcl = sbpcl;
@@ -72,7 +74,8 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
         effpcl.pres = prof->pres[k];
         effpcl.tmpc = prof->tmpc[k];
         effpcl.dwpc = prof->dwpc[k];
-        integrate_parcel<lifter_wobus>(lifter, prof, &effpcl);
+        lift_parcel(lifter, prof, &effpcl);
+        cape_cinh(prof, &effpcl);
 
         if ((effpcl.cape >= cape_thresh) && (effpcl.cinh >= cinh_thresh)) {
             eff_pbot = effpcl.pres;
@@ -94,7 +97,8 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
         effpcl.pres = prof->pres[k];
         effpcl.tmpc = prof->tmpc[k];
         effpcl.dwpc = prof->dwpc[k];
-        integrate_parcel<lifter_wobus>(lifter, prof, &effpcl);
+        lift_parcel(lifter, prof, &effpcl);
+        cape_cinh(prof, &effpcl);
 
         if ((effpcl.cape < cape_thresh) || (effpcl.cinh < cinh_thresh)) {
             eff_ptop = effpcl.pres;
@@ -168,10 +172,12 @@ WindComponents storm_motion_bunkers(Profile *prof, bool leftMover) noexcept {
     lifter_wobus lifter;
 
     define_parcel(prof, &sbpcl, LPL::SFC);
-    define_parcel(prof, &mupcl, LPL::MU);
+    lift_parcel(lifter, prof, &sbpcl);
+    cape_cinh(prof, &sbpcl);
 
-    integrate_parcel<lifter_wobus>(lifter, prof, &sbpcl);
-    integrate_parcel<lifter_wobus>(lifter, prof, &mupcl);
+    define_parcel(prof, &mupcl, LPL::MU);
+    lift_parcel(lifter, prof, &mupcl);
+    cape_cinh(prof, &mupcl);
 
     if (sbpcl.cape > mupcl.cape) {
         pcl = sbpcl;
