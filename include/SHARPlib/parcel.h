@@ -158,11 +158,6 @@ struct Parcel {
     float eql_pressure;
 
     /**
-     * \brief Pressure at the Maximum Parcel Level (hPa)
-     */
-    float mpl_pressure;
-
-    /**
      * \brief Parcel Convective Available Potential Energy (J/kg) between the
      * LFC and EL
      */
@@ -172,18 +167,6 @@ struct Parcel {
      * \brief Parcel Convective Inhibition (J/kg) between the LFC and EL
      */
     float cinh;
-
-    /**
-     * \brief Parcel Convective Available Potnential Energy (J/kg)
-     * for the total profile depth (all positive areas above LCL)
-     */
-    float total_cape;
-
-    /**
-     * \brief Parcel Convective Inhibition (J/kg)
-     * for the total profile depth (all negative areas below EL)
-     */
-    float total_cinh;
 
     /**
      * \brief The type of parcel this is
@@ -215,28 +198,6 @@ struct Parcel {
  */
 void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept;
 
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Computes the CINH from the sharp::LPL to the LCL
- *
- * Accumulates the CINH from the sharp::LPL to the parcel's LCL in 10 hPa
- * increments. The virtual temperature correction is used to properly
- * account for additional buoyancy from water vapor (see Doswell 1994).
- * This routine assumes you have either defined the parcel using
- * sharp::define_parcel or have defined the parcel attributes manually.
- *
- * \param prof      sharp::Profile
- * \param pcl       sharp::Parcel
- * \param pres_lcl  Pressure at LCL (hPa)
- * \param tmpc_lcl  Temperature at LCL (degC)
- * \return Convective Inhibition (CINH; J/kg) below the LCL
- */
-float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl,
-                     float tmpc_lcl) noexcept;
-
-void find_lfc_el(Parcel* pcl, float* pres_arr, float*hght_arr, float* buoy_arr,
-                 int NZ) noexcept;
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
@@ -296,267 +257,10 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     }
 }
 
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Lifts and integrates a parcel to compute CAPE, CINH,<!--
- * --> and the LFC/EL heights
- *
- * Lifts a parcel from its sharp::LPL to the top of the given sharp::Profile.
- * Integrates CAPE and CINH, and computes the parcel LCL, LFC, and EL. The
- * virtual temperature correction is used where possible - see Doswell 1994.
- *
- * In edge cases where profiles are close to neutrally buoyant, there can be
- * multiple layers of buoyancy and therefore multiple LFC/EL candidates. This
- * algorithm selects the layer with the largest CAPE, and sets the LFC/EL as
- * the levels bounding this layer. Total profile buoyancy is also accounted
- * for to support legacy behavior.
- *
- * The method of computing the moist adiabats for parcel ascent can be passed
- * to this routine via a functor, meaning that other methods of computing moist
- * adiabats may be used without negatively affecting performance.
- *
- * \param liftpcl   A functor that that provides a means to lift the parcel
- * \param prof      A sharp::Profile of atmospheric data
- * \param pcl       A sharp::Parcel with its sharp::LPL/attributes defined.
- */
-template <typename Lifter>
-void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) noexcept {
-    // Lift the parcel from the LPL to the LCL
-    float pres_lcl;
-    float tmpc_lcl;
-    drylift(pcl->pres, pcl->tmpc, pcl->dwpc, pres_lcl, tmpc_lcl);
+void find_lfc_el(Parcel* pcl, float* pres_arr, float*hght_arr, float* buoy_arr,
+                 int NZ) noexcept;
 
-    if (pres_lcl > prof->pres[0]) pres_lcl = prof->pres[0];
-    pcl->lcl_pressure = pres_lcl;
-
-    // get the CINH below the LCL in 10 hPa increments
-    float cinh = cinh_below_lcl(prof, pcl, pres_lcl, tmpc_lcl);
-
-    // define the parcel saturated lift layer to be
-    // from the LCL to the top of the profile available
-    PressureLayer sat_layer(pres_lcl, prof->pres[prof->NZ - 1]);
-
-    // excludes the indices that would correspond to the exact top and
-    // bottom of this layer - default is that bottom and top is interpolated
-    LayerIndex sat_index = get_layer_index(sat_layer, prof->pres, prof->NZ);
-
-    float pbot = pres_lcl;
-    float hbot = interp_pressure(pres_lcl, prof->pres, prof->hght, prof->NZ);
-    float ptop = MISSING;
-    float htop = MISSING;
-
-    // _enb - environment bottom layer
-    // _ent - environment top layer
-    // _pcb - parcel bottom layer
-    // _pct - parcel top layer
-
-    // float tmpc_pcb = tmpc_lcl;
-    float vtmp_enb =
-        interp_pressure(pres_lcl, prof->pres, prof->vtmp, prof->NZ);
-    float vtmp_pcb = virtual_temperature(pres_lcl, tmpc_lcl, tmpc_lcl);
-
-    float tmpc_pct = MISSING;
-    float vtmp_ent = MISSING;
-    float vtmp_pct = MISSING;
-
-    float lyre = 0.0;
-    float lyre_last = 0.0;
-    float cape = 0.0;
-    float cape_old = 0.0;
-    float cinh_old = 0.0;
-    float lfc_pres = MISSING;
-    float lfc_old = MISSING;
-    float el_pres = MISSING;
-    float el_old = MISSING;
-    pcl->total_cape = 0.0;
-    pcl->total_cinh = 0.0;
-
-    // iterate from the LCL to the top of the profile
-    // -- the +1 takes us to the last level since it is
-    // excluded by get_layer_index
-    for (int k = sat_index.kbot; k <= sat_index.ktop + 1; k++) {
-#ifndef NO_QC
-        if (prof->tmpc[k] == MISSING) {
-            continue;
-        }
-#endif
-        ptop = prof->pres[k];
-        htop = prof->hght[k];
-
-        tmpc_pct = liftpcl(pres_lcl, tmpc_lcl, ptop);
-        // parcel is saturated, so temperature and dewpoint are same
-        vtmp_pct = virtual_temperature(ptop, tmpc_pct, tmpc_pct);
-        vtmp_ent = prof->vtmp[k];
-
-        float buoy_bot = buoyancy(vtmp_pcb, vtmp_enb);
-        float buoy_top = buoyancy(vtmp_pct, vtmp_ent);
-
-        float dz = htop - hbot;
-
-        lyre_last = lyre;
-        lyre = ((buoy_bot + buoy_top) / 2.0) * dz;
-
-        if (lyre > 0) {
-            cape += lyre;
-            pcl->total_cape += lyre;
-        } else {
-            // we only want to accumulate CINH
-            // between the LCL and LFC.
-            if (pcl->lfc_pressure == MISSING) {
-                cinh += lyre;
-            }
-            // this keeps track of total CINH in case of
-            // multiple LFC heights.
-            pcl->total_cinh += lyre;
-        }
-
-        // check for the LFC
-        if ((lyre > 0) && (lyre_last <= 0)) {
-            // Set the LFC pressure to the bottom pressure layer
-            lfc_pres = pbot;
-            bool found = false;
-            // if we can't find the LFC within 50 hPa of this
-            // level, stop searching because it's either the
-            // first level or further up the profile.
-            for (lfc_pres = pbot; lfc_pres > pbot - 50.0; lfc_pres -= 5.0) {
-                float env_vtmp =
-                    interp_pressure(lfc_pres, prof->pres, prof->vtmp, prof->NZ);
-                float pcl_tmpc = liftpcl(ptop, tmpc_pct, lfc_pres);
-                float pcl_vtmp =
-                    virtual_temperature(lfc_pres, pcl_tmpc, pcl_tmpc);
-                if (pcl_vtmp > env_vtmp) {
-                    found = true;
-                    break;
-                }
-            }
-            // reset to pbot if not found, since
-            // this was the level that triggered
-            // the LFC condition to begin with.
-            if (!found) {
-                lfc_pres = pbot;
-                found = true;
-            }
-
-            // sanity check against the LCL
-            if (lfc_pres > pres_lcl) lfc_pres = pres_lcl;
-
-            // We've already found an LFC candidate - need
-            // to keep track of a few things to determine which
-            // LFC is the "right one".
-            if (pcl->lfc_pressure != MISSING) {
-                // store the old CAPE value here - we've already
-                // added a new positive layer, so pull it back out
-                // so we don't accidentally double count later
-                cape_old = cape - lyre;
-                cinh_old = cinh;
-                lfc_old = pcl->lfc_pressure;
-                el_old = pcl->eql_pressure;
-
-                // reset the CAPE and integrate from the new LFC
-                cape = lyre;
-                cinh = pcl->total_cinh;
-            }
-            if (found) pcl->lfc_pressure = lfc_pres;
-        }  // end LFC check
-
-        // check for the EL
-        if (((lyre < 0) && (lyre_last >= 0)) ||
-            ((ptop == prof->pres[prof->NZ - 1]) && (lyre > 0))) {
-            el_pres = pbot;
-            bool found = false;
-            // if we can't find the EL within 50 hPa
-            // of this level, stop searching
-            for (el_pres = pbot; el_pres > ptop - 50.0; el_pres -= 5.0) {
-                if (el_pres < prof->pres[prof->NZ - 1]) break;
-                float env_vtmp =
-                    interp_pressure(el_pres, prof->pres, prof->vtmp, prof->NZ);
-                float pcl_tmpc = liftpcl(ptop, tmpc_pct, el_pres);
-                float pcl_vtmp =
-                    virtual_temperature(el_pres, pcl_tmpc, pcl_tmpc);
-                if (pcl_vtmp < env_vtmp) {
-                    found = true;
-                    break;
-                }
-            }
-
-            if ((!found) && (pbot < pcl->lfc_pressure)) {
-                el_pres = pbot;
-                found = true;
-            }
-
-            if (found) pcl->eql_pressure = el_pres;
-
-            // check which CAPE layer should stay,
-            // and keep the layer with the maximum
-            // buoyancy in the profile.
-            bool swapped = false;
-            if (cape_old > cape) {
-                pcl->lfc_pressure = lfc_old;
-                pcl->eql_pressure = el_old;
-                cinh = cinh_old;
-                cape = cape_old;
-                swapped = true;
-            }
-
-            if ((pcl->eql_pressure != MISSING) && (!swapped) &&
-                (pcl->eql_pressure < pcl->lfc_pressure)) {
-                // take off the last layer if positive and
-                // then integrate up to the EL
-                if (lyre > 0) {
-                    cape -= lyre;
-                }
-
-                float el_htop = interp_pressure(pcl->eql_pressure, prof->pres,
-                                                prof->hght, prof->NZ);
-                float el_tmpc_pct =
-                    liftpcl(pres_lcl, tmpc_lcl, pcl->eql_pressure);
-                // parcel is saturated, so temperature and dewpoint are same
-                float el_vtmp_pct = virtual_temperature(
-                    pcl->eql_pressure, el_tmpc_pct, el_tmpc_pct);
-                float el_vtmp_ent = interp_pressure(
-                    pcl->eql_pressure, prof->pres, prof->vtmp, prof->NZ);
-
-                float el_buoy_bot = buoyancy(vtmp_pcb, vtmp_enb);
-                float el_buoy_top = buoyancy(el_vtmp_pct, el_vtmp_ent);
-
-                float el_dz = el_htop - hbot;
-
-                float el_lyre = ((el_buoy_bot + el_buoy_top) / 2.0) * el_dz;
-                if (el_lyre > 0) {
-                    cape += el_lyre;
-                }
-
-                // no need to keep lifting/integrating past 200 hPa
-                // if these conditions have been met.
-                if (ptop < 200) {
-                    break;
-                }
-            }
-        }  // end EL check
-
-        // set the top of the current layer to the
-        // bottom of the next layer
-        pbot = ptop;
-        hbot = htop;
-        vtmp_enb = vtmp_ent;
-        // tmpc_pcb = tmpc_pct;
-        vtmp_pcb = vtmp_pct;
-    }  // end profile iteration
-
-    // truncate CAPE values
-    // below 1 J/kg to zero
-    if (cape < 1) {
-        cape = 0;
-        cinh = 0;
-    }
-    if (pcl->total_cape < 1) {
-        pcl->total_cape = 0.0;
-        pcl->total_cinh = 0.0;
-    }
-    pcl->cinh = cinh;
-    pcl->cape = cape;
-}
+void cape_cinh(Profile* prof, Parcel *pcl) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -574,8 +278,6 @@ void integrate_parcel(Lifter liftpcl, Profile* prof, Parcel* pcl) noexcept {
  */
 void parcel_wobf(Profile* prof, Parcel* pcl) noexcept;
 
-
-void parcel_wobf_new(Profile* prof, Parcel* pcl) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO

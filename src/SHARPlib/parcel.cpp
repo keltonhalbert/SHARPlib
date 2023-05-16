@@ -31,7 +31,6 @@ Parcel::Parcel() {
     lcl_pressure = MISSING;
     lfc_pressure = MISSING;
     eql_pressure = MISSING;
-    mpl_pressure = MISSING;
 
     cape = 0.0;
     cinh = 0.0;
@@ -122,61 +121,55 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept {
     }
 }
 
-inline bool __find_lfc(float lyr_1, float lyr_2) {
+inline bool __is_lfc(float lyr_1, float lyr_2) {
     return ((lyr_1 <= 0) && (lyr_2 > 0));
 }
 
-inline bool __find_el(float lyr_1, float lyr_2) {
+inline bool __is_el(float lyr_1, float lyr_2) {
     return ((lyr_1 >= 0) && (lyr_2 < 0)) ; 
 }
 
-// To-Do: Make the LFC and EL search configurable by the user,
-// i.e. base it off of max CAPE, lowest LFC, or highest LFC
 void find_lfc_el(Parcel* pcl, float* pres_arr, float* hght_arr, float* buoy_arr,
                  int NZ) noexcept {
     PressureLayer sat_lyr = {pcl->lcl_pressure, pres_arr[NZ - 1]};
     LayerIndex lyr_idx = get_layer_index(sat_lyr, pres_arr, NZ);
-    if (lyr_idx.kbot != 0) --lyr_idx.kbot;
 
-    // check if the buoyancy at the LCL in case this is also the LFC,
-    float lcl_buoy = interp_pressure(sat_lyr.bottom, pres_arr, buoy_arr, NZ);
-    float lfc_pres = (lcl_buoy > 0) ? sat_lyr.bottom : MISSING;
-    float eql_pres = MISSING;
-
+    float lyr_bot = 0.0;
     float pos_buoy = 0.0;
+    float pos_buoy_last = 0.0;
+    float pbot = sat_lyr.bottom;
+    float buoy_bot = interp_pressure(sat_lyr.bottom, pres_arr, buoy_arr, NZ);
+    float hbot = interp_pressure(sat_lyr.bottom, pres_arr, hght_arr, NZ);
+
+    float lfc_pres = (buoy_bot > 0) ? sat_lyr.bottom : MISSING;
+    float eql_pres = MISSING;
     float lfc_pres_last = MISSING;
     float eql_pres_last = MISSING;
-    float pos_buoy_last = 0.0;
 
-    printf("LCL Pres: %f\tLCL Buoy: %f\n", sat_lyr.bottom, lcl_buoy);
-    for (int k = lyr_idx.kbot; k <= lyr_idx.ktop-1; ++k) {
-        float pbot = pres_arr[k];
-        float ptop = pres_arr[k+2];
-        float lyr_bot = (buoy_arr[k] + buoy_arr[k+1]) / 2.0;
-        float lyr_top = (buoy_arr[k+1] + buoy_arr[k+2]) / 2.0;
-        printf("%d %f %f %f %f %d %d\n", k, pbot, ptop, lyr_bot, lyr_top,
-                __find_lfc(lyr_bot, lyr_top),
-                __find_el(lyr_bot, lyr_top));
-
-        if (__find_lfc(lyr_bot, lyr_top)) {
+    for (int k = lyr_idx.kbot; k <= lyr_idx.ktop + 1; ++k) {
+        float ptop = pres_arr[k];
+        float htop = hght_arr[k];
+        float buoy_top = buoy_arr[k];
+        float lyr_top = (buoy_top + buoy_bot) / 2.0f;
+        if ((lyr_bot <= 0) && (lyr_top > 0)) {
             if (lfc_pres != MISSING) {
                 pos_buoy_last = pos_buoy;
                 lfc_pres_last = lfc_pres;
                 eql_pres_last = eql_pres;
                 pos_buoy = 0.0;
             }
-            for (lfc_pres = pbot; lfc_pres > ptop; lfc_pres -= 1.0) {
+            for (lfc_pres = pbot - 5; lfc_pres >= ptop + 5; lfc_pres -= 1.0) {
                 float buoy = interp_pressure(lfc_pres, pres_arr, buoy_arr, NZ);
                 if (buoy > 0) break;
             }
         }
 
-        if ((lfc_pres != MISSING) && (lyr_bot > 0.0)) {
-            pos_buoy += (hght_arr[k+1] - hght_arr[k]) * lyr_bot;
+        if ((lfc_pres != MISSING) && (lyr_top > 0.0)) {
+            pos_buoy += (htop - hbot) * lyr_top;
         }
 
-        if ((lfc_pres != MISSING) && (__find_el(lyr_bot, lyr_top))) {
-            for (eql_pres = ptop; eql_pres <= pbot; eql_pres += 1.0) {
+        if ((lfc_pres != MISSING) && ((lyr_bot >= 0) && (lyr_top < 0))) {
+            for (eql_pres = pbot - 5; eql_pres >= ptop + 5; eql_pres -= 1.0) {
                 float buoy = interp_pressure(eql_pres, pres_arr, buoy_arr, NZ);
                 if (buoy < 0) break;
             }
@@ -186,67 +179,36 @@ void find_lfc_el(Parcel* pcl, float* pres_arr, float* hght_arr, float* buoy_arr,
                 pos_buoy = pos_buoy_last;
             }
         }
-        if ((k + 2 == NZ - 1) && (lyr_top > 0)) eql_pres = pres_arr[NZ - 1];
+        if ((k == NZ - 1) && (lyr_top > 0)) eql_pres = pres_arr[NZ - 1];
+        pbot = ptop;
+        hbot = htop;
+        buoy_bot = buoy_top;
+        lyr_bot = lyr_top;
     }
     pcl->lfc_pressure = lfc_pres;
     pcl->eql_pressure = eql_pres;
 }
 
-float cinh_below_lcl(Profile* prof, Parcel* pcl, float pres_lcl,
-                     float tmpc_lcl) noexcept {
-    // get the virtual temoerature of the LCL
-    float vtmp_lcl = virtual_temperature(pres_lcl, tmpc_lcl, tmpc_lcl);
+void cape_cinh(Profile* prof, Parcel* pcl) noexcept {
+    find_lfc_el(pcl, prof->pres, prof->hght, prof->buoyancy, prof->NZ);
+    if ((pcl->lfc_pressure != MISSING) && (pcl->eql_pressure != MISSING)) {
+		PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
+		PressureLayer lpl_lfc = {pcl->pres, pcl->lfc_pressure};
+        HeightLayer lfc_el_ht =
+            pressure_layer_to_height(lfc_el, prof->pres, prof->hght, prof->NZ);
+        HeightLayer lpl_lfc_ht =
+            pressure_layer_to_height(lpl_lfc, prof->pres, prof->hght, prof->NZ);
 
-    // parcel thetav, or virtual potential temperature,
-    // is constant from the LPL to the LCL.
-    float pcl_thetav = theta(pres_lcl, vtmp_lcl, 1000.0);
-
-    // Accumulate CINH in the mixing layer below the LCL.
-    // This will be done in 10 mb increments and will use the
-    // virtual temperature correction.
-    float cinh = 0.0;
-    for (float pbot = pcl->pres; pbot > pres_lcl; pbot -= 10.0) {
-        float ptop = pbot - 10.0;
-        // don't accidentally go above the LCL
-        if (ptop < pres_lcl) ptop = pres_lcl;
-
-        // _pcb - parcel bottom layer
-        // _pct - parcel top layer
-        // _enb - environment bottom layer
-        // _ent - environment top layer
-
-        // "lift" the thetav of the parcel to a new pressure level
-        float vtmp_pcb = theta(1000.0, pcl_thetav, pbot);
-        float vtmp_pct = theta(1000.0, pcl_thetav, ptop);
-
-        // get the virtual temperature of the environment
-        float vtmp_enb =
-            interp_pressure(pbot, prof->pres, prof->vtmp, prof->NZ);
-        float vtmp_ent =
-            interp_pressure(ptop, prof->pres, prof->vtmp, prof->NZ);
-
-        float buoy_bot = buoyancy(vtmp_pcb, vtmp_enb);
-        float buoy_top = buoyancy(vtmp_pct, vtmp_ent);
-
-        float hbot = interp_pressure(pbot, prof->pres, prof->hght, prof->NZ);
-        float htop = interp_pressure(ptop, prof->pres, prof->hght, prof->NZ);
-
-        float dz = htop - hbot;
-
-        // integrate using trapezoid method
-        float lyre = ((buoy_bot + buoy_top) / 2.0) * dz;
-        if (lyre < 0.0) cinh += lyre;
+        float CINH = integrate_layer_trapz(lpl_lfc_ht, prof->buoyancy,
+                                           prof->hght, prof->NZ, -1);
+        float CAPE = integrate_layer_trapz(lfc_el_ht, prof->buoyancy,
+                                           prof->hght, prof->NZ, 1);
+		pcl->cape = CAPE;
+		pcl->cinh = CINH;
     }
-    return cinh;
 }
 
 void parcel_wobf(Profile* prof, Parcel* pcl) noexcept {
-    constexpr lifter_wobus lifter;
-    integrate_parcel(lifter, prof, pcl);
-    return;
-}
-
-void parcel_wobf_new(Profile* prof, Parcel* pcl) noexcept {
     constexpr lifter_wobus lifter;
     lift_parcel(lifter, prof, pcl);
 
