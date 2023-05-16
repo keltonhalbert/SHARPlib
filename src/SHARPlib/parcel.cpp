@@ -140,17 +140,21 @@ void find_lfc_el(Parcel* pcl, float* pres_arr, float* hght_arr, float* buoy_arr,
     float pbot = sat_lyr.bottom;
     float buoy_bot = interp_pressure(sat_lyr.bottom, pres_arr, buoy_arr, NZ);
     float hbot = interp_pressure(sat_lyr.bottom, pres_arr, hght_arr, NZ);
-
+    // set the LFC pressure to the LCL if the buoyancy is positive
     float lfc_pres = (buoy_bot > 0) ? sat_lyr.bottom : MISSING;
     float eql_pres = MISSING;
     float lfc_pres_last = MISSING;
     float eql_pres_last = MISSING;
 
     for (int k = lyr_idx.kbot; k <= lyr_idx.ktop + 1; ++k) {
+#ifndef NO_QC
+        if (buoy_arr[k] == MISSING) continue;
+#endif
         float ptop = pres_arr[k];
         float htop = hght_arr[k];
         float buoy_top = buoy_arr[k];
         float lyr_top = (buoy_top + buoy_bot) / 2.0f;
+        // LFC condition
         if ((lyr_bot <= 0) && (lyr_top > 0)) {
             if (lfc_pres != MISSING) {
                 pos_buoy_last = pos_buoy;
@@ -164,10 +168,11 @@ void find_lfc_el(Parcel* pcl, float* pres_arr, float* hght_arr, float* buoy_arr,
             }
         }
 
+        // keep track of buoyancy so that we pick the max CAPE layer
         if ((lfc_pres != MISSING) && (lyr_top > 0.0)) {
             pos_buoy += (htop - hbot) * lyr_top;
         }
-
+        // EL condition
         if ((lfc_pres != MISSING) && ((lyr_bot >= 0) && (lyr_top < 0))) {
             for (eql_pres = pbot - 5; eql_pres >= ptop + 5; eql_pres -= 1.0) {
                 float buoy = interp_pressure(eql_pres, pres_arr, buoy_arr, NZ);
@@ -179,7 +184,9 @@ void find_lfc_el(Parcel* pcl, float* pres_arr, float* hght_arr, float* buoy_arr,
                 pos_buoy = pos_buoy_last;
             }
         }
+        // If there is no EL, just use the last available level
         if ((k == NZ - 1) && (lyr_top > 0)) eql_pres = pres_arr[NZ - 1];
+        // set loop variables
         pbot = ptop;
         hbot = htop;
         buoy_bot = buoy_top;
@@ -229,94 +236,6 @@ void parcel_wobf(Profile* prof, Parcel* pcl) noexcept {
 		pcl->cinh = CINH;
     }
     return;
-}
-
-// NCAPE/buoyancy dilution from Peters et al. 2022
-float buoyancy_dilution(Profile* prof, Parcel* pcl, const float* mse_star,
-                        const float* mse_bar) noexcept {
-    // this routine requires there to be a defined
-    // LFC and EL, since these are the integration bounds
-    if ((pcl->lfc_pressure == MISSING) || (pcl->eql_pressure == MISSING)) {
-        return MISSING;
-    }
-
-    // set our integration layer between the LFC and EL,
-    // and get the top and bottom indices of these
-    // layers for iteration
-    PressureLayer integ_layer = {pcl->lfc_pressure, pcl->eql_pressure};
-    LayerIndex integ_idx = get_layer_index(integ_layer, prof->pres, prof->NZ);
-
-    // start with the interpolated bottom layer
-    float mse_bar_bot =
-        interp_pressure(integ_layer.bottom, prof->pres, mse_bar, prof->NZ);
-    float mse_star_bot =
-        interp_pressure(integ_layer.bottom, prof->pres, mse_star, prof->NZ);
-    float tmpk_bot =
-        interp_pressure(integ_layer.bottom, prof->pres, prof->tmpc, prof->NZ) +
-        ZEROCNK;
-    float zbot =
-        interp_pressure(integ_layer.bottom, prof->pres, prof->hght, prof->NZ);
-
-    // initialize the top layer variables
-    // to missing - these get set in the loop
-    float mse_bar_top = MISSING;
-    float mse_star_top = MISSING;
-    float tmpk_top = MISSING;
-    float ztop = MISSING;
-    float NCAPE = 0.0;
-
-    // kbot is always the first level above the pressure
-    // value of the bottom layer, and ktop is always
-    // the level just below the top layer
-    for (int k = integ_idx.kbot; k <= integ_idx.ktop; k++) {
-#ifndef NO_QC
-        if ((prof->tmpc[k] == MISSING) || (prof->dwpc[k] == MISSING)) {
-            continue;
-        }
-#endif
-        // get the top-layer values
-        mse_bar_top = mse_bar[k];
-        mse_star_top = mse_star[k];
-        tmpk_top = prof->tmpc[k] + ZEROCNK;
-        ztop = prof->hght[k];
-
-        // compute the integrated quantity
-        float mse_diff_bot = -1.0 * (GRAVITY / (CP_DRYAIR * tmpk_bot)) *
-                             (mse_bar_bot - mse_star_bot);
-        float mse_diff_top = -1.0 * (GRAVITY / (CP_DRYAIR * tmpk_top)) *
-                             (mse_bar_top - mse_star_top);
-        float dz = ztop - zbot;
-
-        NCAPE += ((mse_diff_bot + mse_diff_top) / 2.0) * dz;
-
-        // set the top of the current layer
-        // as the bottom of the next layer
-        mse_bar_bot = mse_bar_top;
-        mse_star_bot = mse_star_top;
-        tmpk_bot = tmpk_top;
-        zbot = ztop;
-    }
-
-    // finish with the interpolated top layer
-    mse_bar_top =
-        interp_pressure(integ_layer.top, prof->pres, mse_bar, prof->NZ);
-    mse_star_top =
-        interp_pressure(integ_layer.top, prof->pres, mse_star, prof->NZ);
-    ztop = interp_pressure(integ_layer.top, prof->pres, prof->hght, prof->NZ);
-    tmpk_top =
-        interp_pressure(integ_layer.top, prof->pres, prof->tmpc, prof->NZ) +
-        ZEROCNK;
-
-    // compute the integrated quantity
-    float mse_diff_bot = -1.0 * (GRAVITY / (CP_DRYAIR * tmpk_bot)) *
-                         (mse_bar_bot - mse_star_bot);
-    float mse_diff_top = -1.0 * (GRAVITY / (CP_DRYAIR * tmpk_top)) *
-                         (mse_bar_top - mse_star_top);
-    float dz = ztop - zbot;
-
-    NCAPE += ((mse_diff_bot + mse_diff_top) / 2.0) * dz;
-
-    return NCAPE;
 }
 
 }  // end namespace sharp

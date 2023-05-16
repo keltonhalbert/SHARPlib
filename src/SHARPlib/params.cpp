@@ -222,65 +222,43 @@ float entrainment_cape(Profile *prof, Parcel *pcl) noexcept {
     if ((pcl->lfc_pressure == MISSING) || (pcl->lfc_pressure == MISSING)) {
         return 0.0;
     }
-
-    float *mse_star = new float[prof->NZ];
+    float *mse_diff = new float[prof->NZ];
     float *mse_bar = new float[prof->NZ];
 
     // compute MSE_bar
     mse_bar[0] = prof->moist_static_energy[0];
     for (int k = 1; k < prof->NZ; k++) {
-        float lyr_bot = prof->moist_static_energy[0];
-        float lyr_top = MISSING;
-        float pbot = prof->pres[0];
-        float ptop = MISSING;
-        float dp = 0.0;
-
-        float lyr_mean = 0.0;
-        float weight = 0.0;
-        for (int iz = 1; iz <= k; iz++) {
-            if (prof->moist_static_energy[iz] == MISSING) {
-                continue;
-            }
-
-            lyr_top = prof->moist_static_energy[iz];
-            ptop = prof->pres[iz];
-            dp = pbot - ptop;
-
-            lyr_mean += ((lyr_top + lyr_bot) / 2.0) * dp;
-            weight += dp;
-
-            lyr_bot = lyr_top;
-            pbot = ptop;
-        }
-
-        mse_bar[k] = lyr_mean / weight;
+        PressureLayer mn_lyr = {prof->pres[0], prof->pres[k]};
+        mse_bar[k] =
+            layer_mean(mn_lyr, prof->pres, prof->moist_static_energy, prof->NZ);
     }
 
     // compute MSE_star
     for (int k = 0; k < prof->NZ; k++) {
+        float tmpk = prof->tmpc[k] + ZEROCNK;
         // default units are g/kg - convert to kg/kg
         float rsat = mixratio(prof->pres[k], prof->tmpc[k]) / 1000.0f;
         float qsat = (1.0 - rsat) * rsat;
         float height_agl = prof->hght[k] - prof->hght[0];
-        // printf("%d %f %f %f %f %f %f\n", k, prof->pres[k], prof->hght[k],
-        // prof->tmpc[k], prof->dwpc[k], rsat, qsat);
-        mse_star[k] =
+        float mse_star = 
             moist_static_energy(height_agl, prof->tmpc[k] + ZEROCNK, qsat);
+        mse_diff[k] =
+            -1.0 * (GRAVITY / (CP_DRYAIR * tmpk)) * (mse_bar[k] - mse_star);
     }
 
     // compute NCAPE
-    float NCAPE = buoyancy_dilution(prof, pcl, mse_star, mse_bar);
-    // printf("NCAPE = %f\n", NCAPE);
+    PressureLayer plyr = {pcl->lfc_pressure, pcl->eql_pressure};
+    HeightLayer hlyr =
+        pressure_layer_to_height(plyr, prof->pres, prof->hght, prof->NZ);
+    float NCAPE = integrate_layer_trapz(hlyr, mse_diff, prof->hght, prof->NZ); 
 
     // Compute the Bunkers non-parcel based storm motion
     WindComponents strm_mtn =
         storm_motion_bunkers(prof, {0.0, 6000.0}, {0.0, 6000.0}, false, false);
-    // printf("Bunkers U = %f, Bunkers V = %f\n", strm_mtn.u, strm_mtn.v);
 
     // get the mean 0-1km storm relative wind
     HeightLayer layer = {prof->hght[0] + 0.0f, prof->hght[0] + 1000.0f};
     LayerIndex layer_idx = get_layer_index(layer, prof->hght, prof->NZ);
-
     // loop from the surface to the last level before 1km AGL.
     float V_sr_mean = 0.0;
     int count = 0;
@@ -298,10 +276,7 @@ float entrainment_cape(Profile *prof, Parcel *pcl) noexcept {
     float v_1km = interp_height(layer.top, prof->hght, prof->vwin, prof->NZ);
 
     V_sr_mean += vector_magnitude(u_1km - strm_mtn.u, v_1km - strm_mtn.v);
-    // the +2 is +1 for swapping from zero-index to size, and then
-    // the last level of the interpolated top.
     V_sr_mean = V_sr_mean / (count + 1);
-    // printf("V_sr_mean = %f\n", V_sr_mean);
 
     // now for all of the ECAPE nonsense
     float L = 120.0;
@@ -321,9 +296,6 @@ float entrainment_cape(Profile *prof, Parcel *pcl) noexcept {
     float term3 = 4.0f * term1 * (1.0f - pitchfork * N_tilde);
     float sqrt_term = term2 * term2 + term3;
 
-    // printf("H = %f\tpitchfork = %f\n", H, pitchfork);
-    // printf("V_sr_tilde = %f\tN_tilde = %f\n", V_sr_tilde, N_tilde);
-
     // in the case of a negative solution,
     // set ECAPE to 0;
     if (sqrt_term < 0) {
@@ -332,9 +304,8 @@ float entrainment_cape(Profile *prof, Parcel *pcl) noexcept {
 
     float E_tilde = V_sr_tilde_sq + (-1.0f - pitchfork - (term1)*N_tilde +
                                      std::sqrt(sqrt_term)) /
-                                        (2 * term1);
-
-    delete[] mse_star;
+                                        (2.0f * term1);
+    delete[] mse_diff;
     delete[] mse_bar;
 
     return E_tilde * pcl->cape;

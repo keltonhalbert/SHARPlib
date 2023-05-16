@@ -279,23 +279,6 @@ void cape_cinh(Profile* prof, Parcel *pcl) noexcept;
 void parcel_wobf(Profile* prof, Parcel* pcl) noexcept;
 
 
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Computes the NCAPE term used for ECAPE
- *
- *
- * Computes the buoyancy dilution rate (NCAPE) used for evaluating
- * Entrainment CAPE (ECAPE).
- *
- * \param prof      A sharp::Profile of atmospheric data
- * \param pcl       A sharp::Parcel with its sharp::LPL/attributes defined.
- * \param mse_star  Vertical array of Saturation Moist Static Energy
- * \param mse_bar   Vertical array of integrated Moist Static Energy
- */
-float buoyancy_dilution(Profile* prof, Parcel* pcl, const float* mse_star,
-                        const float* mse_bar) noexcept;
-
 }  // end namespace sharp
 
 namespace sharp::exper {}  // end namespace sharp::exper
