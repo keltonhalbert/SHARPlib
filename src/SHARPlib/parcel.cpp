@@ -121,14 +121,6 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept {
     }
 }
 
-inline bool __is_lfc(float lyr_1, float lyr_2) {
-    return ((lyr_1 <= 0) && (lyr_2 > 0));
-}
-
-inline bool __is_el(float lyr_1, float lyr_2) {
-    return ((lyr_1 >= 0) && (lyr_2 < 0)) ; 
-}
-
 void find_lfc_el(Parcel* pcl, float* pres_arr, float* hght_arr, float* buoy_arr,
                  int NZ) noexcept {
     PressureLayer sat_lyr = {pcl->lcl_pressure, pres_arr[NZ - 1]};
@@ -219,7 +211,6 @@ void parcel_wobf(Profile* prof, Parcel* pcl) noexcept {
     constexpr lifter_wobus lifter;
     lift_parcel(lifter, prof, pcl);
     cape_cinh(prof, pcl);
-    return;
 }
 
 }  // end namespace sharp
