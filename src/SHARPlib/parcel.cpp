@@ -218,23 +218,7 @@ void cape_cinh(Profile* prof, Parcel* pcl) noexcept {
 void parcel_wobf(Profile* prof, Parcel* pcl) noexcept {
     constexpr lifter_wobus lifter;
     lift_parcel(lifter, prof, pcl);
-
-    find_lfc_el(pcl, prof->pres, prof->hght, prof->buoyancy, prof->NZ);
-
-    if ((pcl->lfc_pressure != MISSING) && (pcl->eql_pressure != MISSING)) {
-		PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
-		PressureLayer lpl_lfc = {pcl->pres, pcl->lfc_pressure};
-        HeightLayer lfc_el_ht =
-            pressure_layer_to_height(lfc_el, prof->pres, prof->hght, prof->NZ);
-        HeightLayer lpl_lfc_ht =
-            pressure_layer_to_height(lpl_lfc, prof->pres, prof->hght, prof->NZ);
-        float CINH = integrate_layer_trapz(lpl_lfc_ht, prof->buoyancy,
-                                           prof->hght, prof->NZ, -1);
-        float CAPE = integrate_layer_trapz(lfc_el_ht, prof->buoyancy,
-                                           prof->hght, prof->NZ, 1);
-		pcl->cape = CAPE;
-		pcl->cinh = CINH;
-    }
+    cape_cinh(prof, pcl);
     return;
 }
 
