@@ -215,7 +215,6 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     // Lift the parcel from the LPL to the LCL
     float pres_lcl;
     float tmpc_lcl;
-
     drylift(pcl->pres, pcl->tmpc, pcl->dwpc, pres_lcl, tmpc_lcl);
     pcl->lcl_pressure = pres_lcl;
 
@@ -257,9 +256,39 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     }
 }
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Find the LFC and EL that bounds the layer with the maximum CAPE
+ *
+ * Searches the buoyancy array for the LFC and EL layer combination that
+ * results in the most CAPE in the given profile. The buoyancy array is
+ * typically computed by calling sharp::lift_parcel. Once the LFC and EL
+ * are found, the values are set in pcl->lfc_pres and pcl->eql_pres.
+ *
+ * \param pcl   a sharp::Parcel with its sharp::LPL/attributes defined
+ * \param pres_arr  The pressure coordinate array
+ * \param hght_arr  The height coordinate array
+ * \param buoy_arr  The profile buoyancy array
+ * \param NZ        The length of the arrays
+ */
 void find_lfc_el(Parcel* pcl, float* pres_arr, float*hght_arr, float* buoy_arr,
                  int NZ) noexcept;
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Compute CAPE and CINH for a previously lifted parcel.
+ *
+ * Assuming that sharp::lift_parcel has been called, cape_cinh
+ * will integrate the area between the LFC and EL to compute CAPE,
+ * and integrate the area between the LPL and LCL to compute CINH.
+ *
+ * The results are set in pcl->cape and pcl->cinh. 
+ *
+ * \param prof  A sharp::Profile of sounding data
+ * \param pcl   A sharp::Parcel corresponding to the profile buoyancy array. 
+ */
 void cape_cinh(Profile* prof, Parcel *pcl) noexcept;
 
 /**

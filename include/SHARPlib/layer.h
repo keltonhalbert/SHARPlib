@@ -32,7 +32,13 @@ namespace sharp {
  *
  */
 enum class LayerCoordinate {
+    /**
+     * \brief Height coordinate
+     */
     height = 0,
+    /**
+     * \brief Pressure coordinate
+     */
     pressure = 1,
 };
 
@@ -40,7 +46,7 @@ enum class LayerCoordinate {
  *
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- * \brief A simple structure of two named floats that represent a height layer.
+ * \brief A simple structure of named floats that represent a height layer.
  *
  */
 struct HeightLayer {
@@ -103,8 +109,8 @@ struct PressureLayer {
  *
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- * \brief A simple structure of two named integer indices for the top and bottom
- * of a layer
+ * \brief A simple structure of two named integer indices for the top <!--
+ * -->and bottom of a layer
  *
  */
 struct LayerIndex {
@@ -262,8 +268,8 @@ HeightLayer pressure_layer_to_height(PressureLayer layer, const float* pressure,
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- * \brief Template for min/max value over sharp::PressureLayer or
- * sharp::HeightLayer
+ * \brief Template for min/max value over sharp::PressureLayer <!--
+ * -->or sharp::HeightLayer
  *
  * This tempalte function contains the algorithm for searching for either
  * the minimum or maximum value over a given sharp::PressureLayer or
@@ -474,7 +480,7 @@ constexpr T integrate_layer_trapz(L layer, const T* var_array,
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
  * \brief Computes the mass-weighted mean value of a field over <!--
- * --> a given pressure layer.
+ * -->a given pressure layer.
  *
  * Computes the mean value of a given array of data and corresponding
  * pressure coordinates over the given sharp::PressureLayer.
@@ -493,7 +499,7 @@ float layer_mean(PressureLayer layer, const float* pressure,
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
  * \brief Computes the mass-weighted mean value of a field over <!--
- * --> a given height layer.
+ * -->a given height layer.
  *
  * Computes the mean value of a given array of data and corresponding
  * height coordinates over the given sharp::HeightLayer. This is really
