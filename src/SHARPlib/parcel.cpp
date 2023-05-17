@@ -21,21 +21,6 @@
 
 namespace sharp {
 
-Parcel::Parcel() {
-    // Set LPL values to MISSING
-    pres = MISSING;
-    tmpc = MISSING;
-    dwpc = MISSING;
-
-    // Set derived values to MISSING
-    lcl_pressure = MISSING;
-    lfc_pressure = MISSING;
-    eql_pressure = MISSING;
-
-    cape = 0.0;
-    cinh = 0.0;
-}
-
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *

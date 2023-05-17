@@ -13,10 +13,14 @@
  * John Hart and Rich Thompson at SPC. 
  */
 
-#ifndef __SHARP_CONSTANTS
-#define __SHARP_CONSTANTS
+#ifndef __SHARP_CONSTANTS__
+#define __SHARP_CONSTANTS__
 
+#ifdef __cplusplus
 namespace sharp {
+extern "C" {
+#endif
+
 // conversion between celsius and kelvin
 static constexpr float ZEROCNK = 273.15f;
 // missing array values
@@ -58,6 +62,9 @@ static constexpr float VKSQ = 0.18;
 // temperature (Pa)
 static constexpr float VAPPRES_REF = 611.65;
 
+#ifdef __cplusplus
+}
 } // end namespace sharp
+#endif
 
 #endif
