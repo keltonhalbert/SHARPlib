@@ -32,7 +32,6 @@ sharp_LayerIndex_t* sharp_LayerIndex_create() {
     return i;
 }
 
-
 void sharp_PressureLayer_delete(sharp_PressureLayer_t* l) {
     if (l == NULL) return;
     delete static_cast<sharp::PressureLayer*>(l->obj);
