@@ -130,53 +130,49 @@ struct Parcel {
     /**
      * \brief Parcel starting pressure (hPa)
      */
-    float pres;
+    float pres = MISSING;
 
     /**
      * \brief Parcel starting temperature (degC)
      */
-    float tmpc;
+    float tmpc = MISSING;
 
     /**
      * \brief Parcel starting dewpoint (degC)
      */
-    float dwpc;
+    float dwpc = MISSING;
 
     /**
      * \brief Pressure at the Lifted Condensation Level (hPa)
      */
-    float lcl_pressure;
+    float lcl_pressure = MISSING;
 
     /**
      * \brief Pressure at the Level of Free Convection (hPa)
      */
-    float lfc_pressure;
+    float lfc_pressure = MISSING;
 
     /**
      * \brief Pressure at the parcel Equilibrium Level (hPa)
      */
-    float eql_pressure;
+    float eql_pressure = MISSING;
 
     /**
      * \brief Parcel Convective Available Potential Energy (J/kg) between the
      * LFC and EL
      */
-    float cape;
+    float cape = 0.0;
 
     /**
      * \brief Parcel Convective Inhibition (J/kg) between the LFC and EL
      */
-    float cinh;
+    float cinh = 0.0;
 
     /**
      * \brief The type of parcel this is
      */
     LPL source;
 
-    /**
-     * \brief Parcel empty constructor that sets all values to sharp::MISSING
-     */
-    Parcel();
 };
 
 /**
