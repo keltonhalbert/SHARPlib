@@ -2,6 +2,7 @@
 #include <SHARPlib/CWrap/layer_wrap.h>
 #include <SHARPlib/constants.h>
 #include <SHARPlib/thermo.h>
+#include <stdlib.h>
 
 float sharp_wobf(float temperature) {
     return sharp::wobf(temperature);
