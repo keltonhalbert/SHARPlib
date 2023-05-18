@@ -1,6 +1,7 @@
 #include <SHARPlib/CWrap/params_wrap.h>
 #include <SHARPlib/constants.h>
 #include <SHARPlib/params.h>
+#include <stdlib.h>
 
 void sharp_effective_inflow_layer(sharp_Profile_t* prof,
                                   sharp_PressureLayer_t* elyr,
