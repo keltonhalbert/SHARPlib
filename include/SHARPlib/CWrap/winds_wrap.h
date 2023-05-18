@@ -29,7 +29,8 @@ float sharp_WindVector_get_direction(sharp_WindVector_t* v);
 float sharp_WindComponents_get_u(sharp_WindComponents_t* c);
 float sharp_WindComponents_get_v(sharp_WindComponents_t* c);
 
-#ifdef __cplusplus
+
+#ifdef __cplusplus // end of extern C
 }
 #endif
 
