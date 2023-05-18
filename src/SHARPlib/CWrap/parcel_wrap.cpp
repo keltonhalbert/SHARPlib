@@ -17,3 +17,49 @@ void sharp_Parcel_delete(sharp_Parcel_t* p) {
     delete static_cast<sharp::Parcel*>(p->obj);
     free(p);
 }
+
+float sharp_Parcel_get_pres(sharp_Parcel_t* p) {
+	if (p == NULL) return 0;
+	return static_cast<sharp::Parcel*>(p->obj)->pres;
+}
+
+float sharp_Parcel_get_tmpc(sharp_Parcel_t* p) {
+	if (p == NULL) return 0;
+	return static_cast<sharp::Parcel*>(p->obj)->tmpc;
+}
+
+float sharp_Parcel_get_dwpc(sharp_Parcel_t* p) {
+	if (p == NULL) return 0;
+	return static_cast<sharp::Parcel*>(p->obj)->dwpc;
+}
+
+float sharp_Parcel_get_lcl_pres(sharp_Parcel_t* p) {
+	if (p == NULL) return 0;
+	return static_cast<sharp::Parcel*>(p->obj)->lcl_pressure;
+}
+
+float sharp_Parcel_get_lfc_pres(sharp_Parcel_t* p) {
+	if (p == NULL) return 0;
+	return static_cast<sharp::Parcel*>(p->obj)->lfc_pressure;
+}
+
+float sharp_Parcel_get_el_pres(sharp_Parcel_t* p) {
+	if (p == NULL) return 0;
+	return static_cast<sharp::Parcel*>(p->obj)->eql_pressure;
+}
+
+float sharp_Parcel_get_cape(sharp_Parcel_t* p) {
+	if (p == NULL) return 0;
+	return static_cast<sharp::Parcel*>(p->obj)->cape;
+}
+
+float sharp_Parcel_get_cinh(sharp_Parcel_t* p) {
+	if (p == NULL) return 0;
+	return static_cast<sharp::Parcel*>(p->obj)->cinh;
+}
+
+int sharp_Parcel_get_lpl(sharp_Parcel_t* p) {
+	if (p == NULL) return 0;
+	return static_cast<int>(static_cast<sharp::Parcel*>(p->obj)->source);
+}
+

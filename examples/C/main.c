@@ -16,8 +16,8 @@ int main(int argc, char** argv) {
     sharp_WindComponents_t* comp = sharp_WindComponents_create();
     sharp_WindVector_t* vec = sharp_WindVector_create();
 
-    printf("%f %f\n", sharp_PressureLayer_get_bottom(plyr), sharp_PressureLayer_get_top(plyr));
-    printf("%f %f\n", sharp_HeightLayer_get_bottom(hlyr), sharp_HeightLayer_get_top(hlyr));
+    printf("pbot: %f hPa ptop: %f hPa\n", sharp_PressureLayer_get_bottom(plyr), sharp_PressureLayer_get_top(plyr));
+    printf("hbot: %f meters htop: %f meters\n", sharp_HeightLayer_get_bottom(hlyr), sharp_HeightLayer_get_top(hlyr));
 
     float* pres = sharp_Profile_get_pres_ptr(prof);
     int k;
@@ -29,8 +29,23 @@ int main(int argc, char** argv) {
 
     float* pres2 = sharp_Profile_get_pres_ptr(prof);
     for (k = 0; k < NZ; ++k) {
-        printf("%f\n", pres2[k]);
+        printf("pres[%d] = %f\n", k, pres2[k]);
     }
+
+	printf("pcl pres: %f pcl tmpc: %f pcl dwpc: %f\n", 
+			sharp_Parcel_get_pres(pcl),
+			sharp_Parcel_get_tmpc(pcl),
+			sharp_Parcel_get_dwpc(pcl)
+		  );
+	printf("pcl lcl pres: %f pcl lfc pres: %f pcl el pres: %f\n",
+			sharp_Parcel_get_lcl_pres(pcl),
+			sharp_Parcel_get_lfc_pres(pcl),
+			sharp_Parcel_get_el_pres(pcl)
+		  );
+	printf("pcl CAPE: %f pcl CINH: %f\n",
+			sharp_Parcel_get_cape(pcl),
+			sharp_Parcel_get_cinh(pcl)
+		  );
 
     sharp_Profile_delete(prof);
     sharp_Parcel_delete(pcl);
