@@ -84,6 +84,7 @@ int sharp_LayerIndex_get_top(sharp_LayerIndex_t* i) {
 void sharp_get_PressureLayer_index(sharp_PressureLayer_t* lyr,
                                    sharp_LayerIndex_t* idx,
                                    const float* pressure, int NZ) {
+    if ((lyr == NULL) || (idx == NULL)) return;
     sharp::PressureLayer* pl = static_cast<sharp::PressureLayer*>(lyr->obj);
     sharp::LayerIndex* i = static_cast<sharp::LayerIndex*>(idx->obj);
     sharp::LayerIndex out = sharp::get_layer_index(*pl, pressure, NZ);
@@ -94,6 +95,7 @@ void sharp_get_PressureLayer_index(sharp_PressureLayer_t* lyr,
 void sharp_get_HeightLayer_index(sharp_HeightLayer_t* lyr,
                                    sharp_LayerIndex_t* idx,
                                    const float* height, int NZ) {
+    if ((lyr == NULL) || (idx == NULL)) return;
     sharp::HeightLayer* hl = static_cast<sharp::HeightLayer*>(lyr->obj);
     sharp::LayerIndex* i = static_cast<sharp::LayerIndex*>(idx->obj);
     sharp::LayerIndex out = sharp::get_layer_index(*hl, height, NZ);
@@ -107,6 +109,7 @@ void sharp_HeightLayer_to_PressureLayer(sharp_HeightLayer_t* hlyr,
                                         const float* pressure,
                                         const float* height, int NZ,
                                         bool isAGL) {
+    if ((hlyr == NULL) || (plyr == NULL)) return;
     sharp::HeightLayer* hl = static_cast<sharp::HeightLayer*>(hlyr->obj);
     sharp::PressureLayer* pl = static_cast<sharp::PressureLayer*>(plyr->obj);
 
@@ -121,6 +124,7 @@ void sharp_PressureLayer_to_HeightLayer(sharp_PressureLayer_t* plyr,
                                         const float* pressure,
                                         const float* height, int NZ,
                                         bool toAGL) {
+    if ((hlyr == NULL) || (plyr == NULL)) return;
     sharp::PressureLayer* pl = static_cast<sharp::PressureLayer*>(plyr->obj);
     sharp::HeightLayer* hl = static_cast<sharp::HeightLayer*>(hlyr->obj);
 
@@ -130,29 +134,33 @@ void sharp_PressureLayer_to_HeightLayer(sharp_PressureLayer_t* plyr,
     pl->top = out.top;
 }
 
+float sharp_PressureLayer_min(sharp_PressureLayer_t* plyr, const float* pres,
+                              const float* data, int NZ, float* lvl_of_min) {
+    if (plyr == NULL) return sharp::MISSING;
+    sharp::PressureLayer* pl = static_cast<sharp::PressureLayer*>(plyr->obj);
+    return sharp::layer_min(*pl, pres, data, NZ, lvl_of_min);
+}
 
+float sharp_PressureLayer_max(sharp_PressureLayer_t* plyr, const float* pres,
+                              const float* data, int NZ, float* lvl_of_max) {
+    if (plyr == NULL) return sharp::MISSING;
+    sharp::PressureLayer* pl = static_cast<sharp::PressureLayer*>(plyr->obj);
+    return sharp::layer_max(*pl, pres, data, NZ, lvl_of_max);
+}
 
+float sharp_HeightLayer_min(sharp_HeightLayer_t* hlyr, const float* hght,
+                            const float* data, int NZ, float* lvl_of_min) {
+    if (hlyr == NULL) return sharp::MISSING;
+    sharp::HeightLayer* hl = static_cast<sharp::HeightLayer*>(hlyr->obj);
+    return sharp::layer_min(*hl, hght, data, NZ, lvl_of_min);
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+float sharp_HeightLayer_max(sharp_HeightLayer_t* hlyr, const float* hght,
+                            const float* data, int NZ, float* lvl_of_max) {
+    if (hlyr == NULL) return sharp::MISSING;
+    sharp::HeightLayer* hl = static_cast<sharp::HeightLayer*>(hlyr->obj);
+    return sharp::layer_max(*hl, hght, data, NZ, lvl_of_max);
+}
 
 
 
