@@ -72,6 +72,22 @@ float sharp_HeightLayer_min(sharp_HeightLayer_t* hlyr, const float* hght,
 float sharp_HeightLayer_max(sharp_HeightLayer_t* hlyr, const float* hght,
                             const float* data, int NZ, float* lvl_of_max);
 
+float sharp_PressureLayer_mean(sharp_PressureLayer_t* plyr,
+                               const float* pressure, const float* data,
+                               int NZ);
+
+float sharp_HeightLayer_mean(sharp_HeightLayer_t* hlyr, const float* height,
+                             const float* pressure, const float* data, int NZ,
+                             int isAGL);
+
+float sharp_PressureLayer_integrate(sharp_PressureLayer_t* plyr,
+                                    const float* data, const float* pressure,
+                                    int NZ, int integ_sign, int weighted);
+
+float sharp_HeightLayer_integrate(sharp_HeightLayer_t* hlyr,
+                                  const float* data, const float* height,
+                                  int NZ, int integ_sign, int weighted);
+
 #ifdef __cplusplus
 }
 #endif
