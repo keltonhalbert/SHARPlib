@@ -162,6 +162,32 @@ float sharp_HeightLayer_max(sharp_HeightLayer_t* hlyr, const float* hght,
     return sharp::layer_max(*hl, hght, data, NZ, lvl_of_max);
 }
 
+float sharp_PressureLayer_mean(sharp_PressureLayer_t* plyr,
+                               const float* pressure, const float* data,
+                               int NZ) {
+    sharp::PressureLayer* pl = static_cast<sharp::PressureLayer*>(plyr->obj);
+    return sharp::layer_mean(*pl, pressure, data, NZ);
+}
 
+float sharp_HeightLayer_mean(sharp_HeightLayer_t* hlyr, const float* height,
+                             const float* pressure, const float* data, int NZ,
+                             int isAGL) {
+    sharp::HeightLayer* hl = static_cast<sharp::HeightLayer*>(hlyr->obj);
+    return sharp::layer_mean(*hl, height, pressure, data, NZ, isAGL);
+}
 
+float sharp_PressureLayer_integrate(sharp_PressureLayer_t* plyr,
+                                    const float* data, const float* pressure,
+                                    int NZ, int integ_sign, int weighted) {
+    sharp::PressureLayer* pl = static_cast<sharp::PressureLayer*>(plyr->obj);
+    return sharp::integrate_layer_trapz(*pl, data, pressure, NZ, integ_sign,
+                                        weighted);
+}
 
+float sharp_HeightLayer_integrate(sharp_HeightLayer_t* hlyr, const float* data,
+                                  const float* height, int NZ, int integ_sign,
+                                  int weighted) {
+    sharp::HeightLayer* hl = static_cast<sharp::HeightLayer*>(hlyr->obj);
+    return sharp::integrate_layer_trapz(*hl, data, height, NZ, integ_sign,
+                                        weighted);
+}
