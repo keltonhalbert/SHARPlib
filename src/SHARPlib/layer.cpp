@@ -118,7 +118,7 @@ float layer_mean(PressureLayer layer, const float* pressure,
 
 float layer_mean(HeightLayer layer, const float* height, const float* pressure,
                  const float* data_arr, int num_levs,
-                 const bool isAGL = false) noexcept {
+                 const bool isAGL) noexcept {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
         return MISSING;
