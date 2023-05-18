@@ -22,96 +22,80 @@ void sharp_Profile_delete(sharp_Profile_t* p) {
 
 float* sharp_Profile_get_pres_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    sharp::Profile* prof = static_cast<sharp::Profile*>(p->obj);
-    return prof->pres;
+    return static_cast<sharp::Profile*>(p->obj)->pres;
 }
 
 float* sharp_Profile_get_hght_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    sharp::Profile* prof = static_cast<sharp::Profile*>(p->obj);
-    return prof->hght;
+    return static_cast<sharp::Profile*>(p->obj)->hght;
 }
 
 float* sharp_Profile_get_tmpc_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    sharp::Profile* prof = static_cast<sharp::Profile*>(p->obj);
-    return prof->tmpc;
+    return static_cast<sharp::Profile*>(p->obj)->tmpc;
 }
 
 float* sharp_Profile_get_dwpc_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    sharp::Profile* prof = static_cast<sharp::Profile*>(p->obj);
-    return prof->dwpc;
+    return static_cast<sharp::Profile*>(p->obj)->dwpc;
 }
 
 float* sharp_Profile_get_mixr_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    sharp::Profile* prof = static_cast<sharp::Profile*>(p->obj);
-    return prof->mixr;
+    return static_cast<sharp::Profile*>(p->obj)->mixr;
 }
 
 float* sharp_Profile_get_relh_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    sharp::Profile* prof = static_cast<sharp::Profile*>(p->obj);
-    return prof->relh;
+    return static_cast<sharp::Profile*>(p->obj)->relh;
 }
 
 float* sharp_Profile_get_vtmp_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    sharp::Profile* prof = static_cast<sharp::Profile*>(p->obj);
-    return prof->vtmp;
+    return static_cast<sharp::Profile*>(p->obj)->vtmp;
 }
 
 float* sharp_Profile_get_wspd_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    sharp::Profile* prof = static_cast<sharp::Profile*>(p->obj);
-    return prof->wspd;
+    return static_cast<sharp::Profile*>(p->obj)->wspd;
 }
 
 float* sharp_Profile_get_wdir_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    sharp::Profile* prof = static_cast<sharp::Profile*>(p->obj);
-    return prof->wdir;
+    return static_cast<sharp::Profile*>(p->obj)->wdir;
 }
 
 float* sharp_Profile_get_uwin_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    sharp::Profile* prof = static_cast<sharp::Profile*>(p->obj);
-    return prof->uwin;
+    return static_cast<sharp::Profile*>(p->obj)->uwin;
 }
 
 float* sharp_Profile_get_vwin_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    sharp::Profile* prof = static_cast<sharp::Profile*>(p->obj);
-    return prof->vwin;
+    return static_cast<sharp::Profile*>(p->obj)->vwin;
 }
 
 float* sharp_Profile_get_vvel_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    sharp::Profile* prof = static_cast<sharp::Profile*>(p->obj);
-    return prof->vvel;
+    return static_cast<sharp::Profile*>(p->obj)->vvel;
 }
 
 float* sharp_Profile_get_theta_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    sharp::Profile* prof = static_cast<sharp::Profile*>(p->obj);
-    return prof->theta;
+    return static_cast<sharp::Profile*>(p->obj)->theta;
 }
 
 float* sharp_Profile_get_thetae_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    sharp::Profile* prof = static_cast<sharp::Profile*>(p->obj);
-    return prof->theta_e;
+    return static_cast<sharp::Profile*>(p->obj)->theta_e;
 }
 
 float* sharp_Profile_get_mse_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    sharp::Profile* prof = static_cast<sharp::Profile*>(p->obj);
-    return prof->moist_static_energy;
+    return static_cast<sharp::Profile*>(p->obj)->moist_static_energy;
 }
 
 float* sharp_Profile_get_buoy_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    sharp::Profile* prof = static_cast<sharp::Profile*>(p->obj);
-    return prof->buoyancy;
+    return static_cast<sharp::Profile*>(p->obj)->buoyancy;
 }
