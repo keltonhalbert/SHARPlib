@@ -59,6 +59,19 @@ void sharp_PressureLayer_to_HeightLayer(sharp_PressureLayer_t* plyr,
                                         const float* pressure,
                                         const float* height, int NZ,
                                         int toAGL);
+
+float sharp_PressureLayer_min(sharp_PressureLayer_t* plyr, const float* pres,
+                              const float* data, int NZ, float* lvl_of_min);
+
+float sharp_PressureLayer_max(sharp_PressureLayer_t* plyr, const float* pres,
+                              const float* data, int NZ, float* lvl_of_max);
+
+float sharp_HeightLayer_min(sharp_HeightLayer_t* hlyr, const float* hght,
+                            const float* data, int NZ, float* lvl_of_min);
+
+float sharp_HeightLayer_max(sharp_HeightLayer_t* hlyr, const float* hght,
+                            const float* data, int NZ, float* lvl_of_max);
+
 #ifdef __cplusplus
 }
 #endif
