@@ -2,6 +2,7 @@
 #include <SHARPlib/CWrap/parcel_wrap.h>
 #include <SHARPlib/CWrap/layer_wrap.h>
 #include <SHARPlib/CWrap/winds_wrap.h>
+#include <SHARPlib/CWrap/interp_wrap.h>
 #include <stdio.h>
 
 int main(int argc, char** argv) {
