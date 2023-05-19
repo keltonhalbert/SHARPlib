@@ -1,3 +1,17 @@
+/**
+ * \file
+ * \brief Header defining the C wrapper interface to parcel routines
+ * \author
+ *   Kelton Halbert                     \n
+ *   Email: kelton.halbert@noaa.gov     \n
+ *   License: Apache 2.0                \n
+ * \date    2023-05-19
+ *
+ * Written for the NWS Storm Prediction Center,
+ * based on NSHARP routines written by John Hart 
+ * Rich Thompson.
+ */
+
 #ifndef __SHARP_PARCEL_WRAP_H__
 #define __SHARP_PARCEL_WRAP_H__
 
