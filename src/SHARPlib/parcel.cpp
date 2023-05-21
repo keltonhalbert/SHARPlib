@@ -123,7 +123,7 @@ void find_lfc_el(Parcel* pcl, const float* pres_arr, const float* hght_arr,
     float lfc_pres_last = MISSING;
     float eql_pres_last = MISSING;
 
-    for (int k = lyr_idx.kbot; k <= lyr_idx.ktop + 1; ++k) {
+    for (int k = lyr_idx.kbot; k < lyr_idx.ktop + 2; ++k) {
 #ifndef NO_QC
         if (buoy_arr[k] == MISSING) continue;
 #endif
@@ -139,7 +139,7 @@ void find_lfc_el(Parcel* pcl, const float* pres_arr, const float* hght_arr,
                 eql_pres_last = eql_pres;
                 pos_buoy = 0.0;
             }
-            for (lfc_pres = pbot - 5; lfc_pres >= ptop + 5; lfc_pres -= 1.0) {
+            for (lfc_pres = pbot - 5; lfc_pres > ptop + 5; lfc_pres -= 1.0) {
                 float buoy = interp_pressure(lfc_pres, pres_arr, buoy_arr, NZ);
                 if (buoy > 0) break;
             }
@@ -151,7 +151,7 @@ void find_lfc_el(Parcel* pcl, const float* pres_arr, const float* hght_arr,
         }
         // EL condition
         if ((lfc_pres != MISSING) && ((lyr_bot >= 0) && (lyr_top < 0))) {
-            for (eql_pres = pbot - 5; eql_pres >= ptop + 5; eql_pres -= 1.0) {
+            for (eql_pres = pbot - 5; eql_pres > ptop + 5; eql_pres -= 1.0) {
                 float buoy = interp_pressure(eql_pres, pres_arr, buoy_arr, NZ);
                 if (buoy < 0) break;
             }
