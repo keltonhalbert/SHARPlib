@@ -450,10 +450,8 @@ constexpr T integrate_layer_trapz(L layer, const T* var_array,
         T layer_avg = __integ_trapz(var_top, var_bottom, coord_top,
                                     coord_bottom, weights, weighted);
 
-        if ((integ_sign == 0) ||
-            (std::signbit(integ_sign) == std::signbit(layer_avg))) {
-            integrated += layer_avg;
-        }
+		bool cond = ((integ_sign == 0) || (std::signbit(integ_sign) == std::signbit(layer_avg)));
+		integrated += cond * layer_avg;
 
         var_bottom = var_top;
         coord_bottom = coord_top;
@@ -462,10 +460,8 @@ constexpr T integrate_layer_trapz(L layer, const T* var_array,
     // interpolated top of layer
     T layer_avg = __integ_trapz(var_lyr_top, var_bottom, coord_lyr_top,
                                 coord_bottom, weights, weighted);
-    if ((integ_sign == 0) ||
-        (std::signbit(integ_sign) == std::signbit(layer_avg))) {
-        integrated += layer_avg;
-    }
+	bool cond = ((integ_sign == 0) || (std::signbit(integ_sign) == std::signbit(layer_avg)));
+	integrated += cond * layer_avg;
 
     if constexpr (layer.coord == LayerCoordinate::pressure) {
         integrated *= -1.0;
