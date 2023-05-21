@@ -11,6 +11,7 @@
 #include <SHARPlib/layer.h>
 
 #include <cmath>
+#include <iostream>
 
 namespace sharp {
 
@@ -156,36 +157,33 @@ float saturated_lift(float pressure, float theta_sat) noexcept {
     // we do not want to go below the 1000.0 hPa reference level
     if ((std::fabs(pressure - 1000.0f) - 0.001f) <= 0.0f) return theta_sat;
 
-    float pwrp = 0;
-    float t1 = 0;
-    float t2 = 0;
-    float e1 = 0;
-    float e2 = 0;
-    float rate = 0;
+	float eps = 0.001f;
+	float pwrp = std::pow(pressure / 1000.0f, ROCP);
+	// get the temperature
+	float t1 = (theta_sat + ZEROCNK) * pwrp - ZEROCNK;
+	float e1 = wobf(t1) - wobf(theta_sat);
+	float rate = 1.0f;
     float eor = 999;
-
-    while (std::fabs(eor) - 0.001f > 0.0f) {
-        if (eor == 999.f) { /* First Pass */
-            pwrp = std::pow(pressure / 1000.0f, ROCP);
-            // get the temperature
-            t1 = (theta_sat + ZEROCNK) * pwrp - ZEROCNK;
-            float woto = wobf(t1);
-            float wotm = wobf(theta_sat);
-            e1 = woto - wotm;
-            rate = 1.0f;
-        } else { /* Successive Passes */
-            rate = (t2 - t1) / (e2 - e1);
-            t1 = t2;
-            e1 = e2;
-        }
+	float t2;
+	// Testing the original showed that only
+	// 5 or so iterations are needed, but
+	// double that just in case. It'll exit
+	// early if it converges anyway. 
+	for (int iter = 0; iter < 10; ++iter) {
         t2 = t1 - e1 * rate;
-        e2 = (t2 + ZEROCNK) / pwrp - ZEROCNK;
-        float wot2 = wobf(t2);
-        float woe2 = wobf(e2);
-        e2 = e2 + wot2 - woe2 - theta_sat;
+        float e2 = (t2 + ZEROCNK) / pwrp - ZEROCNK;
+        e2 = e2 + wobf(t2) - wobf(e2) - theta_sat;
+
         eor = e2 * rate;
-    }
-    return t2 - eor;
+		rate = (t2 - t1) / (e2 - e1);
+		t1 = t2;
+		e1 = e2;
+
+		if (std::fabs(eor) - eps < 0.0f) {
+			return t2 - eor;	
+		}
+	}
+	return t2;
 }
 
 float wetlift(float pressure, float temperature,
