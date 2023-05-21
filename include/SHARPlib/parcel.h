@@ -209,8 +209,8 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept;
 template <typename Lft>
 void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     // Lift the parcel from the LPL to the LCL
-    const float pres_lcl;
-    const float tmpc_lcl;
+    float pres_lcl;
+    float tmpc_lcl;
     drylift(pcl->pres, pcl->tmpc, pcl->dwpc, pres_lcl, tmpc_lcl);
     pcl->lcl_pressure = pres_lcl;
 
