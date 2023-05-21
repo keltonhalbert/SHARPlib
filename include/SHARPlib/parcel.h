@@ -209,12 +209,12 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept;
 template <typename Lft>
 void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     // Lift the parcel from the LPL to the LCL
-    float pres_lcl;
-    float tmpc_lcl;
+    const float pres_lcl;
+    const float tmpc_lcl;
     drylift(pcl->pres, pcl->tmpc, pcl->dwpc, pres_lcl, tmpc_lcl);
     pcl->lcl_pressure = pres_lcl;
 
-    float thetav_lcl = theta(
+    const float thetav_lcl = theta(
         pres_lcl, virtual_temperature(pcl->pres, tmpc_lcl, tmpc_lcl), 1000.0);
 
     // Define the dry and saturated lift layers
@@ -233,10 +233,9 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     // Fill the array with dry parcel buoyancy.
     // Virtual potential temperature (Theta-V)
     // is conserved for a parcels dry ascent to the LCL
-    for (int k = dry_idx.kbot; k <= dry_idx.ktop; ++k) {
-        float env_vtmp = prof->vtmp[k];
+    for (int k = dry_idx.kbot; k < dry_idx.ktop+1; ++k) {
         float pcl_vtmp = theta(1000.0, thetav_lcl, prof->pres[k]);
-        prof->buoyancy[k] = buoyancy(pcl_vtmp, env_vtmp);
+        prof->buoyancy[k] = buoyancy(pcl_vtmp, prof->vtmp[k]);
     }
 
     // fill the array with the moist parcel buoyancy

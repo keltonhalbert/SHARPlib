@@ -15,6 +15,7 @@
 
 namespace sharp {
 
+// To-Do: Can I make this branchless?
 float wobf(float temperature) noexcept {
 #ifndef NO_QC
     if (temperature == MISSING) return MISSING;
@@ -38,6 +39,7 @@ float wobf(float temperature) noexcept {
     }
 }
 
+// To-Do: Implement Bolton (1980) formula
 float vapor_pressure(float temperature) noexcept {
 #ifndef NO_QC
     if (temperature == MISSING) return MISSING;
@@ -116,6 +118,7 @@ float theta(float pressure, float temperature, float ref_pressure) noexcept {
     return (temperature * std::pow(ref_pressure / pressure, ROCP)) - ZEROCNK;
 }
 
+// To-Do: Implement exact version
 float mixratio(float pressure, float temperature) noexcept {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING)) {
@@ -165,6 +168,7 @@ float saturated_lift(float pressure, float theta_sat) noexcept {
     float rate = 1.0f;
     float eor = 999;
     float t2;
+	int condition = 0;
 	// Testing the original showed that only
 	// 5 or so iterations are needed, but
 	// double that just in case. It'll exit
@@ -178,12 +182,10 @@ float saturated_lift(float pressure, float theta_sat) noexcept {
         rate = (t2 - t1) / (e2 - e1);
         t1 = t2;
 		e1 = e2;
-
-        if (std::fabs(eor) - eps < 0.0f) {
-            return t2 - eor;	
-        }
+		condition |= ((std::fabs(eor) - eps) < 0.0f);
+		if (condition) break;
     }
-    return t2;
+    return t2 - eor;
 }
 
 float wetlift(float pressure, float temperature,
