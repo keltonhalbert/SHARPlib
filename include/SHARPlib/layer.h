@@ -163,13 +163,9 @@ constexpr LayerIndex get_layer_index(L& layer, const float* coord, int N,
     int lower_idx = lower_bound(coord, N, layer.bottom, bottom_comp);
     int upper_idx = upper_bound(coord, N, layer.top, bottom_comp);
 
-    if ((bottom_comp(coord[lower_idx], layer.bottom)) && (lower_idx < N - 1)) {
-        ++lower_idx;
-    }
-
-    if ((top_comp(coord[upper_idx], layer.top)) && (upper_idx > 0)) {
-        --upper_idx;
-    }
+	// if the condition is true, increment or decrement
+	lower_idx += ((bottom_comp(coord[lower_idx], layer.bottom)) & (lower_idx < N - 1));
+	upper_idx -= ((top_comp(coord[upper_idx], layer.top)) & (upper_idx > 0));
 
     return {lower_idx, upper_idx};
 }
