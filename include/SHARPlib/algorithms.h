@@ -43,7 +43,7 @@ namespace sharp {
  * \param cmp       The comparitor
  */
 template <typename T, typename C = std::less<>>
-inline constexpr int lower_bound(const T* array, const int N, const T& value,
+[[nodiscard]] inline constexpr int lower_bound(const T* array, const int N, const T& value,
                                        const C cmp = C{}) noexcept {
     int first = 0;
     int last = N;
@@ -84,7 +84,7 @@ inline constexpr int lower_bound(const T* array, const int N, const T& value,
  * \param cmp       The comparitor
  */
 template <typename T, typename C = std::less<>>
-inline constexpr int upper_bound(const T* array, const int N, const T& value,
+[[nodiscard]] inline constexpr int upper_bound(const T* array, const int N, const T& value,
                                        const C cmp = C{}) noexcept {
     int first = 0;
     int last = N;
@@ -121,7 +121,7 @@ inline constexpr int upper_bound(const T* array, const int N, const T& value,
  * \return             The area under the curve
  */
 template <typename _T>
-inline constexpr _T __integ_trapz(_T var_top, _T var_bottom, _T coord_top,
+[[nodiscard]] inline constexpr _T __integ_trapz(_T var_top, _T var_bottom, _T coord_top,
                                   _T coord_bottom, _T& weights,
                                   const bool weighted = false) noexcept {
 	weights += (weighted) * (coord_top - coord_bottom);

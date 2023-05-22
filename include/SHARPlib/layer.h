@@ -146,7 +146,7 @@ struct LayerIndex {
  * \return       sharp::LayerIndex {kbot, ktop}
  */
 template <typename L, typename Cb, typename Ct>
-constexpr LayerIndex get_layer_index(L& layer, const float* coord, int N,
+[[nodiscard]] constexpr LayerIndex get_layer_index(L& layer, const float* coord, int N,
                                      const Cb bottom_comp,
                                      const Ct top_comp) noexcept {
     if (bottom_comp(layer.bottom, coord[0])) {
@@ -191,7 +191,7 @@ constexpr LayerIndex get_layer_index(L& layer, const float* coord, int N,
  * \return          sharp::LayerIndex       {kbot, ktop}
  *
  */
-LayerIndex get_layer_index(PressureLayer& layer, const float* pressure,
+[[nodiscard]] LayerIndex get_layer_index(PressureLayer& layer, const float* pressure,
                            int num_levs) noexcept;
 
 /**
@@ -216,7 +216,7 @@ LayerIndex get_layer_index(PressureLayer& layer, const float* pressure,
  * \return          sharp::LayerIndex       {kbot, ktop}
  *
  */
-LayerIndex get_layer_index(HeightLayer& layer, const float* height,
+[[nodiscard]] LayerIndex get_layer_index(HeightLayer& layer, const float* height,
                            int num_levs) noexcept;
 
 /*
@@ -236,7 +236,7 @@ LayerIndex get_layer_index(HeightLayer& layer, const float* height,
  *
  * \return  sharp::PressureLayer
  */
-PressureLayer height_layer_to_pressure(HeightLayer layer, const float* pressure,
+[[nodiscard]] PressureLayer height_layer_to_pressure(HeightLayer layer, const float* pressure,
                                        const float* height, int num_levs,
                                        bool isAGL = false) noexcept;
 
@@ -257,7 +257,7 @@ PressureLayer height_layer_to_pressure(HeightLayer layer, const float* pressure,
  *
  * \return sharp::HeightLayer
  */
-HeightLayer pressure_layer_to_height(PressureLayer layer, const float* pressure,
+[[nodiscard]] HeightLayer pressure_layer_to_height(PressureLayer layer, const float* pressure,
                                      const float* height, int num_levs,
                                      bool toAGL = false) noexcept;
 
@@ -287,7 +287,7 @@ HeightLayer pressure_layer_to_height(PressureLayer layer, const float* pressure,
  *
  */
 template <typename L, typename C>
-constexpr float layer_minmax(L layer, const float* coord_arr,
+[[nodiscard]] constexpr float layer_minmax(L layer, const float* coord_arr,
                              const float* data_arr, int N,
                              float* lvl_min_or_max, const C comp) noexcept {
 #ifndef NO_QC
@@ -406,7 +406,7 @@ constexpr float layer_max(L layer, const float* coord_arr,
  * \return integrated_value
  */
 template <typename T, typename L>
-constexpr T integrate_layer_trapz(L layer, const T* var_array,
+[[nodiscard]] constexpr T integrate_layer_trapz(L layer, const T* var_array,
                                   const T* coord_array, int N,
                                   const int integ_sign = 0,
                                   const bool weighted = false) noexcept {
@@ -490,7 +490,7 @@ constexpr T integrate_layer_trapz(L layer, const T* var_array,
  * \return layer_mean
  *
  */
-float layer_mean(PressureLayer layer, const float* pressure,
+[[nodiscard]] float layer_mean(PressureLayer layer, const float* pressure,
                  const float* data_arr, int num_levs) noexcept;
 
 /**
@@ -512,7 +512,7 @@ float layer_mean(PressureLayer layer, const float* pressure,
  * \return layer_mean
  *
  */
-float layer_mean(HeightLayer layer, const float* height, const float* pressure,
+[[nodiscard]] float layer_mean(HeightLayer layer, const float* height, const float* pressure,
                  const float* data_arr, int num_levs,
                  const bool isAGL = false) noexcept;
 

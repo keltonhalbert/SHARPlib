@@ -49,7 +49,7 @@ namespace sharp {
  * \return The value between __a and __b at distance __t between them.
  */
 template <typename _Fp>
-inline constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept {
+[[nodiscard]] inline constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept {
     if ((__a <= 0 && __b >= 0) || (__a >= 0 && __b <= 0))
         return __t * __b + (1 - __t) * __a;
 
@@ -90,7 +90,7 @@ inline constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept {
  *
  * \return The value between __a and __b at distance __t between them.
  */
-inline constexpr float lerp(float __a, float __b, float __t) noexcept {
+[[nodiscard]] inline constexpr float lerp(float __a, float __b, float __t) noexcept {
     return __lerp(__a, __b, __t);
 }
 
@@ -113,7 +113,7 @@ inline constexpr float lerp(float __a, float __b, float __t) noexcept {
  * \param num_levs      The length of data_arr and height_arr
  * \return              The value of data_arr at the requested height_val.
  */
-float interp_height(float height_val, const float* height_arr,
+[[nodiscard]] float interp_height(float height_val, const float* height_arr,
                     const float* data_arr, int num_levs) noexcept;
 
 /**
@@ -136,7 +136,7 @@ float interp_height(float height_val, const float* height_arr,
  * \param num_levs        The length of data_arr and pressure_arr
  * \return                The value of data_arr at the requested pressure_val.
  */
-float interp_pressure(float pressure_val, const float* pressure_arr,
+[[nodiscard]] float interp_pressure(float pressure_val, const float* pressure_arr,
                       const float* data_arr, int num_levs) noexcept;
 
 }  // end namespace sharp
