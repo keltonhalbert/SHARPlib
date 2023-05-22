@@ -12,16 +12,14 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
-#ifndef __SHARP_PARCEL
-#define __SHARP_PARCEL
+#ifndef __SHARP_PARCEL_H__
+#define __SHARP_PARCEL_H__
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
 #include <SHARPlib/profile.h>
 #include <SHARPlib/thermo.h>
-
-#include <iostream>
 
 namespace sharp {
 
@@ -307,4 +305,4 @@ void parcel_wobf(Profile* prof, Parcel* pcl) noexcept;
 
 namespace sharp::exper {}  // end namespace sharp::exper
 
-#endif
+#endif // __SHARP_PARCEL_H__

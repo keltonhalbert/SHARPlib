@@ -12,8 +12,8 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
-#ifndef __SHARP_PROFILE
-#define __SHARP_PROFILE
+#ifndef __SHARP_PROFILE_H__
+#define __SHARP_PROFILE_H__
 
 namespace sharp {
 
@@ -154,4 +154,4 @@ struct Profile {
 
 namespace sharp::exper {}  // end namespace sharp::exper
 
-#endif
+#endif // __SHARP_PROFILE_H__

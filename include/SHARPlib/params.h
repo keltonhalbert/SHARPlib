@@ -12,8 +12,8 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
-#ifndef __SHARP_PARAMS
-#define __SHARP_PARAMS
+#ifndef __SHARP_PARAMS_H__
+#define __SHARP_PARAMS_H__
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/layer.h>
@@ -125,4 +125,4 @@ float significant_tornado_parameter(Profile* prof, Parcel pcl,
 
 namespace sharp::exper {}  // end namespace sharp::exper
 
-#endif
+#endif // __SHARP_PARAMS_H__

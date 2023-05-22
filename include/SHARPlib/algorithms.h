@@ -12,8 +12,8 @@
  * John Hart and Rich Thompson at SPC.
  */
 
-#ifndef __SHARP_ALGORITHMS
-#define __SHARP_ALGORITHMS
+#ifndef __SHARP_ALGORITHMS_H__
+#define __SHARP_ALGORITHMS_H__
 
 #include <functional>
 
@@ -123,11 +123,11 @@ inline constexpr int upper_bound(const T* array, const int N, const T& value,
 template <typename _T>
 inline constexpr _T __integ_trapz(_T var_top, _T var_bottom, _T coord_top,
                                   _T coord_bottom, _T& weights,
-                                  bool weighted = false) noexcept {
+                                  const bool weighted = false) noexcept {
 	weights += (weighted) * (coord_top - coord_bottom);
     return ((var_top + var_bottom) / 2.0f) * (coord_top - coord_bottom);
 }
 
 } // end namespace sharp
 
-#endif // __SHARP_ALGORITHMS
+#endif // __SHARP_ALGORITHMS_H__

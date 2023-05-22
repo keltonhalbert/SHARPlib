@@ -12,8 +12,8 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
-#ifndef __SHARP_WINDS
-#define __SHARP_WINDS
+#ifndef __SHARP_WINDS_H__
+#define __SHARP_WINDS_H__
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
@@ -360,4 +360,4 @@ float helicity(PressureLayer layer, WindComponents storm_motion,
 
 namespace sharp::exper {}  // end namespace sharp::exper
 
-#endif
+#endif // __SHARP_WINDS_H__
