@@ -146,9 +146,8 @@ void find_lfc_el(Parcel* pcl, const float* pres_arr, const float* hght_arr,
         }
 
         // keep track of buoyancy so that we pick the max CAPE layer
-        if ((lfc_pres != MISSING) && (lyr_top > 0.0)) {
-            pos_buoy += (htop - hbot) * lyr_top;
-        }
+		float condition = ((lfc_pres != MISSING) & (lyr_top > 0.0));
+		pos_buoy += condition * (htop - hbot) * lyr_top;
         // EL condition
         if ((lfc_pres != MISSING) && ((lyr_bot >= 0) && (lyr_top < 0))) {
             for (eql_pres = pbot - 5; eql_pres > ptop + 5; eql_pres -= 1.0) {

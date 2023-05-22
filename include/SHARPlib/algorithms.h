@@ -43,23 +43,18 @@ namespace sharp {
  * \param cmp       The comparitor
  */
 template <typename T, typename C = std::less<>>
-inline constexpr int lower_bound(const T* array, int N, T value,
-                                 C cmp = C{}) noexcept {
-    int idx = 0;
+inline constexpr int lower_bound(const T* array, const int N, const T& value,
+                                       const C cmp = C{}) noexcept {
     int first = 0;
-    int count = N - 1;
+    int last = N;
 
-    while (count > 0) {
-        idx = first;
-        int step = count / 2;
-        idx += step;
-        T element = array[idx];
+    while (first < last) {
+        int mid = first + ((last - first) >> 1);
 
-        if (cmp(element, value)) {
-            first = ++idx;
-            count -= step + 1;
+        if (cmp(array[mid], value)) {
+            first = mid + 1;
         } else {
-            count = step;
+            last = mid;
         }
     }
 
@@ -89,23 +84,18 @@ inline constexpr int lower_bound(const T* array, int N, T value,
  * \param cmp       The comparitor
  */
 template <typename T, typename C = std::less<>>
-inline constexpr int upper_bound(const T* array, int N, T value,
-                                 C cmp = C{}) noexcept {
-    int idx = 0;
+inline constexpr int upper_bound(const T* array, const int N, const T& value,
+                                       const C cmp = C{}) noexcept {
     int first = 0;
-    int count = N - 1;
+    int last = N;
 
-    while (count > 0) {
-        idx = first;
-        int step = count / 2;
-        idx += step;
-        T element = array[idx];
+    while (first < last) {
+        int mid = first + ((last - first) >> 1);
 
-        if (!cmp(value, element)) {
-            first = ++idx;
-            count -= step + 1;
+        if (!cmp(value, array[mid])) {
+            first = mid + 1;
         } else {
-            count = step;
+            last = mid;
         }
     }
 
