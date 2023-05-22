@@ -12,8 +12,8 @@
  * John Hart and Rich Thompson at SPC.
  */
 
-#ifndef __SHARP_INTERP
-#define __SHARP_INTERP
+#ifndef __SHARP_INTERP_H__
+#define __SHARP_INTERP_H__
 
 #include <SHARPlib/constants.h>
 
@@ -143,4 +143,4 @@ float interp_pressure(float pressure_val, const float* pressure_arr,
 
 namespace sharp::exper {}  // end namespace sharp::exper
 
-#endif
+#endif // __SHARP_INTERP_H__

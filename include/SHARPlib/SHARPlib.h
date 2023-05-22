@@ -13,8 +13,8 @@
  * John Hart and Rich Thompson at SPC.
  */
 
-#ifndef __SHARPLIB
-#define __SHARPLIB
+#ifndef __SHARPLIB_H__
+#define __SHARPLIB_H__
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
@@ -84,4 +84,4 @@ Profile *create_profile(float *pres, float *hght, float *tmpc, float *dwpc,
 
 }  // end namespace sharp
 
-#endif
+#endif // __SHARPLIB_H__

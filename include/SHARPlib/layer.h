@@ -13,8 +13,8 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
-#ifndef __SHARP_LAYERS
-#define __SHARP_LAYERS
+#ifndef __SHARP_LAYERS_H__
+#define __SHARP_LAYERS_H__
 
 #include <SHARPlib/algorithms.h>
 #include <SHARPlib/constants.h>
@@ -102,7 +102,7 @@ struct PressureLayer {
      */
     static constexpr LayerCoordinate coord = LayerCoordinate::pressure;
 
-    PressureLayer(float bot, float top, float delta = -10);
+    PressureLayer(float bot, float top, float delta = -10.0);
 };
 
 /**
@@ -448,9 +448,6 @@ constexpr T integrate_layer_trapz(L layer, const T* var_array,
 
 		int cond = ((integ_sign == 0) | (std::signbit(integ_sign) == std::signbit(layer_avg)));
 		integrated += cond * layer_avg;
-
-        var_bottom = var_top;
-        coord_bottom = coord_top;
     }
 
 	// interpolated bottom of layer
@@ -523,4 +520,4 @@ float layer_mean(HeightLayer layer, const float* height, const float* pressure,
 
 namespace sharp::exper {}  // namespace sharp::exper
 
-#endif
+#endif // __SHARP_LAYERS_H__

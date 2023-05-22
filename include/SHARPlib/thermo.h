@@ -12,8 +12,8 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
-#ifndef __SHARP_THERMO
-#define __SHARP_THERMO
+#ifndef __SHARP_THERMO_H__
+#define __SHARP_THERMO_H__
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
@@ -446,4 +446,4 @@ float moist_static_energy(float height_agl, float temperature,
 
 namespace sharp::exper {}  // end namespace sharp::exper
 
-#endif
+#endif // __SHARP_THERMP_H__
