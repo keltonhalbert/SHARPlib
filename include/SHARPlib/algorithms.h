@@ -51,12 +51,13 @@ template <typename T, typename C = std::less<>>
     while (first < last) {
         int mid = first + ((last - first) >> 1);
 
-        if (cmp(array[mid], value)) {
+        if (!cmp(value, array[mid])) {
             first = mid + 1;
         } else {
             last = mid;
         }
     }
+
 
     return first;
 }
@@ -86,16 +87,21 @@ template <typename T, typename C = std::less<>>
 template <typename T, typename C = std::less<>>
 [[nodiscard]] inline constexpr int upper_bound(const T* array, const int N, const T& value,
                                        const C cmp = C{}) noexcept {
+    int idx = 0;
     int first = 0;
-    int last = N;
+    int count = N - 1;
 
-    while (first < last) {
-        int mid = first + ((last - first) >> 1);
+    while (count > 0) {
+        idx = first;
+        int step = count / 2;
+        idx += step;
+        T element = array[idx];
 
-        if (!cmp(value, array[mid])) {
-            first = mid + 1;
+        if (!cmp(value, element)) {
+            first = ++idx;
+            count -= step + 1;
         } else {
-            last = mid;
+            count = step;
         }
     }
 

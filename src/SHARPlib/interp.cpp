@@ -33,9 +33,10 @@ float interp_height(float height_val, const float* height_arr,
 
     constexpr auto comp = std::less<float>();
     int idx_bot = lower_bound(height_arr, num_levs, height_val, comp);
+	int idx_top = upper_bound(height_arr, num_levs, height_val, comp);
 	// only decrements if true
 	idx_bot -= ((height_arr[idx_bot] > height_val) && (idx_bot > 0)); 
-	int idx_top = idx_bot + 1;
+	//int idx_top = idx_bot + 1;
 
     if ((idx_bot == idx_top) && (height_arr[idx_bot] == height_val)) {
         return data_arr[idx_bot];
@@ -86,10 +87,10 @@ float interp_pressure(float pressure_val, const float* pressure_arr,
 #endif
 
 	constexpr auto comp = std::greater<float>();
-	int idx_bot = upper_bound(pressure_arr, num_levs, pressure_val, comp);
+	int idx_bot = lower_bound(pressure_arr, num_levs, pressure_val, comp);
+	int idx_top = upper_bound(pressure_arr, num_levs, pressure_val, comp);
 	// only decrements if true
 	idx_bot -= ((pressure_arr[idx_bot] < pressure_val) && (idx_bot > 0)); 
-	int idx_top = idx_bot + 1;
 
     if ((idx_bot == idx_top) && (pressure_arr[idx_bot] == pressure_val)) {
         return data_arr[idx_bot];
