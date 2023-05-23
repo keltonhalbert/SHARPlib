@@ -18,3 +18,6 @@ target_link_libraries(test_sharp_winds SHARP)
 
 add_executable(test_sharp_parcel test_parcel.cpp)
 target_link_libraries(test_sharp_parcel SHARP) 
+
+add_executable(test_sharp_algs test_algorithms.cpp)
+target_link_libraries(test_sharp_algs SHARP) 

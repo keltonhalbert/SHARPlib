@@ -60,4 +60,5 @@ add_test(NAME sharp_interp COMMAND test_sharp_interp)
 add_test(NAME sharp_parcel COMMAND test_sharp_parcel)
 add_test(NAME sharp_layer COMMAND test_sharp_layer)
 add_test(NAME sharp_winds COMMAND test_sharp_winds)
+add_test(NAME sharp_algs COMMAND test_sharp_algs)
 
