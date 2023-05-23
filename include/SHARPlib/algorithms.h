@@ -45,13 +45,11 @@ namespace sharp {
 template <typename T, typename C = std::less<>>
 [[nodiscard]] inline constexpr int lower_bound(const T* array, const int N, const T& value,
                                        const C cmp = C{}) noexcept {
-    int idx = 0;
     int first = 0;
     int count = N - 1;
-
     while (count > 0) {
-        idx = first;
-        int step = count / 2;
+        int idx = first;
+        int step = count >> 1;
         idx += step;
         T element = array[idx];
 
@@ -91,13 +89,11 @@ template <typename T, typename C = std::less<>>
 template <typename T, typename C = std::less<>>
 [[nodiscard]] inline constexpr int upper_bound(const T* array, const int N, const T& value,
                                        const C cmp = C{}) noexcept {
-    int idx = 0;
     int first = 0;
     int count = N - 1;
-
     while (count > 0) {
-        idx = first;
-        int step = count / 2;
+        int idx = first;
+        int step = count >> 1;
         idx += step;
         T element = array[idx];
 
