@@ -54,12 +54,8 @@ template <typename T, typename C = std::less<>>
         idx += step;
         T element = array[idx];
 
-        if (cmp(element, value)) {
-            first = ++idx;
-            count -= step + 1;
-        } else {
-            count = step;
-        }
+        first = cmp(element, value) ? ++idx : first;
+        count = cmp(element, value) ? count - (step+1) : step;
     }
 
     return first;
@@ -99,12 +95,8 @@ template <typename T, typename C = std::less<>>
         idx += step;
         T element = array[idx];
 
-        if (!cmp(value, element)) {
-            first = ++idx;
-            count -= step + 1;
-        } else {
-            count = step;
-        }
+        first = cmp(value, element) ? first: ++idx;
+        count = cmp(value, element) ? step: count - (step+1);
     }
 
     return first;

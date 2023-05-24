@@ -23,6 +23,7 @@ TEST_CASE("lower bound") {
     int std_lower_idx = std_lower - &array[0];
 
     CHECK(sharp_lower == std_lower_idx);  
+    CHECK(array[sharp_lower] == array[std_lower_idx]);
 }
 
 TEST_CASE("upper bound") {
@@ -38,5 +39,21 @@ TEST_CASE("upper bound") {
     int std_upper_idx = std_upper - &array[0];
 
     CHECK(sharp_upper == std_upper_idx);  
+    CHECK(array[sharp_upper] == array[std_upper_idx]);
+
+}
+
+TEST_CASE("Reverse ordered bounds") {
+
+    const float array[10] = {19, 18, 17, 16, 15, 14, 13, 12, 11, 10};
+    const float val = 16;
+    const int N = 10;
+
+    constexpr auto comp = std::greater<float>();
+    int sharp_lower = sharp::lower_bound(array, N, val, comp);
+    int sharp_upper = sharp::upper_bound(array, N, val, comp);
+
+    CHECK(sharp_lower == 3);
+    CHECK(sharp_upper == 4);
 
 }
