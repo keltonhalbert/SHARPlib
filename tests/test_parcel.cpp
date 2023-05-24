@@ -159,6 +159,7 @@ TEST_CASE("Testing new parcel definitions") {
         duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
 
         std::cout << "Lifting 3 parcels took: " << duration << "us" << std::endl;
+        std::cout << "Average was: " << duration / 3.0 << "us" << std::endl;
 
         std::cout << "SFC PCL\t";
         std::cout << "LFC PRES: " << sfc_pcl.lfc_pressure << "\t"; 
