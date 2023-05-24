@@ -71,12 +71,13 @@ TEST_CASE("Testing layer_max over height layer") {
     sharp::HeightLayer layer2(-100.0, 20000.0);  // out of bounds recovery
     sharp::HeightLayer layer3(6000.0, 10000.0); // max is not in layer
     sharp::HeightLayer layer4(1000.0, 4750.0); // max is just above layer
+    sharp::HeightLayer layer5(5250.0, 9000.0); // max is just below layer
 
     CHECK(sharp::layer_max(layer1, hght, data, 10, nullptr) == 10.0);
     CHECK(sharp::layer_max(layer2, hght, data, 10, nullptr) == 10.0);
     CHECK(sharp::layer_max(layer3, hght, data, 10, nullptr) ==  0.0);
-
     CHECK(sharp::layer_max(layer4, hght, data, 10, nullptr) ==  7.5);
+    CHECK(sharp::layer_max(layer5, hght, data, 10, nullptr) ==  7.5);
 }
 
 
@@ -89,12 +90,13 @@ TEST_CASE("Testing layer_min over height layer") {
     sharp::HeightLayer layer2(-100.0, 20000.0);  // out of bounds recovery
     sharp::HeightLayer layer3(6000.0, 10000.0); // max is not in layer
     sharp::HeightLayer layer4(1000.0, 4750.0); // max is just above layer
+    sharp::HeightLayer layer5(5250.0, 9000.0); // max is just below layer
 
     CHECK(sharp::layer_min(layer1, hght, data, 10) == -10.0);
     CHECK(sharp::layer_min(layer2, hght, data, 10) == -10.0);
     CHECK(sharp::layer_min(layer3, hght, data, 10) ==  0.0);
-
     CHECK(sharp::layer_min(layer4, hght, data, 10) ==  -7.5);
+    CHECK(sharp::layer_min(layer5, hght, data, 10) ==  -7.5);
 }
 
 TEST_CASE("Testing layer_mean over a pressure layer") {
