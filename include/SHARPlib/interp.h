@@ -49,7 +49,7 @@ namespace sharp {
  * \return The value between __a and __b at distance __t between them.
  */
 template <typename _Fp>
-[[nodiscard]] inline constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept {
+[[nodiscard]] constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept {
     if ((__a <= 0 && __b >= 0) || (__a >= 0 && __b <= 0))
         return __t * __b + (1 - __t) * __a;
 
@@ -90,8 +90,7 @@ template <typename _Fp>
  *
  * \return The value between __a and __b at distance __t between them.
  */
-[[nodiscard]] inline constexpr float lerp(float __a, float __b,
-                                          float __t) noexcept {
+[[nodiscard]] constexpr float lerp(float __a, float __b, float __t) noexcept {
     return __lerp(__a, __b, __t);
 }
 
