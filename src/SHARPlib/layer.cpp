@@ -53,16 +53,16 @@ PressureLayer::PressureLayer(float bottom, float top, float delta) {
 
 LayerIndex get_layer_index(PressureLayer& layer, const float* pressure,
                            int N) noexcept {
-    constexpr auto bottom_comp = std::greater_equal<float>();
-    constexpr auto top_comp = std::less_equal<float>();
+    constexpr auto bottom_comp = std::greater<float>();
+    constexpr auto top_comp = std::less<float>();
 
     return get_layer_index(layer, pressure, N, bottom_comp, top_comp);
 }
 
 LayerIndex get_layer_index(HeightLayer& layer, const float* height,
                            int N) noexcept {
-    constexpr auto bottom_comp = std::less_equal<float>();
-    constexpr auto top_comp = std::greater_equal<float>();
+    constexpr auto bottom_comp = std::less<float>();
+    constexpr auto top_comp = std::greater<float>();
 
     return get_layer_index(layer, height, N, bottom_comp, top_comp);
 }

@@ -22,6 +22,7 @@
 
 #include <cmath>
 #include <functional>
+#include <iostream>
 
 namespace sharp {
 
@@ -163,9 +164,8 @@ template <typename L, typename Cb, typename Ct>
     int lower_idx = lower_bound(coord, N, layer.bottom, bottom_comp);
     int upper_idx = upper_bound(coord, N, layer.top, bottom_comp);
 
-    // if the condition is true, increment or decrement
-    lower_idx +=
-        ((bottom_comp(coord[lower_idx], layer.bottom)) & (lower_idx < N - 1));
+    // If the layer top is in between two levels, this check ensures
+    // that our index is below the top for interpolation reasons
     upper_idx -= ((top_comp(coord[upper_idx], layer.top)) & (upper_idx > 0));
 
     return {lower_idx, upper_idx};
