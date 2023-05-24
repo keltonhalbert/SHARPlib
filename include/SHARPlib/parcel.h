@@ -52,7 +52,8 @@ struct lifter_wobus {
      * \param tmpc      Initial parcel temperature (degC)
      * \param new_pres  Final level of parcel after lift (hPa)
      */
-    [[nodiscard]] float operator()(float pres, float tmpc, float new_pres) const noexcept {
+    [[nodiscard]] float operator()(float pres, float tmpc,
+                                   float new_pres) const noexcept {
         return wetlift(pres, tmpc, new_pres);
     }
 };
