@@ -113,7 +113,8 @@ namespace sharp {
  * \param    pressure       (mb)
  * \return   temperature    (degC)
  */
-[[nodiscard]] float temperature_at_mixratio(float wv_mixratio, float pressure) noexcept;
+[[nodiscard]] float temperature_at_mixratio(float wv_mixratio,
+                                            float pressure) noexcept;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -128,7 +129,8 @@ namespace sharp {
  * \param    temperature           (degC)
  * \return   pressure              (mb)
  */
-[[nodiscard]] float theta_level(float potential_temperature, float temperature) noexcept;
+[[nodiscard]] float theta_level(float potential_temperature,
+                                float temperature) noexcept;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -145,7 +147,8 @@ namespace sharp {
  * \param    ref_pressure          (mb)
  * \return   potential_temperature (degC)
  */
-[[nodiscard]] float theta(float pressure, float temperature, float ref_pressure) noexcept;
+[[nodiscard]] float theta(float pressure, float temperature,
+                          float ref_pressure) noexcept;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -198,7 +201,7 @@ namespace sharp {
  * \return   virtual_temperature   (degC)
  */
 [[nodiscard]] float virtual_temperature(float pressure, float temperature,
-                          float dewpoint) noexcept;
+                                        float dewpoint) noexcept;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -243,7 +246,7 @@ namespace sharp {
  * \return   lifted_temperature    (degC)
  */
 [[nodiscard]] float wetlift(float pressure, float temperature,
-              float lifted_pressure) noexcept;
+                            float lifted_pressure) noexcept;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -294,7 +297,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \return   lifted_index_temperature   (degC)
  */
 [[nodiscard]] float lifted(float pressure, float temperature, float dewpoint,
-             float lifted_pressure) noexcept;
+                           float lifted_pressure) noexcept;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -321,7 +324,8 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \param    dewpoint               (degC)
  * \return   wetbulb_temperature    (degC)
  */
-[[nodiscard]] float wetbulb(float pressure, float temperature, float dewpoint) noexcept;
+[[nodiscard]] float wetbulb(float pressure, float temperature,
+                            float dewpoint) noexcept;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -350,7 +354,8 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \param    dewpoint                       (degC)
  * \return   wetbulb_potential_temperature  (degC)
  */
-[[nodiscard]] float theta_wetbulb(float pressure, float temperature, float dewpoint) noexcept;
+[[nodiscard]] float theta_wetbulb(float pressure, float temperature,
+                                  float dewpoint) noexcept;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -380,7 +385,8 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \param    dewpoint                           (degC)
  * \return   equivalent_potential_temperature   (degC)
  */
-[[nodiscard]] float thetae(float pressure, float temperature, float dewpoint) noexcept;
+[[nodiscard]] float thetae(float pressure, float temperature,
+                           float dewpoint) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -398,7 +404,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \return Temperature Lapse Rate (degC/km)
  */
 [[nodiscard]] float lapse_rate(HeightLayer layer_agl, const float* height,
-                 const float* temperature, int num_levs) noexcept;
+                               const float* temperature, int num_levs) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -417,8 +423,8 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \return Temperature Lapse Rate (degC/km)
  */
 [[nodiscard]] float lapse_rate(PressureLayer layer, const float* pressure,
-                 const float* height, const float* temperature,
-                 int num_levs) noexcept;
+                               const float* height, const float* temperature,
+                               int num_levs) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -428,7 +434,8 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \param pcl_temperature	(degC)
  * \param env_temperature	(degC)
  */
-[[nodiscard]] float buoyancy(float pcl_temperature, float env_temperature) noexcept;
+[[nodiscard]] float buoyancy(float pcl_temperature,
+                             float env_temperature) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -440,7 +447,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \param specific_humidity (kg/kg)
  */
 [[nodiscard]] float moist_static_energy(float height_agl, float temperature,
-                          float specific_humidity) noexcept;
+                                        float specific_humidity) noexcept;
 
 }  // end namespace sharp
 

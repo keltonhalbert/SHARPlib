@@ -45,8 +45,9 @@ namespace sharp {
  * \param cinh_thresh   The CINH threshold that defines the EIL.<!--
  *                      ->> Default is -250 J/kg.
  */
-PressureLayer effective_inflow_layer(Profile* prof, float cape_thresh,
-                                     float cinh_thresh) noexcept;
+[[nodiscard]] PressureLayer effective_inflow_layer(Profile* prof,
+                                                   float cape_thresh,
+                                                   float cinh_thresh) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -68,11 +69,10 @@ PressureLayer effective_inflow_layer(Profile* prof, float cape_thresh,
  * \param pressureWeighted      Boolean flag for whether or not to weight mean
  * \return sharp::WindComponents    {u_storm, v_storm}
  */
-WindComponents storm_motion_bunkers(Profile* prof,
-                                    HeightLayer mean_wind_layer_agl,
-                                    HeightLayer wind_shear_layer_agl,
-                                    bool leftMover = false,
-                                    bool pressureWeighted = false) noexcept;
+[[nodiscard]] WindComponents storm_motion_bunkers(
+    Profile* prof, HeightLayer mean_wind_layer_agl,
+    HeightLayer wind_shear_layer_agl, bool leftMover = false,
+    bool pressureWeighted = false) noexcept;
 
 /**
  *  \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -95,8 +95,8 @@ WindComponents storm_motion_bunkers(Profile* prof,
  *  \param Profile      sharp::Profile of atmospheric data
  *  \param leftMover    Boolean flag for left or right deviant supercell
  */
-WindComponents storm_motion_bunkers(Profile* prof,
-                                    bool leftMover = false) noexcept;
+[[nodiscard]] WindComponents storm_motion_bunkers(
+    Profile* prof, bool leftMover = false) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -110,16 +110,16 @@ WindComponents storm_motion_bunkers(Profile* prof,
  * \param prof      A sharp::Profile of atmospheric data
  * \param pcl       A sharp::Parcel with its sharp::LPL/attributes defined.
  */
-float entrainment_cape(Profile* prof, Parcel* pcl) noexcept;
+[[nodiscard]] float entrainment_cape(Profile* prof, Parcel* pcl) noexcept;
 
-float energy_helicity_index(float cape, float helicity) noexcept;
+[[nodiscard]] float energy_helicity_index(float cape, float helicity) noexcept;
 
-float supercell_composite_parameter(float mu_cape, float eff_srh,
-                                    float eff_shear) noexcept;
+[[nodiscard]] float supercell_composite_parameter(float mu_cape, float eff_srh,
+                                                  float eff_shear) noexcept;
 
-float significant_tornado_parameter(Profile* prof, Parcel pcl,
-                                    float storm_relative_helicity,
-                                    float bulk_wind_difference) noexcept;
+[[nodiscard]] float significant_tornado_parameter(
+    Profile* prof, Parcel pcl, float storm_relative_helicity,
+    float bulk_wind_difference) noexcept;
 
 }  // end namespace sharp
 
