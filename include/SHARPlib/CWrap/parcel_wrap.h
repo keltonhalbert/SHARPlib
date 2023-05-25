@@ -31,8 +31,8 @@ sharp_Parcel_t* sharp_Parcel_create();
 void sharp_Parcel_delete(sharp_Parcel_t* pcl);
 
 float sharp_Parcel_get_pres(sharp_Parcel_t* pcl);
-float sharp_Parcel_get_tmpc(sharp_Parcel_t* pcl);
-float sharp_Parcel_get_dwpc(sharp_Parcel_t* pcl);
+float sharp_Parcel_get_tmpk(sharp_Parcel_t* pcl);
+float sharp_Parcel_get_dwpk(sharp_Parcel_t* pcl);
 float sharp_Parcel_get_lcl_pres(sharp_Parcel_t* pcl);
 float sharp_Parcel_get_lfc_pres(sharp_Parcel_t* pcl);
 float sharp_Parcel_get_el_pres(sharp_Parcel_t* pcl);
@@ -43,8 +43,8 @@ int sharp_Parcel_get_lpl(sharp_Parcel_t* pcl);
 void sharp_define_parcel(sharp_Profile_t* prof, sharp_Parcel_t* pcl,
                          int source);
 
-void sharp_define_custom_parcel(sharp_Parcel_t* pcl, float pres, float tmpc,
-                                float dwpc);
+void sharp_define_custom_parcel(sharp_Parcel_t* pcl, float pres, float tmpk,
+                                float dwpk);
 
 void sharp_lift_parcel_wobf(sharp_Profile_t* prof, sharp_Parcel_t* pcl);
 
