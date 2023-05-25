@@ -413,13 +413,13 @@ constexpr float layer_max(L layer, const float* coord_arr,
  */
 template <typename T, typename L>
 [[nodiscard]] constexpr T integrate_layer_trapz(
-    L layer, const T* var_array, const T* coord_array, int N,
+    L layer, const T var_array[], const T coord_array[], int N,
     const int integ_sign = 0, const bool weighted = false) noexcept {
 
-    T var_lyr_bottom = MISSING;
+    T var_lyr_bottom;
     T coord_lyr_bottom = layer.bottom;
 
-    T var_lyr_top = MISSING;
+    T var_lyr_top;
     T coord_lyr_top = layer.top;
 
     T integrated = 0.0;
@@ -427,6 +427,7 @@ template <typename T, typename L>
 
     // using constexpr means that this if statement optimizes
     // away at compile time since the layer coordinate is known
+    LayerIndex idx = get_layer_index(layer, coord_array, N);
     if constexpr (layer.coord == LayerCoordinate::height) {
         var_lyr_bottom = interp_height(layer.bottom, coord_array, var_array, N);
         var_lyr_top = interp_height(layer.top, coord_array, var_array, N);
@@ -436,7 +437,6 @@ template <typename T, typename L>
         var_lyr_top = interp_pressure(layer.top, coord_array, var_array, N);
     }
 
-    LayerIndex idx = get_layer_index(layer, coord_array, N);
     for (int k = idx.kbot; k < idx.ktop; ++k) {
 #ifndef NO_QC
         if (var_array[k] == MISSING) {
@@ -444,16 +444,16 @@ template <typename T, typename L>
         }
 #endif
 
-        T var_bottom = var_array[k];
-        T var_top = var_array[k + 1];
-
         T coord_bottom = coord_array[k];
+        T var_bottom = var_array[k];
+
         T coord_top = coord_array[k + 1];
+        T var_top = var_array[k + 1];
 
         T layer_avg = __integ_trapz(var_top, var_bottom, coord_top,
                                     coord_bottom, weights, weighted);
 
-        int cond = ((integ_sign == 0) |
+        T cond = ((!integ_sign) |
                     (std::signbit(integ_sign) == std::signbit(layer_avg)));
         integrated += cond * layer_avg;
     }
@@ -462,20 +462,20 @@ template <typename T, typename L>
     T layer_avg = __integ_trapz(var_array[idx.kbot], var_lyr_bottom,
                                 coord_array[idx.kbot], coord_lyr_bottom,
                                 weights, weighted);
-    int cond = ((integ_sign == 0) |
-                (std::signbit(integ_sign) == std::signbit(layer_avg)));
+	T cond = ((!integ_sign) |
+				(std::signbit(integ_sign) == std::signbit(layer_avg)));
     integrated += cond * layer_avg;
 
     // interpolated top of layer
     layer_avg = __integ_trapz(var_lyr_top, var_array[idx.ktop], coord_lyr_top,
                               coord_array[idx.ktop], weights, weighted);
-    cond = ((integ_sign == 0) |
-            (std::signbit(integ_sign) == std::signbit(layer_avg)));
+	cond = ((!integ_sign) |
+				(std::signbit(integ_sign) == std::signbit(layer_avg)));
     integrated += cond * layer_avg;
 
     if constexpr (layer.coord == LayerCoordinate::pressure) {
-        integrated *= -1.0;
-        weights *= -1.0;
+        integrated *= -1.0f;
+        weights *= -1.0f;
     }
 
     if (weighted) integrated /= weights;
