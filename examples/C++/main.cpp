@@ -31,24 +31,24 @@ std::vector<std::string> split(std::string& s, std::string delimiter) {
 }
 
 void build_profile(sharp::Profile* prof, std::vector<std::string>& row, int idx) {
-    float pres = std::stof(row[0]);
+    float pres = std::stof(row[0]) * sharp::HPA_TO_PA;
     float hght = std::stof(row[1]);
-    float tmpc = std::stof(row[2]);
-    float dwpc = std::stof(row[3]);
+    float tmpk = std::stof(row[2]) + sharp::ZEROCNK;
+    float dwpk = std::stof(row[3]) + sharp::ZEROCNK;
     float wdir = std::stof(row[4]);
     float wspd = std::stof(row[5]);
 
     prof->pres[idx] = pres; 
     prof->hght[idx] = hght;
-    prof->tmpc[idx] = tmpc;
-    prof->dwpc[idx] = dwpc;
+    prof->tmpk[idx] = tmpk;
+    prof->dwpk[idx] = dwpk;
     prof->wdir[idx] = wdir;
     prof->wspd[idx] = wspd;
 
-    prof->vtmp[idx] = sharp::virtual_temperature(pres, tmpc, dwpc);
-    prof->mixr[idx] = sharp::mixratio(pres, dwpc);
-    prof->theta[idx] = sharp::theta(pres, tmpc, 1000.0);
-    prof->theta_e[idx] = sharp::thetae(pres, tmpc, dwpc);
+    prof->vtmp[idx] = sharp::virtual_temperature(pres, tmpk, dwpk);
+    prof->mixr[idx] = sharp::mixratio(pres, dwpk);
+    prof->theta[idx] = sharp::theta(pres, tmpk, sharp::THETA_REF_PRESSURE);
+    prof->theta_e[idx] = sharp::thetae(pres, tmpk, dwpk);
     
     sharp::WindComponents uv = sharp::vector_to_components(wspd, wdir);
 
@@ -131,7 +131,7 @@ int main(int argc, char* argv[]) {
 
 	std::string snd_file1 = "../../data/test_snds/20160524_2302_EF3_37.57_-100.13_108_613967.snd";
 	std::string snd_file2 = "../../data/test_snds/hires-SPC.txt";
-	sharp::Profile* prof = read_sounding(snd_file2);
+	sharp::Profile* prof = read_sounding(snd_file1);
 
     if (prof) {
 		static constexpr sharp::lifter_wobus lifter;
