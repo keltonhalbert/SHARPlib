@@ -40,7 +40,7 @@ Profile *create_profile(float *pres, float *hght, float *tmpk, float *dwpk,
 
         float vtmp = virtual_temperature(pres[k], tmpk[k], dwpk[k]);
         float mixr = mixratio(pres[k], dwpk[k]);
-        float thta = theta(pres[k], tmpk[k], 1000.0);
+        float thta = theta(pres[k], tmpk[k], sharp::THETA_REF_PRESSURE);
         float thte = thetae(pres[k], tmpk[k], dwpk[k]);
 
         prof->vtmp[k] = vtmp;
@@ -48,14 +48,14 @@ Profile *create_profile(float *pres, float *hght, float *tmpk, float *dwpk,
         prof->theta[k] = thta;
         prof->theta_e[k] = thte;
 
-        float specific_humidity = (1.0 - (mixr / 1000.0)) * (mixr / 1000.0);
+        float specific_humidity = (1.0 - mixr) * (mixr);
         if (mixr == MISSING) specific_humidity = MISSING;
 
         float height_agl = prof->hght[k] - prof->hght[0];
-        prof->moist_static_energy[k] = moist_static_energy(
-            height_agl, prof->tmpk[k] + ZEROCNK, specific_humidity);
+        prof->moist_static_energy[k] =
+            moist_static_energy(height_agl, prof->tmpk[k], specific_humidity);
 
-		prof->buoyancy[k] = 0.0;
+        prof->buoyancy[k] = 0.0;
 
         if (windComponents) {
             // converting from knots to m/s
