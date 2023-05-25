@@ -27,7 +27,7 @@
 
 namespace sharp {
 
-Profile *create_profile(float *pres, float *hght, float *tmpc, float *dwpc,
+Profile *create_profile(float *pres, float *hght, float *tmpk, float *dwpk,
                         float *wspd_or_u, float *wdir_or_v, int NZ,
                         Source sounding_type, bool windComponents) {
     Profile *prof = new Profile(NZ, sounding_type);
@@ -35,13 +35,13 @@ Profile *create_profile(float *pres, float *hght, float *tmpc, float *dwpc,
     for (int k = 0; k < NZ; k++) {
         prof->pres[k] = pres[k];
         prof->hght[k] = hght[k];
-        prof->tmpc[k] = tmpc[k];
-        prof->dwpc[k] = dwpc[k];
+        prof->tmpk[k] = tmpk[k];
+        prof->dwpk[k] = dwpk[k];
 
-        float vtmp = virtual_temperature(pres[k], tmpc[k], dwpc[k]);
-        float mixr = mixratio(pres[k], dwpc[k]);
-        float thta = theta(pres[k], tmpc[k], 1000.0);
-        float thte = thetae(pres[k], tmpc[k], dwpc[k]);
+        float vtmp = virtual_temperature(pres[k], tmpk[k], dwpk[k]);
+        float mixr = mixratio(pres[k], dwpk[k]);
+        float thta = theta(pres[k], tmpk[k], 1000.0);
+        float thte = thetae(pres[k], tmpk[k], dwpk[k]);
 
         prof->vtmp[k] = vtmp;
         prof->mixr[k] = mixr;
@@ -53,7 +53,7 @@ Profile *create_profile(float *pres, float *hght, float *tmpc, float *dwpc,
 
         float height_agl = prof->hght[k] - prof->hght[0];
         prof->moist_static_energy[k] = moist_static_energy(
-            height_agl, prof->tmpc[k] + ZEROCNK, specific_humidity);
+            height_agl, prof->tmpk[k] + ZEROCNK, specific_humidity);
 
 		prof->buoyancy[k] = 0.0;
 

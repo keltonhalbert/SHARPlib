@@ -49,12 +49,12 @@ struct lifter_wobus {
     /**
      * \brief Overloads operator() to call sharp::wetlift.
      * \param pres      Initial percel pressure (hPa)
-     * \param tmpc      Initial parcel temperature (degC)
+     * \param tmpk      Initial parcel temperature (degC)
      * \param new_pres  Final level of parcel after lift (hPa)
      */
-    [[nodiscard]] float operator()(float pres, float tmpc,
+    [[nodiscard]] float operator()(float pres, float tmpk,
                                    float new_pres) const noexcept {
-        return wetlift(pres, tmpc, new_pres);
+        return wetlift(pres, tmpk, new_pres);
     }
 };
 //
@@ -135,12 +135,12 @@ struct Parcel {
     /**
      * \brief Parcel starting temperature (degC)
      */
-    float tmpc = MISSING;
+    float tmpk = MISSING;
 
     /**
      * \brief Parcel starting dewpoint (degC)
      */
-    float dwpc = MISSING;
+    float dwpk = MISSING;
 
     /**
      * \brief Pressure at the Lifted Condensation Level (hPa)
@@ -210,12 +210,13 @@ template <typename Lft>
 void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     // Lift the parcel from the LPL to the LCL
     float pres_lcl;
-    float tmpc_lcl;
-    drylift(pcl->pres, pcl->tmpc, pcl->dwpc, pres_lcl, tmpc_lcl);
+    float tmpk_lcl;
+    drylift(pcl->pres, pcl->tmpk, pcl->dwpk, pres_lcl, tmpk_lcl);
     pcl->lcl_pressure = pres_lcl;
 
-    const float thetav_lcl = theta(
-        pres_lcl, virtual_temperature(pcl->pres, tmpc_lcl, tmpc_lcl), 1000.0);
+    const float thetav_lcl =
+        theta(pres_lcl, virtual_temperature(pcl->pres, tmpk_lcl, tmpk_lcl),
+              THETA_REF_PRESSURE);
 
     // Define the dry and saturated lift layers
     PressureLayer dry_lyr = {pcl->pres, pcl->lcl_pressure};
@@ -234,7 +235,7 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     // Virtual potential temperature (Theta-V)
     // is conserved for a parcels dry ascent to the LCL
     for (int k = dry_idx.kbot; k < dry_idx.ktop+1; ++k) {
-        float pcl_vtmp = theta(1000.0, thetav_lcl, prof->pres[k]);
+        float pcl_vtmp = theta(THETA_REF_PRESSURE, thetav_lcl, prof->pres[k]);
         prof->buoyancy[k] = buoyancy(pcl_vtmp, prof->vtmp[k]);
     }
 
@@ -242,9 +243,9 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     for (int k = sat_idx.kbot; k < prof->NZ; ++k) {
         // compute above-lcl buoyancy here
         float pcl_pres = prof->pres[k];
-        float pcl_tmpc = liftpcl(pres_lcl, tmpc_lcl, pcl_pres);
+        float pcl_tmpk = liftpcl(pres_lcl, tmpk_lcl, pcl_pres);
         // parcel is saturated, so temperature and dewpoint are same
-        float pcl_vtmp = virtual_temperature(pcl_pres, pcl_tmpc, pcl_tmpc);
+        float pcl_vtmp = virtual_temperature(pcl_pres, pcl_tmpk, pcl_tmpk);
         float env_vtmp = prof->vtmp[k];
         float buoy = buoyancy(pcl_vtmp, env_vtmp);
 		prof->buoyancy[k] = buoy;

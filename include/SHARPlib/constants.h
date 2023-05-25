@@ -20,6 +20,11 @@ namespace sharp {
 
 // conversion between celsius and kelvin
 static constexpr float ZEROCNK = 273.15f;
+// hPa to Pa conversion
+static constexpr float HPA_TO_PA = 100.0;
+static constexpr float PA_TO_HPA = 0.01;
+// Potential Temperature Reference Pressure (Pa)
+static constexpr float THETA_REF_PRESSURE = 100000.0;
 // missing array values
 static constexpr float MISSING = -9999.0f;  
 // Gravitational constant in m/s^2
