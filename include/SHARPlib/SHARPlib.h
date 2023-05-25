@@ -33,29 +33,33 @@ Profile *create_profile(float *pres, float *hght, float *tmpk, float *dwpk,
     Profile *prof = new Profile(NZ, sounding_type);
 
     for (int k = 0; k < NZ; k++) {
-        prof->pres[k] = pres[k];
-        prof->hght[k] = hght[k];
-        prof->tmpk[k] = tmpk[k];
-        prof->dwpk[k] = dwpk[k];
+        float p = pres[k];
+        float h = hght[k];
+        float t = tmpk[k];
+        float d = dwpk[k];
 
-        float vtmp = virtual_temperature(pres[k], tmpk[k], dwpk[k]);
-        float mixr = mixratio(pres[k], dwpk[k]);
-        float thta = theta(pres[k], tmpk[k], sharp::THETA_REF_PRESSURE);
-        float thte = thetae(pres[k], tmpk[k], dwpk[k]);
+        float vtmp = virtual_temperature(p, t, d);
+        float mixr = mixratio(p, d);
+        float thta = theta(p, t, sharp::THETA_REF_PRESSURE);
+        float thte = thetae(p, t, d);
+
+        prof->pres[k] = p; 
+        prof->hght[k] = h; 
+        prof->tmpk[k] = t;
+        prof->dwpk[k] = d; 
 
         prof->vtmp[k] = vtmp;
         prof->mixr[k] = mixr;
         prof->theta[k] = thta;
         prof->theta_e[k] = thte;
+        prof->buoyancy[k] = 0.0f;
 
-        float specific_humidity = (1.0 - mixr) * (mixr);
+        float specific_humidity = (1.0f - mixr) * (mixr);
         if (mixr == MISSING) specific_humidity = MISSING;
 
         float height_agl = prof->hght[k] - prof->hght[0];
         prof->moist_static_energy[k] =
             moist_static_energy(height_agl, prof->tmpk[k], specific_humidity);
-
-        prof->buoyancy[k] = 0.0;
 
         if (windComponents) {
             // converting from knots to m/s
