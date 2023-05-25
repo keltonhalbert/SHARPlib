@@ -11,7 +11,6 @@
 #include <SHARPlib/layer.h>
 
 #include <cmath>
-#include <iostream>
 
 namespace sharp {
 
@@ -21,13 +20,13 @@ float wobf(float temperature) noexcept {
     if (temperature == MISSING) return MISSING;
 #endif
     float pol;
-    float x = temperature - 20.0f;
+    float x = temperature - ZEROCNK - 20.0f;
     if (x <= 0.0f) {
        pol = 1.0f + x * (-8.841660499999999e-03f + x * ( 1.4714143e-04f \
                  + x * (-9.671989000000001e-07f + x * (-3.2607217e-08f \
                  + x * (-3.8598073e-10f)))));
        pol = pol * pol;
-       return 15.13f / (pol * pol);
+       return (15.13f / (pol * pol))+ZEROCNK;
     }
     else {
        pol = x * (4.9618922e-07f + x * (-6.1059365e-09f + \
@@ -35,7 +34,7 @@ float wobf(float temperature) noexcept {
              x * (1.6688280e-16f)))));
        pol = 1.0f + x * (3.6182989e-03f + x * (-1.3603273e-05f + pol));
        pol = pol * pol;
-       return 29.93f / (pol * pol) + 0.96f * x - 14.8f;
+       return (29.93f / (pol * pol) + 0.96f * x - 14.8f)+ZEROCNK;
     }
 }
 
@@ -45,15 +44,16 @@ float vapor_pressure(float temperature) noexcept {
     if (temperature == MISSING) return MISSING;
 #endif
     float pol;
+    float tmpc = temperature - ZEROCNK;
 
-    pol = temperature * (1.1112018e-17f + temperature * (-3.0994571e-20f));
-    pol = temperature * (2.1874425e-13f + temperature * (-1.789232e-15f + pol));
-    pol = temperature * (4.3884180e-09f + temperature * (-2.988388e-11f + pol));
-    pol = temperature * (7.8736169e-05f + temperature * (-6.111796e-07f + pol));
-    pol = .99999683e-00f + temperature * (-9.082695e-03f + pol);
+    pol = tmpc * (1.1112018e-17f + tmpc * (-3.0994571e-20f));
+    pol = tmpc * (2.1874425e-13f + tmpc * (-1.789232e-15f + pol));
+    pol = tmpc * (4.3884180e-09f + tmpc * (-2.988388e-11f + pol));
+    pol = tmpc * (7.8736169e-05f + tmpc * (-6.111796e-07f + pol));
+    pol = .99999683e-00f + tmpc * (-9.082695e-03f + pol);
     pol = (pol * pol);
     pol = (pol * pol);
-    return 6.1078f / (pol * pol);
+    return (610.78f / (pol * pol)); 
 }
 
 float lcl_temperature(float temperature, float dewpoint) noexcept {
@@ -63,11 +63,12 @@ float lcl_temperature(float temperature, float dewpoint) noexcept {
     }
 #endif
     float s, dlt;
+    float tmpc = temperature - ZEROCNK;
 
     s = temperature - dewpoint;
-    dlt = s * (1.2185f + 0.001278f * temperature +
-          s * (-0.00219f + 1.173E-05f * s - 0.0000052f * temperature));
-    return temperature - dlt;
+    dlt = s * (1.2185f + 0.001278f * tmpc +
+          s * (-0.00219f + 1.173E-05f * s - 0.0000052f * tmpc));
+    return (tmpc - dlt) + ZEROCNK;
 }
 
 float temperature_at_mixratio(float wv_mixratio, float pressure) noexcept {
@@ -83,12 +84,13 @@ float temperature_at_mixratio(float wv_mixratio, float pressure) noexcept {
     constexpr double c4 = 38.9114;
     constexpr double c5 = 0.0915;
     constexpr double c6 = 1.2035;
+    float pres = pressure * PA_TO_HPA;
 
-    double x = std::log10(wv_mixratio * pressure / (622.0 + wv_mixratio));
+    double x = std::log10(wv_mixratio * pres / (EPSILON + wv_mixratio));
     double tmrk = std::pow(10.0, c1 * x + c2) - c3 +
                   c4 * std::pow(std::pow(10.0, c5 * x) - c6, 2.0);
 
-    return (float)(tmrk - ZEROCNK);
+    return (float)tmrk;
 }
 
 float theta_level(float potential_temperature, float temperature) noexcept {
@@ -97,11 +99,7 @@ float theta_level(float potential_temperature, float temperature) noexcept {
         return MISSING;
     }
 #endif
-
-    // convert to degrees kelvin
-    potential_temperature += ZEROCNK;
-    temperature += ZEROCNK;
-    return 1000.0f /
+    return THETA_REF_PRESSURE /
            std::pow((potential_temperature / temperature), (1.0f / ROCP));
 }
 
@@ -112,10 +110,7 @@ float theta(float pressure, float temperature, float ref_pressure) noexcept {
         return MISSING;
     }
 #endif
-
-    // get temperature in kelvin
-    temperature += ZEROCNK;
-    return (temperature * std::pow(ref_pressure / pressure, ROCP)) - ZEROCNK;
+    return (temperature * std::pow(ref_pressure / pressure, ROCP));
 }
 
 // To-Do: Implement exact version
@@ -128,10 +123,13 @@ float mixratio(float pressure, float temperature) noexcept {
 
     // correction factor for the departure of the mixture
     // of air and water vapor from the ideal gas law
-    float x = 0.02f * (temperature - 12.5f + 7500.0f / pressure);
-    float wfw = 1.0f + 0.0000045f * pressure + 0.0014f * x * x;
-    float fwesw = wfw * vapor_pressure(temperature);
-    return 621.97f * (fwesw / (pressure - fwesw));
+    float tmpc = temperature - ZEROCNK;
+    float pres = pressure * PA_TO_HPA;
+
+    float x = 0.02f * (tmpc - 12.5f + 7500.0f / pres);
+    float wfw = 1.0f + 0.0000045f * pres + 0.0014f * x * x;
+    float fwesw = wfw * vapor_pressure(temperature) * PA_TO_HPA;
+    return EPSILON * (fwesw / (pres - fwesw));
 }
 
 float virtual_temperature(float pressure, float temperature,
@@ -143,11 +141,8 @@ float virtual_temperature(float pressure, float temperature,
         return MISSING;
     }
 #endif
-
-    constexpr float eps = 0.62197f;
-    float temperature_k = temperature + ZEROCNK;
-    float w = 0.001f * mixratio(pressure, dewpoint);
-    return (temperature_k * ((1.0f + (w / eps)) / (1.0f + w))) - ZEROCNK;
+    float w = mixratio(pressure, dewpoint);
+    return (temperature * ((1.0f + (w / EPSILON)) / (1.0f + w)));
 }
 
 float saturated_lift(float pressure, float theta_sat) noexcept {
@@ -157,13 +152,13 @@ float saturated_lift(float pressure, float theta_sat) noexcept {
     }
 #endif
 
-    // we do not want to go below the 1000.0 hPa reference level
-    if ((std::fabs(pressure - 1000.0f) - 0.001f) <= 0.0f) return theta_sat;
+    float iter_step = 0.001f;
+    if ((std::fabs(pressure - THETA_REF_PRESSURE) - iter_step) <= 0.0f)
+        return theta_sat;
 
-    float eps = 0.001f;
-    float pwrp = std::pow(pressure / 1000.0f, ROCP);
+    float pwrp = std::pow(pressure / THETA_REF_PRESSURE, ROCP);
     // get the temperature
-    float t1 = (theta_sat + ZEROCNK) * pwrp - ZEROCNK;
+    float t1 = theta_sat * pwrp;
     float e1 = wobf(t1) - wobf(theta_sat);
     float rate = 1.0f;
     float eor = 999;
@@ -175,14 +170,14 @@ float saturated_lift(float pressure, float theta_sat) noexcept {
 	// early if it converges anyway. 
 	for (int iter = 0; iter < 10; ++iter) {
         t2 = t1 - e1 * rate;
-        float e2 = (t2 + ZEROCNK) / pwrp - ZEROCNK;
+        float e2 = (t2) / pwrp;
         e2 = e2 + wobf(t2) - wobf(e2) - theta_sat;
 
         eor = e2 * rate;
         rate = (t2 - t1) / (e2 - e1);
         t1 = t2;
 		e1 = e2;
-		condition |= ((std::fabs(eor) - eps) < 0.0f);
+		condition |= ((std::fabs(eor) - iter_step) < 0.0f);
 		if (condition) break;
     }
     return t2 - eor;
@@ -198,7 +193,7 @@ float wetlift(float pressure, float temperature,
 #endif
 
     // parcels potential temperature
-    float pcl_theta = theta(pressure, temperature, 1000.0f);
+    float pcl_theta = theta(pressure, temperature, THETA_REF_PRESSURE);
     // some Wobus voodo
     float woth = wobf(pcl_theta);
     float wott = wobf(temperature);
@@ -223,13 +218,12 @@ void drylift(float pressure, float temperature, float dewpoint,
 #endif
 
     // theta is constant from parcel level to LCL
-    float pcl_theta = theta(pressure, temperature, 1000.0f);
+    float pcl_theta = theta(pressure, temperature, THETA_REF_PRESSURE);
 
     temperature_at_lcl = lcl_temperature(temperature, dewpoint);
     pressure_at_lcl = theta_level(pcl_theta, temperature_at_lcl);
 
 	if (pressure_at_lcl > pressure) pressure_at_lcl = pressure;
-
     return;
 }
 
@@ -286,7 +280,7 @@ float theta_wetbulb(float pressure, float temperature,
     // so the values are changed by the drylift routine
     drylift(pressure, temperature, dewpoint, pressure_at_lcl,
             temperature_at_lcl);
-    return wetlift(pressure_at_lcl, temperature_at_lcl, 1000.0f);
+    return wetlift(pressure_at_lcl, temperature_at_lcl, THETA_REF_PRESSURE);
 }
 
 float thetae(float pressure, float temperature, float dewpoint) noexcept {
@@ -299,6 +293,7 @@ float thetae(float pressure, float temperature, float dewpoint) noexcept {
 
     float pressure_at_lcl = MISSING;
     float temperature_at_lcl = MISSING;
+    constexpr float lift_top = 10000.0f; // 100 hPa but its Pa
 
     // pressure_at_lcl and temperature_at_lcl are passed by reference,
     // so the values are changed by the drylift routine
@@ -306,9 +301,9 @@ float thetae(float pressure, float temperature, float dewpoint) noexcept {
             temperature_at_lcl);
     // Lift a saturated parcel to 100 mb
     float lifted_temperature =
-        wetlift(pressure_at_lcl, temperature_at_lcl, 100.0f);
+        wetlift(pressure_at_lcl, temperature_at_lcl, lift_top);
     // Return the potential temperature of the 100 hPa value
-    return theta(100.0f, lifted_temperature, 1000.0f);
+    return theta(lift_top, lifted_temperature, THETA_REF_PRESSURE);
 }
 
 float lapse_rate(HeightLayer layer_agl, const float* height,
@@ -371,7 +366,7 @@ float lapse_rate(PressureLayer layer, const float* pressure,
 
 float buoyancy(float pcl_temperature, float env_temperature) noexcept {
     return GRAVITY * (pcl_temperature - env_temperature) /
-           (env_temperature + ZEROCNK);
+           (env_temperature);
 }
 
 float moist_static_energy(float height_agl, float temperature,
