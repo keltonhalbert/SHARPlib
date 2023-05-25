@@ -22,7 +22,6 @@
 
 #include <cmath>
 #include <functional>
-#include <iostream>
 
 namespace sharp {
 

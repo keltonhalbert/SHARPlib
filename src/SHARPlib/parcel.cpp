@@ -123,7 +123,7 @@ void find_lfc_el(Parcel* pcl, const float* pres_arr, const float* hght_arr,
     float lfc_pres_last = MISSING;
     float eql_pres_last = MISSING;
 
-    for (int k = lyr_idx.kbot; k < lyr_idx.ktop + 2; ++k) {
+    for (int k = lyr_idx.kbot; k < lyr_idx.ktop + 1; ++k) {
 #ifndef NO_QC
         if (buoy_arr[k] == MISSING) continue;
 #endif
