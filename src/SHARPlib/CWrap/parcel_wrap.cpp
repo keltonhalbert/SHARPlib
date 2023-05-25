@@ -24,14 +24,14 @@ float sharp_Parcel_get_pres(sharp_Parcel_t* p) {
 	return static_cast<sharp::Parcel*>(p->obj)->pres;
 }
 
-float sharp_Parcel_get_tmpc(sharp_Parcel_t* p) {
+float sharp_Parcel_get_tmpk(sharp_Parcel_t* p) {
 	if (p == NULL) return sharp::MISSING;
-	return static_cast<sharp::Parcel*>(p->obj)->tmpc;
+	return static_cast<sharp::Parcel*>(p->obj)->tmpk;
 }
 
-float sharp_Parcel_get_dwpc(sharp_Parcel_t* p) {
+float sharp_Parcel_get_dwpk(sharp_Parcel_t* p) {
 	if (p == NULL) return sharp::MISSING;
-	return static_cast<sharp::Parcel*>(p->obj)->dwpc;
+	return static_cast<sharp::Parcel*>(p->obj)->dwpk;
 }
 
 float sharp_Parcel_get_lcl_pres(sharp_Parcel_t* p) {
@@ -73,13 +73,13 @@ void sharp_define_parcel(sharp_Profile_t* prof, sharp_Parcel_t* pcl,
     sharp::define_parcel(pf, pc, src); 
 }
 
-void sharp_define_custom_parcel(sharp_Parcel_t* pcl, float pres, float tmpc,
-                                float dwpc) {
+void sharp_define_custom_parcel(sharp_Parcel_t* pcl, float pres, float tmpk,
+                                float dwpk) {
     if (pcl == NULL) return;
     sharp::Parcel* pc = static_cast<sharp::Parcel*>(pcl->obj);
     pc->pres = pres;
-    pc->tmpc = tmpc;
-    pc->dwpc = dwpc;
+    pc->tmpk = tmpk;
+    pc->dwpk = dwpk;
 }
 
 void sharp_lift_parcel_wobf(sharp_Profile_t* prof, sharp_Parcel_t* pcl) {

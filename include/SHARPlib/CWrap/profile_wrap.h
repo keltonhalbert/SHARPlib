@@ -29,8 +29,8 @@ void sharp_Profile_delete(sharp_Profile_t* p);
 
 float* sharp_Profile_get_pres_ptr(sharp_Profile_t* p);
 float* sharp_Profile_get_hght_ptr(sharp_Profile_t* p);
-float* sharp_Profile_get_tmpc_ptr(sharp_Profile_t* p);
-float* sharp_Profile_get_dwpc_ptr(sharp_Profile_t* p);
+float* sharp_Profile_get_tmpk_ptr(sharp_Profile_t* p);
+float* sharp_Profile_get_dwpk_ptr(sharp_Profile_t* p);
 float* sharp_Profile_get_mixr_ptr(sharp_Profile_t* p);
 float* sharp_Profile_get_relh_ptr(sharp_Profile_t* p);
 float* sharp_Profile_get_vtmp_ptr(sharp_Profile_t* p);

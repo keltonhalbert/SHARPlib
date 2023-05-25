@@ -30,14 +30,14 @@ float* sharp_Profile_get_hght_ptr(sharp_Profile_t* p) {
     return static_cast<sharp::Profile*>(p->obj)->hght;
 }
 
-float* sharp_Profile_get_tmpc_ptr(sharp_Profile_t* p) {
+float* sharp_Profile_get_tmpk_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    return static_cast<sharp::Profile*>(p->obj)->tmpc;
+    return static_cast<sharp::Profile*>(p->obj)->tmpk;
 }
 
-float* sharp_Profile_get_dwpc_ptr(sharp_Profile_t* p) {
+float* sharp_Profile_get_dwpk_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
-    return static_cast<sharp::Profile*>(p->obj)->dwpc;
+    return static_cast<sharp::Profile*>(p->obj)->dwpk;
 }
 
 float* sharp_Profile_get_mixr_ptr(sharp_Profile_t* p) {
