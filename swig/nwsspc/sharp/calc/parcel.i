@@ -4,6 +4,7 @@
     #define SWIG_FILE_WITH_INIT
     #include <SHARPlib/parcel.h>
 %}
+%import "../include/SHARPlib/layer.h"
 
 %include exception.i
 

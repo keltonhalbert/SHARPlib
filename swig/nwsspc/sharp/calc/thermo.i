@@ -11,7 +11,7 @@
 import_array();
 %}
 
-%import "../include/SHARPlib/utils.h"
+%import "../include/SHARPlib/layer.h"
 
 
 /* Set up an argument typemap for our arrays */

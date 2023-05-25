@@ -9,8 +9,9 @@ import nwsspc.sharp.calc.profile as profile
 import nwsspc.sharp.calc.interp as interp
 import nwsspc.sharp.calc.thermo as thermo
 import nwsspc.sharp.calc.parcel as parcel
+import nwsspc.sharp.calc.params as params
 import nwsspc.sharp.calc.winds as winds
-import nwsspc.sharp.calc.utils as utils
+import nwsspc.sharp.calc.layer as layer
 
 def load_sounding(filename):
     names = ["pres", "hght", "tmpc", "dwpc", "wdir", "wspd"]
@@ -29,8 +30,12 @@ def load_sounding(filename):
 
     for idx in range(len(uwin)):
         comp = winds.vector_to_components(float(wspd[idx]), float(wdir[idx]))
-        uwin[idx] = comp.u * 0.514444 ## convert to m/s
-        vwin[idx] = comp.v * 0.514444 ## convert to m/s
+        if (comp.u != constants.MISSING):
+            uwin[idx] = comp.u * 0.514444 ## convert to m/s
+            vwin[idx] = comp.v * 0.514444 ## convert to m/s
+        else:
+            uwin[idx] = comp.u
+            vwin[idx] = comp.v
     
     return {"pres": pres, "hght": hght, "tmpc": tmpc, "dwpc": dwpc, "wdir": wdir, "wspd": wspd, "uwin": uwin, "vwin": vwin}
 
@@ -50,15 +55,15 @@ def test_interp(sounding):
     print("3 km Temperature: ", tmpc_3000m)
     print("====================")
 
-def test_utils(sounding):
+def test_layer(sounding):
 
     print("====================")
     print("Testing utility bindings...")
-    pres_layer = utils.PressureLayer(1000.0, 500.0)
-    hght_layer = utils.HeightLayer(1000.0, 3000.0)
+    pres_layer = layer.PressureLayer(1000.0, 500.0)
+    hght_layer = layer.HeightLayer(1000.0, 3000.0)
 
-    idx1 = utils.get_layer_index(pres_layer, sounding["pres"])
-    idx2 = utils.get_layer_index(hght_layer, sounding["hght"])
+    idx1 = layer.get_layer_index(pres_layer, sounding["pres"])
+    idx2 = layer.get_layer_index(hght_layer, sounding["hght"])
 
     print("Pressure Layer: 1000.0 hPa to 500.0 hPa")
     print("Pressure Layer kbot: ", idx1.kbot, "ktop: ", idx1.ktop)
@@ -71,11 +76,14 @@ def test_winds(sounding):
 
     print("====================")
     print("Testing kinematic bindings...")
-    pres_layer = utils.PressureLayer(1000.0, 500.0)
-    hght_layer = utils.HeightLayer(0.0, 3000.0)
-    strm_motnv = winds.WindComponents()
-    strm_motnv.u = 10.0
-    strm_motnv.v = 0.0
+    prof = profile.create_profile(sounding["pres"], sounding["hght"], 
+                                  sounding["tmpc"], sounding["dwpc"], 
+                                  sounding["wspd"], sounding["wdir"], 
+                                  profile.Source_Observed, False) 
+
+    pres_layer = layer.PressureLayer(1000.0, 500.0)
+    hght_layer = layer.HeightLayer(0.0, 3000.0)
+    strm_motnv = params.storm_motion_bunkers(prof, False)
 
     comp1 = winds.mean_wind(pres_layer, sounding["pres"], sounding["uwin"], sounding["vwin"])
     comp2 = winds.mean_wind_npw(pres_layer, sounding["pres"], sounding["uwin"], sounding["vwin"])
@@ -93,8 +101,8 @@ def test_thermo(sounding):
     print("====================")
     print("Testing thermodynamic bindings...")
 
-    layer = utils.HeightLayer(0, 3000.0)
-    lapse_rate = thermo.lapse_rate(layer, sounding["hght"], sounding["tmpc"])
+    hlayer = layer.HeightLayer(0, 3000.0)
+    lapse_rate = thermo.lapse_rate(hlayer, sounding["hght"], sounding["tmpc"])
     print("0-3km AGL Lapse Rate: ", lapse_rate)
     print("====================")
 
@@ -135,7 +143,7 @@ def test_parcel(sounding):
 def main():
     sounding = load_sounding("./hires-SPC.txt")
     test_interp(sounding)
-    test_utils(sounding)
+    test_layer(sounding)
     test_winds(sounding)
     test_thermo(sounding)
     test_parcel(sounding)

@@ -17,7 +17,7 @@
     }
 }
 
-%import "../include/SHARPlib/utils.h"
+%import "../include/SHARPlib/layer.h"
 %import "../include/SHARPlib/winds.h"
 %import "../include/SHARPlib/profile.h"
 %import "../include/SHARPlib/parcel.h"
