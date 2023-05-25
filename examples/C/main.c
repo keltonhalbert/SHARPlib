@@ -42,8 +42,8 @@ int get_num_levs_in_file(const char* filename) {
  * arrays should have already been allocated to the appropriate size
  * before entering this routine.
  */
-void read_snd_file(const char* filename, float* pres, float* hght, float* tmpc,
-                   float* dwpc, float* wspd, float* wdir, float* omeg) {
+void read_snd_file(const char* filename, float* pres, float* hght, float* tmpk,
+                   float* dwpk, float* wspd, float* wdir, float* omeg) {
     FILE* file = fopen(filename, "r");
 
     if (file == NULL) {
@@ -60,8 +60,11 @@ void read_snd_file(const char* filename, float* pres, float* hght, float* tmpc,
             while ((fgets(line, 256, file) != 0) &&
                    (strstr(line, "%END%") == 0)) {
                 j = sscanf(line, "%f,%f,%f,%f,%f,%f,%f", &(pres[i]), &(hght[i]),
-                           &(tmpc[i]), &(dwpc[i]), &(wdir[i]), &(wspd[i]),
+                           &(tmpk[i]), &(dwpk[i]), &(wdir[i]), &(wspd[i]),
                            &(omeg[i]));
+                pres[i] = pres[i] * 100.0;
+                tmpk[i] = tmpk[i] + 273.15;
+                dwpk[i] = dwpk[i] + 273.15;
                 ++i;
             }
         }
@@ -85,12 +88,12 @@ void load_sounding(const char* filename, sharp_Profile_t* prof) {
     // get the base data arrays and fill them with the data from the file
     float* pres = sharp_Profile_get_pres_ptr(prof);
     float* hght = sharp_Profile_get_hght_ptr(prof);
-    float* tmpc = sharp_Profile_get_tmpc_ptr(prof);
-    float* dwpc = sharp_Profile_get_dwpc_ptr(prof);
+    float* tmpk = sharp_Profile_get_tmpk_ptr(prof);
+    float* dwpk = sharp_Profile_get_dwpk_ptr(prof);
     float* wdir = sharp_Profile_get_wdir_ptr(prof);
     float* wspd = sharp_Profile_get_wspd_ptr(prof);
     float* omeg = sharp_Profile_get_vvel_ptr(prof);
-    read_snd_file(filename, pres, hght, tmpc, dwpc, wspd, wdir, omeg);
+    read_snd_file(filename, pres, hght, tmpk, dwpk, wspd, wdir, omeg);
 
     // fill the other arrays with computed data
     float* mixr = sharp_Profile_get_mixr_ptr(prof);
@@ -107,26 +110,24 @@ void load_sounding(const char* filename, sharp_Profile_t* prof) {
 
         float p = pres[i];
         float h = hght[i];
-        float t = tmpc[i];
-        float d = dwpc[i];
+        float t = tmpk[i];
+        float d = dwpk[i];
         float spd = wspd[i];
         float dir = wdir[i];
 
         mixr[i] = sharp_mixratio(p, d);
         vtmp[i] = sharp_virtual_temperature(p, t, d);
-        theta[i] = sharp_theta(p, t, 1000.0);
+        theta[i] = sharp_theta(p, t, 100000.0);
         thetae[i] = sharp_thetae(p, t, d);
         uwin[i] = sharp_u_component(spd, dir);
         vwin[i] = sharp_v_component(spd, dir);
 
         // need to convert mixing ratio from g/kg to kg/kg
-        float specific_humidity =
-            (1.0 - (mixr[i] / 1000.0)) * (mixr[i] / 1000.0);
+        float specific_humidity = (1.0 - (mixr[i])) * (mixr[i]);
         if (mixr[i] == -9999.0f) specific_humidity = -9999.0f;
 
         float height_agl = hght[i] - hght[0];
-        mse[i] = sharp_moist_static_energy(height_agl, t + 273.15,
-                                           specific_humidity);
+        mse[i] = sharp_moist_static_energy(height_agl, t, specific_humidity);
     }
 }
 
@@ -136,7 +137,7 @@ int main(int argc, char** argv) {
     double cpu_time_used;
 
 	// filename and number of vertical levels in the file
-    const char* filename = "20160524_2302_EF3_37.57_-100.13_108_613967.snd";
+    const char* filename = "../../data/test_snds/20160524_2302_EF3_37.57_-100.13_108_613967.snd";
     int NZ = get_num_levs_in_file(filename);
 
     // create a Profile with the required number of vertical levels
@@ -154,16 +155,16 @@ int main(int argc, char** argv) {
     // can see we've successfully loaded the data!
     float* pres = sharp_Profile_get_pres_ptr(prof);
     float* hght = sharp_Profile_get_hght_ptr(prof);
-    float* tmpc = sharp_Profile_get_tmpc_ptr(prof);
-    float* dwpc = sharp_Profile_get_dwpc_ptr(prof);
+    float* tmpk = sharp_Profile_get_tmpk_ptr(prof);
+    float* dwpk = sharp_Profile_get_dwpk_ptr(prof);
     float* wdir = sharp_Profile_get_wdir_ptr(prof);
     float* wspd = sharp_Profile_get_wspd_ptr(prof);
     float* omeg = sharp_Profile_get_vvel_ptr(prof);
     for (int i = 0; i < NZ; ++i) {
         printf(
-            "pres[%d] = %f hght[%d] = %f tmpc[%d] = %f dwpc[%d] = %f wdir[%d] "
+            "pres[%d] = %f hght[%d] = %f tmpk[%d] = %f dwpk[%d] = %f wdir[%d] "
             "= %f wspd[%d] = %f omeg[%d] = %f\n",
-            i, pres[i], i, hght[i], i, tmpc[i], i, dwpc[i], i, wdir[i], i,
+            i, pres[i], i, hght[i], i, tmpk[i], i, dwpk[i], i, wdir[i], i,
             wspd[i], i, omeg[i]);
     }
 
