@@ -14,13 +14,13 @@ import nwsspc.sharp.calc.winds as winds
 import nwsspc.sharp.calc.layer as layer
 
 def load_sounding(filename):
-    names = ["pres", "hght", "tmpc", "dwpc", "wdir", "wspd"]
+    names = ["pres", "hght", "tmpk", "dwpk", "wdir", "wspd"]
     snd_df = pd.read_csv(filename, delimiter=",", comment="%", names=names, skiprows=5)
 
-    pres = snd_df["pres"].to_numpy().astype('float32')
+    pres = snd_df["pres"].to_numpy().astype('float32')*100.0
     hght = snd_df["hght"].to_numpy().astype('float32')
-    tmpc = snd_df["tmpc"].to_numpy().astype('float32')
-    dwpc = snd_df["dwpc"].to_numpy().astype('float32')
+    tmpk = snd_df["tmpk"].to_numpy().astype('float32')+273.15
+    dwpk = snd_df["dwpk"].to_numpy().astype('float32')+273.15
     wdir = snd_df["wdir"].to_numpy().astype('float32')
     wspd = snd_df["wspd"].to_numpy().astype('float32')
 
@@ -37,29 +37,29 @@ def load_sounding(filename):
             uwin[idx] = comp.u
             vwin[idx] = comp.v
     
-    return {"pres": pres, "hght": hght, "tmpc": tmpc, "dwpc": dwpc, "wdir": wdir, "wspd": wspd, "uwin": uwin, "vwin": vwin}
+    return {"pres": pres, "hght": hght, "tmpk": tmpk, "dwpk": dwpk, "wdir": wdir, "wspd": wspd, "uwin": uwin, "vwin": vwin}
 
 
 def test_interp(sounding):
     print("====================")
     print("Testing the Interpolation bindings...")
 
-    hght_1000hPa = interp.interp_pressure(1000.0, sounding["pres"], sounding["hght"])
-    hght_500hPa = interp.interp_pressure(500.0, sounding["pres"], sounding["hght"])
+    hght_1000hPa = interp.interp_pressure(100000.0, sounding["pres"], sounding["hght"])
+    hght_500hPa = interp.interp_pressure(50000.0, sounding["pres"], sounding["hght"])
     print("1000 hPa Height: ", hght_1000hPa)
     print("500 hPa Height: ", hght_500hPa)
 
-    tmpc_1000m = interp.interp_height(1000.0, sounding["hght"], sounding["tmpc"])
-    tmpc_3000m = interp.interp_height(3000.0, sounding["hght"], sounding["tmpc"])
-    print("1 km Temperature: ", tmpc_1000m)
-    print("3 km Temperature: ", tmpc_3000m)
+    tmpk_1000m = interp.interp_height(1000.0, sounding["hght"], sounding["tmpk"])
+    tmpk_3000m = interp.interp_height(3000.0, sounding["hght"], sounding["tmpk"])
+    print("1 km Temperature: ", tmpk_1000m)
+    print("3 km Temperature: ", tmpk_3000m)
     print("====================")
 
 def test_layer(sounding):
 
     print("====================")
     print("Testing utility bindings...")
-    pres_layer = layer.PressureLayer(1000.0, 500.0)
+    pres_layer = layer.PressureLayer(100000.0, 50000.0)
     hght_layer = layer.HeightLayer(1000.0, 3000.0)
 
     idx1 = layer.get_layer_index(pres_layer, sounding["pres"])
@@ -77,11 +77,11 @@ def test_winds(sounding):
     print("====================")
     print("Testing kinematic bindings...")
     prof = profile.create_profile(sounding["pres"], sounding["hght"], 
-                                  sounding["tmpc"], sounding["dwpc"], 
+                                  sounding["tmpk"], sounding["dwpk"], 
                                   sounding["wspd"], sounding["wdir"], 
                                   profile.Source_Observed, False) 
 
-    pres_layer = layer.PressureLayer(1000.0, 500.0)
+    pres_layer = layer.PressureLayer(100000.0, 50000.0)
     hght_layer = layer.HeightLayer(0.0, 3000.0)
     strm_motnv = params.storm_motion_bunkers(prof, False)
 
@@ -102,7 +102,7 @@ def test_thermo(sounding):
     print("Testing thermodynamic bindings...")
 
     hlayer = layer.HeightLayer(0, 3000.0)
-    lapse_rate = thermo.lapse_rate(hlayer, sounding["hght"], sounding["tmpc"])
+    lapse_rate = thermo.lapse_rate(hlayer, sounding["hght"], sounding["tmpk"])
     print("0-3km AGL Lapse Rate: ", lapse_rate)
     print("====================")
 
@@ -112,7 +112,7 @@ def test_parcel(sounding):
 
     ## example of processing a single parcel
     prof = profile.create_profile(sounding["pres"], sounding["hght"], 
-                                  sounding["tmpc"], sounding["dwpc"], 
+                                  sounding["tmpk"], sounding["dwpk"], 
                                   sounding["wspd"], sounding["wdir"], 
                                   profile.Source_Observed, False) 
     pcl = parcel.Parcel()
