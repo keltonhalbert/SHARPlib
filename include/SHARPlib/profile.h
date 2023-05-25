@@ -1,7 +1,8 @@
 /**
  * \file
- * \brief Data structures for containing data from vertical atmospheric sounding profiles 
- * \author  
+ * \brief Data structures for containing data from vertical<!--
+ * --> atmospheric sounding profiles
+ * \author
  *   Kelton Halbert                  \n
  *   Email: kelton.halbert@noaa.gov  \n
  *   License: Apache 2.0             \n
@@ -9,14 +10,10 @@
  *
  * Written for the NWS Storm Predidiction Center \n
  * Based on NSHARP routines originally written by
- * John Hart and Rich Thompson at SPC. 
+ * John Hart and Rich Thompson at SPC.
  */
-#ifndef __SHARP_PROFILE
-#define __SHARP_PROFILE
-
-#include <SHARPlib/thermo.h>
-#include <SHARPlib/utils.h>
-#include <SHARPlib/winds.h>
+#ifndef __SHARP_PROFILE_H__
+#define __SHARP_PROFILE_H__
 
 namespace sharp {
 
@@ -28,12 +25,12 @@ namespace sharp {
  */
 enum class Source : int {
     Observed = 0,
-    PFC      = 1,
-    ACARS    = 2,
+    PFC = 1,
+    ACARS = 2,
 };
-    
+
 /**
- * \brief Stores arrays of vertical atmospheric sounding profile data. 
+ * \brief Stores arrays of vertical atmospheric sounding profile data.
  * \author
  *   Kelton Halbert                 \n
  *   Email: kelton.halbert@noaa.gov \n
@@ -42,17 +39,16 @@ enum class Source : int {
  *
  * The Profile struct is used to store the arrays
  * of vertical data associated with either a weather
- * balloon or forecast model sounding profile. In 
- * C++, structs and classes are completely identical. 
+ * balloon or forecast model sounding profile. In
+ * C++, structs and classes are completely identical.
  * We use a struct in this case, however, since really
  * it is just a data container, and we don't need
  * things like inheritence, polymorphism, etc that are
  * typically associated with classes. Additionally,
- * in C++ structs have all members and functions 
+ * in C++ structs have all members and functions
  * set to 'public' as default, which is desireable!
  */
 struct Profile {
-
     /**
      * \brief Vertical array of pressure in millibars (descending)
      */
@@ -64,27 +60,27 @@ struct Profile {
     float* hght;
 
     /**
-     * \brief Vertical array of temperature in degrees Celsius 
+     * \brief Vertical array of temperature in degrees Celsius
      */
     float* tmpc;
 
     /**
-     * \brief Vertical array of dewpoint in degrees Celsius 
+     * \brief Vertical array of dewpoint in degrees Celsius
      */
     float* dwpc;
 
     /**
-     * \brief Vertical array of water vapor mixing ratio in degrees Celsius 
+     * \brief Vertical array of water vapor mixing ratio in degrees Celsius
      */
     float* mixr;
 
     /**
-     * \brief Vertical array of relative humidity over liquid water (%) 
+     * \brief Vertical array of relative humidity over liquid water (%)
      */
     float* relh;
 
     /**
-     * \brief Vertical array of virtual temperature in degrees Celsius 
+     * \brief Vertical array of virtual temperature in degrees Celsius
      */
     float* vtmp;
 
@@ -109,7 +105,7 @@ struct Profile {
     float* vwin;
 
     /**
-     * \brief Vertical array of vertical velocity in m/s 
+     * \brief Vertical array of vertical velocity in m/s
      */
     float* vvel;
 
@@ -128,56 +124,34 @@ struct Profile {
      */
     float* moist_static_energy;
 
+    /*
+     * \brief Buoyancy for a lifted parcel.
+     */
+    float* buoyancy;
+
     /**
-     * \brief The number of vertical levels present / the length of the arrays. 
+     * \brief The number of vertical levels present / the length of the arrays.
      */
     int NZ;
 
     /**
-     * \brief The type of soungind profile (e.g. Observed, PFC) 
+     * \brief The type of soungind profile (e.g. Observed, PFC)
      */
-    Source snd_type; 
-
+    Source snd_type;
 
     /**
      * \brief Constructor that allocates arrays for our sounding
      */
     Profile(int num_levels, Source sounding_type);
 
-    Profile() {};
+    Profile(){};
 
     // Destructor that deallocates arrays
     ~Profile();
-
 };
 
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \breif Creates a Profile from arrays
- *
- * \param pres              Array of pressure (hPa)
- * \param hght              Array of height (meters)
- * \param tmpc              Array of temperature (degC)
- * \param dwpc              Array of dewpoiont (degC)
- * \param wspd_or_u         Array of wind speed or u-component (kts or m/s)
- * \param wdir_or_v         Array of wind direction or v-component (deg or m/s)
- * \param NZ                The number of vertical levels
- * \param sounding_type     The sharp::Source of the profile
- * \param windComponents    A boolean if winds are vectors or components
- */
-Profile* create_profile(float *pres, float *hght, 
-                        float *tmpc, float *dwpc,
-                        float *wspd_or_u, float *wdir_or_v,
-                        int NZ, Source sounding_type, bool windComponents); 
+}  // end namespace sharp
 
-} // end namespace sharp
+namespace sharp::exper {}  // end namespace sharp::exper
 
-
-namespace sharp::exper {
-
-
-} // end namespace sharp::exper
-
-
-#endif
+#endif // __SHARP_PROFILE_H__

@@ -41,8 +41,8 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -ffast-math -fno-finite-math-only -march=native")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O3 -Wall -ftree-vectorize -funroll-loops -march=native")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -ffast-math -ftree-vectorize -funroll-loops -march=native")
 
 ## used for passing custom build options
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
@@ -58,6 +58,7 @@ add_subdirectory(tests)
 add_test(NAME sharp_thermo COMMAND test_sharp_thermo)
 add_test(NAME sharp_interp COMMAND test_sharp_interp)
 add_test(NAME sharp_parcel COMMAND test_sharp_parcel)
-add_test(NAME sharp_utils COMMAND test_sharp_utils)
+add_test(NAME sharp_layer COMMAND test_sharp_layer)
 add_test(NAME sharp_winds COMMAND test_sharp_winds)
+add_test(NAME sharp_algs COMMAND test_sharp_algs)
 

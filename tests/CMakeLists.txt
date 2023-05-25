@@ -10,11 +10,14 @@ target_link_libraries(test_sharp_thermo SHARP)
 add_executable(test_sharp_interp test_interp.cpp)
 target_link_libraries(test_sharp_interp SHARP) 
 
-add_executable(test_sharp_utils test_utils.cpp)
-target_link_libraries(test_sharp_utils SHARP) 
+add_executable(test_sharp_layer test_layer.cpp)
+target_link_libraries(test_sharp_layer SHARP) 
 
 add_executable(test_sharp_winds test_winds.cpp)
 target_link_libraries(test_sharp_winds SHARP) 
 
 add_executable(test_sharp_parcel test_parcel.cpp)
 target_link_libraries(test_sharp_parcel SHARP) 
+
+add_executable(test_sharp_algs test_algorithms.cpp)
+target_link_libraries(test_sharp_algs SHARP) 

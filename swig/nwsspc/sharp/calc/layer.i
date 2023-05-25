@@ -1,8 +1,8 @@
-/* File: utils.i */
-%module utils 
+/* File: layer.i */
+%module layer 
 %{
     #define SWIG_FILE_WITH_INIT
-    #include <SHARPlib/utils.h>
+    #include <SHARPlib/layer.h>
 %}
 
 %include exception.i
@@ -84,9 +84,9 @@ sharp::PressureLayer _hght_lyr_to_pres(sharp::HeightLayer layer,
  * These functions are unecessary,
  * as numpy supports these natively
  */ 
-%ignore max_value;
-%ignore min_value;
-%ignore mean_value;
+%ignore layer_max;
+%ignore layer_min;
+%ignore layer_mean;
 
 
-%include "../include/SHARPlib/utils.h"
+%include "../include/SHARPlib/layer.h"

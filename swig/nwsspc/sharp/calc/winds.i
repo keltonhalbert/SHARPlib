@@ -4,7 +4,7 @@
     #define SWIG_FILE_WITH_INIT
     #include <SHARPlib/winds.h>
 %}
-%import "../include/SHARPlib/utils.h"
+%import "../include/SHARPlib/layer.h"
 
 /* Import Numpy Array Functionality */
 %include "numpy.i"

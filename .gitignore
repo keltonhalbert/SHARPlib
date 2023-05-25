@@ -47,3 +47,19 @@ _deps
 *.exe
 *.out
 *.app
+
+# Ignore the build directory
+build
+
+# SWIG python files and wrappers
+swig/build
+swig/*.egg-info
+swig/nwsspc/sharp/calc/*_wrap.cpp
+swig/nwsspc/sharp/calc/constants.py
+swig/nwsspc/sharp/calc/interp.py
+swig/nwsspc/sharp/calc/layer.py
+swig/nwsspc/sharp/calc/params.py
+swig/nwsspc/sharp/calc/parcel.py
+swig/nwsspc/sharp/calc/profile.py
+swig/nwsspc/sharp/calc/thermo.py
+swig/nwsspc/sharp/calc/winds.py
