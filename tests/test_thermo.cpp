@@ -5,26 +5,34 @@
 
 TEST_CASE("Testing theta") {
 
-    CHECK(sharp::theta(900.0, 10.0, 1000.0) == doctest::Approx(18.6533));
+    constexpr float tmpk = 10.0 + sharp::ZEROCNK;
+    constexpr float pres = 900.0 * sharp::HPA_TO_PA;
+    CHECK(sharp::theta(pres, tmpk, sharp::THETA_REF_PRESSURE) ==
+          doctest::Approx(18.6533+sharp::ZEROCNK));
 
 #ifndef NO_QC
-    CHECK(sharp::theta(sharp::MISSING, 10.0, 1000.0) == sharp::MISSING);
-    CHECK(sharp::theta(900.0, sharp::MISSING, 1000.0) == sharp::MISSING);
-    CHECK(sharp::theta(900.0, 10.0, sharp::MISSING) == sharp::MISSING);
+    CHECK(sharp::theta(sharp::MISSING, tmpk, sharp::THETA_REF_PRESSURE) ==
+          sharp::MISSING);
+    CHECK(sharp::theta(pres, sharp::MISSING, sharp::THETA_REF_PRESSURE) ==
+          sharp::MISSING);
+    CHECK(sharp::theta(pres, tmpk, sharp::MISSING) == sharp::MISSING);
 
-    CHECK(sharp::theta(sharp::MISSING, sharp::MISSING, 1000.0) == sharp::MISSING);
-    CHECK(sharp::theta(sharp::MISSING, 10.0, sharp::MISSING) == sharp::MISSING);
-    CHECK(sharp::theta(900.0, sharp::MISSING, sharp::MISSING) == sharp::MISSING);
-    CHECK(sharp::theta(sharp::MISSING, sharp::MISSING, sharp::MISSING) 
-                                                    == sharp::MISSING);
+    CHECK(sharp::theta(sharp::MISSING, sharp::MISSING,
+                       sharp::THETA_REF_PRESSURE) == sharp::MISSING);
+    CHECK(sharp::theta(sharp::MISSING, tmpk, sharp::MISSING) == sharp::MISSING);
+    CHECK(sharp::theta(pres, sharp::MISSING, sharp::MISSING) == sharp::MISSING);
+    CHECK(sharp::theta(sharp::MISSING, sharp::MISSING, sharp::MISSING) ==
+          sharp::MISSING);
 #endif
 }
 
 TEST_CASE("Testing theta_level") {
+    constexpr float tmpk = 10.0 + sharp::ZEROCNK;
+    constexpr float theta = 30.0 + sharp::ZEROCNK;
 
 #ifndef NO_QC
-    CHECK(sharp::theta_level(sharp::MISSING, 10.0) == sharp::MISSING);
-    CHECK(sharp::theta_level(30.0, sharp::MISSING) == sharp::MISSING);
+    CHECK(sharp::theta_level(sharp::MISSING, tmpk) == sharp::MISSING);
+    CHECK(sharp::theta_level(theta, sharp::MISSING) == sharp::MISSING);
     CHECK(sharp::theta_level(sharp::MISSING, sharp::MISSING) == sharp::MISSING);
 #endif
 

@@ -62,12 +62,12 @@ struct Profile {
     /**
      * \brief Vertical array of temperature in degrees Celsius
      */
-    float* tmpc;
+    float* tmpk;
 
     /**
      * \brief Vertical array of dewpoint in degrees Celsius
      */
-    float* dwpc;
+    float* dwpk;
 
     /**
      * \brief Vertical array of water vapor mixing ratio in degrees Celsius

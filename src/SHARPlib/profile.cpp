@@ -24,8 +24,8 @@ namespace sharp {
 Profile::Profile(int num_levs, Source sounding_type) {
     pres = new float[num_levs];
     hght = new float[num_levs];
-    tmpc = new float[num_levs];
-    dwpc = new float[num_levs];
+    tmpk = new float[num_levs];
+    dwpk = new float[num_levs];
     wspd = new float[num_levs];
     wdir = new float[num_levs];
 
@@ -51,8 +51,8 @@ Profile::Profile(int num_levs, Source sounding_type) {
 Profile::~Profile() {
     delete[] pres;
     delete[] hght;
-    delete[] tmpc;
-    delete[] dwpc;
+    delete[] tmpk;
+    delete[] dwpk;
     delete[] wspd;
     delete[] wdir;
 
