@@ -32,8 +32,8 @@ namespace sharp {
  */
 void _sfc(Profile* prof, Parcel* pcl) noexcept {
     pcl->pres = prof->pres[0];
-    pcl->tmpc = prof->tmpc[0];
-    pcl->dwpc = prof->dwpc[0];
+    pcl->tmpk = prof->tmpk[0];
+    pcl->dwpk = prof->dwpk[0];
 }
 
 /**
@@ -48,13 +48,14 @@ void _sfc(Profile* prof, Parcel* pcl) noexcept {
 void _mu(Profile* prof, Parcel* pcl) noexcept {
     // Search for the most unstable parcel in the bottom
     // 400 hPa of the profile
-    PressureLayer mu_layer(prof->pres[0], prof->pres[0] - 400.0);
+    static constexpr float mu_depth = 40000.0f; // 400 hPa in Pa
+    PressureLayer mu_layer(prof->pres[0], prof->pres[0] - mu_depth);
 
     // layer_max returns the max, and will set the pressure
     // of the max via a pointer to a float.
     layer_max(mu_layer, prof->pres, prof->theta_e, prof->NZ, &(pcl->pres));
-    pcl->tmpc = interp_pressure(pcl->pres, prof->pres, prof->tmpc, prof->NZ);
-    pcl->dwpc = interp_pressure(pcl->pres, prof->pres, prof->dwpc, prof->NZ);
+    pcl->tmpk = interp_pressure(pcl->pres, prof->pres, prof->tmpk, prof->NZ);
+    pcl->dwpk = interp_pressure(pcl->pres, prof->pres, prof->dwpk, prof->NZ);
 }
 
 /**
@@ -67,7 +68,8 @@ void _mu(Profile* prof, Parcel* pcl) noexcept {
  *
  */
 void _ml(Profile* prof, Parcel* pcl) noexcept {
-    PressureLayer mix_layer(prof->pres[0], prof->pres[0] - 100.0);
+    static constexpr float ml_depth = 10000.0; // 100 hPa in Pa
+    PressureLayer mix_layer(prof->pres[0], prof->pres[0] - ml_depth);
 
     // get the mean attributes of the lowest 100 hPa
     float mean_mixr = layer_mean(mix_layer, prof->pres, prof->mixr, prof->NZ);
@@ -75,8 +77,8 @@ void _ml(Profile* prof, Parcel* pcl) noexcept {
 
     // set the parcel attributes
     pcl->pres = prof->pres[0];
-    pcl->tmpc = theta(1000.0, mean_thta, prof->pres[0]);
-    pcl->dwpc = temperature_at_mixratio(mean_mixr, prof->pres[0]);
+    pcl->tmpk = theta(THETA_REF_PRESSURE, mean_thta, prof->pres[0]);
+    pcl->dwpk = temperature_at_mixratio(mean_mixr, prof->pres[0]);
 }
 
 void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept {
@@ -139,7 +141,8 @@ void find_lfc_el(Parcel* pcl, const float* pres_arr, const float* hght_arr,
                 eql_pres_last = eql_pres;
                 pos_buoy = 0.0;
             }
-            for (lfc_pres = pbot - 5; lfc_pres > ptop + 5; lfc_pres -= 1.0) {
+            for (lfc_pres = pbot - 500; lfc_pres > ptop + 500;
+                 lfc_pres -= 100.0) {
                 float buoy = interp_pressure(lfc_pres, pres_arr, buoy_arr, NZ);
                 if (buoy > 0) break;
             }
@@ -150,7 +153,8 @@ void find_lfc_el(Parcel* pcl, const float* pres_arr, const float* hght_arr,
 		pos_buoy += condition * (htop - hbot) * lyr_top;
         // EL condition
         if ((lfc_pres != MISSING) && ((lyr_bot >= 0) && (lyr_top < 0))) {
-            for (eql_pres = pbot - 5; eql_pres > ptop + 5; eql_pres -= 1.0) {
+            for (eql_pres = pbot - 500; eql_pres > ptop + 500;
+                 eql_pres -= 100.0) {
                 float buoy = interp_pressure(eql_pres, pres_arr, buoy_arr, NZ);
                 if (buoy < 0) break;
             }

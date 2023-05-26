@@ -66,14 +66,14 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
     // search for the effective inflow bottom
     for (int k = 0; k <= prof->NZ - 1; k++) {
 #ifndef NO_QC
-        if ((prof->tmpc[k] == MISSING) || (prof->dwpc[k] == MISSING)) {
+        if ((prof->tmpk[k] == MISSING) || (prof->dwpk[k] == MISSING)) {
             continue;
         }
 #endif
         Parcel effpcl;
         effpcl.pres = prof->pres[k];
-        effpcl.tmpc = prof->tmpc[k];
-        effpcl.dwpc = prof->dwpc[k];
+        effpcl.tmpk = prof->tmpk[k];
+        effpcl.dwpk = prof->dwpk[k];
         lift_parcel(lifter, prof, &effpcl);
         cape_cinh(prof, &effpcl);
 
@@ -88,15 +88,15 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
 
     for (int k = eff_kbot + 1; k <= prof->NZ - 1; k++) {
 #ifndef NO_QC
-        if ((prof->tmpc[k] == MISSING) || (prof->dwpc[k] == MISSING)) {
+        if ((prof->tmpk[k] == MISSING) || (prof->dwpk[k] == MISSING)) {
             continue;
         }
 #endif
 
         Parcel effpcl;
         effpcl.pres = prof->pres[k];
-        effpcl.tmpc = prof->tmpc[k];
-        effpcl.dwpc = prof->dwpc[k];
+        effpcl.tmpk = prof->tmpk[k];
+        effpcl.dwpk = prof->dwpk[k];
         lift_parcel(lifter, prof, &effpcl);
         cape_cinh(prof, &effpcl);
 
@@ -235,13 +235,12 @@ float entrainment_cape(Profile *prof, Parcel *pcl) noexcept {
 
     // compute MSE_star
     for (int k = 0; k < prof->NZ; k++) {
-        float tmpk = prof->tmpc[k] + ZEROCNK;
-        // default units are g/kg - convert to kg/kg
-        float rsat = mixratio(prof->pres[k], prof->tmpc[k]) / 1000.0f;
+        float tmpk = prof->tmpk[k];
+        float rsat = mixratio(prof->pres[k], prof->tmpk[k]);
         float qsat = (1.0 - rsat) * rsat;
         float height_agl = prof->hght[k] - prof->hght[0];
         float mse_star = 
-            moist_static_energy(height_agl, prof->tmpc[k] + ZEROCNK, qsat);
+            moist_static_energy(height_agl, prof->tmpk[k], qsat);
         mse_diff[k] =
             -1.0 * (GRAVITY / (CP_DRYAIR * tmpk)) * (mse_bar[k] - mse_star);
     }

@@ -203,6 +203,9 @@ namespace sharp {
 [[nodiscard]] float virtual_temperature(float pressure, float temperature,
                                         float dewpoint) noexcept;
 
+[[nodiscard]] float virtual_temperature(float temperature,
+                                        float wv_mixratio) noexcept;
+
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
  *

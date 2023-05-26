@@ -102,7 +102,7 @@ struct PressureLayer {
      */
     static constexpr LayerCoordinate coord = LayerCoordinate::pressure;
 
-    PressureLayer(float bot, float top, float delta = -10.0);
+    PressureLayer(float bot, float top, float delta = -1000.0);
 };
 
 /**
