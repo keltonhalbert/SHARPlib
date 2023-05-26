@@ -53,16 +53,16 @@ PressureLayer::PressureLayer(float bottom, float top, float delta) {
 
 LayerIndex get_layer_index(PressureLayer& layer, const float pressure[],
                            int N) noexcept {
-    constexpr auto bottom_comp = std::greater<float>();
-    constexpr auto top_comp = std::less<float>();
+    static constexpr auto bottom_comp = std::greater<float>();
+    static constexpr auto top_comp = std::less<float>();
 
     return get_layer_index(layer, pressure, N, bottom_comp, top_comp);
 }
 
 LayerIndex get_layer_index(HeightLayer& layer, const float height[],
                            int N) noexcept {
-    constexpr auto bottom_comp = std::less<float>();
-    constexpr auto top_comp = std::greater<float>();
+    static constexpr auto bottom_comp = std::less<float>();
+    static constexpr auto top_comp = std::greater<float>();
 
     return get_layer_index(layer, height, N, bottom_comp, top_comp);
 }
@@ -76,8 +76,8 @@ PressureLayer height_layer_to_pressure(HeightLayer layer,
         layer.top += height[0];
     }
 
-    float pbot = interp_height(layer.bottom, height, pressure, num_levs);
-    float ptop = interp_height(layer.top, height, pressure, num_levs);
+    const float pbot = interp_height(layer.bottom, height, pressure, num_levs);
+    const float ptop = interp_height(layer.top, height, pressure, num_levs);
 
     return {pbot, ptop};
 }
@@ -113,7 +113,7 @@ float layer_mean(PressureLayer layer, const float pressure[],
         layer.top = pressure[num_levs - 1];
     }
 
-    float mean =
+    const float mean =
         integrate_layer_trapz(layer, data_arr, pressure, num_levs, 0, true);
     return mean;
 }
@@ -143,8 +143,8 @@ float layer_mean(HeightLayer layer, const float height[],
     PressureLayer pres_layer =
         height_layer_to_pressure(layer, pressure, height, num_levs, false);
 
-    float mean = integrate_layer_trapz(pres_layer, data_arr, pressure, num_levs,
-                                       0, true);
+    const float mean = integrate_layer_trapz(pres_layer, data_arr, pressure,
+                                             num_levs, 0, true);
     return mean;
 }
 

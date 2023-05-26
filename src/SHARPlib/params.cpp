@@ -27,7 +27,7 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
     // TO-DO: At some point, this will need to be
     // templated or generalized to take other parcel
     // lifters once things progress to that level...
-    constexpr lifter_wobus lifter;
+    static constexpr lifter_wobus lifter;
 
     // create our parcel objects
     Parcel mupcl;
@@ -112,9 +112,9 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
 WindComponents storm_motion_bunkers(Profile *prof,
                                     HeightLayer mean_wind_layer_agl,
                                     HeightLayer wind_shear_layer_agl,
-                                    bool leftMover,
-                                    bool pressureWeighted) noexcept {
-    float deviation = 7.5;  // deviation from mean wind in m/s
+                                    const bool leftMover,
+                                    const bool pressureWeighted) noexcept {
+    constexpr float deviation = 7.5;  // deviation from mean wind in m/s
 
     PressureLayer mw_lyr = height_layer_to_pressure(
         mean_wind_layer_agl, prof->pres, prof->hght, prof->NZ, true);
@@ -147,9 +147,9 @@ WindComponents storm_motion_bunkers(Profile *prof,
     WindComponents winds_hi =
         mean_wind_npw(p_layer_hi, prof->pres, prof->uwin, prof->vwin, prof->NZ);
 
-    float shear_u = winds_hi.u - winds_lo.u;
-    float shear_v = winds_hi.v - winds_lo.v;
-    float mag = vector_magnitude(shear_u, shear_v);
+    const float shear_u = winds_hi.u - winds_lo.u;
+    const float shear_v = winds_hi.v - winds_lo.v;
+    const float mag = vector_magnitude(shear_u, shear_v);
 
     float storm_u = MISSING;
     float storm_v = MISSING;
@@ -165,11 +165,12 @@ WindComponents storm_motion_bunkers(Profile *prof,
     return {storm_u, storm_v};
 }
 
-WindComponents storm_motion_bunkers(Profile *prof, bool leftMover) noexcept {
+WindComponents storm_motion_bunkers(Profile *prof,
+                                    const bool leftMover) noexcept {
     Parcel pcl;
     Parcel sbpcl;
     Parcel mupcl;
-    lifter_wobus lifter;
+    static constexpr lifter_wobus lifter;
 
     define_parcel(prof, &sbpcl, LPL::SFC);
     lift_parcel(lifter, prof, &sbpcl);
@@ -192,7 +193,7 @@ WindComponents storm_motion_bunkers(Profile *prof, bool leftMover) noexcept {
 
     // set up the layers
     PressureLayer eil = effective_inflow_layer(prof, 100.0, -250.0);
-    float eql_pres = pcl.eql_pressure;
+    const float eql_pres = pcl.eql_pressure;
 
     if ((eil.bottom == MISSING) || (eil.top == MISSING)) {
         return storm_motion_bunkers(prof, {0.0, 6000.0}, {0.0, 6000.0},
@@ -205,9 +206,9 @@ WindComponents storm_motion_bunkers(Profile *prof, bool leftMover) noexcept {
     float eql_ht = interp_pressure(eql_pres, prof->pres, prof->hght, prof->NZ);
     // get AGL
     eql_ht -= prof->hght[0];
-    float htop = 0.65 * (eql_ht - eil_hght.bottom);
+    const float htop = 0.65 * (eql_ht - eil_hght.bottom);
 
-    if ((htop < 3000.0) || (eil_hght.bottom > htop)) {
+    if ((htop < 3000.0f) || (eil_hght.bottom > htop)) {
         return storm_motion_bunkers(prof, {0.0, 6000.0}, {0.0, 6000.0},
                                     leftMover, false);
     }
@@ -235,21 +236,22 @@ float entrainment_cape(Profile *prof, Parcel *pcl) noexcept {
 
     // compute MSE_star
     for (int k = 0; k < prof->NZ; k++) {
-        float tmpk = prof->tmpk[k];
-        float rsat = mixratio(prof->pres[k], prof->tmpk[k]);
-        float qsat = (1.0 - rsat) * rsat;
-        float height_agl = prof->hght[k] - prof->hght[0];
-        float mse_star = 
+        const float tmpk = prof->tmpk[k];
+        const float rsat = mixratio(prof->pres[k], prof->tmpk[k]);
+        const float qsat = (1.0f - rsat) * rsat;
+        const float height_agl = prof->hght[k] - prof->hght[0];
+        const float mse_star = 
             moist_static_energy(height_agl, prof->tmpk[k], qsat);
         mse_diff[k] =
-            -1.0 * (GRAVITY / (CP_DRYAIR * tmpk)) * (mse_bar[k] - mse_star);
+            -1.0f * (GRAVITY / (CP_DRYAIR * tmpk)) * (mse_bar[k] - mse_star);
     }
 
     // compute NCAPE
     PressureLayer plyr = {pcl->lfc_pressure, pcl->eql_pressure};
     HeightLayer hlyr =
         pressure_layer_to_height(plyr, prof->pres, prof->hght, prof->NZ);
-    float NCAPE = integrate_layer_trapz(hlyr, mse_diff, prof->hght, prof->NZ); 
+    const float NCAPE =
+        integrate_layer_trapz(hlyr, mse_diff, prof->hght, prof->NZ);
 
     // Compute the Bunkers non-parcel based storm motion
     WindComponents strm_mtn =
@@ -271,29 +273,31 @@ float entrainment_cape(Profile *prof, Parcel *pcl) noexcept {
                                       prof->vwin[k] - strm_mtn.v);
         count += 1;
     }
-    float u_1km = interp_height(layer.top, prof->hght, prof->uwin, prof->NZ);
-    float v_1km = interp_height(layer.top, prof->hght, prof->vwin, prof->NZ);
+    const float u_1km =
+        interp_height(layer.top, prof->hght, prof->uwin, prof->NZ);
+    const float v_1km =
+        interp_height(layer.top, prof->hght, prof->vwin, prof->NZ);
 
     V_sr_mean += vector_magnitude(u_1km - strm_mtn.u, v_1km - strm_mtn.v);
     V_sr_mean = V_sr_mean / (count + 1);
 
     // now for all of the ECAPE nonsense
-    float L = 120.0;
-    float H =
+    constexpr float L = 120.0;
+    const float H =
         interp_pressure(pcl->eql_pressure, prof->pres, prof->hght, prof->NZ) -
         prof->hght[0];
-    float sigma = 1.6;
-    float alpha = 0.8;
-    float pitchfork = (VKSQ * (alpha * alpha) * (PI * PI) * L) /
+    constexpr float sigma = 1.6;
+    constexpr float alpha = 0.8;
+    const float pitchfork = (VKSQ * (alpha * alpha) * (PI * PI) * L) /
                       (PRANDTL * (sigma * sigma) * H);
-    float V_sr_tilde = V_sr_mean / std::sqrt(2.0f * pcl->cape);
-    float V_sr_tilde_sq = V_sr_tilde * V_sr_tilde;
-    float N_tilde = NCAPE / pcl->cape;
+    const float V_sr_tilde = V_sr_mean / std::sqrt(2.0f * pcl->cape);
+    const float V_sr_tilde_sq = V_sr_tilde * V_sr_tilde;
+    const float N_tilde = NCAPE / pcl->cape;
 
-    float term1 = pitchfork / V_sr_tilde_sq;
-    float term2 = 1.0f + pitchfork + term1 * N_tilde;
-    float term3 = 4.0f * term1 * (1.0f - pitchfork * N_tilde);
-    float sqrt_term = term2 * term2 + term3;
+    const float term1 = pitchfork / V_sr_tilde_sq;
+    const float term2 = 1.0f + pitchfork + term1 * N_tilde;
+    const float term3 = 4.0f * term1 * (1.0f - pitchfork * N_tilde);
+    const float sqrt_term = term2 * term2 + term3;
 
     // in the case of a negative solution,
     // set ECAPE to 0;
@@ -301,9 +305,9 @@ float entrainment_cape(Profile *prof, Parcel *pcl) noexcept {
         return 0;
     }
 
-    float E_tilde = V_sr_tilde_sq + (-1.0f - pitchfork - (term1)*N_tilde +
-                                     std::sqrt(sqrt_term)) /
-                                        (2.0f * term1);
+    const float E_tilde = V_sr_tilde_sq + (-1.0f - pitchfork - (term1)*N_tilde +
+                                           std::sqrt(sqrt_term)) /
+                                              (2.0f * term1);
     delete[] mse_diff;
     delete[] mse_bar;
 
@@ -316,7 +320,7 @@ float energy_helicity_index(float cape, float helicity) noexcept {
         return MISSING;
     }
 #endif
-    return (cape * helicity) / 160000.0;
+    return (cape * helicity) / 160000.0f;
 }
 
 float supercell_composite_parameter(float mu_cape, float eff_srh,
@@ -334,9 +338,9 @@ float supercell_composite_parameter(float mu_cape, float eff_srh,
         eff_shear = 0.0;
     }
 
-    float mu_cape_term = mu_cape / 1000.0;
-    float eff_srh_term = eff_srh / 50.0;
-    float eff_shear_term = eff_shear / 20.0;
+    const float mu_cape_term = mu_cape / 1000.0f;
+    const float eff_srh_term = eff_srh / 50.0f;
+    const float eff_shear_term = eff_shear / 20.0f;
 
     return mu_cape_term * eff_srh_term * eff_shear_term;
 }

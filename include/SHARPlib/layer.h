@@ -239,8 +239,8 @@ template <typename L, typename Cb, typename Ct>
  * \return  sharp::PressureLayer
  */
 [[nodiscard]] PressureLayer height_layer_to_pressure(
-    HeightLayer layer, const float pressure[], const float height[], int num_levs,
-    bool isAGL = false) noexcept;
+    HeightLayer layer, const float pressure[], const float height[],
+    int num_levs, bool isAGL = false) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -315,7 +315,7 @@ template <typename L, typename C>
 
     float coord_lvl = layer.bottom;
     for (int k = layer_idx.kbot; k < layer_idx.ktop + 1; ++k) {
-        float val = data_arr[k];
+        const float val = data_arr[k];
         if (comp(val, min_or_max)) {
             min_or_max = val;
             coord_lvl = coord_arr[k];

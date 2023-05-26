@@ -72,8 +72,10 @@ void _ml(Profile* prof, Parcel* pcl) noexcept {
     PressureLayer mix_layer(prof->pres[0], prof->pres[0] - ml_depth);
 
     // get the mean attributes of the lowest 100 hPa
-    float mean_mixr = layer_mean(mix_layer, prof->pres, prof->mixr, prof->NZ);
-    float mean_thta = layer_mean(mix_layer, prof->pres, prof->theta, prof->NZ);
+    const float mean_mixr =
+        layer_mean(mix_layer, prof->pres, prof->mixr, prof->NZ);
+    const float mean_thta =
+        layer_mean(mix_layer, prof->pres, prof->theta, prof->NZ);
 
     // set the parcel attributes
     pcl->pres = prof->pres[0];
@@ -129,10 +131,10 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
 #ifndef NO_QC
         if (buoy_arr[k] == MISSING) continue;
 #endif
-        float ptop = pres_arr[k];
-        float htop = hght_arr[k];
-        float buoy_top = buoy_arr[k];
-        float lyr_top = (buoy_top + buoy_bot) / 2.0f;
+        const float ptop = pres_arr[k];
+        const float htop = hght_arr[k];
+        const float buoy_top = buoy_arr[k];
+        const float lyr_top = (buoy_top + buoy_bot) / 2.0f;
         // LFC condition
         if ((lyr_bot <= 0) && (lyr_top > 0)) {
             if (lfc_pres != MISSING) {
@@ -143,19 +145,21 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
             }
             for (lfc_pres = pbot - 500; lfc_pres > ptop + 500;
                  lfc_pres -= 100.0) {
-                float buoy = interp_pressure(lfc_pres, pres_arr, buoy_arr, NZ);
+                const float buoy =
+                    interp_pressure(lfc_pres, pres_arr, buoy_arr, NZ);
                 if (buoy > 0) break;
             }
         }
 
         // keep track of buoyancy so that we pick the max CAPE layer
-		float condition = ((lfc_pres != MISSING) & (lyr_top > 0.0));
-		pos_buoy += condition * (htop - hbot) * lyr_top;
+        const float condition = ((lfc_pres != MISSING) & (lyr_top > 0.0));
+        pos_buoy += condition * (htop - hbot) * lyr_top;
         // EL condition
         if ((lfc_pres != MISSING) && ((lyr_bot >= 0) && (lyr_top < 0))) {
             for (eql_pres = pbot - 500; eql_pres > ptop + 500;
                  eql_pres -= 100.0) {
-                float buoy = interp_pressure(eql_pres, pres_arr, buoy_arr, NZ);
+                const float buoy =
+                    interp_pressure(eql_pres, pres_arr, buoy_arr, NZ);
                 if (buoy < 0) break;
             }
             if (pos_buoy_last > pos_buoy) {
@@ -196,7 +200,7 @@ void cape_cinh(Profile* prof, Parcel* pcl) noexcept {
 }
 
 void parcel_wobf(Profile* prof, Parcel* pcl) noexcept {
-    constexpr lifter_wobus lifter;
+    static constexpr lifter_wobus lifter;
     lift_parcel(lifter, prof, pcl);
     cape_cinh(prof, pcl);
 }

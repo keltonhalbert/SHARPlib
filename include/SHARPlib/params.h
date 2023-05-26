@@ -71,8 +71,8 @@ namespace sharp {
  */
 [[nodiscard]] WindComponents storm_motion_bunkers(
     Profile* prof, HeightLayer mean_wind_layer_agl,
-    HeightLayer wind_shear_layer_agl, bool leftMover = false,
-    bool pressureWeighted = false) noexcept;
+    HeightLayer wind_shear_layer_agl, const bool leftMover = false,
+    const bool pressureWeighted = false) noexcept;
 
 /**
  *  \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -96,7 +96,7 @@ namespace sharp {
  *  \param leftMover    Boolean flag for left or right deviant supercell
  */
 [[nodiscard]] WindComponents storm_motion_bunkers(
-    Profile* prof, bool leftMover = false) noexcept;
+    Profile* prof, const bool leftMover = false) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
