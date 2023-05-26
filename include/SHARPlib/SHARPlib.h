@@ -27,9 +27,10 @@
 
 namespace sharp {
 
-Profile *create_profile(float *pres, float *hght, float *tmpk, float *dwpk,
-                        float *wspd_or_u, float *wdir_or_v, int NZ,
-                        Source sounding_type, bool windComponents) {
+Profile *create_profile(const float pres[], const float hght[],
+                        const float tmpk[], const float dwpk[],
+                        const float wspd_or_u[], const float wdir_or_v[],
+                        int NZ, Source sounding_type, bool windComponents) {
     Profile *prof = new Profile(NZ, sounding_type);
 
     for (int k = 0; k < NZ; k++) {
