@@ -21,8 +21,8 @@
 
 namespace sharp {
 
-float interp_height(float height_val, const float* height_arr,
-                    const float* data_arr, int num_levs) noexcept {
+float interp_height(float height_val, const float height_arr[],
+                    const float data_arr[], int num_levs) noexcept {
 #ifndef NO_QC
     if (height_val == MISSING) return MISSING;
     // If the height value is beyond the top of the profile,
@@ -63,8 +63,8 @@ float interp_height(float height_val, const float* height_arr,
     return lerp(data_bot, data_top, dz_norm);
 }
 
-float interp_pressure(float pressure_val, const float* pressure_arr,
-                      const float* data_arr, int num_levs) noexcept {
+float interp_pressure(float pressure_val, const float pressure_arr[],
+                      const float data_arr[], int num_levs) noexcept {
 #ifndef NO_QC
     if (pressure_val == MISSING) return MISSING;
     // If the pressure value is beyond the top of the profile,
