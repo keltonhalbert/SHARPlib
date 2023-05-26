@@ -233,8 +233,9 @@ struct WindComponents {
  * \param num_levs  (length of arrays)
  * \return sharp::WindComponents    {mean_u, mean_v}
  */
-[[nodiscard]] WindComponents mean_wind(PressureLayer layer, const float* pres,
-                                       const float* u_wind, const float* v_wind,
+[[nodiscard]] WindComponents mean_wind(PressureLayer layer, const float pres[],
+                                       const float u_wind[],
+                                       const float v_wind[],
                                        int num_levs) noexcept;
 
 /**
@@ -256,9 +257,9 @@ struct WindComponents {
  * \return sharp::WindComponents    {mean_u, mean_v}
  */
 [[nodiscard]] WindComponents mean_wind_npw(PressureLayer layer,
-                                           const float* pres,
-                                           const float* u_wind,
-                                           const float* v_wind,
+                                           const float pres[],
+                                           const float u_wind[],
+                                           const float v_wind[],
                                            int num_levs) noexcept;
 
 /**
@@ -278,9 +279,9 @@ struct WindComponents {
  * \param num_levs  (length of arrays)
  * \return sharp::WindComponents    {shear_u, shear_v}
  */
-[[nodiscard]] WindComponents wind_shear(PressureLayer layer, const float* pres,
-                                        const float* u_wind,
-                                        const float* v_wind,
+[[nodiscard]] WindComponents wind_shear(PressureLayer layer, const float pres[],
+                                        const float u_wind[],
+                                        const float v_wind[],
                                         int num_levs) noexcept;
 
 /**
@@ -301,9 +302,9 @@ struct WindComponents {
  * \return sharp::WindComponents    {shear_u, shear_v}
  */
 [[nodiscard]] WindComponents wind_shear(HeightLayer layer_agl,
-                                        const float* height,
-                                        const float* u_wind,
-                                        const float* v_wind,
+                                        const float height[],
+                                        const float u_wind[],
+                                        const float v_wind[],
                                         int num_levs) noexcept;
 
 /**
@@ -331,8 +332,8 @@ struct WindComponents {
  *
  */
 [[nodiscard]] float helicity(HeightLayer layer_agl, WindComponents storm_motion,
-                             const float* height, const float* u_wind,
-                             const float* v_wind, int num_levs) noexcept;
+                             const float height[], const float u_wind[],
+                             const float v_wind[], int num_levs) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -362,8 +363,8 @@ struct WindComponents {
  *
  */
 [[nodiscard]] float helicity(PressureLayer layer, WindComponents storm_motion,
-                             const float* pressure, const float* height,
-                             const float* u_wind, const float* v_wind,
+                             const float pressure[], const float height[],
+                             const float u_wind[], const float v_wind[],
                              int num_levs) noexcept;
 
 }  // end namespace sharp
