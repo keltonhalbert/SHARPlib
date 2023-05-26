@@ -108,8 +108,8 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept {
     }
 }
 
-void find_lfc_el(Parcel* pcl, const float* pres_arr, const float* hght_arr,
-                 const float* buoy_arr, int NZ) noexcept {
+void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
+                 const float buoy_arr[], int NZ) noexcept {
     PressureLayer sat_lyr = {pcl->lcl_pressure, pres_arr[NZ - 1]};
     LayerIndex lyr_idx = get_layer_index(sat_lyr, pres_arr, NZ);
 

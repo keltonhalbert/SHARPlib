@@ -51,7 +51,7 @@ PressureLayer::PressureLayer(float bottom, float top, float delta) {
     this->delta = delta;
 }
 
-LayerIndex get_layer_index(PressureLayer& layer, const float* pressure,
+LayerIndex get_layer_index(PressureLayer& layer, const float pressure[],
                            int N) noexcept {
     constexpr auto bottom_comp = std::greater<float>();
     constexpr auto top_comp = std::less<float>();
@@ -59,7 +59,7 @@ LayerIndex get_layer_index(PressureLayer& layer, const float* pressure,
     return get_layer_index(layer, pressure, N, bottom_comp, top_comp);
 }
 
-LayerIndex get_layer_index(HeightLayer& layer, const float* height,
+LayerIndex get_layer_index(HeightLayer& layer, const float height[],
                            int N) noexcept {
     constexpr auto bottom_comp = std::less<float>();
     constexpr auto top_comp = std::greater<float>();
@@ -67,8 +67,9 @@ LayerIndex get_layer_index(HeightLayer& layer, const float* height,
     return get_layer_index(layer, height, N, bottom_comp, top_comp);
 }
 
-PressureLayer height_layer_to_pressure(HeightLayer layer, const float* pressure,
-                                       const float* height, int num_levs,
+PressureLayer height_layer_to_pressure(HeightLayer layer,
+                                       const float pressure[],
+                                       const float height[], int num_levs,
                                        bool isAGL) noexcept {
     if (isAGL) {
         layer.bottom += height[0];
@@ -81,8 +82,9 @@ PressureLayer height_layer_to_pressure(HeightLayer layer, const float* pressure,
     return {pbot, ptop};
 }
 
-HeightLayer pressure_layer_to_height(PressureLayer layer, const float* pressure,
-                                     const float* height, int num_levs,
+HeightLayer pressure_layer_to_height(PressureLayer layer,
+                                     const float pressure[],
+                                     const float height[], int num_levs,
                                      bool toAGL) noexcept {
     float zbot = interp_pressure(layer.bottom, pressure, height, num_levs);
     float ztop = interp_pressure(layer.top, pressure, height, num_levs);
@@ -95,8 +97,8 @@ HeightLayer pressure_layer_to_height(PressureLayer layer, const float* pressure,
     return {zbot, ztop};
 }
 
-float layer_mean(PressureLayer layer, const float* pressure,
-                 const float* data_arr, int num_levs) noexcept {
+float layer_mean(PressureLayer layer, const float pressure[],
+                 const float data_arr[], int num_levs) noexcept {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
         return MISSING;
@@ -116,8 +118,8 @@ float layer_mean(PressureLayer layer, const float* pressure,
     return mean;
 }
 
-float layer_mean(HeightLayer layer, const float* height, const float* pressure,
-                 const float* data_arr, int num_levs,
+float layer_mean(HeightLayer layer, const float height[],
+                 const float pressure[], const float data_arr[], int num_levs,
                  const bool isAGL) noexcept {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING)) {

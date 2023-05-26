@@ -305,8 +305,8 @@ float thetae(float pressure, float temperature, float dewpoint) noexcept {
     return theta(lift_top, lifted_temperature, THETA_REF_PRESSURE);
 }
 
-float lapse_rate(HeightLayer layer_agl, const float* height,
-                 const float* temperature, int num_levs) noexcept {
+float lapse_rate(HeightLayer layer_agl, const float height[],
+                 const float temperature[], int num_levs) noexcept {
 #ifndef NO_QC
     if ((layer_agl.bottom == MISSING) || (layer_agl.top == MISSING)) {
         return MISSING;
@@ -340,8 +340,8 @@ float lapse_rate(HeightLayer layer_agl, const float* height,
     return ((tmpc_u - tmpc_l) / dz) * -1000.0f;
 }
 
-float lapse_rate(PressureLayer layer, const float* pressure,
-                 const float* height, const float* temperature,
+float lapse_rate(PressureLayer layer, const float pressure[],
+                 const float height[], const float temperature[],
                  int num_levs) noexcept {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING)) {

@@ -406,8 +406,8 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \param num_levs      (length of arrays)
  * \return Temperature Lapse Rate (degC/km)
  */
-[[nodiscard]] float lapse_rate(HeightLayer layer_agl, const float* height,
-                               const float* temperature, int num_levs) noexcept;
+[[nodiscard]] float lapse_rate(HeightLayer layer_agl, const float height[],
+                               const float temperature[], int num_levs) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -425,8 +425,8 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \param num_levs      (length of arrays)
  * \return Temperature Lapse Rate (degC/km)
  */
-[[nodiscard]] float lapse_rate(PressureLayer layer, const float* pressure,
-                               const float* height, const float* temperature,
+[[nodiscard]] float lapse_rate(PressureLayer layer, const float pressure[],
+                               const float height[], const float temperature[],
                                int num_levs) noexcept;
 
 /**

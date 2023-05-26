@@ -222,8 +222,8 @@ float entrainment_cape(Profile *prof, Parcel *pcl) noexcept {
     if ((pcl->lfc_pressure == MISSING) || (pcl->lfc_pressure == MISSING)) {
         return 0.0;
     }
-    float *mse_diff = new float[prof->NZ];
-    float *mse_bar = new float[prof->NZ];
+    float* mse_diff = new float[prof->NZ];
+    float* mse_bar = new float[prof->NZ];
 
     // compute MSE_bar
     mse_bar[0] = prof->moist_static_energy[0];
