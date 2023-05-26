@@ -64,15 +64,15 @@ float vector_magnitude_precise(float u_comp, float v_comp) noexcept {
 }
 
 WindVector components_to_vector(float u_comp, float v_comp) noexcept {
-    float wind_speed = vector_magnitude(u_comp, v_comp);
-    float wind_direction = vector_angle(u_comp, v_comp);
+    const float wind_speed = vector_magnitude(u_comp, v_comp);
+    const float wind_direction = vector_angle(u_comp, v_comp);
 
     return {wind_speed, wind_direction};
 }
 
 WindVector components_to_vector(WindComponents comp) noexcept {
-    float wind_speed = vector_magnitude(comp.u, comp.v);
-    float wind_direction = vector_angle(comp.u, comp.v);
+    const float wind_speed = vector_magnitude(comp.u, comp.v);
+    const float wind_direction = vector_angle(comp.u, comp.v);
 
     return {wind_speed, wind_direction};
 }
@@ -84,8 +84,8 @@ WindComponents vector_to_components(float wind_speed,
         return {MISSING, MISSING};
 #endif
     wind_direction *= (PI / 180.0);
-    float u_comp = -1.0 * wind_speed * std::sin(wind_direction);
-    float v_comp = -1.0 * wind_speed * std::cos(wind_direction);
+    const float u_comp = -1.0 * wind_speed * std::sin(wind_direction);
+    const float v_comp = -1.0 * wind_speed * std::cos(wind_direction);
 
     return {u_comp, v_comp};
 }
@@ -95,9 +95,9 @@ WindComponents vector_to_components(WindVector vect) noexcept {
     if ((vect.speed == MISSING) || (vect.direction == MISSING))
         return {MISSING, MISSING};
 #endif
-    float wind_direction = vect.direction * (PI / 180.0);
-    float u_comp = -1.0 * vect.speed * std::sin(wind_direction);
-    float v_comp = -1.0 * vect.speed * std::cos(wind_direction);
+    const float wind_direction = vect.direction * (PI / 180.0);
+    const float u_comp = -1.0 * vect.speed * std::sin(wind_direction);
+    const float v_comp = -1.0 * vect.speed * std::cos(wind_direction);
 
     return {u_comp, v_comp};
 }
@@ -125,8 +125,8 @@ WindComponents mean_wind(PressureLayer layer, const float pres[],
         pr_lvl += layer.delta;
     }
 
-    float mean_u = u_sum / weight;
-    float mean_v = v_sum / weight;
+    const float mean_u = u_sum / weight;
+    const float mean_v = v_sum / weight;
 
     return {mean_u, mean_v};
 }
@@ -159,8 +159,8 @@ WindComponents mean_wind_npw(PressureLayer layer, const float pres[],
         pr_lvl += layer.delta;
     }
 
-    float mean_u = u_sum / weight;
-    float mean_v = v_sum / weight;
+    const float mean_u = u_sum / weight;
+    const float mean_v = v_sum / weight;
 
     return {mean_u, mean_v};
 }
@@ -176,11 +176,11 @@ WindComponents wind_shear(PressureLayer layer, const float pres[],
     if (layer.bottom > pres[0]) layer.bottom = pres[0];
     if (layer.top < pres[num_levs - 1]) layer.top = pres[num_levs - 1];
 
-    float u_bot = interp_pressure(layer.bottom, pres, u_wind, num_levs);
-    float u_top = interp_pressure(layer.top, pres, u_wind, num_levs);
+    const float u_bot = interp_pressure(layer.bottom, pres, u_wind, num_levs);
+    const float u_top = interp_pressure(layer.top, pres, u_wind, num_levs);
 
-    float v_bot = interp_pressure(layer.bottom, pres, v_wind, num_levs);
-    float v_top = interp_pressure(layer.top, pres, v_wind, num_levs);
+    const float v_bot = interp_pressure(layer.bottom, pres, v_wind, num_levs);
+    const float v_top = interp_pressure(layer.top, pres, v_wind, num_levs);
 
 #ifndef NO_QC
     if ((u_bot == MISSING) || (v_bot == MISSING) || (u_top == MISSING) ||
@@ -208,11 +208,11 @@ WindComponents wind_shear(HeightLayer layer_agl, const float height[],
     if (layer_agl.top > height[num_levs - 1])
         layer_agl.top = height[num_levs - 1];
 
-    float u_bot = interp_height(layer_agl.bottom, height, u_wind, num_levs);
-    float u_top = interp_height(layer_agl.top, height, u_wind, num_levs);
+    const float u_bot = interp_height(layer_agl.bottom, height, u_wind, num_levs);
+    const float u_top = interp_height(layer_agl.top, height, u_wind, num_levs);
 
-    float v_bot = interp_height(layer_agl.bottom, height, v_wind, num_levs);
-    float v_top = interp_height(layer_agl.top, height, v_wind, num_levs);
+    const float v_bot = interp_height(layer_agl.bottom, height, v_wind, num_levs);
+    const float v_top = interp_height(layer_agl.top, height, v_wind, num_levs);
 
 #ifndef NO_QC
     if ((u_bot == MISSING) || (v_bot == MISSING) || (u_top == MISSING) ||

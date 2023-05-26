@@ -222,8 +222,8 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     PressureLayer dry_lyr = {pcl->pres, pcl->lcl_pressure};
     PressureLayer sat_lyr = {pcl->lcl_pressure, prof->pres[prof->NZ - 1]};
     // The LayerIndex excludes the top and bottom for interpolation reasons
-    LayerIndex dry_idx = get_layer_index(dry_lyr, prof->pres, prof->NZ);
-    LayerIndex sat_idx = get_layer_index(sat_lyr, prof->pres, prof->NZ);
+    const LayerIndex dry_idx = get_layer_index(dry_lyr, prof->pres, prof->NZ);
+    const LayerIndex sat_idx = get_layer_index(sat_lyr, prof->pres, prof->NZ);
 
 	// zero out any residual buoyancy from
 	// other parcels that may have been lifted
@@ -235,19 +235,21 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     // Virtual potential temperature (Theta-V)
     // is conserved for a parcels dry ascent to the LCL
     for (int k = dry_idx.kbot; k < dry_idx.ktop+1; ++k) {
-        float pcl_vtmp = theta(THETA_REF_PRESSURE, thetav_lcl, prof->pres[k]);
+        const float pcl_vtmp =
+            theta(THETA_REF_PRESSURE, thetav_lcl, prof->pres[k]);
         prof->buoyancy[k] = buoyancy(pcl_vtmp, prof->vtmp[k]);
     }
 
     // fill the array with the moist parcel buoyancy
     for (int k = sat_idx.kbot; k < prof->NZ; ++k) {
         // compute above-lcl buoyancy here
-        float pcl_pres = prof->pres[k];
-        float pcl_tmpk = liftpcl(pres_lcl, tmpk_lcl, pcl_pres);
+        const float pcl_pres = prof->pres[k];
+        const float pcl_tmpk = liftpcl(pres_lcl, tmpk_lcl, pcl_pres);
         // parcel is saturated, so temperature and dewpoint are same
-        float pcl_vtmp = virtual_temperature(pcl_pres, pcl_tmpk, pcl_tmpk);
-        float env_vtmp = prof->vtmp[k];
-        float buoy = buoyancy(pcl_vtmp, env_vtmp);
+        const float pcl_vtmp =
+            virtual_temperature(pcl_pres, pcl_tmpk, pcl_tmpk);
+        const float env_vtmp = prof->vtmp[k];
+        const float buoy = buoyancy(pcl_vtmp, env_vtmp);
 		prof->buoyancy[k] = buoy;
     }
 }

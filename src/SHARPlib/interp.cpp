@@ -31,7 +31,7 @@ float interp_height(float height_val, const float height_arr[],
         return MISSING;
 #endif
 
-    constexpr auto comp = std::less<float>();
+    static constexpr auto comp = std::less<float>();
     int idx_top = upper_bound(height_arr, num_levs, height_val, comp);
     int idx_bot = idx_top - 1;
 
@@ -50,14 +50,14 @@ float interp_height(float height_val, const float height_arr[],
         return MISSING;
 #endif
 
-    float height_bot = height_arr[idx_bot];
-    float height_top = height_arr[idx_top];
-    float data_bot = data_arr[idx_bot];
-    float data_top = data_arr[idx_top];
+    const float height_bot = height_arr[idx_bot];
+    const float height_top = height_arr[idx_top];
+    const float data_bot = data_arr[idx_bot];
+    const float data_top = data_arr[idx_top];
 
     // normalize the distance between values
     // to a range of 0-1 for the lerp routine
-    float dz_norm = (height_val - height_bot) / (height_top - height_bot);
+    const float dz_norm = (height_val - height_bot) / (height_top - height_bot);
 
     // return the linear interpolation
     return lerp(data_bot, data_top, dz_norm);
@@ -75,7 +75,7 @@ float interp_pressure(float pressure_val, const float pressure_arr[],
     }
 #endif
 
-    constexpr auto comp = std::greater<float>();
+    static constexpr auto comp = std::greater<float>();
     int idx_top = upper_bound(pressure_arr, num_levs, pressure_val, comp);
     int idx_bot = idx_top - 1;
 
@@ -94,16 +94,17 @@ float interp_pressure(float pressure_val, const float pressure_arr[],
         return MISSING;
 #endif
 
-    float pressure_bot = pressure_arr[idx_bot];
-    float pressure_top = pressure_arr[idx_top];
-    float data_bot = data_arr[idx_bot];
-    float data_top = data_arr[idx_top];
+    const float pressure_bot = pressure_arr[idx_bot];
+    const float pressure_top = pressure_arr[idx_top];
+    const float data_bot = data_arr[idx_bot];
+    const float data_top = data_arr[idx_top];
 
     // In order to linearly interpolate pressure properly, distance needs
     // to be calculated in log10(pressure) coordinates and normalized
     // between 0 and 1 for the lerp routine.
-    float dp_norm = (std::log10(pressure_bot) - std::log10(pressure_val)) /
-                    (std::log10(pressure_bot) - std::log10(pressure_top));
+    const float dp_norm =
+        (std::log10(pressure_bot) - std::log10(pressure_val)) /
+        (std::log10(pressure_bot) - std::log10(pressure_top));
 
     // return the linear interpolation
     return lerp(data_bot, data_top, dp_norm);
