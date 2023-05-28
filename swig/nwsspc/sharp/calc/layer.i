@@ -23,12 +23,12 @@ import_array();
 %}
 
 /* Set up an argument typemap for our arrays */
-%apply (float* IN_ARRAY1, int DIM1) { (const float* pressure, int num_levs) };
-%apply (float* IN_ARRAY1, int DIM1) { (const float* height, int num_levs) };
+%apply (float* IN_ARRAY1, int DIM1) { (const float pressure[], const int N) };
+%apply (float* IN_ARRAY1, int DIM1) { (const float height[], const int N) };
 
 %apply (float* IN_ARRAY1, int DIM1) {
-        (const float* pressure, int NZ1),
-        (const float* height, int NZ2)
+        (const float* pressure, const int NZ1),
+        (const float* height, const int NZ2)
 };
 
 %rename (pressure_layer_to_height) _pres_lyr_to_hght;
@@ -49,8 +49,8 @@ import_array();
 %inline %{
 
 sharp::HeightLayer _pres_lyr_to_hght(sharp::PressureLayer layer,
-                            const float* pressure, int NZ1,
-                            const float* height, int NZ2,
+                            const float* pressure, const int NZ1,
+                            const float* height, const int NZ2,
                             bool toAGL) {
     if ((NZ1 != NZ2)) {
         PyErr_Format(
@@ -64,8 +64,8 @@ sharp::HeightLayer _pres_lyr_to_hght(sharp::PressureLayer layer,
 }
 
 sharp::PressureLayer _hght_lyr_to_pres(sharp::HeightLayer layer,
-                            const float* pressure, int NZ1,
-                            const float* height, int NZ2,
+                            const float* pressure, const int NZ1,
+                            const float* height, const int NZ2,
                             bool isAGL) {
     if ((NZ1 != NZ2)) {
         PyErr_Format(

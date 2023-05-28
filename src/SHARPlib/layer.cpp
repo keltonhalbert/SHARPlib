@@ -52,7 +52,7 @@ PressureLayer::PressureLayer(float bottom, float top, float delta) {
 }
 
 LayerIndex get_layer_index(PressureLayer& layer, const float pressure[],
-                           int N) noexcept {
+                           const int N) noexcept {
     static constexpr auto bottom_comp = std::greater<float>();
     static constexpr auto top_comp = std::less<float>();
 
@@ -60,7 +60,7 @@ LayerIndex get_layer_index(PressureLayer& layer, const float pressure[],
 }
 
 LayerIndex get_layer_index(HeightLayer& layer, const float height[],
-                           int N) noexcept {
+                           const int N) noexcept {
     static constexpr auto bottom_comp = std::less<float>();
     static constexpr auto top_comp = std::greater<float>();
 
@@ -69,25 +69,25 @@ LayerIndex get_layer_index(HeightLayer& layer, const float height[],
 
 PressureLayer height_layer_to_pressure(HeightLayer layer,
                                        const float pressure[],
-                                       const float height[], int num_levs,
+                                       const float height[], const int N,
                                        bool isAGL) noexcept {
     if (isAGL) {
         layer.bottom += height[0];
         layer.top += height[0];
     }
 
-    const float pbot = interp_height(layer.bottom, height, pressure, num_levs);
-    const float ptop = interp_height(layer.top, height, pressure, num_levs);
+    const float pbot = interp_height(layer.bottom, height, pressure, N);
+    const float ptop = interp_height(layer.top, height, pressure, N);
 
     return {pbot, ptop};
 }
 
 HeightLayer pressure_layer_to_height(PressureLayer layer,
                                      const float pressure[],
-                                     const float height[], int num_levs,
+                                     const float height[], const int N,
                                      bool toAGL) noexcept {
-    float zbot = interp_pressure(layer.bottom, pressure, height, num_levs);
-    float ztop = interp_pressure(layer.top, pressure, height, num_levs);
+    float zbot = interp_pressure(layer.bottom, pressure, height, N);
+    float ztop = interp_pressure(layer.top, pressure, height, N);
 
     if (toAGL) {
         zbot -= height[0];
@@ -98,7 +98,7 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
 }
 
 float layer_mean(PressureLayer layer, const float pressure[],
-                 const float data_arr[], int num_levs) noexcept {
+                 const float data_arr[], const int N) noexcept {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
         return MISSING;
@@ -109,17 +109,17 @@ float layer_mean(PressureLayer layer, const float pressure[],
         layer.bottom = pressure[0];
     }
 
-    if (layer.top < pressure[num_levs - 1]) {
-        layer.top = pressure[num_levs - 1];
+    if (layer.top < pressure[N - 1]) {
+        layer.top = pressure[N - 1];
     }
 
     const float mean =
-        integrate_layer_trapz(layer, data_arr, pressure, num_levs, 0, true);
+        integrate_layer_trapz(layer, data_arr, pressure, N, 0, true);
     return mean;
 }
 
 float layer_mean(HeightLayer layer, const float height[],
-                 const float pressure[], const float data_arr[], int num_levs,
+                 const float pressure[], const float data_arr[], const int N,
                  const bool isAGL) noexcept {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
@@ -136,15 +136,15 @@ float layer_mean(HeightLayer layer, const float height[],
         layer.bottom = height[0];
     }
 
-    if (layer.top > height[num_levs - 1]) {
-        layer.top = height[num_levs - 1];
+    if (layer.top > height[N - 1]) {
+        layer.top = height[N - 1];
     }
 
     PressureLayer pres_layer =
-        height_layer_to_pressure(layer, pressure, height, num_levs, false);
+        height_layer_to_pressure(layer, pressure, height, N, false);
 
     const float mean = integrate_layer_trapz(pres_layer, data_arr, pressure,
-                                             num_levs, 0, true);
+                                             N, 0, true);
     return mean;
 }
 

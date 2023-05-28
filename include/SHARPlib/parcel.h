@@ -271,7 +271,7 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
  * \param NZ        The length of the arrays
  */
 void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
-                 const float buoy_arr[], int NZ) noexcept;
+                 const float buoy_arr[], const int N) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO

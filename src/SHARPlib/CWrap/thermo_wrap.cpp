@@ -71,7 +71,7 @@ float sharp_thetae(float pressure, float temperature, float dewpoint) {
 
 float sharp_HeightLayer_lapse_rate(sharp_HeightLayer_t* layer_agl,
                                    const float* height,
-                                   const float* temperature, int NZ) {
+                                   const float* temperature, const int NZ) {
     if (layer_agl == NULL) return sharp::MISSING;
     sharp::HeightLayer* h = static_cast<sharp::HeightLayer*>(layer_agl->obj);
     return sharp::lapse_rate(*h, height, temperature, NZ);
@@ -79,7 +79,7 @@ float sharp_HeightLayer_lapse_rate(sharp_HeightLayer_t* layer_agl,
 
 float sharp_PressureLayer_lapse_rate(sharp_PressureLayer_t* layer,
                                      const float* pressure, const float* height,
-                                     const float* temperature, int NZ) {
+                                     const float* temperature, const int NZ) {
     if (layer == NULL) return sharp::MISSING;
     sharp::PressureLayer* p = static_cast<sharp::PressureLayer*>(layer->obj);
     return sharp::lapse_rate(*p, pressure, height, temperature, NZ);

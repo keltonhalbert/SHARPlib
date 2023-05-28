@@ -45,9 +45,8 @@ namespace sharp {
  * \param cinh_thresh   The CINH threshold that defines the EIL.<!--
  *                      ->> Default is -250 J/kg.
  */
-[[nodiscard]] PressureLayer effective_inflow_layer(Profile* prof,
-                                                   float cape_thresh,
-                                                   float cinh_thresh) noexcept;
+[[nodiscard]] PressureLayer effective_inflow_layer(
+    Profile* prof, const float cape_thresh, const float cinh_thresh) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO

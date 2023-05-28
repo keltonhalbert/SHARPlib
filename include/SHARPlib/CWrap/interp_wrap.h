@@ -20,10 +20,10 @@ extern "C" {
 #endif
 
 float sharp_interp_height(float height_val, const float* height_arr,
-                          const float* data_arr, int NZ);
+                          const float* data_arr, const int NZ);
 
 float sharp_interp_pressure(float pressure_val, const float* pressure_arr,
-                            const float* data_arr, int NZ);
+                            const float* data_arr, const int NZ);
 
 #ifdef __cplusplus
 } // extern "C"

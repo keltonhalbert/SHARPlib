@@ -24,7 +24,7 @@ struct sharp_Profile {
 };
 typedef struct sharp_Profile sharp_Profile_t;
 
-sharp_Profile_t* sharp_Profile_create(int NZ, int sounding_type); 
+sharp_Profile_t* sharp_Profile_create(const int NZ, int sounding_type); 
 void sharp_Profile_delete(sharp_Profile_t* p);
 
 float* sharp_Profile_get_pres_ptr(sharp_Profile_t* p);

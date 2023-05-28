@@ -146,8 +146,10 @@ struct LayerIndex {
  * \return       sharp::LayerIndex {kbot, ktop}
  */
 template <typename L, typename Cb, typename Ct>
-[[nodiscard]] constexpr LayerIndex get_layer_index(L& layer, const float coord[],
-                                                   int N, const Cb bottom_comp,
+[[nodiscard]] constexpr LayerIndex get_layer_index(L& layer,
+                                                   const float coord[],
+                                                   const int N,
+                                                   const Cb bottom_comp,
                                                    const Ct top_comp) noexcept {
     if (bottom_comp(layer.bottom, coord[0])) {
         layer.bottom = coord[0];
@@ -193,7 +195,7 @@ template <typename L, typename Cb, typename Ct>
  */
 [[nodiscard]] LayerIndex get_layer_index(PressureLayer& layer,
                                          const float pressure[],
-                                         int num_levs) noexcept;
+                                         const int N) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -219,7 +221,7 @@ template <typename L, typename Cb, typename Ct>
  */
 [[nodiscard]] LayerIndex get_layer_index(HeightLayer& layer,
                                          const float height[],
-                                         int num_levs) noexcept;
+                                         const int N) noexcept;
 
 /*
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -240,7 +242,7 @@ template <typename L, typename Cb, typename Ct>
  */
 [[nodiscard]] PressureLayer height_layer_to_pressure(
     HeightLayer layer, const float pressure[], const float height[],
-    int num_levs, bool isAGL = false) noexcept;
+    const int N, const bool isAGL = false) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -259,11 +261,9 @@ template <typename L, typename Cb, typename Ct>
  *
  * \return sharp::HeightLayer
  */
-[[nodiscard]] HeightLayer pressure_layer_to_height(PressureLayer layer,
-                                                   const float pressure[],
-                                                   const float height[],
-                                                   int num_levs,
-                                                   bool toAGL = false) noexcept;
+[[nodiscard]] HeightLayer pressure_layer_to_height(
+    PressureLayer layer, const float pressure[], const float height[],
+    const int N, const bool toAGL = false) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -292,7 +292,7 @@ template <typename L, typename Cb, typename Ct>
  */
 template <typename L, typename C>
 [[nodiscard]] constexpr float layer_minmax(L layer, const float coord_arr[],
-                                           const float data_arr[], int N,
+                                           const float data_arr[], const int N,
                                            float* lvl_min_or_max,
                                            const C comp) noexcept {
 #ifndef NO_QC
@@ -354,7 +354,7 @@ template <typename L, typename C>
  */
 template <typename L>
 constexpr float layer_min(L layer, const float coord_arr[],
-                          const float data_arr[], int N,
+                          const float data_arr[], const int N,
                           float* lvl_of_min = nullptr) noexcept {
     constexpr auto comp = std::less<float>();
     return layer_minmax(layer, coord_arr, data_arr, N, lvl_of_min, comp);
@@ -383,7 +383,7 @@ constexpr float layer_min(L layer, const float coord_arr[],
  */
 template <typename L>
 constexpr float layer_max(L layer, const float coord_arr[],
-                          const float data_arr[], int N,
+                          const float data_arr[], const int N,
                           float* lvl_of_max = nullptr) noexcept {
     constexpr auto comp = std::greater<float>();
     return layer_minmax(layer, coord_arr, data_arr, N, lvl_of_max, comp);
@@ -412,7 +412,7 @@ constexpr float layer_max(L layer, const float coord_arr[],
  */
 template <typename T, typename L>
 [[nodiscard]] constexpr T integrate_layer_trapz(
-    L layer, const T var_array[], const T coord_array[], int N,
+    L layer, const T var_array[], const T coord_array[], const int N,
     const int integ_sign = 0, const bool weighted = false) noexcept {
 
     T var_lyr_bottom;
@@ -423,6 +423,8 @@ template <typename T, typename L>
 
     T integrated = 0.0;
     T weights = 0.0;
+
+	const bool isign = std::signbit(integ_sign);
 
     // using constexpr means that this if statement optimizes
     // away at compile time since the layer coordinate is known
@@ -449,27 +451,27 @@ template <typename T, typename L>
         T coord_top = coord_array[k + 1];
         T var_top = var_array[k + 1];
 
-        T layer_avg = __integ_trapz(var_top, var_bottom, coord_top,
+        T layer_avg = _integ_trapz(var_top, var_bottom, coord_top,
                                     coord_bottom, weights, weighted);
 
         T cond = ((!integ_sign) |
-                    (std::signbit(integ_sign) == std::signbit(layer_avg)));
+                    (isign == std::signbit(layer_avg)));
         integrated += cond * layer_avg;
     }
 
     // interpolated bottom of layer
-    T layer_avg = __integ_trapz(var_array[idx.kbot], var_lyr_bottom,
+    T layer_avg = _integ_trapz(var_array[idx.kbot], var_lyr_bottom,
                                 coord_array[idx.kbot], coord_lyr_bottom,
                                 weights, weighted);
 	T cond = ((!integ_sign) |
-				(std::signbit(integ_sign) == std::signbit(layer_avg)));
+				(isign == std::signbit(layer_avg)));
     integrated += cond * layer_avg;
 
     // interpolated top of layer
-    layer_avg = __integ_trapz(var_lyr_top, var_array[idx.ktop], coord_lyr_top,
+    layer_avg = _integ_trapz(var_lyr_top, var_array[idx.ktop], coord_lyr_top,
                               coord_array[idx.ktop], weights, weighted);
 	cond = ((!integ_sign) |
-				(std::signbit(integ_sign) == std::signbit(layer_avg)));
+				(isign == std::signbit(layer_avg)));
     integrated += cond * layer_avg;
 
     if constexpr (layer.coord == LayerCoordinate::pressure) {
@@ -498,7 +500,7 @@ template <typename T, typename L>
  *
  */
 [[nodiscard]] float layer_mean(PressureLayer layer, const float pressure[],
-                               const float data_arr[], int num_levs) noexcept;
+                               const float data_arr[], const int N) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -521,7 +523,7 @@ template <typename T, typename L>
  */
 [[nodiscard]] float layer_mean(HeightLayer layer, const float height[],
                                const float pressure[], const float data_arr[],
-                               int num_levs, const bool isAGL = false) noexcept;
+                               const int N, const bool isAGL = false) noexcept;
 
 }  // end namespace sharp
 

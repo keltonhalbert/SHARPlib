@@ -19,6 +19,34 @@ TEST_CASE("Testing PressureLayer structs") {
         );
 }
 
+TEST_CASE("Testing layer bounds checking and searching") {
+    constexpr int N = 10;
+    constexpr float pres[N] = {1000.0, 900.0, 800.0, 700.0, 600.0,
+                               500.0,  400.0, 300.0, 200.0, 100.0};
+
+    sharp::PressureLayer out_of_bounds_1 = {1000.0, 50.0};
+    sharp::PressureLayer out_of_bounds_2 = {1100.0, 100.0};
+    sharp::PressureLayer out_of_bounds_3 = {1100.0, 50.0};
+    sharp::PressureLayer out_of_bounds_4 = {50.0, 25.0};
+    sharp::PressureLayer out_of_bounds_5 = {1150.0, 1100.0};
+
+	const sharp::LayerIndex idx_1 = sharp::get_layer_index(out_of_bounds_1, pres, N);
+	const sharp::LayerIndex idx_2 = sharp::get_layer_index(out_of_bounds_2, pres, N);
+	const sharp::LayerIndex idx_3 = sharp::get_layer_index(out_of_bounds_3, pres, N);
+	const sharp::LayerIndex idx_4 = sharp::get_layer_index(out_of_bounds_4, pres, N);
+	const sharp::LayerIndex idx_5 = sharp::get_layer_index(out_of_bounds_5, pres, N);
+
+	CHECK(idx_1.kbot == 0);
+	CHECK(idx_1.ktop == 9);
+	CHECK(idx_2.kbot == 0);
+	CHECK(idx_2.ktop == 9);
+	CHECK(idx_3.kbot == 0);
+	CHECK(idx_3.ktop == 9);
+	CHECK(idx_4.kbot == 9);
+	CHECK(idx_4.ktop == 9);
+	CHECK(idx_5.kbot == 0);
+	CHECK(idx_5.ktop == 0);
+}
 
 TEST_CASE("Testing layer_max over pressure layer") {
 

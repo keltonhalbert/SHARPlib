@@ -57,11 +57,11 @@ float sharp_thetae(float pressure, float temperature, float dewpoint);
 
 float sharp_HeightLayer_lapse_rate(sharp_HeightLayer_t* layer_agl,
                                    const float* height,
-                                   const float* temperature, int num_levs);
+                                   const float* temperature, const int NZ);
 
 float sharp_PressureLayer_lapse_rate(sharp_PressureLayer_t* layer,
                                      const float* pressure, const float* height,
-                                     const float* temperature, int num_levs);
+                                     const float* temperature, const int NZ);
 
 float sharp_buoyancy(float pcl_temperature, float env_temperature);
 
