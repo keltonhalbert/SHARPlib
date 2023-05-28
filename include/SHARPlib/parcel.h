@@ -115,6 +115,7 @@ enum class LPL : int {
      * \brief Mean Effective Inflow Layer Parcel
      */
     EIL = 6,  // Mean effective inflow layer
+	END,
 };
 
 /**

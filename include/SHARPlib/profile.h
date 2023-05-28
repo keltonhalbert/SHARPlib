@@ -27,6 +27,7 @@ enum class Source : int {
     Observed = 0,
     PFC = 1,
     ACARS = 2,
+	END,
 };
 
 /**
