@@ -407,7 +407,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \return Temperature Lapse Rate (degC/km)
  */
 [[nodiscard]] float lapse_rate(HeightLayer layer_agl, const float height[],
-                               const float temperature[], int num_levs) noexcept;
+                               const float temperature[], const int N) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -427,7 +427,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  */
 [[nodiscard]] float lapse_rate(PressureLayer layer, const float pressure[],
                                const float height[], const float temperature[],
-                               int num_levs) noexcept;
+                               const int N) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO

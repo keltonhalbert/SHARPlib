@@ -64,7 +64,7 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
     float eff_ptop = MISSING;
 
     // search for the effective inflow bottom
-    for (int k = 0; k <= prof->NZ - 1; k++) {
+    for (int k = 0; k < prof->NZ; k++) {
 #ifndef NO_QC
         if ((prof->tmpk[k] == MISSING) || (prof->dwpk[k] == MISSING)) {
             continue;
@@ -86,7 +86,7 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
 
     if (eff_pbot == MISSING) return {MISSING, MISSING};
 
-    for (int k = eff_kbot + 1; k <= prof->NZ - 1; k++) {
+    for (int k = eff_kbot + 1; k < prof->NZ; k++) {
 #ifndef NO_QC
         if ((prof->tmpk[k] == MISSING) || (prof->dwpk[k] == MISSING)) {
             continue;
@@ -263,7 +263,7 @@ float entrainment_cape(Profile *prof, Parcel *pcl) noexcept {
     // loop from the surface to the last level before 1km AGL.
     float V_sr_mean = 0.0;
     int count = 0;
-    for (int k = 0; k <= layer_idx.ktop; ++k) {
+    for (int k = 0; k < layer_idx.ktop+1; ++k) {
 #ifndef NO_QC
         if ((prof->uwin[k] == MISSING) || (prof->vwin[k] == MISSING)) {
             continue;

@@ -91,7 +91,7 @@ void sharp_lift_parcel_wobf(sharp_Profile_t* prof, sharp_Parcel_t* pcl) {
 }
 
 void sharp_find_lfc_el(sharp_Parcel_t* pcl, const float* pres,
-                       const float* hght, const float* buoy, int NZ) {
+                       const float* hght, const float* buoy, const int NZ) {
     if (pcl == NULL) return;
     sharp::Parcel* pc = static_cast<sharp::Parcel*>(pcl->obj);
     sharp::find_lfc_el(pc, pres, hght, buoy, NZ);

@@ -132,7 +132,7 @@ struct Profile {
     /**
      * \brief The number of vertical levels present / the length of the arrays.
      */
-    int NZ;
+    const int NZ;
 
     /**
      * \brief The type of soungind profile (e.g. Observed, PFC)
@@ -144,7 +144,7 @@ struct Profile {
      */
     Profile(int num_levels, Source sounding_type);
 
-    Profile(){};
+    Profile() = delete;
 
     // Destructor that deallocates arrays
     ~Profile();

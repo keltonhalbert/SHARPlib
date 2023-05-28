@@ -236,7 +236,7 @@ struct WindComponents {
 [[nodiscard]] WindComponents mean_wind(PressureLayer layer, const float pres[],
                                        const float u_wind[],
                                        const float v_wind[],
-                                       int num_levs) noexcept;
+                                       const int N) noexcept;
 
 /**
  *
@@ -260,7 +260,7 @@ struct WindComponents {
                                            const float pres[],
                                            const float u_wind[],
                                            const float v_wind[],
-                                           int num_levs) noexcept;
+                                           const int N) noexcept;
 
 /**
  *
@@ -282,7 +282,7 @@ struct WindComponents {
 [[nodiscard]] WindComponents wind_shear(PressureLayer layer, const float pres[],
                                         const float u_wind[],
                                         const float v_wind[],
-                                        int num_levs) noexcept;
+                                        const int N) noexcept;
 
 /**
  *
@@ -305,7 +305,7 @@ struct WindComponents {
                                         const float height[],
                                         const float u_wind[],
                                         const float v_wind[],
-                                        int num_levs) noexcept;
+                                        const int N) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -333,7 +333,7 @@ struct WindComponents {
  */
 [[nodiscard]] float helicity(HeightLayer layer_agl, WindComponents storm_motion,
                              const float height[], const float u_wind[],
-                             const float v_wind[], int num_levs) noexcept;
+                             const float v_wind[], const int N) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -365,7 +365,7 @@ struct WindComponents {
 [[nodiscard]] float helicity(PressureLayer layer, WindComponents storm_motion,
                              const float pressure[], const float height[],
                              const float u_wind[], const float v_wind[],
-                             int num_levs) noexcept;
+                             const int N) noexcept;
 
 }  // end namespace sharp
 

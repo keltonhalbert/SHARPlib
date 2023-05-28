@@ -306,7 +306,7 @@ float thetae(float pressure, float temperature, float dewpoint) noexcept {
 }
 
 float lapse_rate(HeightLayer layer_agl, const float height[],
-                 const float temperature[], int num_levs) noexcept {
+                 const float temperature[], const int N) noexcept {
 #ifndef NO_QC
     if ((layer_agl.bottom == MISSING) || (layer_agl.top == MISSING)) {
         return MISSING;
@@ -321,14 +321,14 @@ float lapse_rate(HeightLayer layer_agl, const float height[],
     if (layer_agl.bottom < height[0]) {
         layer_agl.bottom = height[0];
     }
-    if (layer_agl.top > height[num_levs - 1]) {
-        layer_agl.top = height[num_levs - 1];
+    if (layer_agl.top > height[N - 1]) {
+        layer_agl.top = height[N - 1];
     }
 
     // lower and upper temperature
     const float tmpc_l =
-        interp_height(layer_agl.bottom, height, temperature, num_levs);
-    const float tmpc_u = interp_height(layer_agl.top, height, temperature, num_levs);
+        interp_height(layer_agl.bottom, height, temperature, N);
+    const float tmpc_u = interp_height(layer_agl.top, height, temperature, N);
 #ifndef NO_QC
     if ((tmpc_l == MISSING) || (tmpc_u == MISSING)) {
         return MISSING;
@@ -342,7 +342,7 @@ float lapse_rate(HeightLayer layer_agl, const float height[],
 
 float lapse_rate(PressureLayer layer, const float pressure[],
                  const float height[], const float temperature[],
-                 int num_levs) noexcept {
+                 const int N) noexcept {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
         return MISSING;
@@ -353,14 +353,14 @@ float lapse_rate(PressureLayer layer, const float pressure[],
     if (layer.bottom > pressure[0]) {
         layer.bottom = pressure[0];
     }
-    if (layer.top < pressure[num_levs - 1]) {
-        layer.top = pressure[num_levs - 1];
+    if (layer.top < pressure[N - 1]) {
+        layer.top = pressure[N - 1];
     }
 
     HeightLayer h_layer =
-        pressure_layer_to_height(layer, pressure, height, num_levs, true);
+        pressure_layer_to_height(layer, pressure, height, N, true);
 
-    return lapse_rate(h_layer, height, temperature, num_levs);
+    return lapse_rate(h_layer, height, temperature, N);
 }
 
 float buoyancy(float pcl_temperature, float env_temperature) noexcept {

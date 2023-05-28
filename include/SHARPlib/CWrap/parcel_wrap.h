@@ -49,7 +49,7 @@ void sharp_define_custom_parcel(sharp_Parcel_t* pcl, float pres, float tmpk,
 void sharp_lift_parcel_wobf(sharp_Profile_t* prof, sharp_Parcel_t* pcl);
 
 void sharp_find_lfc_el(sharp_Parcel_t* pcl, const float* pres,
-                       const float* hght, const float* buoy, int NZ);
+                       const float* hght, const float* buoy, const int NZ);
 
 void sharp_cape_cinh(sharp_Profile_t* prof, sharp_Parcel_t* pcl);
 

@@ -121,7 +121,7 @@ template <typename T, typename C = std::less<>>
  * \return             The area under the curve
  */
 template <typename _T>
-[[nodiscard]] inline constexpr _T __integ_trapz(
+[[nodiscard]] inline constexpr _T _integ_trapz(
     _T var_top, _T var_bottom, _T coord_top, _T coord_bottom, _T& weights,
     const bool weighted = false) noexcept {
     weights += (weighted) * (coord_top - coord_bottom);

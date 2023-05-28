@@ -21,7 +21,7 @@ namespace sharp {
  * of num_levs, and an integer describing what kind
  * of sounding it is (oberved, model, etc).
  */
-Profile::Profile(int num_levs, Source sounding_type) {
+Profile::Profile(int num_levs, Source sounding_type) : NZ(num_levs) {
     pres = new float[num_levs];
     hght = new float[num_levs];
     tmpk = new float[num_levs];
@@ -40,7 +40,7 @@ Profile::Profile(int num_levs, Source sounding_type) {
     moist_static_energy = new float[num_levs];
     buoyancy = new float[num_levs];
 
-    NZ = num_levs;
+    //NZ = num_levs;
     snd_type = sounding_type;
 }
 

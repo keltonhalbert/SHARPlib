@@ -97,7 +97,7 @@ void sharp_vector_to_components(sharp_WindVector_t* vec,
 
 void sharp_mean_wind(sharp_PressureLayer_t* plyr, sharp_WindComponents_t* cmp,
                      const float* pres, const float* u_wind,
-                     const float* v_wind, int NZ) {
+                     const float* v_wind, const int NZ) {
     if ((plyr == NULL) || (cmp == NULL)) return;
     sharp::PressureLayer* p = static_cast<sharp::PressureLayer*>(plyr->obj);
     sharp::WindComponents* c = static_cast<sharp::WindComponents*>(cmp->obj);
@@ -108,7 +108,7 @@ void sharp_mean_wind(sharp_PressureLayer_t* plyr, sharp_WindComponents_t* cmp,
 
 void sharp_mean_wind_npw(sharp_PressureLayer_t* plyr,
                          sharp_WindComponents_t* cmp, const float* pres,
-                         const float* u_wind, const float* v_wind, int NZ) {
+                         const float* u_wind, const float* v_wind, const int NZ) {
     if ((plyr == NULL) || (cmp == NULL)) return;
     sharp::PressureLayer* p = static_cast<sharp::PressureLayer*>(plyr->obj);
     sharp::WindComponents* c = static_cast<sharp::WindComponents*>(cmp->obj);
@@ -121,7 +121,7 @@ void sharp_mean_wind_npw(sharp_PressureLayer_t* plyr,
 void sharp_PressureLayer_wind_shear(sharp_PressureLayer_t* plyr,
                                     sharp_WindComponents_t* cmp,
                                     const float* pres, const float* u_wind,
-                                    const float* v_wind, int NZ) {
+                                    const float* v_wind, const int NZ) {
     if ((plyr == NULL) || (cmp == NULL)) return;
     sharp::PressureLayer* p = static_cast<sharp::PressureLayer*>(plyr->obj);
     sharp::WindComponents* c = static_cast<sharp::WindComponents*>(cmp->obj);
@@ -133,7 +133,7 @@ void sharp_PressureLayer_wind_shear(sharp_PressureLayer_t* plyr,
 void sharp_HeightLayer_wind_shear(sharp_HeightLayer_t* hlyr,
                                   sharp_WindComponents_t* cmp,
                                   const float* hght, const float* u_wind,
-                                  const float* v_wind, int NZ) {
+                                  const float* v_wind, const int NZ) {
     if ((hlyr == NULL) || (cmp == NULL)) return;
     sharp::HeightLayer* h = static_cast<sharp::HeightLayer*>(hlyr->obj);
     sharp::WindComponents* c = static_cast<sharp::WindComponents*>(cmp->obj);
@@ -145,7 +145,7 @@ void sharp_HeightLayer_wind_shear(sharp_HeightLayer_t* hlyr,
 float sharp_HeightLayer_helicity(sharp_HeightLayer_t* hlyr,
                                  sharp_WindComponents_t* storm_motion,
                                  const float* height, const float* u_wind,
-                                 const float* v_wind, int NZ) {
+                                 const float* v_wind, const int NZ) {
     if ((hlyr == NULL) || (storm_motion == NULL)) return sharp::MISSING;
     sharp::HeightLayer* h = static_cast<sharp::HeightLayer*>(hlyr->obj);
     sharp::WindComponents* stm =
@@ -157,7 +157,7 @@ float sharp_PressureLayer_helicity(sharp_PressureLayer_t* plyr,
                                    sharp_WindComponents_t* storm_motion,
                                    const float* pressure, const float* height,
                                    const float* u_wind, const float* v_wind,
-                                   int NZ) {
+                                   const int NZ) {
     if ((plyr == NULL) || (storm_motion == NULL)) return sharp::MISSING;
     sharp::PressureLayer* p = static_cast<sharp::PressureLayer*>(plyr->obj);
     sharp::WindComponents* stm = 
