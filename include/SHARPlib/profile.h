@@ -143,7 +143,7 @@ struct Profile {
     /**
      * \brief Constructor that allocates arrays for our sounding
      */
-    Profile(int num_levels, Source sounding_type);
+    Profile(const int num_levels, Source sounding_type);
 
     Profile() = delete;
 
