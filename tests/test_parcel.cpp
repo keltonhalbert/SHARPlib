@@ -135,7 +135,7 @@ TEST_CASE("Testing new parcel definitions") {
 
 
     auto start_time = std::chrono::system_clock::now();
-    sharp::Profile* prof = read_sounding(fname5);
+    sharp::Profile* prof = read_sounding(fname4);
     auto end_time = std::chrono::system_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
 
@@ -145,9 +145,15 @@ TEST_CASE("Testing new parcel definitions") {
         sharp::Parcel mu_pcl;
         sharp::Parcel ml_pcl;
 
-        sharp::define_parcel(prof, &sfc_pcl, sharp::LPL::SFC);
-        sharp::define_parcel(prof, &mu_pcl, sharp::LPL::MU);
-        sharp::define_parcel(prof, &ml_pcl, sharp::LPL::ML);
+        sharp::define_parcel(prof->pres, prof->tmpk, prof->dwpk, prof->mixr,
+                             prof->theta, prof->theta_e, prof->NZ, sfc_pcl,
+                             sharp::LPL::SFC);
+        sharp::define_parcel(prof->pres, prof->tmpk, prof->dwpk, prof->mixr,
+                             prof->theta, prof->theta_e, prof->NZ, mu_pcl,
+                             sharp::LPL::MU);
+        sharp::define_parcel(prof->pres, prof->tmpk, prof->dwpk, prof->mixr,
+                             prof->theta, prof->theta_e, prof->NZ, ml_pcl,
+                             sharp::LPL::ML);
 
         start_time = std::chrono::system_clock::now();
 
