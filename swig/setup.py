@@ -30,7 +30,7 @@ params_module = Extension('nwsspc.sharp.calc._params',
         sources = ['nwsspc/sharp/calc/params.i', '../src/SHARPlib/parcel.cpp',
                    '../src/SHARPlib/profile.cpp', '../src/SHARPlib/layer.cpp',
                    '../src/SHARPlib/interp.cpp', '../src/SHARPlib/winds.cpp',
-                   '../src/SHARPlib/thermo.cpp','../src/SHARPlib/params.cpp'],
+                   '../src/SHARPlib/thermo.cpp','../src/SHARPlib/params/convective.cpp'],
         swig_opts = swig_args,
         extra_compile_args = compile_args
     )
