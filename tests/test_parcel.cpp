@@ -155,14 +155,28 @@ TEST_CASE("Testing new parcel definitions") {
                              prof->theta, prof->theta_e, prof->NZ, ml_pcl,
                              sharp::LPL::ML);
 
+		static constexpr sharp::lifter_wobus lifter;
         start_time = std::chrono::system_clock::now();
 
-        sharp::parcel_wobf(prof, &sfc_pcl);
-        sharp::parcel_wobf(prof, &ml_pcl);
-        sharp::parcel_wobf(prof, &mu_pcl);
+		// Lift and integrate the surface parcel
+        sharp::lift_parcel(lifter, prof->pres, prof->vtmp, prof->buoyancy,
+                           prof->NZ, &sfc_pcl);
+        sharp::cape_cinh(prof->pres, prof->hght, prof->buoyancy, prof->NZ,
+                         &sfc_pcl);
+		// lift and integrate the ML parcel
+        sharp::lift_parcel(lifter, prof->pres, prof->vtmp, prof->buoyancy,
+                           prof->NZ, &ml_pcl);
+        sharp::cape_cinh(prof->pres, prof->hght, prof->buoyancy, prof->NZ,
+                         &ml_pcl);
+		// lift and integrate the MU parcel
+        sharp::lift_parcel(lifter, prof->pres, prof->vtmp, prof->buoyancy,
+                           prof->NZ, &mu_pcl);
+        sharp::cape_cinh(prof->pres, prof->hght, prof->buoyancy, prof->NZ,
+                         &mu_pcl);
 
         end_time = std::chrono::system_clock::now();
-        duration = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time).count();
+        duration = std::chrono::duration_cast<std::chrono::microseconds>(
+                       end_time - start_time).count();
 
         std::cout << "Lifting 3 parcels took: " << duration << "us" << std::endl;
         std::cout << "Average was: " << duration / 3.0 << "us" << std::endl;
