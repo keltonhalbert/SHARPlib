@@ -35,16 +35,23 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
     Parcel pcl;
 
     // find the most unstable parcel
-    define_parcel(prof, &mupcl, LPL::MU);
-    lift_parcel(lifter, prof, &mupcl);
-    cape_cinh(prof, &mupcl);
+	sharp::define_parcel(prof->pres, prof->tmpk, prof->dwpk, prof->mixr,
+						 prof->theta, prof->theta_e, prof->NZ, mupcl,
+						 LPL::MU);
+	lift_parcel(lifter, prof->pres, prof->vtmp, prof->buoyancy, prof->NZ,
+				&mupcl);
 
-    // find the sfc parcel to check against the MU
-    // parcel, since sometimes the max Theta-E parcel
-    // has less CAPE than the surface parcel
-    define_parcel(prof, &sbpcl, LPL::SFC);
-    lift_parcel(lifter, prof, &sbpcl);
-    cape_cinh(prof, &sbpcl);
+	cape_cinh(prof->pres, prof->hght, prof->buoyancy, prof->NZ, &mupcl);
+
+	// find the sfc parcel to check against the MU
+	// parcel, since sometimes the max Theta-E parcel
+	// has less CAPE than the surface parcel
+	sharp::define_parcel(prof->pres, prof->tmpk, prof->dwpk, prof->mixr,
+						 prof->theta, prof->theta_e, prof->NZ, sbpcl,
+						 LPL::SFC);
+	lift_parcel(lifter, prof->pres, prof->vtmp, prof->buoyancy, prof->NZ,
+				&sbpcl);
+	cape_cinh(prof->pres, prof->hght, prof->buoyancy, prof->NZ, &sbpcl);
 
     if (sbpcl.cape > mupcl.cape) {
         pcl = sbpcl;
@@ -74,8 +81,9 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
         effpcl.pres = prof->pres[k];
         effpcl.tmpk = prof->tmpk[k];
         effpcl.dwpk = prof->dwpk[k];
-        lift_parcel(lifter, prof, &effpcl);
-        cape_cinh(prof, &effpcl);
+		lift_parcel(lifter, prof->pres, prof->vtmp, prof->buoyancy, prof->NZ,
+					&effpcl);
+		cape_cinh(prof->pres, prof->hght, prof->buoyancy, prof->NZ, &effpcl);
 
         if ((effpcl.cape >= cape_thresh) && (effpcl.cinh >= cinh_thresh)) {
             eff_pbot = effpcl.pres;
@@ -97,8 +105,9 @@ PressureLayer effective_inflow_layer(Profile *prof, float cape_thresh,
         effpcl.pres = prof->pres[k];
         effpcl.tmpk = prof->tmpk[k];
         effpcl.dwpk = prof->dwpk[k];
-        lift_parcel(lifter, prof, &effpcl);
-        cape_cinh(prof, &effpcl);
+		lift_parcel(lifter, prof->pres, prof->vtmp, prof->buoyancy, prof->NZ,
+					&effpcl);
+		cape_cinh(prof->pres, prof->hght, prof->buoyancy, prof->NZ, &effpcl);
 
         if ((effpcl.cape < cape_thresh) || (effpcl.cinh < cinh_thresh)) {
             eff_ptop = effpcl.pres;
@@ -172,13 +181,18 @@ WindComponents storm_motion_bunkers(Profile *prof,
     Parcel mupcl;
     static constexpr lifter_wobus lifter;
 
-    define_parcel(prof, &sbpcl, LPL::SFC);
-    lift_parcel(lifter, prof, &sbpcl);
-    cape_cinh(prof, &sbpcl);
+    sharp::define_parcel(prof->pres, prof->tmpk, prof->dwpk, prof->mixr,
+                         prof->theta, prof->theta_e, prof->NZ, sbpcl, LPL::SFC);
+    sharp::define_parcel(prof->pres, prof->tmpk, prof->dwpk, prof->mixr,
+                         prof->theta, prof->theta_e, prof->NZ, mupcl, LPL::MU);
 
-    define_parcel(prof, &mupcl, LPL::MU);
-    lift_parcel(lifter, prof, &mupcl);
-    cape_cinh(prof, &mupcl);
+    lift_parcel(lifter, prof->pres, prof->vtmp, prof->buoyancy, prof->NZ,
+                &sbpcl);
+	cape_cinh(prof->pres, prof->hght, prof->buoyancy, prof->NZ, &sbpcl);
+
+    lift_parcel(lifter, prof->pres, prof->vtmp, prof->buoyancy, prof->NZ,
+                &mupcl);
+	cape_cinh(prof->pres, prof->hght, prof->buoyancy, prof->NZ, &mupcl);
 
     if (sbpcl.cape > mupcl.cape) {
         pcl = sbpcl;

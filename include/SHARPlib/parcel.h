@@ -193,7 +193,10 @@ struct Parcel {
  * \param pcl       sharp::Parcel
  * \param source    sharp::LPL
  */
-void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept;
+void define_parcel(const float pressure[], const float temperature[],
+                   const float dewpoint[], const float wv_mixratio[],
+                   const float theta_arr[], const float thetae[], const int N,
+                   Parcel& pcl, LPL source) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -208,7 +211,9 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept;
  *
  */
 template <typename Lft>
-void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
+void lift_parcel(Lft liftpcl, const float pressure_arr[],
+                 const float virtual_temperature_arr[], float buoyancy_arr[],
+                 const int N, Parcel* pcl) noexcept {
     // Lift the parcel from the LPL to the LCL
     float pres_lcl;
     float tmpk_lcl;
@@ -221,15 +226,15 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
 
     // Define the dry and saturated lift layers
     PressureLayer dry_lyr = {pcl->pres, pcl->lcl_pressure};
-    PressureLayer sat_lyr = {pcl->lcl_pressure, prof->pres[prof->NZ - 1]};
+    PressureLayer sat_lyr = {pcl->lcl_pressure, pressure_arr[N - 1]};
     // The LayerIndex excludes the top and bottom for interpolation reasons
-    const LayerIndex dry_idx = get_layer_index(dry_lyr, prof->pres, prof->NZ);
-    const LayerIndex sat_idx = get_layer_index(sat_lyr, prof->pres, prof->NZ);
+    const LayerIndex dry_idx = get_layer_index(dry_lyr, pressure_arr, N);
+    const LayerIndex sat_idx = get_layer_index(sat_lyr, pressure_arr, N);
 
 	// zero out any residual buoyancy from
 	// other parcels that may have been lifted
 	for (int k = 0; k < dry_idx.kbot; ++k) {
-		prof->buoyancy[k] = 0.0;
+		buoyancy_arr[k] = 0.0;
 	}
 
     // Fill the array with dry parcel buoyancy.
@@ -237,21 +242,20 @@ void lift_parcel(Lft liftpcl, Profile* prof, Parcel* pcl) noexcept {
     // is conserved for a parcels dry ascent to the LCL
     for (int k = dry_idx.kbot; k < dry_idx.ktop+1; ++k) {
         const float pcl_vtmp =
-            theta(THETA_REF_PRESSURE, thetav_lcl, prof->pres[k]);
-        prof->buoyancy[k] = buoyancy(pcl_vtmp, prof->vtmp[k]);
+            theta(THETA_REF_PRESSURE, thetav_lcl, pressure_arr[k]);
+        buoyancy_arr[k] = buoyancy(pcl_vtmp, virtual_temperature_arr[k]);
     }
 
     // fill the array with the moist parcel buoyancy
-    for (int k = sat_idx.kbot; k < prof->NZ; ++k) {
+    for (int k = sat_idx.kbot; k < N; ++k) {
         // compute above-lcl buoyancy here
-        const float pcl_pres = prof->pres[k];
+        const float pcl_pres = pressure_arr[k];
         const float pcl_tmpk = liftpcl(pres_lcl, tmpk_lcl, pcl_pres);
         // parcel is saturated, so temperature and dewpoint are same
         const float pcl_vtmp =
             virtual_temperature(pcl_pres, pcl_tmpk, pcl_tmpk);
-        const float env_vtmp = prof->vtmp[k];
-        const float buoy = buoyancy(pcl_vtmp, env_vtmp);
-		prof->buoyancy[k] = buoy;
+        const float env_vtmp = virtual_temperature_arr[k];
+        buoyancy_arr[k] = buoyancy(pcl_vtmp, env_vtmp);
     }
 }
 
@@ -288,7 +292,9 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
  * \param prof  A sharp::Profile of sounding data
  * \param pcl   A sharp::Parcel corresponding to the profile buoyancy array. 
  */
-void cape_cinh(Profile* prof, Parcel *pcl) noexcept;
+//void cape_cinh(Profile* prof, Parcel *pcl) noexcept;
+void cape_cinh(const float pressure[], const float height[],
+               const float buoyancy_arr[], const int N, Parcel* pcl) noexcept; 
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO

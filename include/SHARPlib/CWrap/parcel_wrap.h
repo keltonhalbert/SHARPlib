@@ -40,18 +40,23 @@ float sharp_Parcel_get_cape(sharp_Parcel_t* pcl);
 float sharp_Parcel_get_cinh(sharp_Parcel_t* pcl);
 int sharp_Parcel_get_lpl(sharp_Parcel_t* pcl);
 
-void sharp_define_parcel(sharp_Profile_t* prof, sharp_Parcel_t* pcl,
-                         int source);
+void sharp_define_parcel(const float* pressure, const float* temperature,
+                         const float* dewpoint, const float* wv_mixratio,
+                         const float* theta, const float* thetae, const int N,
+                         sharp_Parcel_t* pcl, int source);
 
 void sharp_define_custom_parcel(sharp_Parcel_t* pcl, float pres, float tmpk,
                                 float dwpk);
 
-void sharp_lift_parcel_wobf(sharp_Profile_t* prof, sharp_Parcel_t* pcl);
+void sharp_lift_parcel_wobf(const float* pressure,
+                            const float* virtual_temperature, float* buoyancy,
+                            const int N, sharp_Parcel_t* pcl);
 
 void sharp_find_lfc_el(sharp_Parcel_t* pcl, const float* pres,
                        const float* hght, const float* buoy, const int NZ);
 
-void sharp_cape_cinh(sharp_Profile_t* prof, sharp_Parcel_t* pcl);
+void sharp_cape_cinh(const float* pressure, const float* height,
+                     const float* buoyancy, const int N, sharp_Parcel_t* pcl);
 
 void sharp_parcel_wobf(sharp_Profile_t* prof, sharp_Parcel_t* pcl);
 
