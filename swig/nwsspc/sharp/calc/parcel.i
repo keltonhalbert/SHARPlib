@@ -44,9 +44,9 @@ import_array();
 %rename(find_lfc_el) _find_lfc_el;
 %rename(cape_cinh) _cape_cinh;
 
-%ignore define_parcel
-%ignore find_lfc_el
-%ignore cape_cinh
+%ignore define_parcel;
+%ignore find_lfc_el;
+%ignore cape_cinh;
 
 %inline %{
 
@@ -89,7 +89,7 @@ void cape_cinh(const float pres_arr[], const int N1,
 	sharp::cape_cinh(pres_arr, hght_arr, buoy_arr, N1, pcl);
 }
 
-}
+%}
 
 
 
