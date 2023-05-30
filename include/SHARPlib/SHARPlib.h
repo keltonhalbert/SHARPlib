@@ -19,11 +19,11 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
-#include <SHARPlib/params.h>
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/profile.h>
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
+#include <SHARPlib/params/convective.h>
 
 namespace sharp {
 

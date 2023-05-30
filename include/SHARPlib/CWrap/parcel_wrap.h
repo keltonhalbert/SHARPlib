@@ -58,7 +58,6 @@ void sharp_find_lfc_el(sharp_Parcel_t* pcl, const float* pres,
 void sharp_cape_cinh(const float* pressure, const float* height,
                      const float* buoyancy, const int N, sharp_Parcel_t* pcl);
 
-void sharp_parcel_wobf(sharp_Profile_t* prof, sharp_Parcel_t* pcl);
 
 #ifdef __cplusplus
 }

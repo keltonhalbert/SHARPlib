@@ -293,25 +293,8 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
  * \param pcl   A sharp::Parcel corresponding to the profile buoyancy array. 
  */
 //void cape_cinh(Profile* prof, Parcel *pcl) noexcept;
-void cape_cinh(const float pressure[], const float height[],
-               const float buoyancy_arr[], const int N, Parcel* pcl) noexcept; 
-
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Lifts a parcel using the Wobus method of computing moist adiabats
- *
- *
- * Lifts a parcel from its sharp::LPL to the Equilibrium Level (EL) using the
- * Wobus method for computing moist adiabats. See sharp::wobf and sharp::wetlift
- * for implementation details. Attributes such as CAPE, CINH, and specific
- * parcel levels are stored within the sharp::Parcel.
- *
- * \param prof      A sharp::Profile of atmospheric data
- * \param pcl       A sharp::Parcel with its sharp::LPL/attributes defined.
- */
-void parcel_wobf(Profile* prof, Parcel* pcl) noexcept;
-
+void cape_cinh(const float pres_arr[], const float hght_arr[],
+               const float buoy_arr[], const int N, Parcel* pcl) noexcept;
 
 }  // end namespace sharp
 

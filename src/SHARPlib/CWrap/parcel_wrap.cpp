@@ -109,10 +109,3 @@ void sharp_cape_cinh(const float* pressure, const float* height,
     sharp::cape_cinh(pressure, height, buoyancy, N, pc);
 }
 
-void sharp_parcel_wobf(sharp_Profile_t* prof, sharp_Parcel_t* pcl) {
-    if ((prof == NULL) || (pcl == NULL)) return;
-    sharp::Profile* pf = static_cast<sharp::Profile*>(prof->obj);
-    sharp::Parcel* pc = static_cast<sharp::Parcel*>(pcl->obj);
-    sharp::parcel_wobf(pf, pc);
-}
-

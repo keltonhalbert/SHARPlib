@@ -192,28 +192,22 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
 }
 
 //void cape_cinh(Profile* prof, Parcel* pcl) noexcept {
-void cape_cinh(const float pressure[], const float height[],
-               const float buoyancy_arr[], const int N, Parcel* pcl) noexcept {
-    find_lfc_el(pcl, pressure, height, buoyancy_arr, N);
+void cape_cinh(const float pres_arr[], const float hght_arr[],
+               const float buoy_arr[], const int N, Parcel* pcl) noexcept {
+    find_lfc_el(pcl, pres_arr, hght_arr, buoy_arr, N);
     if ((pcl->lfc_pressure != MISSING) && (pcl->eql_pressure != MISSING)) {
 		PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
 		PressureLayer lpl_lfc = {pcl->pres, pcl->lfc_pressure};
         HeightLayer lfc_el_ht =
-            pressure_layer_to_height(lfc_el, pressure, height, N);
+            pressure_layer_to_height(lfc_el, pres_arr, hght_arr, N);
         HeightLayer lpl_lfc_ht =
-            pressure_layer_to_height(lpl_lfc, pressure, height, N);
+            pressure_layer_to_height(lpl_lfc, pres_arr, hght_arr, N);
 
         pcl->cinh =
-            integrate_layer_trapz(lpl_lfc_ht, buoyancy_arr, height, N, -1);
+            integrate_layer_trapz(lpl_lfc_ht, buoy_arr, hght_arr, N, -1);
         pcl->cape =
-            integrate_layer_trapz(lfc_el_ht, buoyancy_arr, height, N, 1);
+            integrate_layer_trapz(lfc_el_ht, buoy_arr, hght_arr, N, 1);
     }
-}
-
-void parcel_wobf(Profile* prof, Parcel* pcl) noexcept {
-    static constexpr lifter_wobus lifter;
-    lift_parcel(lifter, prof->pres, prof->vtmp, prof->buoyancy, prof->NZ, pcl);
-    cape_cinh(prof->pres, prof->hght, prof->buoyancy, prof->NZ, pcl);
 }
 
 }  // end namespace sharp
