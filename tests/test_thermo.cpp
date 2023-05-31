@@ -66,7 +66,9 @@ TEST_CASE("Testing lcl_temperature") {
 TEST_CASE("Testing vapor_pressure") {
 
 #ifndef NO_QC
-    CHECK(sharp::vapor_pressure(sharp::MISSING) == sharp::MISSING);
+    CHECK(sharp::vapor_pressure(100000.0f, sharp::MISSING) == sharp::MISSING);
+    CHECK(sharp::vapor_pressure(sharp::MISSING, sharp::ZEROCNK) ==
+          sharp::MISSING);
 #endif
 
 }
