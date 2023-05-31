@@ -11,7 +11,6 @@
 #include <SHARPlib/layer.h>
 
 #include <cmath>
-#include <iostream>
 
 namespace sharp {
 
@@ -39,16 +38,15 @@ float wobf(float temperature) noexcept {
     }
 }
 
-float vapor_pressure(float temperature) noexcept {
+float vapor_pressure(float pressure, float temperature) noexcept {
 #ifndef NO_QC
-    if (temperature == MISSING) return MISSING;
+    if ((temperature == MISSING) || (pressure == MISSING)) return MISSING;
 #endif
     const float tmpc = temperature - ZEROCNK;
-    static constexpr float c1 = 6.112f;
-    static constexpr float c2 = 17.67f;
-    static constexpr float c3 = 243.5;
-
-    return 100.0f * c1 * std::exp((c2 * tmpc) / (tmpc + c3));
+    const float es =
+        611.2f * std::exp(17.67f * (tmpc) / (temperature - 29.65f));
+	// for extremely cold temperatures
+    return std::min(es, pressure * 0.5f);
 }
 
 float lcl_temperature(float temperature, float dewpoint) noexcept {
@@ -71,18 +69,11 @@ float temperature_at_mixratio(float wv_mixratio, float pressure) noexcept {
         return MISSING;
     }
 #endif
-
-    static constexpr double c1 = 0.0498646455;
-    static constexpr double c2 = 2.4082965;
-    static constexpr double c3 = 7.07475;
-    static constexpr double c4 = 38.9114;
-    static constexpr double c5 = 0.0915;
-    static constexpr double c6 = 1.2035;
-    const float pres = pressure * PA_TO_HPA;
-    const double x = std::log10(wv_mixratio * pres / (EPSILON + wv_mixratio));
-    const double tmrk = std::pow(10.0, c1 * x + c2) - c3 +
-                        c4 * std::pow(std::pow(10.0, c5 * x) - c6, 2.0);
-    return (float)tmrk;
+	float es = (wv_mixratio / EPSILON) * pressure / 100.0f / (1.0f + (wv_mixratio / EPSILON));
+	// for extremely cold temperatures
+	es = std::min(es, pressure * 0.5f);
+    const float el = std::log(es);
+    return ZEROCNK + (243.5f * el - 440.8f) / (19.48f - el);
 }
 
 float theta_level(float potential_temperature, float temperature) noexcept {
@@ -114,9 +105,8 @@ float mixratio(float pressure, float temperature) noexcept {
     }
 #endif
 
-    static constexpr float c1 = 0.622f;
-    const float e = vapor_pressure(temperature);
-    return (c1*e)/(pressure-e);
+    const float e = vapor_pressure(pressure, temperature);
+    return (EPSILON*e)/(pressure-e);
 }
 
 float virtual_temperature(float pressure, float temperature,

@@ -74,7 +74,7 @@ namespace sharp {
  * \param    temperature    (degC)
  * \return   vapor_pressure (mb)
  */
-[[nodiscard]] float vapor_pressure(float temperature) noexcept;
+[[nodiscard]] float vapor_pressure(float pressure, float temperature) noexcept;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
