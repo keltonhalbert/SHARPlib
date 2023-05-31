@@ -52,11 +52,35 @@ struct lifter_wobus {
      * \param tmpk      Initial parcel temperature (degC)
      * \param new_pres  Final level of parcel after lift (hPa)
      */
-    [[nodiscard]] float operator()(float pres, float tmpk,
+    [[nodiscard]] inline float operator()(float pres, float tmpk,
                                    float new_pres) const noexcept {
-        return wetlift(pres, tmpk, new_pres);
+        float pcl_tmpk = wetlift(pres, tmpk, new_pres);
+        return virtual_temperature(pcl_tmpk, mixratio(new_pres, pcl_tmpk));
     }
 };
+
+struct lifter_cm1 {
+
+    // Which moist adiabat to use
+    adiabat ma_type = adiabat::pseudo_liq;
+    // pressure increment in Pa
+    float pressure_incr = 500.0f; 
+    // convergence criteria
+    float converge = 0.0002f;
+    float qv_total = MISSING;
+    float qv = 0.0;
+    float ql = 0.0;
+    float qi = 0.0;
+
+    [[nodiscard]] inline float operator()(float pres, float tmpk,
+                                   float new_pres) noexcept {
+        float pcl_tmpk = moist_adiabat_cm1(
+            pres, tmpk, new_pres, this->qv_total, this->qv, this->ql, this->qi,
+            this->pressure_incr, this->converge, this->ma_type);
+        return virtual_temperature(pcl_tmpk, this->qv, this->ql, this->qi);
+    }
+};
+
 //
 ////////////  END FUNCTORS   ///////////
 
@@ -220,9 +244,9 @@ void lift_parcel(Lft liftpcl, const float pressure_arr[],
     drylift(pcl->pres, pcl->tmpk, pcl->dwpk, pres_lcl, tmpk_lcl);
     pcl->lcl_pressure = pres_lcl;
 
-    const float thetav_lcl =
-        theta(pres_lcl, virtual_temperature(pcl->pres, tmpk_lcl, tmpk_lcl),
-              THETA_REF_PRESSURE);
+    const float qv_lcl = mixratio(pres_lcl, tmpk_lcl);
+    const float thetav_lcl = theta(
+        pres_lcl, virtual_temperature(tmpk_lcl, qv_lcl), THETA_REF_PRESSURE);
 
     // Define the dry and saturated lift layers
     PressureLayer dry_lyr = {pcl->pres, pcl->lcl_pressure};
@@ -250,12 +274,10 @@ void lift_parcel(Lft liftpcl, const float pressure_arr[],
     for (int k = sat_idx.kbot; k < N; ++k) {
         // compute above-lcl buoyancy here
         const float pcl_pres = pressure_arr[k];
-        const float pcl_tmpk = liftpcl(pres_lcl, tmpk_lcl, pcl_pres);
-        // parcel is saturated, so temperature and dewpoint are same
-        const float pcl_vtmp =
-            virtual_temperature(pcl_pres, pcl_tmpk, pcl_tmpk);
-        const float env_vtmp = virtual_temperature_arr[k];
-        buoyancy_arr[k] = buoyancy(pcl_vtmp, env_vtmp);
+        const float pcl_vtmpk = liftpcl(pres_lcl, tmpk_lcl, pcl_pres);
+        const float env_vtmpk = virtual_temperature_arr[k];
+        buoyancy_arr[k] = buoyancy(pcl_vtmpk, env_vtmpk);
+
     }
 }
 

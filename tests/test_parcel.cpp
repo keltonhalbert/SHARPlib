@@ -45,8 +45,8 @@ void build_profile(sharp::Profile* prof, std::vector<std::string>& row, int idx)
     prof->wdir[idx] = wdir;
     prof->wspd[idx] = wspd;
 
-    prof->vtmp[idx] = sharp::virtual_temperature(pres, tmpk, dwpk);
     prof->mixr[idx] = sharp::mixratio(pres, dwpk);
+    prof->vtmp[idx] = sharp::virtual_temperature(tmpk, prof->mixr[idx]);
     prof->theta[idx] = sharp::theta(pres, tmpk, sharp::THETA_REF_PRESSURE);
     prof->theta_e[idx] = sharp::thetae(pres, tmpk, dwpk);
     
@@ -135,7 +135,7 @@ TEST_CASE("Testing new parcel definitions") {
 
 
     auto start_time = std::chrono::system_clock::now();
-    sharp::Profile* prof = read_sounding(fname4);
+    sharp::Profile* prof = read_sounding(fname5);
     auto end_time = std::chrono::system_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
 
@@ -156,6 +156,8 @@ TEST_CASE("Testing new parcel definitions") {
                              sharp::LPL::ML);
 
 		static constexpr sharp::lifter_wobus lifter;
+        sharp::lifter_cm1 cm1;
+        cm1.ma_type = sharp::adiabat::pseudo_ice;
         start_time = std::chrono::system_clock::now();
 
 		// Lift and integrate the surface parcel
@@ -198,6 +200,16 @@ TEST_CASE("Testing new parcel definitions") {
         std::cout << "EL PRES: " << ml_pcl.eql_pressure << "\t"; 
         std::cout << "CAPE: " << ml_pcl.cape << "\t"; 
         std::cout << "CINH: " << ml_pcl.cinh << std::endl;
+
+        sharp::lift_parcel(cm1, prof->pres, prof->vtmp, prof->buoyancy,
+                           prof->NZ, &sfc_pcl);
+        sharp::cape_cinh(prof->pres, prof->hght, prof->buoyancy, prof->NZ, 
+                         &sfc_pcl);
+        std::cout << "CM1 SFC PCL\t";
+        std::cout << "CM1 LFC PRES: " << sfc_pcl.lfc_pressure << "\t"; 
+        std::cout << "CM1 EL PRES: " << sfc_pcl.eql_pressure << "\t"; 
+        std::cout << "CM1 CAPE: " << sfc_pcl.cape << "\t"; 
+        std::cout << "CM1 CINH: " << sfc_pcl.cinh << std::endl;
     }
     delete prof;
 }

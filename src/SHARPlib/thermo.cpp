@@ -7,10 +7,12 @@
 // Based on NSHARP routines originally written by
 // John Hart and Rich Thompson at SPC.
 #include <SHARPlib/constants.h>
+#include <SHARPlib/thermo.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
 
 #include <cmath>
+#include <iostream>
 
 namespace sharp {
 
@@ -44,7 +46,18 @@ float vapor_pressure(float pressure, float temperature) noexcept {
 #endif
     const float tmpc = temperature - ZEROCNK;
     const float es =
-        611.2f * std::exp(17.67f * (tmpc) / (temperature - 29.65f));
+        611.2f * std::exp(17.67f * tmpc / (temperature - 29.65f));
+	// for extremely cold temperatures
+    return std::min(es, pressure * 0.5f);
+}
+
+float vapor_pressure_ice(float pressure, float temperature) noexcept {
+#ifndef NO_QC
+    if ((temperature == MISSING) || (pressure == MISSING)) return MISSING;
+#endif
+    const float tmpc = temperature - ZEROCNK;
+    const float es =
+        611.2f * std::exp(21.8745584f * tmpc / (temperature - 7.66f));
 	// for extremely cold temperatures
     return std::min(es, pressure * 0.5f);
 }
@@ -109,29 +122,30 @@ float mixratio(float pressure, float temperature) noexcept {
     return (EPSILON*e)/(pressure-e);
 }
 
-float virtual_temperature(float pressure, float temperature,
-                          float dewpoint) noexcept {
+float mixratio_ice(float pressure, float temperature) noexcept {
 #ifndef NO_QC
-    if (dewpoint == MISSING) {
-        return temperature;
-    } else if ((pressure == MISSING) || (temperature == MISSING)) {
+    if ((temperature == MISSING) || (pressure == MISSING)) {
         return MISSING;
     }
 #endif
-    const float w = mixratio(pressure, dewpoint);
-    return (temperature * ((1.0f + (w / EPSILON)) / (1.0f + w)));
+    const float e = vapor_pressure_ice(pressure, temperature);
+    return (EPSILON*e)/(pressure-e);
 }
 
-float virtual_temperature(float temperature, float wv_mixratio) noexcept {
+float virtual_temperature(float temperature, float qv, float ql,
+                          float qi) noexcept {
 #ifndef NO_QC
-    if (wv_mixratio == MISSING) {
+    if (qv == MISSING) {
         return temperature;
     } else if (temperature == MISSING) {
         return MISSING;
     }
+    else if ((ql == MISSING) || (qi == MISSING)) {
+        ql = 0.0f;
+        qi = 0.0f;
+    }
 #endif
-    return (temperature *
-            ((1.0f + (wv_mixratio / EPSILON)) / (1.0f + wv_mixratio)));
+    return (temperature * ((1.0f + (qv / EPSILON)) / (1.0f + qv + ql + qi)));
 }
 
 float saturated_lift(float pressure, float theta_sat) noexcept {
@@ -170,6 +184,103 @@ float saturated_lift(float pressure, float theta_sat) noexcept {
 		if (condition) break;
     }
     return t2 - eor;
+}
+
+[[nodiscard]] float moist_adiabat_cm1(float pressure, float temperature,
+                                      float new_pressure, float& qv_total,
+                                      float& qv, float&ql, float& qi,
+                                      const float pres_incr,
+                                      const float converge,
+                                      const adiabat ma_type) {
+
+    qv_total = mixratio(lcl_pressure, lcl_temperature);
+
+    bool ice = (ma_type >= adiabat::pseudo_ice) ? true : false;
+    // set up increment variables
+    float dp = std::abs(lcl_pressure - new_pressure);
+    int n_iters = (dp < pres_incr) ? 1 : 1 + (int)(dp / pres_incr);
+    dp = (dp < pres_incr) ? dp : dp / (float)n_iters;
+
+    // Start by setting the "top" variables.
+    float pcl_theta_hi =
+        theta(lcl_pressure, lcl_temperature, THETA_REF_PRESSURE);
+    float pcl_pres_hi = lcl_pressure;
+    float pcl_pi_hi = std::pow(lcl_pressure / THETA_REF_PRESSURE, ROCP);
+    float pcl_t_hi = pcl_theta_hi * pcl_pi_hi;
+    float pcl_qv_hi = mixratio(pcl_pres_hi, pcl_t_hi);
+    float pcl_ql_hi = 0.0f;
+    float pcl_qi_hi = 0.0f;
+
+    // NOTE: pressure and temperature are of the LCL
+    for (int i = 0; i < n_iters; ++i ) {
+        bool not_converged = true;
+
+        float pcl_theta_lo = pcl_theta_hi; 
+        float pcl_pres_lo = pcl_pres_hi;
+        float pcl_qv_lo = pcl_qv_hi;
+        float pcl_ql_lo = pcl_ql_hi;
+        float pcl_qi_lo = pcl_qi_hi;
+        float pcl_t_lo = pcl_t_hi; 
+
+        pcl_pres_hi = pcl_pres_hi - dp;
+        pcl_pi_hi = std::pow(pcl_pres_hi / THETA_REF_PRESSURE, ROCP);
+        float pcl_theta_last = pcl_theta_lo;
+
+        while(not_converged) {
+            pcl_t_hi = pcl_theta_last * pcl_pi_hi;
+
+            float fliq = 1.0;
+            float fice = 0.0;
+            if (ice) {
+                fliq = std::max(
+                    std::min((pcl_t_hi - 233.15f) / (ZEROCNK - 233.15f), 1.0f),
+                    0.0f);
+                fice = 1.0f - fliq;
+            }
+
+            float qv_term = fliq * mixratio(pcl_pres_hi, pcl_t_hi) +
+                            fice * mixratio_ice(pcl_pres_hi, pcl_t_hi);
+            pcl_qv_hi = std::min(qv_total, qv_term); 
+            pcl_qi_hi = std::max(fice*(qv_total - pcl_qv_hi), 0.0f);
+            pcl_ql_hi = std::max(qv_total - pcl_qv_hi - pcl_qi_hi, 0.0f);
+
+            float tbar = 0.5f*(pcl_t_lo + pcl_t_hi);
+            float qvbar = 0.5f*(pcl_qv_lo + pcl_qv_hi);
+            float qlbar = 0.5f*(pcl_ql_lo + pcl_ql_hi);
+            float qibar = 0.5f*(pcl_qi_lo + pcl_qi_hi);
+
+            float LHV = LV1 - LV2 * tbar;
+            float LHS = LS1 - LS2 * tbar;
+
+            float RM = RDGAS + RVGAS * qvbar;
+            float CPM = CP_DRYAIR + CP_VAPOR * qvbar + CP_LIQUID * qlbar +
+                        CP_ICE * qibar;
+            float term = LHV*(pcl_ql_hi-pcl_ql_lo)/(CPM*tbar)
+                        +LHS*(pcl_qi_hi-pcl_qi_lo)/(CPM*tbar)
+                        +(RM/CPM-ROCP)*std::log(pcl_pres_hi / pcl_pres_lo); 
+
+            pcl_theta_hi = pcl_theta_lo * std::exp(term);
+
+            if (std::abs(pcl_theta_hi - pcl_theta_last) > converge) {
+                pcl_theta_last =
+                    pcl_theta_last + 0.3 * (pcl_theta_hi - pcl_theta_last);
+            }
+            else {
+                not_converged = false;
+            }
+        }
+        if ((ma_type == adiabat::pseudo_liq) ||
+            (ma_type == adiabat::pseudo_ice)) {
+            qv_total = pcl_qv_hi;
+            pcl_ql_hi = 0.0f;
+            pcl_qi_hi = 0.0f;
+        }
+    }
+    pcl_t_hi = pcl_theta_hi*pcl_pi_hi;
+    qv = pcl_qv_hi;
+    ql = pcl_ql_hi;
+    qi = pcl_qi_hi;
+    return pcl_t_hi; 
 }
 
 float wetlift(float pressure, float temperature,
@@ -367,7 +478,7 @@ float moist_static_energy(float height_agl, float temperature,
     }
 #endif
 
-    return (CP_DRYAIR * temperature) + (LV * specific_humidity) +
+    return (CP_DRYAIR * temperature) + (EXP_LV * specific_humidity) +
            (GRAVITY * height_agl);
 }
 

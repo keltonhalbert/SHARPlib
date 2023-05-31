@@ -21,6 +21,14 @@
 
 namespace sharp {
 
+enum class adiabat : int {
+    pseudo_liq = 1,
+    reverse_liq = 2,
+    pseudo_ice = 3,
+    reverse_ice = 4,
+    END,
+};
+
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
  *
@@ -75,6 +83,9 @@ namespace sharp {
  * \return   vapor_pressure (mb)
  */
 [[nodiscard]] float vapor_pressure(float pressure, float temperature) noexcept;
+
+[[nodiscard]] float vapor_pressure_ice(float pressure,
+                                       float temperature) noexcept;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -200,11 +211,9 @@ namespace sharp {
  * \param    dewpoint              (degC)
  * \return   virtual_temperature   (degC)
  */
-[[nodiscard]] float virtual_temperature(float pressure, float temperature,
-                                        float dewpoint) noexcept;
-
-[[nodiscard]] float virtual_temperature(float temperature,
-                                        float wv_mixratio) noexcept;
+[[nodiscard]] float virtual_temperature(float temperature, float qv,
+                                        float ql = 0.0f,
+                                        float qi = 0.0f) noexcept;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -250,6 +259,13 @@ namespace sharp {
  */
 [[nodiscard]] float wetlift(float pressure, float temperature,
                             float lifted_pressure) noexcept;
+
+[[nodiscard]] float moist_adiabat_cm1(float pressure, float temperature,
+                                      float new_pressure, float& qv_total,
+                                      float& qv, float&ql, float& qi,
+                                      const float pres_incr,
+                                      const float converge,
+                                      const adiabat ma_type);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
