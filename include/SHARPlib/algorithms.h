@@ -27,7 +27,8 @@ namespace sharp {
  *
  * Based on std::lower_bound, this iterates over an array using a binary search
  * to find the first element that does not satisfy the comparison condition. By
- * default, the comparison is std::less.
+ * default, the comparison is std::less. Binary search expects data to be sorted
+ * in ascending order -- for pressure level data, change the comparitor.
  *
  * We use a custom implementation of sharp::lower_bound rather than
  * std::lower_bound for a few reasons. First, we prefer raw pointer
@@ -35,7 +36,8 @@ namespace sharp {
  * C code, and the potential future in which this runs on CUDA
  * architecture. Currently, the algorithms in the STL library are
  * not supported by the CUDA STL, but the types in <functional>
- * (i.e. std::less) are supported by the CUDA STL.
+ * (i.e. std::less) are supported by the CUDA STL. Additionally, this
+ * implementation of lower_bound is designed to reduce branching.
  *
  * \param array     The array to search over
  * \param N         The length of the array
@@ -68,7 +70,8 @@ template <typename T, typename C = std::less<>>
  *
  * Based on std::upper_bound, this iterates over an array using a binary search
  * to find the first element that satisfies the comparison condition. By
- * default, the comparison is std::less.
+ * default, the comparison is std::less. Binary search expects data to be in
+ * ascending order -- for pressure level data, change the comparitor.
  *
  * We use a custom implementation of sharp::upper_bound rather than
  * std::upper_bound for a few reasons. First, we prefer raw pointer
@@ -76,7 +79,8 @@ template <typename T, typename C = std::less<>>
  * C code, and the potential future in which this runs on CUDA
  * architecture. Currently, the algorithms in the STL library are
  * not supported by the CUDA STL, but the types in <functional>
- * (i.e. std::less) are supported by the CUDA STL.
+ * (i.e. std::less) are supported by the CUDA STL. Additionally, this
+ * implementation of lower_bound is designed to reduce branching.
  *
  * \param array     The array to search over
  * \param N         The length of the array

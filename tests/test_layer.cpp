@@ -1,4 +1,5 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <iostream>
 #include <stdexcept>
 #include <cmath>
 
@@ -17,6 +18,46 @@ TEST_CASE("Testing PressureLayer structs") {
     CHECK_THROWS_AS(
         sharp::PressureLayer layer2( 100.0, 1000.0 ), const std::range_error&
         );
+}
+
+TEST_CASE("Testing conversion between layers") {
+    constexpr int N = 10;
+    constexpr float pres[N] = {1000.0, 900.0, 800.0, 700.0, 600.0,
+                               500.0,  400.0, 300.0, 200.0, 100.0};
+    constexpr float hght[N] = {0.0, 500.0, 1500.0, 2500.0, 4000.0,
+                               5500.0, 7500.0, 8500.0, 10500.0, 12500.0};
+
+    // check within bounds
+    sharp::HeightLayer hlyr = {0.0, 3000.0};
+    sharp::PressureLayer plyr = {1000.0, 750.0};
+    
+    auto out_plyr = sharp::height_layer_to_pressure(hlyr, pres, hght, N);
+    auto out_hlyr = sharp::pressure_layer_to_height(plyr, pres, hght, N);
+
+    CHECK(out_plyr.bottom  == 1000.0);
+    CHECK(out_hlyr.bottom == 0.0);
+    CHECK(out_plyr.top == doctest::Approx(666.667));
+    CHECK(out_hlyr.top == doctest::Approx(1983.32));
+    
+    // check ot of bounds
+    sharp::HeightLayer h_oob1= {-100, 250.0};
+    sharp::HeightLayer h_oob2 = {11500.0, 14000.0};
+    sharp::PressureLayer p_oob1 = {1150.0, 900.0};
+    sharp::PressureLayer p_oob2 = {150.0, 50.0};
+
+    auto oob1 = sharp::height_layer_to_pressure(h_oob1, pres, hght, N);
+    auto oob2 = sharp::height_layer_to_pressure(h_oob2, pres, hght, N);
+    auto oob3 = sharp::pressure_layer_to_height(p_oob1, pres, hght, N);
+    auto oob4 = sharp::pressure_layer_to_height(p_oob2, pres, hght, N);
+
+    CHECK(oob1.bottom == sharp::MISSING); 
+    CHECK(oob2.bottom == sharp::MISSING); 
+    CHECK(oob3.bottom == sharp::MISSING); 
+    CHECK(oob4.bottom == sharp::MISSING); 
+    CHECK(oob1.top == sharp::MISSING); 
+    CHECK(oob2.top == sharp::MISSING); 
+    CHECK(oob3.top == sharp::MISSING); 
+    CHECK(oob4.top == sharp::MISSING); 
 }
 
 TEST_CASE("Testing layer bounds checking and searching") {

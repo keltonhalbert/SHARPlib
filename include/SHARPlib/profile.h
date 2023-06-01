@@ -32,26 +32,19 @@ enum class Source : int {
 
 /**
  * \brief Stores arrays of vertical atmospheric sounding profile data.
- * \author
- *   Kelton Halbert                 \n
- *   Email: kelton.halbert@noaa.gov \n
- *   License: Apache 2.0            \n
- * \date 2022-10-18
  *
  * The Profile struct is used to store the arrays
  * of vertical data associated with either a weather
  * balloon or forecast model sounding profile. In
  * C++, structs and classes are completely identical.
  * We use a struct in this case, however, since really
- * it is just a data container, and we don't need
- * things like inheritence, polymorphism, etc that are
- * typically associated with classes. Additionally,
+ * it is just a data container. Additionally,
  * in C++ structs have all members and functions
  * set to 'public' as default, which is desireable!
  */
 struct Profile {
     /**
-     * \brief Vertical array of pressure in millibars (descending)
+     * \brief Vertical array of pressure in Pa (descending)
      */
     float* pres;
 
@@ -61,32 +54,27 @@ struct Profile {
     float* hght;
 
     /**
-     * \brief Vertical array of temperature in degrees Celsius
+     * \brief Vertical array of temperature in degrees Kelvin
      */
     float* tmpk;
 
     /**
-     * \brief Vertical array of dewpoint in degrees Celsius
+     * \brief Vertical array of dewpoint in degrees Kelvin
      */
     float* dwpk;
 
     /**
-     * \brief Vertical array of water vapor mixing ratio in degrees Celsius
+     * \brief Vertical array of water vapor mixing ratio in kg/kg
      */
     float* mixr;
 
     /**
-     * \brief Vertical array of relative humidity over liquid water (%)
-     */
-    float* relh;
-
-    /**
-     * \brief Vertical array of virtual temperature in degrees Celsius
+     * \brief Vertical array of virtual temperature in degrees Kelvin
      */
     float* vtmp;
 
     /**
-     * \brief Vertical array of wind speed in knots
+     * \brief Vertical array of wind speed in m/s
      */
     float* wspd;
 
@@ -111,12 +99,12 @@ struct Profile {
     float* vvel;
 
     /**
-     * \brief Vertical array of potential temperature in degrees Celsius
+     * \brief Vertical array of potential temperature in degrees Kelvin
      */
     float* theta;
 
     /**
-     * \brief Vertical array of equivalent potential temperature in degC
+     * \brief Vertical array of equiv. potential temperature in degrees Kelvin
      */
     float* theta_e;
 
@@ -126,7 +114,7 @@ struct Profile {
     float* moist_static_energy;
 
     /*
-     * \brief Buoyancy for a lifted parcel.
+     * \brief Buoyancy for a lifted parcel (m/s^2)
      */
     float* buoyancy;
 
@@ -152,7 +140,5 @@ struct Profile {
 };
 
 }  // end namespace sharp
-
-namespace sharp::exper {}  // end namespace sharp::exper
 
 #endif // __SHARP_PROFILE_H__
