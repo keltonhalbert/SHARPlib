@@ -10,6 +10,7 @@
 import_array();
 %}
 
+%import "../include/SHARPlib/thermo.h"
 %import "../include/SHARPlib/layer.h"
 
 %include exception.i
@@ -24,7 +25,7 @@ import_array();
 }
 
 /* Set up argument typemap */
-%apply(float IN_ARRAY1, int DIM1){
+%apply(float* IN_ARRAY1, int DIM1){
 	(const float pressure[], const int N1),
 	(const float temperature[], const int N2),
 	(const float dewpoint[], const int N3),
@@ -33,7 +34,7 @@ import_array();
 	(const float thetae[], const int N6)
 }
 
-%apply (float IN_ARRAY1, int DIM1) {
+%apply (float* IN_ARRAY1, int DIM1) {
 	(const float pres_arr[], const int N1),
 	(const float hght_arr[], const int N2),
 	(const float buoy_arr[], const int N3)
@@ -90,20 +91,6 @@ void cape_cinh(const float pres_arr[], const int N1,
 }
 
 %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 %include "../include/SHARPlib/parcel.h"
