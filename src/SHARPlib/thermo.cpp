@@ -12,11 +12,9 @@
 #include <SHARPlib/layer.h>
 
 #include <cmath>
-#include <iostream>
 
 namespace sharp {
 
-// To-Do: Can I make this branchless?
 float wobf(float temperature) noexcept {
 #ifndef NO_QC
     if (temperature == MISSING) return MISSING;
@@ -110,7 +108,6 @@ float theta(float pressure, float temperature, float ref_pressure) noexcept {
     return (temperature * std::pow(ref_pressure / pressure, ROCP));
 }
 
-// To-Do: Implement exact version
 float mixratio(float pressure, float temperature) noexcept {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING)) {
@@ -148,15 +145,15 @@ float virtual_temperature(float temperature, float qv, float ql,
     return (temperature * ((1.0f + (qv / EPSILON)) / (1.0f + qv + ql + qi)));
 }
 
-float saturated_lift(float pressure, float theta_sat) noexcept {
+float saturated_lift(float pressure, float theta_sat,
+                     const float converge) noexcept {
 #ifndef NO_QC
     if ((pressure == MISSING) || (theta_sat == MISSING)) {
         return MISSING;
     }
 #endif
 
-    static constexpr float iter_step = 0.001f;
-    if ((std::fabs(pressure - THETA_REF_PRESSURE) - iter_step) <= 0.0f)
+    if (std::fabs(pressure - THETA_REF_PRESSURE) <= converge)
         return theta_sat;
 
     const float pwrp = std::pow(pressure / THETA_REF_PRESSURE, ROCP);
@@ -180,10 +177,31 @@ float saturated_lift(float pressure, float theta_sat) noexcept {
         rate = (t2 - t1) / (e2 - e1);
         t1 = t2;
 		e1 = e2;
-		condition |= ((std::fabs(eor) - iter_step) < 0.0f);
+		condition |= (std::fabs(eor) <= converge);
 		if (condition) break;
     }
     return t2 - eor;
+}
+
+float wetlift(float pressure, float temperature,
+              float lifted_pressure) noexcept {
+#ifndef NO_QC
+    if ((temperature == MISSING) || (pressure == MISSING) ||
+        (lifted_pressure == MISSING)) {
+        return MISSING;
+    }
+#endif
+
+    // parcels potential temperature
+    const float pcl_theta = theta(pressure, temperature, THETA_REF_PRESSURE);
+    // some Wobus voodo
+    const float woth = wobf(pcl_theta);
+    const float wott = wobf(temperature);
+    // This is the wet bulb potential temperature
+    const float pcl_thetaw = pcl_theta - woth + wott;
+    // get the temperature that crosses the moist adiabat at
+    // this pressure level
+    return saturated_lift(lifted_pressure, pcl_thetaw);
 }
 
 [[nodiscard]] float moist_adiabat_cm1(float pressure, float temperature,
@@ -283,26 +301,6 @@ float saturated_lift(float pressure, float theta_sat) noexcept {
     return pcl_t_hi; 
 }
 
-float wetlift(float pressure, float temperature,
-              float lifted_pressure) noexcept {
-#ifndef NO_QC
-    if ((temperature == MISSING) || (pressure == MISSING) ||
-        (lifted_pressure == MISSING)) {
-        return MISSING;
-    }
-#endif
-
-    // parcels potential temperature
-    const float pcl_theta = theta(pressure, temperature, THETA_REF_PRESSURE);
-    // some Wobus voodo
-    const float woth = wobf(pcl_theta);
-    const float wott = wobf(temperature);
-    // This is the wet bulb potential temperature
-    const float pcl_thetaw = pcl_theta - woth + wott;
-    // get the temperature that crosses the moist adiabat at
-    // this pressure level
-    return saturated_lift(lifted_pressure, pcl_thetaw);
-}
 
 void drylift(float pressure, float temperature, float dewpoint,
              float& pressure_at_lcl, float& temperature_at_lcl) noexcept {
@@ -483,10 +481,5 @@ float moist_static_energy(float height_agl, float temperature,
 }
 
 }  // end namespace sharp
-
-namespace sharp::exper {
-
-
-} // end namespace sharp::exper
 
 

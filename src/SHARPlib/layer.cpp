@@ -70,10 +70,14 @@ LayerIndex get_layer_index(HeightLayer& layer, const float height[],
 PressureLayer height_layer_to_pressure(HeightLayer layer,
                                        const float pressure[],
                                        const float height[], const int N,
-                                       bool isAGL) noexcept {
+                                       const bool isAGL) noexcept {
     if (isAGL) {
         layer.bottom += height[0];
         layer.top += height[0];
+    }
+
+    if ((layer.bottom < height[0]) || (layer.top > height[N-1])) {
+        return {MISSING, MISSING};
     }
 
     const float pbot = interp_height(layer.bottom, height, pressure, N);
@@ -85,7 +89,11 @@ PressureLayer height_layer_to_pressure(HeightLayer layer,
 HeightLayer pressure_layer_to_height(PressureLayer layer,
                                      const float pressure[],
                                      const float height[], const int N,
-                                     bool toAGL) noexcept {
+                                     const bool toAGL) noexcept {
+    if ((layer.bottom > pressure[0]) || (layer.top < pressure[N-1])) {
+        return {MISSING, MISSING};
+    }
+
     float zbot = interp_pressure(layer.bottom, pressure, height, N);
     float ztop = interp_pressure(layer.top, pressure, height, N);
 
@@ -146,4 +154,3 @@ float layer_mean(HeightLayer layer, const float height[],
 
 }  // end namespace sharp
 
-namespace sharp::exper {}  // end namespace sharp::exper
