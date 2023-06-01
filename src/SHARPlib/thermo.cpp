@@ -193,19 +193,19 @@ float saturated_lift(float pressure, float theta_sat) noexcept {
                                       const float converge,
                                       const adiabat ma_type) {
 
-    qv_total = mixratio(lcl_pressure, lcl_temperature);
+    qv_total = mixratio(pressure, temperature);
 
     bool ice = (ma_type >= adiabat::pseudo_ice) ? true : false;
     // set up increment variables
-    float dp = std::abs(lcl_pressure - new_pressure);
+    float dp = std::abs(pressure - new_pressure);
     int n_iters = (dp < pres_incr) ? 1 : 1 + (int)(dp / pres_incr);
     dp = (dp < pres_incr) ? dp : dp / (float)n_iters;
 
     // Start by setting the "top" variables.
     float pcl_theta_hi =
-        theta(lcl_pressure, lcl_temperature, THETA_REF_PRESSURE);
-    float pcl_pres_hi = lcl_pressure;
-    float pcl_pi_hi = std::pow(lcl_pressure / THETA_REF_PRESSURE, ROCP);
+        theta(pressure, temperature, THETA_REF_PRESSURE);
+    float pcl_pres_hi = pressure;
+    float pcl_pi_hi = std::pow(pressure / THETA_REF_PRESSURE, ROCP);
     float pcl_t_hi = pcl_theta_hi * pcl_pi_hi;
     float pcl_qv_hi = mixratio(pcl_pres_hi, pcl_t_hi);
     float pcl_ql_hi = 0.0f;
