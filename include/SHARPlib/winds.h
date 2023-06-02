@@ -154,10 +154,10 @@ struct WindComponents {
  * and return the wind speed (m/s) and direction (degrees from
  * North) from the components as a struct.
  *
- * \param   u_comp              (m/s)
- * \param   v_comp              (m/s)
+ * \param   u_comp  (m/s)
+ * \param   v_comp  (m/s)
  *
- * \return  sharp::WindVector   {wind_speed, wind_direction}
+ * \return  {wind_speed, wind_direction}
  */
 [[nodiscard]] WindVector components_to_vector(float u_comp,
                                               float v_comp) noexcept;
@@ -173,9 +173,9 @@ struct WindComponents {
  * and return the wind speed (m/s) and direction (degrees from
  * North) and return them as sharp::WindVector.
  *
- * \param   comp                {u_comp, v_comp}
+ * \param   comp    {u_comp, v_comp}
  *
- * \return  sharp::WindVector   {wind_speed, wind_direction}
+ * \return  {wind_speed, wind_direction}
  */
 [[nodiscard]] WindVector components_to_vector(WindComponents comp) noexcept;
 
@@ -189,10 +189,10 @@ struct WindComponents {
  * Given the wind speed and direction of a vector, compute and return the
  * zonal and meridional vector components as a struct.
  *
- * \param   wind_speed              (m/s)
- * \param   wind_direction          (degrees from North)
+ * \param   wind_speed      (m/s)
+ * \param   wind_direction  (degrees from North)
  *
- * \return  sharp::WindComponents   {u_comp, v_comp}
+ * \return  {u_comp, v_comp}
  */
 [[nodiscard]] WindComponents vector_to_components(
     float wind_speed, float wind_direction) noexcept;
@@ -207,9 +207,9 @@ struct WindComponents {
  * Given the wind speed and direction of a vector via sharp::WindVector,
  * compute and return the zonal and meridional vector components as a struct.
  *
- * \param   vect                    {speed, direction}
+ * \param   vect    {speed, direction}
  *
- * \return  sharp::WindComponents   {u_comp, v_comp}
+ * \return  {u_comp, v_comp}
  */
 [[nodiscard]] WindComponents vector_to_components(WindVector vect) noexcept;
 
@@ -223,13 +223,13 @@ struct WindComponents {
  * Computes the pressure weighted mean wind over the given sharp::PressureLayer
  * and arrays of pressure and wind components with a length of num_levs.
  *
- * \param   layer                   {bottom, top} 
- * \param   pres                    (Pa)
- * \param   u_wind                  (m/s)
- * \param   v_wind                  (m/s)
- * \param   N                       (length of arrays)
+ * \param   layer   {bottom, top} 
+ * \param   pres    (Pa)
+ * \param   u_wind  (m/s)
+ * \param   v_wind  (m/s)
+ * \param   N       (length of arrays)
  *
- * \return  sharp::WindComponents   {mean_u, mean_v}
+ * \return  {mean_u, mean_v}
  */
 [[nodiscard]] WindComponents mean_wind(PressureLayer layer, const float pres[],
                                        const float u_wind[],
@@ -247,13 +247,13 @@ struct WindComponents {
  * sharp::PressureLayer and arrays of pressure and wind components
  * with a length of num_levs.
  *
- * \param   layer                   sharp::PressureLayer
- * \param   pres                    (Pa)
- * \param   u_wind                  (m/s)
- * \param   v_wind                  (m/s)
- * \param   N                       (length of arrays)
+ * \param   layer   {bottom, top} 
+ * \param   pres    (Pa)
+ * \param   u_wind  (m/s)
+ * \param   v_wind  (m/s)
+ * \param   N       (length of arrays)
  *
- * \return  sharp::WindComponents   {mean_u, mean_v}
+ * \return  {mean_u, mean_v}
  */
 [[nodiscard]] WindComponents mean_wind_npw(PressureLayer layer,
                                            const float pres[],
@@ -271,13 +271,13 @@ struct WindComponents {
  * sharp::PressureLayer given the vertical sounding arrays
  * of pressure, u_wind, v_wind, and their length.
  *
- * \param   layer                   sharp::PressureLayer
- * \param   pres                    (Pa)
- * \param   u_wind                  (m/s)
- * \param   v_wind                  (m/s)
- * \param   N                       (length of arrays)
+ * \param   layer   {bottom, top}
+ * \param   pres    (Pa)
+ * \param   u_wind  (m/s)
+ * \param   v_wind  (m/s)
+ * \param   N       (length of arrays)
  *
- * \return  sharp::WindComponents   {shear_u, shear_v}
+ * \return  {shear_u, shear_v}
  */
 [[nodiscard]] WindComponents wind_shear(PressureLayer layer, const float pres[],
                                         const float u_wind[],
@@ -294,13 +294,13 @@ struct WindComponents {
  * sharp::HeightLayer given the vertical sounding arrays
  * of height, u_wind, v_wind, and their length.
  *
- * \param   layer                   sharp::HeightLayer
- * \param   height                  (meters)
- * \param   u_wind                  (m/s)
- * \param   v_wind                  (m/s)
- * \param   N                       (length of arrays)
+ * \param   layer   {bottom, top}
+ * \param   height  (meters)
+ * \param   u_wind  (m/s)
+ * \param   v_wind  (m/s)
+ * \param   N       (length of arrays)
  *
- * \return  sharp::WindComponents   {shear_u, shear_v}
+ * \return  {shear_u, shear_v}
  */
 [[nodiscard]] WindComponents wind_shear(HeightLayer layer_agl,
                                         const float height[],
@@ -324,14 +324,14 @@ struct WindComponents {
  * (AGL), and gets converted to above-mean-sea-level (MSL) during the
  * computation.
  *
- * \param   layer_agl                   {bottom_agl, top_agl}
- * \param   storm_motion                {storm_u, storm_v}
- * \param   height                      (meters)
- * \param   u_wind                      (m/s)
- * \param   v_wind                      (m/s)
- * \param   N                           (length of arrays)
+ * \param   layer_agl       {bottom_agl, top_agl}
+ * \param   storm_motion    {storm_u, storm_v}
+ * \param   height          (meters)
+ * \param   u_wind          (m/s)
+ * \param   v_wind          (m/s)
+ * \param   N               (length of arrays)
  *
- * \return  storm_relative_helicity     (m^2/s^2)
+ * \return  storm_relative_helicity
  */
 [[nodiscard]] float helicity(HeightLayer layer_agl, WindComponents storm_motion,
                              const float height[], const float u_wind[],
@@ -355,15 +355,15 @@ struct WindComponents {
  * interpolated to height AGL (m) and then passed to the helicity function
  * that works in height coordinates.
  *
- * \param   layer_agl                   {bottom, top}
- * \param   storm_motion                {storm_u, storm_v}
- * \param   pressure                    (Pa)
- * \param   height                      (meters)
- * \param   u_wind                      (m/s)
- * \param   v_wind                      (m/s)
- * \param   N                           (length of arrays)
+ * \param   layer_agl       {bottom, top}
+ * \param   storm_motion    {storm_u, storm_v}
+ * \param   pressure        (Pa)
+ * \param   height          (meters)
+ * \param   u_wind          (m/s)
+ * \param   v_wind          (m/s)
+ * \param   N               (length of arrays)
  *
- * \return  storm_relative_helicity     (m^2/s^2)
+ * \return  storm_relative_helicity
  */
 [[nodiscard]] float helicity(PressureLayer layer, WindComponents storm_motion,
                              const float pressure[], const float height[],

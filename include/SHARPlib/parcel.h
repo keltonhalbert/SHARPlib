@@ -24,6 +24,7 @@ namespace sharp {
 
 ////////////    FUNCTORS    ///////////
 //
+
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
@@ -41,16 +42,15 @@ namespace sharp {
  * lifting code. The reason this is awesome is that the compiler
  * can still optimize and inline this code, while the user can configure
  * the parcel lifting algorithm to their specifications.
- *
  */
 struct lifter_wobus {
     /**
      * \brief Overloads operator() to call sharp::wetlift.
-     * \param pres      Parcel pressure (Pa)
-     * \param tmpk      Parcel temperature (degK)
-     * \param new_pres  Final level of parcel after lift (Pa)
+     * \param   pres        Parcel pressure (Pa)
+     * \param   tmpk        Parcel temperature (degK)
+     * \param   new_pres    Final level of parcel after lift (Pa)
      *
-     * \return          The virtual temperature of the lifted parcel 
+     * \return  The virtual temperature of the lifted parcel 
      */
     [[nodiscard]] inline float operator()(float pres, float tmpk,
                                    float new_pres) const noexcept {
@@ -98,11 +98,11 @@ struct lifter_cm1 {
     /**
      * \brief Overloads operator() to call sharp::moist_adiabat_cm1
      *
-     * \param pres      Parcel pressure (Pa)
-     * \param tmpk      Parcel temperature (degK)
-     * \param new_pres  Final level of parcel after lift (Pa)
+     * \param   pres        Parcel pressure (Pa)
+     * \param   tmpk        Parcel temperature (degK)
+     * \param   new_pres    Final level of parcel after lift (Pa)
      *
-     * \return          The virtual temperature of the lifted parcel 
+     * \return  The virtual temperature of the lifted parcel 
      */
     [[nodiscard]] inline float operator()(float pres, float tmpk,
                                    float new_pres) noexcept {
@@ -112,6 +112,7 @@ struct lifter_cm1 {
         return virtual_temperature(pcl_tmpk, this->qv, this->ql, this->qi);
     }
 };
+
 //
 ////////////  END FUNCTORS   ///////////
 
@@ -244,15 +245,15 @@ struct Parcel {
  * If you wish to set a custom LPL, you can do so and then set the
  * source to sharp::LPL::USR.
  *
- * \param pressure      Array of pressure (Pa)
- * \param temperature   Array of temperature (degK)
- * \param dewpoint      Array of dewpoint temperature (degK)
- * \param wv_mixratio   Array of water vapor mixing ratio (kg/kg)
- * \param theta_arr     Array of potential temperature (degK)
- * \param thetae_arr    Array of eqiv. potential temperature (degK)
- * \param N             The length of the arrays
- * \param pcl           The sharp::Parcel to set the attributes to
- * \param LPL           The type of sharp::Parcel to define 
+ * \param   pressure        Array of pressure (Pa)
+ * \param   temperature     Array of temperature (degK)
+ * \param   dewpoint        Array of dewpoint temperature (degK)
+ * \param   wv_mixratio     Array of water vapor mixing ratio (kg/kg)
+ * \param   theta_arr       Array of potential temperature (degK)
+ * \param   thetae_arr      Array of eqiv. potential temperature (degK)
+ * \param   N               The length of the arrays
+ * \param   pcl             The sharp::Parcel to set the attributes to
+ * \param   LPL             The type of sharp::Parcel to define 
  */
 void define_parcel(const float pressure[], const float temperature[],
                    const float dewpoint[], const float wv_mixratio[],
@@ -270,12 +271,12 @@ void define_parcel(const float pressure[], const float temperature[],
  * bu the type of lifting functor passed to the function (i.e. 
  * sharp::lifter_wobus or sharp::lifter_cm1). 
  *
- * \param liftpcl
- * \param pressure_arr              Array of env pressure (Pa)
- * \param virtual_temperature_arr   Array of env virtual temperature (degK)
- * \param buoyancy_arr              The array to fill with Buoyancy (m/s^2)
- * \param N                         The length of the arrays
- * \param pcl                       The sharp::Parcel to lift
+ * \param   liftpcl
+ * \param   pressure_arr                Array of env pressure (Pa)
+ * \param   virtual_temperature_arr     Array of env virtual temperature (degK)
+ * \param   buoyancy_arr                The array to fill with Buoyancy (m/s^2)
+ * \param   N                           The length of the arrays
+ * \param   pcl                         The sharp::Parcel to lift
  */
 template <typename Lft>
 void lift_parcel(Lft liftpcl, const float pressure_arr[],
@@ -335,11 +336,11 @@ void lift_parcel(Lft liftpcl, const float pressure_arr[],
  * are found, the values are set in sharp::Parcel.lfc_pres and 
  * sharp::Parcel.eql_pres.
  *
- * \param pcl       a sharp::Parcel with its sharp::LPL/attributes defined
- * \param pres_arr  The pressure coordinate array (Pa)
- * \param hght_arr  The height coordinate array (meters)
- * \param buoy_arr  The profile buoyancy array (m/s^2)
- * \param N        The length of the arrays
+ * \param   pcl         a sharp::Parcel with its sharp::LPL/attributes defined
+ * \param   pres_arr    The pressure coordinate array (Pa)
+ * \param   hght_arr    The height coordinate array (meters)
+ * \param   buoy_arr    The profile buoyancy array (m/s^2)
+ * \param   N           The length of the arrays
  */
 void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
                  const float buoy_arr[], const int N) noexcept;
@@ -355,11 +356,11 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
  *
  * The results are set in pcl->cape and pcl->cinh. 
  *
- * \param pres_arr  Array of pressure (Pa)
- * \param hght_arr  Array of height (meters)
- * \param buoy_arr  Array of buoyancy (m/s^2)
- * \param N         Length of arrays
- * \param pcl       A sharp::Parcel corresponding to the buoyancy array. 
+ * \param   pres_arr    Array of pressure (Pa)
+ * \param   hght_arr    Array of height (meters)
+ * \param   buoy_arr    Array of buoyancy (m/s^2)
+ * \param   N           Length of arrays
+ * \param   pcl         A sharp::Parcel corresponding to the buoyancy array. 
  */
 void cape_cinh(const float pres_arr[], const float hght_arr[],
                const float buoy_arr[], const int N, Parcel* pcl) noexcept;
