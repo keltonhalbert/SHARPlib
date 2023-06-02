@@ -236,7 +236,6 @@ float wetlift(float pressure, float temperature,
     float pcl_ql_hi = 0.0f;
     float pcl_qi_hi = 0.0f;
 
-    // NOTE: pressure and temperature are of the LCL
     for (int i = 0; i < n_iters; ++i ) {
         bool not_converged = true;
 
@@ -311,13 +310,11 @@ float wetlift(float pressure, float temperature,
 
 void drylift(float pressure, float temperature, float dewpoint,
              float& pressure_at_lcl, float& temperature_at_lcl) noexcept {
-    // we do this before the QC check so that
-    // these values are passed back as missing
-    pressure_at_lcl = MISSING;
-    temperature_at_lcl = MISSING;
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING) ||
         (dewpoint == MISSING)) {
+        pressure_at_lcl = MISSING;
+        temperature_at_lcl = MISSING;
         return;
     }
 #endif

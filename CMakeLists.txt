@@ -17,10 +17,10 @@ use_cxx17()
 ## Bring the headers into the project
 include_directories(include)
 include_directories(external/fmt/include EXCLUDE_FROM_ALL)
-#add_subdirectory(external/fmt EXCLUDE_FROM_ALL)
 
 ## add all CPP files as sources
-file(GLOB SOURCES "src/SHARPlib/*.cpp")
+file(GLOB SOURCES "src/SHARPlib/*.cpp" "src/SHARPlib/params/*.cpp")
+#file(GLOB SOURCES "src/SHARPlib/params/*.cpp")
 
 ## Add the library build command
 ## The library target is SHARP, we are building a static lib,

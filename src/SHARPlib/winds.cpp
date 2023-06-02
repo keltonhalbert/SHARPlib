@@ -102,6 +102,8 @@ WindComponents vector_to_components(WindVector vect) noexcept {
     return {u_comp, v_comp};
 }
 
+// To-Do: sharp::mean_wind and sharp::mean_wind_npw can be combined 
+// into a single function, reducing duplicate code
 WindComponents mean_wind(PressureLayer layer, const float pres[],
                          const float u_wind[], const float v_wind[],
                          const int N) noexcept {
@@ -165,6 +167,8 @@ WindComponents mean_wind_npw(PressureLayer layer, const float pres[],
     return {mean_u, mean_v};
 }
 
+// To-Do: sharp::wind_shear can be templated over the PressureLayer
+// and HeightLayer types, reducing redundant code
 WindComponents wind_shear(PressureLayer layer, const float pres[],
                           const float u_wind[], const float v_wind[],
                           const int N) noexcept {
@@ -224,6 +228,8 @@ WindComponents wind_shear(HeightLayer layer_agl, const float height[],
     return {u_top - u_bot, v_top - v_bot};
 }
 
+// To-Do: sharp::helicity can be templated over the PressureLayer
+// and HeightLayer types, reducing code size and such
 float helicity(HeightLayer layer_agl, WindComponents storm_motion,
                const float height[], const float u_wind[], const float v_wind[],
                const int N) noexcept {
