@@ -7,15 +7,14 @@
 // Based on NSHARP routines originally written by
 // John Hart and Rich Thompson at SPC.
 #include <SHARPlib/constants.h>
+#include <SHARPlib/thermo.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
 
 #include <cmath>
-#include <iostream>
 
 namespace sharp {
 
-// To-Do: Can I make this branchless?
 float wobf(float temperature) noexcept {
 #ifndef NO_QC
     if (temperature == MISSING) return MISSING;
@@ -39,16 +38,26 @@ float wobf(float temperature) noexcept {
     }
 }
 
-float vapor_pressure(float temperature) noexcept {
+float vapor_pressure(float pressure, float temperature) noexcept {
 #ifndef NO_QC
-    if (temperature == MISSING) return MISSING;
+    if ((temperature == MISSING) || (pressure == MISSING)) return MISSING;
 #endif
     const float tmpc = temperature - ZEROCNK;
-    static constexpr float c1 = 6.112f;
-    static constexpr float c2 = 17.67f;
-    static constexpr float c3 = 243.5;
+    const float es =
+        611.2f * std::exp(17.67f * tmpc / (temperature - 29.65f));
+	// for extremely cold temperatures
+    return std::min(es, pressure * 0.5f);
+}
 
-    return 100.0f * c1 * std::exp((c2 * tmpc) / (tmpc + c3));
+float vapor_pressure_ice(float pressure, float temperature) noexcept {
+#ifndef NO_QC
+    if ((temperature == MISSING) || (pressure == MISSING)) return MISSING;
+#endif
+    const float tmpc = temperature - ZEROCNK;
+    const float es =
+        611.2f * std::exp(21.8745584f * tmpc / (temperature - 7.66f));
+	// for extremely cold temperatures
+    return std::min(es, pressure * 0.5f);
 }
 
 float lcl_temperature(float temperature, float dewpoint) noexcept {
@@ -71,18 +80,11 @@ float temperature_at_mixratio(float wv_mixratio, float pressure) noexcept {
         return MISSING;
     }
 #endif
-
-    static constexpr double c1 = 0.0498646455;
-    static constexpr double c2 = 2.4082965;
-    static constexpr double c3 = 7.07475;
-    static constexpr double c4 = 38.9114;
-    static constexpr double c5 = 0.0915;
-    static constexpr double c6 = 1.2035;
-    const float pres = pressure * PA_TO_HPA;
-    const double x = std::log10(wv_mixratio * pres / (EPSILON + wv_mixratio));
-    const double tmrk = std::pow(10.0, c1 * x + c2) - c3 +
-                        c4 * std::pow(std::pow(10.0, c5 * x) - c6, 2.0);
-    return (float)tmrk;
+	float es = (wv_mixratio / EPSILON) * pressure / 100.0f / (1.0f + (wv_mixratio / EPSILON));
+	// for extremely cold temperatures
+	es = std::min(es, pressure * 0.5f);
+    const float el = std::log(es);
+    return ZEROCNK + (243.5f * el - 440.8f) / (19.48f - el);
 }
 
 float theta_level(float potential_temperature, float temperature) noexcept {
@@ -106,7 +108,6 @@ float theta(float pressure, float temperature, float ref_pressure) noexcept {
     return (temperature * std::pow(ref_pressure / pressure, ROCP));
 }
 
-// To-Do: Implement exact version
 float mixratio(float pressure, float temperature) noexcept {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING)) {
@@ -114,45 +115,52 @@ float mixratio(float pressure, float temperature) noexcept {
     }
 #endif
 
-    static constexpr float c1 = 0.622f;
-    const float e = vapor_pressure(temperature);
-    return (c1*e)/(pressure-e);
+    const float e = vapor_pressure(pressure, temperature);
+    return (EPSILON*e)/(pressure-e);
 }
 
-float virtual_temperature(float pressure, float temperature,
-                          float dewpoint) noexcept {
+float mixratio_ice(float pressure, float temperature) noexcept {
 #ifndef NO_QC
-    if (dewpoint == MISSING) {
-        return temperature;
-    } else if ((pressure == MISSING) || (temperature == MISSING)) {
+    if ((temperature == MISSING) || (pressure == MISSING)) {
         return MISSING;
     }
 #endif
-    const float w = mixratio(pressure, dewpoint);
-    return (temperature * ((1.0f + (w / EPSILON)) / (1.0f + w)));
+    const float e = vapor_pressure_ice(pressure, temperature);
+    return (EPSILON*e)/(pressure-e);
 }
 
-float virtual_temperature(float temperature, float wv_mixratio) noexcept {
+float specific_humidity(float q) noexcept {
 #ifndef NO_QC
-    if (wv_mixratio == MISSING) {
+    if (q == MISSING) return MISSING;
+#endif
+    return (1.0f - q) * q;
+}
+
+float virtual_temperature(float temperature, float qv, float ql,
+                          float qi) noexcept {
+#ifndef NO_QC
+    if (qv == MISSING) {
         return temperature;
     } else if (temperature == MISSING) {
         return MISSING;
     }
+    else if ((ql == MISSING) || (qi == MISSING)) {
+        ql = 0.0f;
+        qi = 0.0f;
+    }
 #endif
-    return (temperature *
-            ((1.0f + (wv_mixratio / EPSILON)) / (1.0f + wv_mixratio)));
+    return (temperature * ((1.0f + (qv / EPSILON)) / (1.0f + qv + ql + qi)));
 }
 
-float saturated_lift(float pressure, float theta_sat) noexcept {
+float saturated_lift(float pressure, float theta_sat,
+                     const float converge) noexcept {
 #ifndef NO_QC
     if ((pressure == MISSING) || (theta_sat == MISSING)) {
         return MISSING;
     }
 #endif
 
-    static constexpr float iter_step = 0.001f;
-    if ((std::fabs(pressure - THETA_REF_PRESSURE) - iter_step) <= 0.0f)
+    if (std::fabs(pressure - THETA_REF_PRESSURE) <= converge)
         return theta_sat;
 
     const float pwrp = std::pow(pressure / THETA_REF_PRESSURE, ROCP);
@@ -176,7 +184,7 @@ float saturated_lift(float pressure, float theta_sat) noexcept {
         rate = (t2 - t1) / (e2 - e1);
         t1 = t2;
 		e1 = e2;
-		condition |= ((std::fabs(eor) - iter_step) < 0.0f);
+		condition |= (std::fabs(eor) <= converge);
 		if (condition) break;
     }
     return t2 - eor;
@@ -203,15 +211,106 @@ float wetlift(float pressure, float temperature,
     return saturated_lift(lifted_pressure, pcl_thetaw);
 }
 
+float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
+                        float& qv_total, float& qv, float& ql, float& qi,
+                        const float pres_incr, const float converge,
+                        const adiabat ma_type) {
+    qv_total = mixratio(pressure, temperature);
+
+    bool ice = (ma_type >= adiabat::pseudo_ice) ? true : false;
+    // set up increment variables
+    float dp = std::abs(pressure - new_pressure);
+    int n_iters = (dp < pres_incr) ? 1 : 1 + (int)(dp / pres_incr);
+    dp = (dp < pres_incr) ? dp : dp / (float)n_iters;
+
+    // Start by setting the "top" variables.
+    float pcl_theta_hi =
+        theta(pressure, temperature, THETA_REF_PRESSURE);
+    float pcl_pres_hi = pressure;
+    float pcl_pi_hi = std::pow(pressure / THETA_REF_PRESSURE, ROCP);
+    float pcl_t_hi = pcl_theta_hi * pcl_pi_hi;
+    float pcl_qv_hi = mixratio(pcl_pres_hi, pcl_t_hi);
+    float pcl_ql_hi = 0.0f;
+    float pcl_qi_hi = 0.0f;
+
+    for (int i = 0; i < n_iters; ++i ) {
+        bool not_converged = true;
+
+        float pcl_theta_lo = pcl_theta_hi; 
+        float pcl_pres_lo = pcl_pres_hi;
+        float pcl_qv_lo = pcl_qv_hi;
+        float pcl_ql_lo = pcl_ql_hi;
+        float pcl_qi_lo = pcl_qi_hi;
+        float pcl_t_lo = pcl_t_hi; 
+
+        pcl_pres_hi = pcl_pres_hi - dp;
+        pcl_pi_hi = std::pow(pcl_pres_hi / THETA_REF_PRESSURE, ROCP);
+        float pcl_theta_last = pcl_theta_lo;
+
+        while(not_converged) {
+            pcl_t_hi = pcl_theta_last * pcl_pi_hi;
+
+            float fliq = 1.0;
+            float fice = 0.0;
+            if (ice) {
+                fliq = std::max(
+                    std::min((pcl_t_hi - 233.15f) / (ZEROCNK - 233.15f), 1.0f),
+                    0.0f);
+                fice = 1.0f - fliq;
+            }
+
+            float qv_term = fliq * mixratio(pcl_pres_hi, pcl_t_hi) +
+                            fice * mixratio_ice(pcl_pres_hi, pcl_t_hi);
+            pcl_qv_hi = std::min(qv_total, qv_term); 
+            pcl_qi_hi = std::max(fice*(qv_total - pcl_qv_hi), 0.0f);
+            pcl_ql_hi = std::max(qv_total - pcl_qv_hi - pcl_qi_hi, 0.0f);
+
+            float tbar = 0.5f*(pcl_t_lo + pcl_t_hi);
+            float qvbar = 0.5f*(pcl_qv_lo + pcl_qv_hi);
+            float qlbar = 0.5f*(pcl_ql_lo + pcl_ql_hi);
+            float qibar = 0.5f*(pcl_qi_lo + pcl_qi_hi);
+
+            float LHV = LV1 - LV2 * tbar;
+            float LHS = LS1 - LS2 * tbar;
+
+            float RM = RDGAS + RVGAS * qvbar;
+            float CPM = CP_DRYAIR + CP_VAPOR * qvbar + CP_LIQUID * qlbar +
+                        CP_ICE * qibar;
+            float term = LHV*(pcl_ql_hi-pcl_ql_lo)/(CPM*tbar)
+                        +LHS*(pcl_qi_hi-pcl_qi_lo)/(CPM*tbar)
+                        +(RM/CPM-ROCP)*std::log(pcl_pres_hi / pcl_pres_lo); 
+
+            pcl_theta_hi = pcl_theta_lo * std::exp(term);
+
+            if (std::abs(pcl_theta_hi - pcl_theta_last) > converge) {
+                pcl_theta_last =
+                    pcl_theta_last + 0.3 * (pcl_theta_hi - pcl_theta_last);
+            }
+            else {
+                not_converged = false;
+            }
+        }
+        if ((ma_type == adiabat::pseudo_liq) ||
+            (ma_type == adiabat::pseudo_ice)) {
+            qv_total = pcl_qv_hi;
+            pcl_ql_hi = 0.0f;
+            pcl_qi_hi = 0.0f;
+        }
+    }
+    pcl_t_hi = pcl_theta_hi*pcl_pi_hi;
+    qv = pcl_qv_hi;
+    ql = pcl_ql_hi;
+    qi = pcl_qi_hi;
+    return pcl_t_hi;
+}
+
 void drylift(float pressure, float temperature, float dewpoint,
              float& pressure_at_lcl, float& temperature_at_lcl) noexcept {
-    // we do this before the QC check so that
-    // these values are passed back as missing
-    pressure_at_lcl = MISSING;
-    temperature_at_lcl = MISSING;
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING) ||
         (dewpoint == MISSING)) {
+        pressure_at_lcl = MISSING;
+        temperature_at_lcl = MISSING;
         return;
     }
 #endif
@@ -377,15 +476,21 @@ float moist_static_energy(float height_agl, float temperature,
     }
 #endif
 
-    return (CP_DRYAIR * temperature) + (LV * specific_humidity) +
+    return (CP_DRYAIR * temperature) + (EXP_LV * specific_humidity) +
            (GRAVITY * height_agl);
 }
 
+float buoyancy_dilution_potential(float temperature, float mse_bar,
+                                  float saturation_mse) {
+#ifndef NO_QC
+    if ((temperature == MISSING) || (mse_bar == MISSING) ||
+        (saturation_mse == MISSING)) {
+        return MISSING;
+    }
+#endif
+    return -1.0f * (GRAVITY / (CP_DRYAIR * temperature)) *
+           (mse_bar - saturation_mse);
+}
+
 }  // end namespace sharp
-
-namespace sharp::exper {
-
-
-} // end namespace sharp::exper
-
 

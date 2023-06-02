@@ -1,4 +1,3 @@
-
 /**
  * \file
  * \brief Routines used for parcel lifting and integration
@@ -15,9 +14,9 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
-#include <SHARPlib/parcel.h>
-#include <SHARPlib/profile.h>
 #include <SHARPlib/thermo.h>
+#include <SHARPlib/parcel.h>
+
 
 namespace sharp {
 
@@ -26,14 +25,17 @@ namespace sharp {
  *
  * \brief Sets the parcel initial values to the surface of the profile
  *
- * \param prof
- * \param pcl
- *
+ * \param pressure      Array of pressure (Pa)
+ * \param temperature   Array of temperature (degK)
+ * \param dewpoint      Array of dewpoint (degK)
+ * \param N             Length of arrays
+ * \param pcl           sharp::Parcel to define
  */
-void _sfc(Profile* prof, Parcel* pcl) noexcept {
-    pcl->pres = prof->pres[0];
-    pcl->tmpk = prof->tmpk[0];
-    pcl->dwpk = prof->dwpk[0];
+void _sfc(const float pressure[], const float temperature[],
+          const float dewpoint[], const int N, Parcel& pcl) noexcept {
+    pcl.pres = pressure[0];
+    pcl.tmpk = temperature[0];
+    pcl.dwpk = dewpoint[0];
 }
 
 /**
@@ -41,21 +43,26 @@ void _sfc(Profile* prof, Parcel* pcl) noexcept {
  *
  * \brief Sets the parcel initial values to the most unstable parcel level
  *
- * \param prof
- * \param pcl
- *
+ * \param pressure      Array of pressure (Pa)
+ * \param temperature   Array of temperature (degK)
+ * \param dewpoint      Array of dewpoint (degK)
+ * \param thetae        Array of equiv. potential temperature (deg K)
+ * \param N             Length of arrays
+ * \param pcl           sharp::Parcel to define
  */
-void _mu(Profile* prof, Parcel* pcl) noexcept {
+void _mu(const float pressure[], const float temperature[],
+         const float dewpoint[], const float thetae[], const int N,
+         Parcel& pcl) noexcept {
     // Search for the most unstable parcel in the bottom
     // 400 hPa of the profile
     static constexpr float mu_depth = 40000.0f; // 400 hPa in Pa
-    PressureLayer mu_layer(prof->pres[0], prof->pres[0] - mu_depth);
+    PressureLayer mu_layer(pressure[0], pressure[0] - mu_depth);
 
     // layer_max returns the max, and will set the pressure
     // of the max via a pointer to a float.
-    layer_max(mu_layer, prof->pres, prof->theta_e, prof->NZ, &(pcl->pres));
-    pcl->tmpk = interp_pressure(pcl->pres, prof->pres, prof->tmpk, prof->NZ);
-    pcl->dwpk = interp_pressure(pcl->pres, prof->pres, prof->dwpk, prof->NZ);
+    layer_max(mu_layer, pressure, thetae, N, &(pcl.pres));
+    pcl.tmpk = interp_pressure(pcl.pres, pressure, temperature, N);
+    pcl.dwpk = interp_pressure(pcl.pres, pressure, dewpoint, N);
 }
 
 /**
@@ -63,40 +70,50 @@ void _mu(Profile* prof, Parcel* pcl) noexcept {
  *
  * \brief Sets the parcel initial values to the bottom 100mb mixed layer
  *
- * \param prof
- * \param pcl
- *
+ * \param pressure      Array of pressure (Pa)
+ * \param temperature   Array of temperature (degK)
+ * \param dewpoint      Array of dewpoint (degK)
+ * \param theta         Array of potential temperature (deg K)
+ * \param wv_mixratio   Array of water vapor mixing ratio (kg/kg)
+ * \param N             Length of arrays
+ * \param pcl           sharp::Parcel to define
  */
-void _ml(Profile* prof, Parcel* pcl) noexcept {
+void _ml(const float pressure[], const float theta_arr[],
+         const float wv_mixratio[], const int N, Parcel& pcl) noexcept {
     static constexpr float ml_depth = 10000.0; // 100 hPa in Pa
-    PressureLayer mix_layer(prof->pres[0], prof->pres[0] - ml_depth);
+	const float sfcpres = pressure[0];
+    PressureLayer mix_layer(sfcpres, sfcpres - ml_depth);
 
     // get the mean attributes of the lowest 100 hPa
     const float mean_mixr =
-        layer_mean(mix_layer, prof->pres, prof->mixr, prof->NZ);
+        layer_mean(mix_layer, pressure, wv_mixratio, N);
     const float mean_thta =
-        layer_mean(mix_layer, prof->pres, prof->theta, prof->NZ);
+        layer_mean(mix_layer, pressure, theta_arr, N);
 
     // set the parcel attributes
-    pcl->pres = prof->pres[0];
-    pcl->tmpk = theta(THETA_REF_PRESSURE, mean_thta, prof->pres[0]);
-    pcl->dwpk = temperature_at_mixratio(mean_mixr, prof->pres[0]);
+    pcl.pres = sfcpres;
+    pcl.tmpk = theta(THETA_REF_PRESSURE, mean_thta, sfcpres);
+    pcl.dwpk = temperature_at_mixratio(mean_mixr, sfcpres);
 }
 
-void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept {
-    pcl->source = source;
+void define_parcel(const float pressure[], const float temperature[],
+                   const float dewpoint[],
+                   const float wv_mixratio[], const float theta_arr[],
+                   const float thetae[], const int N, Parcel& pcl,
+                   LPL source) noexcept {
+    pcl.source = source;
 
     if (source == LPL::SFC) {
-        _sfc(prof, pcl);
+        _sfc(pressure, temperature, dewpoint, N, pcl);
         return;
     } else if (source == LPL::FCST) {
         // TO-DO: Write the forecast_surface routine
         return;
     } else if (source == LPL::MU) {
-        _mu(prof, pcl);
+        _mu(pressure, temperature, dewpoint, thetae, N, pcl);
         return;
     } else if (source == LPL::ML) {
-        _ml(prof, pcl);
+        _ml(pressure, theta_arr, wv_mixratio, N, pcl);
         return;
     } else if (source == LPL::EIL) {
         // TO-DO: Write the EIL routine
@@ -111,16 +128,16 @@ void define_parcel(Profile* prof, Parcel* pcl, LPL source) noexcept {
 }
 
 void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
-                 const float buoy_arr[], const int NZ) noexcept {
-    PressureLayer sat_lyr = {pcl->lcl_pressure, pres_arr[NZ - 1]};
-    LayerIndex lyr_idx = get_layer_index(sat_lyr, pres_arr, NZ);
+                 const float buoy_arr[], const int N) noexcept {
+    PressureLayer sat_lyr = {pcl->lcl_pressure, pres_arr[N - 1]};
+    LayerIndex lyr_idx = get_layer_index(sat_lyr, pres_arr, N);
 
     float lyr_bot = 0.0;
     float pos_buoy = 0.0;
     float pos_buoy_last = 0.0;
     float pbot = sat_lyr.bottom;
-    float buoy_bot = interp_pressure(sat_lyr.bottom, pres_arr, buoy_arr, NZ);
-    float hbot = interp_pressure(sat_lyr.bottom, pres_arr, hght_arr, NZ);
+    float buoy_bot = interp_pressure(sat_lyr.bottom, pres_arr, buoy_arr, N);
+    float hbot = interp_pressure(sat_lyr.bottom, pres_arr, hght_arr, N);
     // set the LFC pressure to the LCL if the buoyancy is positive
     float lfc_pres = (buoy_bot > 0) ? sat_lyr.bottom : MISSING;
     float eql_pres = MISSING;
@@ -146,7 +163,7 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
             for (lfc_pres = pbot - 500; lfc_pres > ptop + 500;
                  lfc_pres -= 100.0) {
                 const float buoy =
-                    interp_pressure(lfc_pres, pres_arr, buoy_arr, NZ);
+                    interp_pressure(lfc_pres, pres_arr, buoy_arr, N);
                 if (buoy > 0) break;
             }
         }
@@ -159,7 +176,7 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
             for (eql_pres = pbot - 500; eql_pres > ptop + 500;
                  eql_pres -= 100.0) {
                 const float buoy =
-                    interp_pressure(eql_pres, pres_arr, buoy_arr, NZ);
+                    interp_pressure(eql_pres, pres_arr, buoy_arr, N);
                 if (buoy < 0) break;
             }
             if (pos_buoy_last > pos_buoy) {
@@ -169,7 +186,7 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
             }
         }
         // If there is no EL, just use the last available level
-        if ((k == NZ - 1) && (lyr_top > 0)) eql_pres = pres_arr[NZ - 1];
+        if ((k == N - 1) && (lyr_top > 0)) eql_pres = pres_arr[N - 1];
         // set loop variables
         pbot = ptop;
         hbot = htop;
@@ -180,31 +197,23 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
     pcl->eql_pressure = eql_pres;
 }
 
-void cape_cinh(Profile* prof, Parcel* pcl) noexcept {
-    find_lfc_el(pcl, prof->pres, prof->hght, prof->buoyancy, prof->NZ);
+void cape_cinh(const float pres_arr[], const float hght_arr[],
+               const float buoy_arr[], const int N, Parcel* pcl) noexcept {
+    find_lfc_el(pcl, pres_arr, hght_arr, buoy_arr, N);
     if ((pcl->lfc_pressure != MISSING) && (pcl->eql_pressure != MISSING)) {
 		PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
 		PressureLayer lpl_lfc = {pcl->pres, pcl->lfc_pressure};
         HeightLayer lfc_el_ht =
-            pressure_layer_to_height(lfc_el, prof->pres, prof->hght, prof->NZ);
+            pressure_layer_to_height(lfc_el, pres_arr, hght_arr, N);
         HeightLayer lpl_lfc_ht =
-            pressure_layer_to_height(lpl_lfc, prof->pres, prof->hght, prof->NZ);
+            pressure_layer_to_height(lpl_lfc, pres_arr, hght_arr, N);
 
-        float CINH = integrate_layer_trapz(lpl_lfc_ht, prof->buoyancy,
-                                           prof->hght, prof->NZ, -1);
-        float CAPE = integrate_layer_trapz(lfc_el_ht, prof->buoyancy,
-                                           prof->hght, prof->NZ, 1);
-		pcl->cape = CAPE;
-		pcl->cinh = CINH;
+        pcl->cinh =
+            integrate_layer_trapz(lpl_lfc_ht, buoy_arr, hght_arr, N, -1);
+        pcl->cape =
+            integrate_layer_trapz(lfc_el_ht, buoy_arr, hght_arr, N, 1);
     }
-}
-
-void parcel_wobf(Profile* prof, Parcel* pcl) noexcept {
-    static constexpr lifter_wobus lifter;
-    lift_parcel(lifter, prof, pcl);
-    cape_cinh(prof, pcl);
 }
 
 }  // end namespace sharp
 
-namespace sharp::exper {}  // end namespace sharp::exper

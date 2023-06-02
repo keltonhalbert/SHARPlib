@@ -3,7 +3,7 @@
 %{
     #define SWIG_FILE_WITH_INIT
     #include <SHARPlib/parcel.h>
-    #include <SHARPlib/params.h>
+    #include <SHARPlib/params/convective.h>
 %}
 
 %include exception.i
@@ -21,4 +21,4 @@
 %import "../include/SHARPlib/winds.h"
 %import "../include/SHARPlib/profile.h"
 %import "../include/SHARPlib/parcel.h"
-%include "../include/SHARPlib/params.h"
+%include "../include/SHARPlib/params/convective.h"
