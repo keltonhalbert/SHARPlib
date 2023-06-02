@@ -297,4 +297,3 @@ float helicity(PressureLayer layer, WindComponents storm_motion,
 
 }  // end namespace sharp
 
-namespace sharp::exper {}  // end namespace sharp::exper

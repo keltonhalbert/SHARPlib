@@ -129,6 +129,13 @@ float mixratio_ice(float pressure, float temperature) noexcept {
     return (EPSILON*e)/(pressure-e);
 }
 
+float specific_humidity(float q) noexcept {
+#ifndef NO_QC
+    if (q == MISSING) return MISSING;
+#endif
+    return (1.0f - q) * q;
+}
+
 float virtual_temperature(float temperature, float qv, float ql,
                           float qi) noexcept {
 #ifndef NO_QC
@@ -480,6 +487,17 @@ float moist_static_energy(float height_agl, float temperature,
            (GRAVITY * height_agl);
 }
 
-}  // end namespace sharp
+float buoyancy_dilution_potential(float temperature, float mse_bar,
+                                  float saturation_mse) {
+#ifndef NO_QC
+    if ((temperature == MISSING) || (mse_bar == MISSING) ||
+        (saturation_mse == MISSING)) {
+        return MISSING;
+    }
+#endif
+    return -1.0f * (GRAVITY / (CP_DRYAIR * temperature)) *
+           (mse_bar - saturation_mse);
+}
 
+}  // end namespace sharp
 

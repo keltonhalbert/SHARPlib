@@ -243,6 +243,19 @@ enum class adiabat : int {
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
+ * \brief Compute specific humidity from a mixing ratio
+ *
+ * Returns the specific humidity given the mixing ratio.
+ *
+ * \param   q                   (kg/kg)
+ *
+ * \return  specific_humidity   (unitless)
+ */
+[[nodiscard]] float specific_humidity(float q) noexcept;
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
  * \brief Compute the full virtual temperature.
  *
  * Returns the virtual temperature in degrees Kelvin given the dry-bulb 
@@ -565,6 +578,10 @@ void drylift(float pressure, float temperature, float dewpoint,
  */
 [[nodiscard]] float moist_static_energy(float height_agl, float temperature,
                                         float specific_humidity) noexcept;
+
+[[nodiscard]] float buoyancy_dilution_potential(const float temperature,
+                                                const float mse_bar,
+                                                const float saturation_mse);
 
 }  // end namespace sharp
 
