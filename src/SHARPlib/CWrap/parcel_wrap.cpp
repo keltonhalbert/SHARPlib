@@ -64,13 +64,17 @@ int sharp_Parcel_get_lpl(sharp_Parcel_t* p) {
 	return static_cast<int>(static_cast<sharp::Parcel*>(p->obj)->source);
 }
 
-void sharp_define_parcel(sharp_Profile_t* prof, sharp_Parcel_t* pcl,
-                         int source) {
-    if ((prof == NULL) || (pcl == NULL)) return;
-    sharp::Profile* pf = static_cast<sharp::Profile*>(prof->obj);
+//void sharp_define_parcel(sharp_Profile_t* prof, sharp_Parcel_t* pcl,
+//                         int source) {
+void sharp_define_parcel(const float* pressure, const float* temperature,
+                         const float* dewpoint, const float* wv_mixratio,
+                         const float* theta, const float* thetae, const int N,
+                         sharp_Parcel_t* pcl, int source) {
+    if (pcl == NULL) return;
+    //sharp::Profile* pf = static_cast<sharp::Profile*>(prof->obj);
     sharp::Parcel* pc = static_cast<sharp::Parcel*>(pcl->obj);
     sharp::LPL src = static_cast<sharp::LPL>(source);
-    sharp::define_parcel(pf, pc, src); 
+    sharp::define_parcel(pressure, temperature, dewpoint, wv_mixratio, theta, thetae, N, *pc, src); 
 }
 
 void sharp_define_custom_parcel(sharp_Parcel_t* pcl, float pres, float tmpk,
@@ -82,12 +86,13 @@ void sharp_define_custom_parcel(sharp_Parcel_t* pcl, float pres, float tmpk,
     pc->dwpk = dwpk;
 }
 
-void sharp_lift_parcel_wobf(sharp_Profile_t* prof, sharp_Parcel_t* pcl) {
-    if ((prof == NULL) || (pcl == NULL)) return;
-    sharp::Profile* pf = static_cast<sharp::Profile*>(prof->obj);
+void sharp_lift_parcel_wobf(const float* pressure,
+                            const float* virtual_temperature, float* buoyancy,
+                            const int N, sharp_Parcel_t* pcl) {
+    if (pcl == NULL) return;
     sharp::Parcel* pc = static_cast<sharp::Parcel*>(pcl->obj);
-    constexpr sharp::lifter_wobus lifter;
-    sharp::lift_parcel(lifter, pf, pc);
+    static constexpr sharp::lifter_wobus lifter;
+    sharp::lift_parcel(lifter, pressure, virtual_temperature, buoyancy, N, pc);
 }
 
 void sharp_find_lfc_el(sharp_Parcel_t* pcl, const float* pres,
@@ -97,17 +102,10 @@ void sharp_find_lfc_el(sharp_Parcel_t* pcl, const float* pres,
     sharp::find_lfc_el(pc, pres, hght, buoy, NZ);
 }
 
-void sharp_cape_cinh(sharp_Profile_t* prof, sharp_Parcel_t* pcl) {
-    if ((prof == NULL) || (pcl == NULL)) return;
-    sharp::Profile* pf = static_cast<sharp::Profile*>(prof->obj);
+void sharp_cape_cinh(const float* pressure, const float* height,
+                     const float* buoyancy, const int N, sharp_Parcel_t* pcl) {
+    if (pcl == NULL) return;
     sharp::Parcel* pc = static_cast<sharp::Parcel*>(pcl->obj);
-    sharp::cape_cinh(pf, pc);
-}
-
-void sharp_parcel_wobf(sharp_Profile_t* prof, sharp_Parcel_t* pcl) {
-    if ((prof == NULL) || (pcl == NULL)) return;
-    sharp::Profile* pf = static_cast<sharp::Profile*>(prof->obj);
-    sharp::Parcel* pc = static_cast<sharp::Parcel*>(pcl->obj);
-    sharp::parcel_wobf(pf, pc);
+    sharp::cape_cinh(pressure, height, buoyancy, N, pc);
 }
 

@@ -8,7 +8,7 @@ TEST_CASE("Testing theta") {
     constexpr float tmpk = 10.0 + sharp::ZEROCNK;
     constexpr float pres = 900.0 * sharp::HPA_TO_PA;
     CHECK(sharp::theta(pres, tmpk, sharp::THETA_REF_PRESSURE) ==
-          doctest::Approx(18.6533+sharp::ZEROCNK));
+          doctest::Approx(291.794));
 
 #ifndef NO_QC
     CHECK(sharp::theta(sharp::MISSING, tmpk, sharp::THETA_REF_PRESSURE) ==
@@ -66,7 +66,9 @@ TEST_CASE("Testing lcl_temperature") {
 TEST_CASE("Testing vapor_pressure") {
 
 #ifndef NO_QC
-    CHECK(sharp::vapor_pressure(sharp::MISSING) == sharp::MISSING);
+    CHECK(sharp::vapor_pressure(100000.0f, sharp::MISSING) == sharp::MISSING);
+    CHECK(sharp::vapor_pressure(sharp::MISSING, sharp::ZEROCNK) ==
+          sharp::MISSING);
 #endif
 
 }

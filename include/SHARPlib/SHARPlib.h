@@ -19,28 +19,29 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
-#include <SHARPlib/params.h>
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/profile.h>
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
+#include <SHARPlib/params/convective.h>
 
 namespace sharp {
 
 Profile *create_profile(const float pres[], const float hght[],
                         const float tmpk[], const float dwpk[],
                         const float wspd_or_u[], const float wdir_or_v[],
-                        int NZ, Source sounding_type, bool windComponents) {
+                        const int N, Source sounding_type,
+                        const bool windComponents) {
     Profile *prof = new Profile(NZ, sounding_type);
 
-    for (int k = 0; k < NZ; k++) {
+    for (int k = 0; k < NZ; ++k) {
         float p = pres[k];
         float h = hght[k];
         float t = tmpk[k];
         float d = dwpk[k];
 
-        float vtmp = virtual_temperature(p, t, d);
         float mixr = mixratio(p, d);
+        float vtmp = virtual_temperature(t, mixr);
         float thta = theta(p, t, sharp::THETA_REF_PRESSURE);
         float thte = thetae(p, t, d);
 
@@ -66,15 +67,12 @@ Profile *create_profile(const float pres[], const float hght[],
             // converting from knots to m/s
             prof->uwin[k] = wspd_or_u[k];
             prof->vwin[k] = wdir_or_v[k];
-            if (prof->uwin[k] != MISSING) prof->uwin[k] *= 0.514444f;
-            if (prof->vwin[k] != MISSING) prof->vwin[k] *= 0.514444f;
 
             WindVector vec = components_to_vector(prof->uwin[k], prof->vwin[k]);
             prof->wspd[k] = vec.speed;
             prof->wdir[k] = vec.direction;
         } else {
             prof->wspd[k] = wspd_or_u[k];
-            if (prof->wspd[k] != MISSING) prof->wspd[k] *= 0.514444f;
             prof->wdir[k] = wdir_or_v[k];
 
             WindComponents cmp =

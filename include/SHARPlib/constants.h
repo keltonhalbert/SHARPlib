@@ -41,20 +41,28 @@ static constexpr float EPSILON = RDGAS / RVGAS;
 // specific heat capacity of dry air (J/kg)
 static constexpr float CP_DRYAIR = 1005.7f;
 // specific heat capacity of water vapor (J/kg) at const pressure
-static constexpr float CP_VAPOR = 1870.0f;
+static constexpr float CP_VAPOR = 1875.0f;
 // specific heat capacity of water (J/kg)
-static constexpr float CP_WATER = 4190.f;
+static constexpr float CP_LIQUID = 4190.0f;
 // specific heat capacity of ice (J/kg)
-static constexpr float CP_ICE = 2106.0f;
-// Latent heat of vaporization of water
-// (J/kg) at triple point temperature
-static constexpr float LV = 2.501e6f;
+static constexpr float CP_ICE = 2118.636f;
+// Experimentally derived latent heat of vaporization 
+// of water (J/kg) at triple point temperature
+static constexpr float EXP_LV = 2.501e6f;
 // Latent heat of sublimation of water
 // ice (J/kg) at triple point temperature
-static constexpr float LS = 2.834e6f;
+static constexpr float EXP_LS = 2.836017e6f;
 
-// static constexpr float ROCP = RDGAS / CP_DRYAIR;
-static constexpr float ROCP = 0.28571428;
+// Some microphysics stuff I don't quite understand, but I think
+// It's meant to help with a more accurate, temperature-dependent
+// version of LV and LS to use in the CM1 lifter.
+static constexpr float LV1 = EXP_LV + (CP_LIQUID-CP_VAPOR)*ZEROCNK;
+static constexpr float LV2 = CP_LIQUID - CP_VAPOR;
+static constexpr float LS1 = EXP_LS+(CP_ICE - CP_VAPOR)*ZEROCNK;
+static constexpr float LS2 = CP_ICE - CP_VAPOR;
+
+static constexpr float ROCP = RDGAS / CP_DRYAIR;
+//static constexpr float ROCP = 0.28571428;
 static constexpr float GAMMA_D = GRAVITY / CP_DRYAIR;
 // Prandtl number
 static constexpr float PRANDTL = 1. / 3.;

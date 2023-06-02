@@ -30,7 +30,6 @@ Profile::Profile(const int num_levs, Source sounding_type) : NZ(num_levs) {
     wdir = new float[num_levs];
 
     mixr = new float[num_levs];
-    relh = new float[num_levs];
     vtmp = new float[num_levs];
     uwin = new float[num_levs];
     vwin = new float[num_levs];
@@ -57,7 +56,6 @@ Profile::~Profile() {
     delete[] wdir;
 
     delete[] mixr;
-    delete[] relh;
     delete[] vtmp;
     delete[] uwin;
     delete[] vwin;
@@ -70,4 +68,3 @@ Profile::~Profile() {
 
 }  // end namespace sharp
 
-namespace sharp::exper {}  // end namespace sharp::exper

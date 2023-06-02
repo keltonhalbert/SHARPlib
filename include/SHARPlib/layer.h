@@ -25,29 +25,32 @@
 
 namespace sharp {
 
-/*
+/**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
  * \brief Enum defining the coordinate system of a layer
- *
  */
 enum class LayerCoordinate {
     /**
      * \brief Height coordinate
      */
     height = 0,
+
     /**
      * \brief Pressure coordinate
      */
     pressure = 1,
+
+    /**
+     * \brief End value for range checking parameters
+     */
+    END,
 };
 
 /**
- *
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
  * \brief A simple structure of named floats that represent a height layer.
- *
  */
 struct HeightLayer {
     /**
@@ -70,30 +73,37 @@ struct HeightLayer {
      */
     static constexpr LayerCoordinate coord = LayerCoordinate::height;
 
+    /**
+     * \brief Constructs a sharp::HeightLayer
+     *
+     * \param   bot     (bottom of layer, meters) 
+     * \param   top     (top of layer, meters)
+     * \param   delta   (height increment, meters)
+     *
+     * \return  {bottom, top} 
+     */
     HeightLayer(float bot, float top, float delta = 100.0);
 };
 
 /**
- *
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
  * \brief A simple structure of two named floats that represent a <!--
  * --> pressure layer.
- *
  */
 struct PressureLayer {
     /**
-     * \brief The bottom of the pressure layer (hPa)
+     * \brief The bottom of the pressure layer (Pa)
      */
     float bottom;
 
     /**
-     * \brief The top of the pressure layer (hPa)
+     * \brief The top of the pressure layer (Pa)
      */
     float top;
 
     /**
-     * \brief The pressure interval with which to iterate over the layer (hPa)
+     * \brief The pressure interval with which to iterate over the layer (Pa)
      */
     float delta;
 
@@ -102,16 +112,24 @@ struct PressureLayer {
      */
     static constexpr LayerCoordinate coord = LayerCoordinate::pressure;
 
+    
+    /**
+     * \brief Constructs a sharp::PressureLayer
+     *
+     * \param   bot     (bottom of layer, Pa) 
+     * \param   top     (top of layer, Pa)
+     * \param   delta   (pressure increment, Pa)
+     *
+     * \return  {bottom, top} 
+     */
     PressureLayer(float bot, float top, float delta = -1000.0);
 };
 
 /**
- *
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
  * \brief A simple structure of two named integer indices for the top <!--
  * -->and bottom of a layer
- *
  */
 struct LayerIndex {
     /**
@@ -125,25 +143,35 @@ struct LayerIndex {
     int ktop;
 };
 
-/*
+/**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
  * \brief Returns the array indices corresponding to the given layer.
  *
  * This template function encapsulates the algorithm that both bounds
  * checks layer operations and returns the array indices to the corresponding
- * coordinate array, excluding the top and bottom of the layer. This behaviour
- * is due to the fact many algorithms used will get the interpolated top and
- * bottom values of the layer, meaning for looping purposes we only want the
- * inner range of indices.
+ * coordinate array, excluding the top and bottom of the layer. Specifically,
+ * the LayerIndex is [bottom, top] exclusive, and can be interpreted as the
+ * interior range the layer bounds. This behaviour is due to the fact many
+ * algorithms used will get the interpolated top and bottom values of the
+ * layer, meaning for looping purposes we only want the inner range of
+ * indices.
  *
- * \param layer	 (sharp::HeightLayer or sharp::PressureLayer) {bottom, top}
- * \param coord  (height or pressure)
- * \param N      (length of array)
- * \param bottom_comp (function comparing the layer bottom to coordinate array) 
- * \param top_comp    (function comparing the layer top to coordinate array)
+ * NOTE: If layer.bottom or layer.top are out of bounds, this function will
+ * truncate the layer to the coordinate range of data provided by coord[]
+ * in an attempt to gracefully continue and produce a result.
+ * This will modify the layer and is why it is passed as a reference.
+ * If you do not wish to have this behavior, it is up to the user to ensure
+ * they assign meaningful values to the layers and not request data out of
+ * bounds.
  *
- * \return       sharp::LayerIndex {kbot, ktop}
+ * \param   layer           {bottom, top}
+ * \param   coord           (height or pressure)
+ * \param   N               (length of array)
+ * \param   bottom_comp     (function comparing the layer bottom to coord array)
+ * \param   top_comp        (function comparing the layer top to coord array)
+ *
+ * \return  {kbot, ktop}
  */
 template <typename L, typename Cb, typename Ct>
 [[nodiscard]] constexpr LayerIndex get_layer_index(L& layer,
@@ -151,10 +179,10 @@ template <typename L, typename Cb, typename Ct>
                                                    const int N,
                                                    const Cb bottom_comp,
                                                    const Ct top_comp) noexcept {
+    // bounds check out search!
     if (bottom_comp(layer.bottom, coord[0])) {
         layer.bottom = coord[0];
     }
-
     if (top_comp(layer.top, coord[N - 1])) {
         layer.top = coord[N - 1];
     }
@@ -175,7 +203,8 @@ template <typename L, typename Cb, typename Ct>
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- * \brief Finds the array indices corresponding to the given layer.
+ * \brief Finds the array indices corresponding to the <!--
+ * -->given sharp::PressureLayer.
  *
  * Returns the array indices corresponding to the given sharp::PressureLayer,
  * and performs bounds checking on the layer. As part of the bounds checking,
@@ -185,13 +214,13 @@ template <typename L, typename Cb, typename Ct>
  * If the exact values of the top and bottom of the layer are present,
  * their indices are ignored. The default behavior is that the bottom
  * and top of a layer is computed by interpolation by default, since
- * it may or may not be present.
+ * it may or may not be present in the native data.
  *
- * \param layer     (sharp::PressureLayer)  {bottom, top}
- * \param pressure  (hPa)
- * \param num_levs  (length of array)
- * \return          sharp::LayerIndex       {kbot, ktop}
+ * \param   layer       {bottom, top}
+ * \param   pressure    (Pa)
+ * \param   N           (length of array)
  *
+ * \return  {kbot, ktop}
  */
 [[nodiscard]] LayerIndex get_layer_index(PressureLayer& layer,
                                          const float pressure[],
@@ -200,7 +229,8 @@ template <typename L, typename Cb, typename Ct>
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- * \brief Finds the array indices corresponding to the given layer.
+ * \brief Finds the array indices corresponding to the <!--
+ * -->given sharp::HeightLayer.
  *
  * Returns the array indices corresponding to the given sharp::HeightLayer,
  * and performs bounds checking on the layer. As part of the bounds checking,
@@ -210,35 +240,38 @@ template <typename L, typename Cb, typename Ct>
  * If the exact values of the top and bottom of the layer are present,
  * their indices are ignored. The default behavior is that the bottom
  * and top of a layer is computed by interpolation by default, since
- * it may or may not be present.
+ * it may or may not be present in the native data.
  *
  *
- * \param layer     (sharp::HeightLayer)    {bottom, top}
- * \param height    (meters)
- * \param num_levs  (length of array)
- * \return          sharp::LayerIndex       {kbot, ktop}
+ * \param   layer   {bottom, top}
+ * \param   height  (meters)
+ * \param   N       (length of array)
  *
+ * \return  {kbot, ktop}
  */
 [[nodiscard]] LayerIndex get_layer_index(HeightLayer& layer,
                                          const float height[],
                                          const int N) noexcept;
 
-/*
+/**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
  * \brief Converts a sharp::HeightLayer to a sharp::PressureLayer
  *
  * Converts a sharp::HeightLayer to a sharp::PressureLayer via
  * interpolation, with a flag to signal whether the input layer is
- * in meters AGL or meters MSL.
+ * in meters AGL or meters MSL. If for some strange reason you 
+ * provide a HeightLayer that is out of the bounds of height[], 
+ * then the bottom and top of the output layer will be set to
+ * sharp::MISSING.
  *
- * \param layer     sharp::HeightLayer to convert (meters)
- * \param pressure  Vertical array of pressure (hPa)
- * \param height    Vertical array of height (meters)
- * \param num_levs  Length of arrays
- * \param isAGL     Flag whether the input layer is AGL or MSL (default: false)
+ * \param   layer       (meters)
+ * \param   pressure    (Pa)
+ * \param   height      (meters)
+ * \param   N           (Length of arrays)
+ * \param   isAGL       Whether the input layer is AGL / MSL (default: false)
  *
- * \return  sharp::PressureLayer
+ * \return  {bottom, top} 
  */
 [[nodiscard]] PressureLayer height_layer_to_pressure(
     HeightLayer layer, const float pressure[], const float height[],
@@ -251,15 +284,17 @@ template <typename L, typename Cb, typename Ct>
  *
  * Converts a sharp::PressureLayer to a sharp::HeightLayer via
  * interpolation, with the obtion of returning the layer in meters
- * AGL or MSL.
+ * AGL or MSL. If for some strange reason you provide a PressureLayer
+ * that is out of the bounds of pressure[], then the bottom and top 
+ * of the output layer will be set to sharp::MISSING.
  *
- * \param layer     sharp::PressureLayer to convert (hPa)
- * \param pressure  Vertical array of pressure (hPa)
- * \param height    Vertical array of height (meters)
- * \param num_levs  Length of arrays
- * \param toAGL     Flag whether to return meters AGL or MSL (default: false)
+ * \param   layer       (Pa)
+ * \param   pressure    (Pa)
+ * \param   height      (meters)
+ * \param   N           (Length of arrays)
+ * \param   toAGL       Flag whether to return meters AGL or MSL (default: false)
  *
- * \return sharp::HeightLayer
+ * \return  {bottom, top} 
  */
 [[nodiscard]] HeightLayer pressure_layer_to_height(
     PressureLayer layer, const float pressure[], const float height[],
@@ -281,14 +316,14 @@ template <typename L, typename Cb, typename Ct>
  * dereferenced and filled with the pressure or height of the maximum/minum
  * value.
  *
- * \param layer          (sharp::PressureLayer or sharp::HeightLayer)
- * \param coord_arr      (pressure or height)
- * \param data_arr       (data array to find max on)
- * \param N              (length of arrays)
- * \param lvl_min_or_max (level of min/max val; hpa)
- * \param comp           Comparitor (i.e. std::less or std::greater)
- * \return minmax_value
+ * \param   layer           (sharp::PressureLayer or sharp::HeightLayer)
+ * \param   coord_arr       (pressure or height)
+ * \param   data_arr        (data array to find max on)
+ * \param   N               (length of arrays)
+ * \param   lvl_min_or_max  (level of min/max val)
+ * \param   comp            Comparitor (i.e. std::less or std::greater)
  *
+ * \return  minmax_value
  */
 template <typename L, typename C>
 [[nodiscard]] constexpr float layer_minmax(L layer, const float coord_arr[],
@@ -334,22 +369,24 @@ template <typename L, typename C>
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- * \brief Returns the minimum value in the given pressure layer.
+ * \brief Returns the minimum value in the given layer.
  *
  * Returns the minimum value observed within the given data array
- * over the given sharp::PressureLayer. The function bounds checks
- * the sharp::PressureLayer by calling sharp::get_layer_index.
+ * over the given sharp::PressureLayer or sharp::HeightLayer. 
+ * The function bounds checks the layer by calling 
+ * sharp::get_layer_index.
  *
- * If pres_of_min is not a nullptr, then the pointer will be
- * dereferenced and filled with the pressure of the minimum
+ * If lvl_of_min is not a nullptr, then the pointer will be
+ * dereferenced and filled with the coordinate of the minimum
  * value.
  *
- * \param layer         (sharp::PressureLayer) 
- * \param pressure      (hPa)
- * \param data_arr      (data array to find min on)
- * \param N             (length of arrays)
- * \param pres_of_min   (Pressure level of min val; hPa)
- * \return layer_min
+ * \param   layer       (sharp::PressureLayer or sharp::HeightLayer) 
+ * \param   coord_arr   (coordinate units; Pa or meters)
+ * \param   data_arr    (data array to find min on)
+ * \param   N           (length of arrays)
+ * \param   lvl_of_min  (level of min val)
+ *
+ * \return  layer_min
  *
  */
 template <typename L>
@@ -363,23 +400,24 @@ constexpr float layer_min(L layer, const float coord_arr[],
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- * \brief Returns the maximim value in the given pressure layer.
+ * \brief Returns the maximim value in the given layer.
  *
  * Returns the maximum value observed within the given data array
- * over the given sharp::PressureLayer. The function bounds checks
- * the sharp::PressureLayer by calling sharp::get_layer_index.
+ * over the given sharp::PressureLayer or sharp::HeightLayer. 
+ * The function bounds checks the layer by calling 
+ * sharp::get_layer_index.
  *
- * If pres_of_max is not a nullptr, then the pointer will be
- * dereferenced and filled with the pressure of the maximum
+ * If lvl_of_max is not a nullptr, then the pointer will be
+ * dereferenced and filled with the coordinate of the maximum
  * value.
  *
- * \param layer         (sharp::PressureLayer) 
- * \param pressure      (hPa)
- * \param data_arr      (data array to find max on)
- * \param N             (length of arrays)
- * \param pres_of_max   (Pressure level of max val; hpa)
- * \return layer_max
+ * \param   layer           (sharp::PressureLayer or sharp::HeightLayer) 
+ * \param   coord_arr       (coordinate units; Pa or meters)
+ * \param   data_arr        (data array to find max on)
+ * \param   N               (length of arrays)
+ * \param   pres_of_max     (level of max val)
  *
+ * \return  layer_max
  */
 template <typename L>
 constexpr float layer_max(L layer, const float coord_arr[],
@@ -395,20 +433,20 @@ constexpr float layer_max(L layer, const float coord_arr[],
  * \brief Returns a trapezoidal integration of the given layer.
  *
  * Returns a trapezoidal integration of the given data array over the
- * given sharp::PressureLayer or sharp::HeightLayer. Includes additional
+ * given sharp::PressureLayer or sharp::HeightLayer. There is an additional
  * default argument that determines whether this is a weighted average
  * or not. The sign of the integration may be passed as well, i.e.
  * integrating only positive or negative values, by passing a 1 or -1 to
  * integ_sign.
  *
- * \param layer          (sharp::PressureLayer or sharp::HeightLayer)
- * \param var_array      (data array to integrate)
- * \param coord_array    (coordinate array to integrate over)
- * \param N              (length of arrays)
- * \param weighted       (bool; default=false)
- * \param integ_sign	 (int; default=0)
+ * \param   layer           (sharp::PressureLayer or sharp::HeightLayer)
+ * \param   var_array       (data array to integrate)
+ * \param   coord_array     (coordinate array to integrate over)
+ * \param   N               (length of arrays)
+ * \param   weighted        (bool; default=false)
+ * \param   integ_sign	    (int; default=0)
  *
- * \return integrated_value
+ * \return  integrated_value
  */
 template <typename T, typename L>
 [[nodiscard]] constexpr T integrate_layer_trapz(
@@ -489,15 +527,15 @@ template <typename T, typename L>
  * \brief Computes the mass-weighted mean value of a field over <!--
  * -->a given pressure layer.
  *
- * Computes the mean value of a given array of data and corresponding
- * pressure coordinates over the given sharp::PressureLayer.
+ * Computes the mass-weighted mean value of given arrays of data 
+ * and corresponding pressure coordinates over the given sharp::PressureLayer.
  *
- * \param layer     (sharp::PressureLayer) 
- * \param pressure  (vertical pressure array; hPa)
- * \param data_arr  (The data for which to compute a mean)
- * \param num_levs  (length of pressure and data arrays)
- * \return layer_mean
+ * \param   layer       (sharp::PressureLayer) 
+ * \param   pressure    (vertical pressure array; Pa)
+ * \param   data_arr    (The data for which to compute a mean)
+ * \param   N           (length of pressure and data arrays)
  *
+ * \return  layer_mean
  */
 [[nodiscard]] float layer_mean(PressureLayer layer, const float pressure[],
                                const float data_arr[], const int N) noexcept;
@@ -508,25 +546,23 @@ template <typename T, typename L>
  * \brief Computes the mass-weighted mean value of a field over <!--
  * -->a given height layer.
  *
- * Computes the mean value of a given array of data and corresponding
- * height coordinates over the given sharp::HeightLayer. This is really
- * just a fancy wrapper around the implementation that uses
+ * Computes the mass-weighted mean value of given arrays of data
+ * and corresponding height coordinates over the given sharp::HeightLayer. 
+ * This is really just a fancy wrapper around the implementation that uses
  * sharp::PressureLayer.
  *
- * \param layer     (sharp::PressureLayer)
- * \param height    (vertical height array; meters)
- * \param pressure  (vertical pressure array; hPa)
- * \param data_arr  (The data for which to compute a mean)
- * \param num_levs  (length of pressure and data arrays)
- * \return layer_mean
+ * \param   layer       (sharp::HeightLayer)
+ * \param   height      (vertical height array; meters)
+ * \param   pressure    (vertical pressure array; Pa)
+ * \param   data_arr    (The data for which to compute a mean)
+ * \param   N           (length of pressure and data arrays)
  *
+ * \return  layer_mean
  */
 [[nodiscard]] float layer_mean(HeightLayer layer, const float height[],
                                const float pressure[], const float data_arr[],
                                const int N, const bool isAGL = false) noexcept;
 
 }  // end namespace sharp
-
-namespace sharp::exper {}  // namespace sharp::exper
 
 #endif // __SHARP_LAYERS_H__
