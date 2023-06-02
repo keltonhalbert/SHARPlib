@@ -211,13 +211,10 @@ float wetlift(float pressure, float temperature,
     return saturated_lift(lifted_pressure, pcl_thetaw);
 }
 
-[[nodiscard]] float moist_adiabat_cm1(float pressure, float temperature,
-                                      float new_pressure, float& qv_total,
-                                      float& qv, float&ql, float& qi,
-                                      const float pres_incr,
-                                      const float converge,
-                                      const adiabat ma_type) {
-
+float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
+                        float& qv_total, float& qv, float& ql, float& qi,
+                        const float pres_incr, const float converge,
+                        const adiabat ma_type) {
     qv_total = mixratio(pressure, temperature);
 
     bool ice = (ma_type >= adiabat::pseudo_ice) ? true : false;
@@ -304,9 +301,8 @@ float wetlift(float pressure, float temperature,
     qv = pcl_qv_hi;
     ql = pcl_ql_hi;
     qi = pcl_qi_hi;
-    return pcl_t_hi; 
+    return pcl_t_hi;
 }
-
 
 void drylift(float pressure, float temperature, float dewpoint,
              float& pressure_at_lcl, float& temperature_at_lcl) noexcept {
