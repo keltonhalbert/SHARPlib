@@ -320,6 +320,7 @@ enum class adiabat : int {
  * \param    pressure              (Pa)
  * \param    temperature           (degK)
  * \param    lifted_pressure       (Pa)
+ *
  * \return   lifted_temperature    (degK)
  */
 [[nodiscard]] float wetlift(float pressure, float temperature,
@@ -475,6 +476,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \param   pressure                        (Pa)
  * \param   temperature                     (degK)
  * \param   dewpoint                        (degK)
+ *
  * \return  wetbulb_potential_temperature   (degK)
  */
 [[nodiscard]] float theta_wetbulb(float pressure, float temperature,

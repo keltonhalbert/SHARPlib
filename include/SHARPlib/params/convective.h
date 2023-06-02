@@ -45,18 +45,18 @@ namespace sharp {
  * array that can be used to hold buoyancy values during parcel lifting and 
  * integration. 
  *
- * \param   pressure                (Pa)
- * \param   height                  (meters)
- * \param   temperature             (degK)
- * \param   dewpoint                (degK)
- * \param   virtemp_arr             (degK)
- * \param   buoy_arr                (m/s^2)
- * \param   N                       (length of arrays)
- * \param   cape_thresh             (J/kg; default=100.0)
- * \param   cinh_thresh             (J/kg; default=-250.0)
- * \param   mupcl
+ * \param   pressure        (Pa)
+ * \param   height          (meters)
+ * \param   temperature     (degK)
+ * \param   dewpoint        (degK)
+ * \param   virtemp_arr     (degK)
+ * \param   buoy_arr        (m/s^2)
+ * \param   N               (length of arrays)
+ * \param   cape_thresh     (J/kg; default=100.0)
+ * \param   cinh_thresh     (J/kg; default=-250.0)
+ * \param   mupcl           (store the most unstable parcel; defualt=nullptr)
  *
- * \return  Effective Inflow Layer  {bottom, top}
+ * \return  {bottom, top}
  */
 [[nodiscard]] PressureLayer effective_inflow_layer(
     const float pressure[], const float height[], const float temperature[],
@@ -87,7 +87,7 @@ namespace sharp {
  * \param   leftMover               (default=false)
  * \param   pressureWeighted        (default=false)
  *
- * \return  storm_motion            {storm_u, storm_v}
+ * \return  {storm_u, storm_v}
  */
 [[nodiscard]] WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
@@ -128,7 +128,7 @@ namespace sharp {
  * \param   mupcl           (Precomputed parcel) 
  * \param   leftMover       (default=false)
  *
- * \return  storm_motion    {storm_u, storm_v}
+ * \return  {storm_u, storm_v}
  */
 [[nodiscard]] WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
@@ -152,7 +152,7 @@ namespace sharp {
  * \param   N               (length of arrays)
  * \param   pcl             (Precomputed parcel)
  *
- * \return  ECAPE           (J/kg)
+ * \return  ECAPE
  */
 [[nodiscard]] float entrainment_cape(const float pressure[],
                                      const float height[],
@@ -172,6 +172,5 @@ namespace sharp {
 
 }  // end namespace sharp
 
-namespace sharp::exper {}  // end namespace sharp::exper
 
 #endif // __SHARP_PARAMS_H__

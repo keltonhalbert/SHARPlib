@@ -39,10 +39,12 @@ namespace sharp {
  * (i.e. std::less) are supported by the CUDA STL. Additionally, this
  * implementation of lower_bound is designed to reduce branching.
  *
- * \param array     The array to search over
- * \param N         The length of the array
- * \param value     The value for lower-bound comparison
- * \param cmp       The comparitor
+ * \param   array   The array to search over
+ * \param   N       The length of the array
+ * \param   value   The value for lower-bound comparison
+ * \param   cmp     The comparitor
+ *
+ * \return  Index of lower bound 
  */
 template <typename T, typename C = std::less<>>
 [[nodiscard]] constexpr int lower_bound(const T array[], const int N,
@@ -82,10 +84,12 @@ template <typename T, typename C = std::less<>>
  * (i.e. std::less) are supported by the CUDA STL. Additionally, this
  * implementation of lower_bound is designed to reduce branching.
  *
- * \param array     The array to search over
- * \param N         The length of the array
- * \param value     The value for upper-bound comparison
- * \param cmp       The comparitor
+ * \param   array   The array to search over
+ * \param   N       The length of the array
+ * \param   value   The value for upper-bound comparison
+ * \param   cmp     The comparitor
+ *
+ * \return  Index of the upper bound
  */
 template <typename T, typename C = std::less<>>
 [[nodiscard]] constexpr int upper_bound(const T array[], const int N,
@@ -116,13 +120,14 @@ template <typename T, typename C = std::less<>>
  * This function does not do the actual integration over an array, but is meant
  * to be wrapped by any function that does so.
  *
- * \param var_top      The top value of the variable to integrate
- * \param var_bottom   The bottom value of the variable to integrate
- * \param coord_top    The top value of the coordinate to integrate
- * \param coord_bottom The bottom value of the coordinate to integrate
- * \param weights      The weights to accumulate
- * \param weighted     Whether or not to accumulate weights
- * \return             The area under the curve
+ * \param   var_top         The top value of the variable to integrate
+ * \param   var_bottom      The bottom value of the variable to integrate
+ * \param   coord_top       The top value of the coordinate to integrate
+ * \param   coord_bottom    The bottom value of the coordinate to integrate
+ * \param   weights         The weights to accumulate
+ * \param   weighted        Whether or not to accumulate weights
+ *
+ * \return  The area under the curve
  */
 template <typename _T>
 [[nodiscard]] inline constexpr _T _integ_trapz(

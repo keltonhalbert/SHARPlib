@@ -41,11 +41,11 @@ namespace sharp {
  * 4. Boundedness: t<0 || t>1 || isfinite(lerp(a,b,t))
  * 5. Consistency: lerp(a,a,t) == a
  *
- * \param __a left value
- * \param __b right value
- * \param __t where 0 <= __t <= 1.0
+ * \param   __a     left value
+ * \param   __b     right value
+ * \param   __t     where 0 <= __t <= 1.0
  *
- * \return The value between __a and __b at distance __t between them.
+ * \return  The value between __a and __b at distance __t between them.
  */
 template <typename _Fp>
 [[nodiscard]] constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept {
@@ -83,11 +83,11 @@ template <typename _Fp>
  * 4. Boundedness: t<0 || t>1 || isfinite(lerp(a,b,t))
  * 5. Consistency: lerp(a,a,t) == a
  *
- * \param __a left value
- * \param __b right value
- * \param __t where 0 <= __t <= 1.0
+ * \param   __a     left value
+ * \param   __b     right value
+ * \param   __t     where 0 <= __t <= 1.0
  *
- * \return The value between __a and __b at distance __t between them.
+ * \return  The value between __a and __b at distance __t between them.
  */
 [[nodiscard]] constexpr float lerp(float __a, float __b, float __t) noexcept {
     return __lerp(__a, __b, __t);
@@ -108,11 +108,12 @@ template <typename _Fp>
  * values first.Duplicate height values or decreasing height values 
  * may produce unexpected results.
  *
- * \param height_val    The height value to interpolate data to
- * \param height_arr    The array of height values in the profile
- * \param data_arr      The array of data values you want interpolated
- * \param N             The the array length (number of elements)
- * \return              The value of data_arr at the requested height_val.
+ * \param   height_val  The height value to interpolate data to
+ * \param   height_arr  The array of height values in the profile
+ * \param   data_arr    The array of data values you want interpolated
+ * \param   N           The the array length (number of elements)
+ *
+ * \return  The value of data_arr at the requested height_val.
  */
 [[nodiscard]] float interp_height(float height_val, const float height_arr[],
                                   const float data_arr[], const int N) noexcept;
@@ -131,11 +132,12 @@ template <typename _Fp>
  * Duplicate pressure values or increasing pressure values may produce
  * unexpected results.
  *
- * \param pressure_val  The pressure value to interpolate data to
- * \param pressure_arr  The array of pressure values in the profile
- * \param data_arr      The array of data values you want interpolated
- * \param N             The the array length (number of elements)
- * \return              The value of data_arr at the requested pressure_val.
+ * \param   pressure_val    The pressure value to interpolate data to
+ * \param   pressure_arr    The array of pressure values in the profile
+ * \param   data_arr        The array of data values you want interpolated
+ * \param   N               The the array length (number of elements)
+ *
+ * \return  The value of data_arr at the requested pressure_val.
  */
 [[nodiscard]] float interp_pressure(float pressure_val,
                                     const float pressure_arr[],
