@@ -150,13 +150,16 @@ TEST_CASE("Testing mean wind calculations") {
     sharp::PressureLayer layer2 = {1000.0, 500.0, -1};
     sharp::PressureLayer layer3 = {1000.0, 100.0, -1};
 
-    auto mean_layer1 = sharp::mean_wind(layer1, pres, u_wind, v_wind, NZ);
-    auto mean_layer2 = sharp::mean_wind(layer2, pres, u_wind, v_wind, NZ);
-    auto mean_layer3 = sharp::mean_wind(layer3, pres, u_wind, v_wind, NZ);
+    auto mean_layer1 = sharp::mean_wind(layer1, pres, u_wind, v_wind, NZ, true);
+    auto mean_layer2 = sharp::mean_wind(layer2, pres, u_wind, v_wind, NZ, true);
+    auto mean_layer3 = sharp::mean_wind(layer3, pres, u_wind, v_wind, NZ, true);
 
-    auto mean_layer4 = sharp::mean_wind_npw(layer1, pres, u_wind, v_wind, NZ);
-    auto mean_layer5 = sharp::mean_wind_npw(layer2, pres, u_wind, v_wind, NZ);
-    auto mean_layer6 = sharp::mean_wind_npw(layer3, pres, u_wind, v_wind, NZ);
+    auto mean_layer4 =
+        sharp::mean_wind(layer1, pres, u_wind, v_wind, NZ, false);
+    auto mean_layer5 =
+        sharp::mean_wind(layer2, pres, u_wind, v_wind, NZ, false);
+    auto mean_layer6 =
+        sharp::mean_wind(layer3, pres, u_wind, v_wind, NZ, false);
 
     CHECK(mean_layer1.u == doctest::Approx(14.7669));
     CHECK(mean_layer1.v == doctest::Approx(14.7669));

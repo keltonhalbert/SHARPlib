@@ -217,49 +217,95 @@ struct WindComponents {
  *
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- * \brief Compute the pressure weighted mean wind over the given<!--
- * --> sharp::PressureLayer
+ * \brief Compute the mean wind over the given sharp::PressureLayer
  *
- * Computes the pressure weighted mean wind over the given sharp::PressureLayer
- * and arrays of pressure and wind components with a length of num_levs.
+ * Computes the mean wind over the given sharp::PressureLayer
+ * and arrays of pressure and wind components with a length of N.
  *
- * \param   layer   {bottom, top} 
- * \param   pres    (Pa)
- * \param   u_wind  (m/s)
- * \param   v_wind  (m/s)
- * \param   N       (length of arrays)
+ *
+ * \param   layer       {bottom, top} 
+ * \param   pres        (Pa)
+ * \param   u_wind      (m/s)
+ * \param   v_wind      (m/s)
+ * \param   N           (length of arrays)
+ * \param   weighted    (whether to weight by pressure level)
  *
  * \return  {mean_u, mean_v}
  */
 [[nodiscard]] WindComponents mean_wind(PressureLayer layer, const float pres[],
                                        const float u_wind[],
                                        const float v_wind[],
-                                       const int N) noexcept;
+                                       const int N, const bool weighted) noexcept;
 
 /**
  *
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- * \brief Compute the non-pressure weighted mean wind over the given<!--
- * --> sharp::PressureLayer
+ * \brief Compue the wind shear for a given layer 
  *
- * Computes the non-pressure weighted mean wind over the given
- * sharp::PressureLayer and arrays of pressure and wind components
- * with a length of num_levs.
+ * Computes the U and V components of the wind shear over a
+ * layer given the vertical sounding arrays
+ * of pressure/height, u_wind, v_wind, and their length.
  *
- * \param   layer   {bottom, top} 
- * \param   pres    (Pa)
+ * This generic template handles the logic
+ * at compike time on whether or not this is a sharp::HeightLayer
+ * or a sharp::PressureLayer, and calls the interpolation routines
+ * accordingly
+ *
+ * \param   layer   {bottom, top}
+ * \param   coord   (meters or Pa)
  * \param   u_wind  (m/s)
  * \param   v_wind  (m/s)
  * \param   N       (length of arrays)
  *
- * \return  {mean_u, mean_v}
+ * \return  {shear_u, shear_v}
  */
-[[nodiscard]] WindComponents mean_wind_npw(PressureLayer layer,
-                                           const float pres[],
-                                           const float u_wind[],
-                                           const float v_wind[],
-                                           const int N) noexcept;
+template <typename L>
+[[nodiscard]] constexpr WindComponents wind_shear(L layer, const float coord[],
+                                                  const float u_wind[],
+                                                  const float v_wind[],
+                                                  const int N) noexcept {
+#ifndef NO_QC
+    if ((layer.bottom == MISSING) || (layer.top == MISSING))
+        return {MISSING, MISSING};
+#endif
+
+    // This if statement disappears at compile time depending
+    // on which kind of layer is passed
+    float u_bot, u_top, v_bot, v_top;
+    if constexpr (layer.coord == LayerCoordinate::pressure) {
+        if (layer.bottom > coord[0]) layer.bottom = coord[0];
+        if (layer.top < coord[N - 1]) layer.top = coord[N - 1];
+
+        u_bot = interp_pressure(layer.bottom, coord, u_wind, N);
+        u_top = interp_pressure(layer.top, coord, u_wind, N);
+
+        v_bot = interp_pressure(layer.bottom, coord, v_wind, N);
+        v_top = interp_pressure(layer.top, coord, v_wind, N);
+    } else {
+        // AGL to MSL
+        layer.bottom += coord[0];
+        layer.top += coord[0];
+
+        if (layer.bottom < coord[0]) layer.bottom = coord[0];
+        if (layer.top > coord[N - 1]) layer.top = coord[N - 1];
+
+        u_bot = interp_height(layer.bottom, coord, u_wind, N);
+        u_top = interp_height(layer.top, coord, u_wind, N);
+
+        v_bot = interp_height(layer.bottom, coord, v_wind, N);
+        v_top = interp_height(layer.top, coord, v_wind, N);
+    }
+
+#ifndef NO_QC
+    if ((u_bot == MISSING) || (v_bot == MISSING) || (u_top == MISSING) ||
+        (v_top == MISSING)) {
+        return {MISSING, MISSING};
+    }
+#endif
+
+    return {u_top - u_bot, v_top - v_bot};
+}
 
 /**
  *
@@ -279,7 +325,8 @@ struct WindComponents {
  *
  * \return  {shear_u, shear_v}
  */
-[[nodiscard]] WindComponents wind_shear(PressureLayer layer, const float pres[],
+[[nodiscard]] WindComponents wind_shear(PressureLayer layer,
+                                        const float pressure[],
                                         const float u_wind[],
                                         const float v_wind[],
                                         const int N) noexcept;
@@ -307,6 +354,114 @@ struct WindComponents {
                                         const float u_wind[],
                                         const float v_wind[],
                                         const int N) noexcept;
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Computes the Storm Relative Helicity (SRH) over a given layer
+ *
+ * Computes the Storm Relative Helicity (SRH) over a given layer
+ * using storm motion vector components stored in sharp::WindComponents. 
+ * This tempalte is the generalized form that will fill in the appropriate
+ * interpolation calls and coordinate arrays depending on whether a
+ * sharp::PressureLayer or sharp::HeightLayer gets passed to this 
+ * template. The other API instances are just static instantiations
+ * of this template. 
+ *
+ * This integration occurs over the given arrays of coord, u_wind, and v_wind,
+ * with N elements in each. The integration only uses interpolation
+ * for the top and bottom of the specified layer.
+ *
+ * If using a sharp::HeightLayer, units are expected in above-ground-level
+ * (AGL), and gets converted to above-mean-sea-level (MSL) during the
+ * computation.
+ *
+ * \param   layer           {bottom, top}
+ * \param   storm_motion    {storm_u, storm_v}
+ * \param   height          (meters)
+ * \param   u_wind          (m/s)
+ * \param   v_wind          (m/s)
+ * \param   N               (length of arrays)
+ *
+ * \return  storm_relative_helicity
+ */
+template <typename L>
+[[nodiscard]] float helicity(L layer, WindComponents storm_motion,
+                             const float coord[], const float u_wind[],
+                             const float v_wind[], const int N) noexcept {
+#ifndef NO_QC
+    if ((storm_motion.u == MISSING) || (storm_motion.v == MISSING)) {
+        return MISSING;
+    }
+    if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
+        return MISSING;
+    }
+#endif
+
+    float sru_bot;
+    float srv_bot;
+    if constexpr (layer.coord == LayerCoordinate::height) {
+        // get the height in MSL by adding the surface height
+        layer.bottom += coord[0];
+        layer.top += coord[0];
+
+        // Get the interpolated bottom of the layer to integrate
+        // and convert to storm-relative winds
+        sru_bot = interp_height(layer.bottom, coord, u_wind, N);
+        srv_bot = interp_height(layer.bottom, coord, v_wind, N);
+    } else {
+        // Get the interpolated bottom of the layer to integrate
+        // and convert to storm-relative winds
+        sru_bot = interp_pressure(layer.bottom, coord, u_wind, N);
+        srv_bot = interp_pressure(layer.bottom, coord, v_wind, N);
+    }
+    sru_bot -= storm_motion.u;
+    srv_bot -= storm_motion.v;
+
+    // Get the vertical array indices corresponding to our layer,
+    // while also bounds checking our search. Indices exclude the
+    // top and bottom layers that will be interpolated.
+    LayerIndex layer_idx = get_layer_index(layer, coord, N);
+
+    // will get set in first loop iter
+    float sru_top;
+    float srv_top;
+    float layer_helicity = 0.0;
+    for (int k = layer_idx.kbot; k <= layer_idx.ktop; ++k) {
+#ifndef NO_QC
+        if ((u_wind[k] == MISSING) || (v_wind[k] == MISSING)) {
+            continue;
+        }
+#endif
+        // top of layer storm relative winds
+        sru_top = u_wind[k] - storm_motion.u;
+        srv_top = v_wind[k] - storm_motion.v;
+
+        // integrate layer
+        layer_helicity += (sru_top * srv_bot) - (sru_bot * srv_top);
+        // set the top to be the bottom
+        // of the next layer
+        sru_bot = sru_top;
+        srv_bot = srv_top;
+    }
+
+    // Get the interpolated top of the layer to integrate
+    // and convert to storm-relative winds
+    if constexpr (layer.coord == LayerCoordinate::height) {
+        sru_top = interp_height(layer.top, coord, u_wind, N);
+        srv_top = interp_height(layer.top, coord, v_wind, N);
+    } else {
+        sru_top = interp_pressure(layer.top, coord, u_wind, N);
+        srv_top = interp_pressure(layer.top, coord, v_wind, N);
+    }
+    sru_top -= storm_motion.u;
+    srv_top -= storm_motion.v;
+
+    // integrate the final layer
+    layer_helicity += (sru_top * srv_bot) - (sru_bot * srv_top);
+
+    return layer_helicity;
+}
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -343,17 +498,12 @@ struct WindComponents {
  * \brief Computes the Storm Relative Helicity (SRH) over a given<!--
  * --> sharp::PressureLayer.
  *
- * Computes the Storm Relative Helicity (SRH) over a given sharp::PressureLayer
- * using storm motion vector components stored in sharp::WindComponents. This
- * integration occurs over the given arrays of height, u_wind, and v_wind,
- * with num_levs elements in each. The integration only uses interpolation
- * for the top and bottom of the specified layer, and uses raw data levels
- * for everything else.
- *
- * The sharp::PressureLayer implementation of helicity is a wrapper around
- * the sharp::HeightLayer version. The values in sharp::PressureLayer are
- * interpolated to height AGL (m) and then passed to the helicity function
- * that works in height coordinates.
+ * Computes the Storm Relative Helicity (SRH) over a given
+ * sharp::PressureLayer using storm motion vector components stored in
+ * sharp::WindComponents. This integration occurs over the given arrays of
+ * height, u_wind, and v_wind, with num_levs elements in each. The
+ * integration only uses interpolation for the top and bottom of the
+ * specified layer, and uses raw data levels for everything else.
  *
  * \param   layer_agl       {bottom, top}
  * \param   storm_motion    {storm_u, storm_v}

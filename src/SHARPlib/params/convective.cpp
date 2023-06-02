@@ -98,11 +98,8 @@ WindComponents storm_motion_bunkers(
                                                     pressure, height, N, true);
 
     WindComponents layer_mean_wind = {MISSING, MISSING};
-    if (pressureWeighted) {
-        layer_mean_wind = mean_wind(mw_lyr, pressure, u_wind, v_wind, N);
-    } else {
-        layer_mean_wind = mean_wind_npw(mw_lyr, pressure, u_wind, v_wind, N);
-    }
+    layer_mean_wind =
+        mean_wind(mw_lyr, pressure, u_wind, v_wind, N, pressureWeighted);
 
     // The shear is computed by finding the 500m deep
     // mean winds at the top and bottom of the wind_shear_layer
@@ -119,9 +116,9 @@ WindComponents storm_motion_bunkers(
         height_layer_to_pressure(h_layer_hi, pressure, height, N, true);
 
     WindComponents winds_lo =
-        mean_wind_npw(p_layer_lo, pressure, u_wind, v_wind, N);
+        mean_wind(p_layer_lo, pressure, u_wind, v_wind, N, false);
     WindComponents winds_hi =
-        mean_wind_npw(p_layer_hi, pressure, u_wind, v_wind, N);
+        mean_wind(p_layer_hi, pressure, u_wind, v_wind, N, false);
 
     const float shear_u = winds_hi.u - winds_lo.u;
     const float shear_v = winds_hi.v - winds_lo.v;
