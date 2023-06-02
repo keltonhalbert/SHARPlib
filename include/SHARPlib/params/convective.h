@@ -18,7 +18,6 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/layer.h>
 #include <SHARPlib/parcel.h>
-#include <SHARPlib/profile.h>
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
 
@@ -37,16 +36,33 @@ namespace sharp {
  *
  * Standard/default values for cape_thresh and cinh_thresh have been
  * experimentally determined to be cape_thresh = 100 J/kg and
- * cinh_thresh = -250 J/kg.
+ * cinh_thresh = -250 J/kg. If a pointer to a parcel object is passed
+ * as the last arguments, the most ustanble parcel found during the 
+ * EIL search will be returned to that pointer. 
  *
- * \param Profile       sharp::Profile of atmospheric data
- * \param cape_thresh   The CAPE threshold that defines the EIL.<!--
- *                      --> Default is 100 J/kg. 
- * \param cinh_thresh   The CINH threshold that defines the EIL.<!--
- *                      ->> Default is -250 J/kg.
+ * All arrays are treated as inputs (and expected to be precomputed) except 
+ * for the buoyancy array. It is more accurately meant to be an empty buffer 
+ * array that can be used to hold buoyancy values during parcel lifting and 
+ * integration. 
+ *
+ * \param   pressure                (Pa)
+ * \param   height                  (meters)
+ * \param   temperature             (degK)
+ * \param   dewpoint                (degK)
+ * \param   virtemp_arr             (degK)
+ * \param   buoy_arr                (m/s^2)
+ * \param   N                       (length of arrays)
+ * \param   cape_thresh             (J/kg; default=100.0)
+ * \param   cinh_thresh             (J/kg; default=-250.0)
+ * \param   mupcl
+ *
+ * \return  Effective Inflow Layer  {bottom, top}
  */
 [[nodiscard]] PressureLayer effective_inflow_layer(
-    Profile* prof, const float cape_thresh, const float cinh_thresh) noexcept;
+    const float pressure[], const float height[], const float temperature[],
+    const float dewpoint[], const float virtemp_arr[], float buoy_arr[],
+    const int N, const float cape_thresh = 100.0,
+    const float cinh_thresh = -250.0, Parcel* mupcl = nullptr) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -61,15 +77,21 @@ namespace sharp {
  * 2014, which uses Effective Inflow Layer metricks to get better estimates of
  * storm motion, especially when considering elevated convection.
  *
- * \param prof                  sharp::Profile of atmospheric data
- * \param mean_wind_layer_agl   sharp::HeightLayer (agl) for mean wind
- * \param wind_shear_layer_agl  sharp::HeightLayer (agl) for wind shear
- * \param leftMover             Boolean flag to return left or right mover
- * \param pressureWeighted      Boolean flag for whether or not to weight mean
- * \return sharp::WindComponents    {u_storm, v_storm}
+ * \param   pressure                (Pa)
+ * \param   height                  (meters)
+ * \param   u_wind                  (m/s)
+ * \param   v_wind                  (m/s)
+ * \param   N                       (length of arrays)
+ * \param   mean_wind_layer_agl     {bottom, top}
+ * \param   wind_shear_layer_agl    {bottom, top}
+ * \param   leftMover               (default=false)
+ * \param   pressureWeighted        (default=false)
+ *
+ * \return  storm_motion            {storm_u, storm_v}
  */
 [[nodiscard]] WindComponents storm_motion_bunkers(
-    Profile* prof, HeightLayer mean_wind_layer_agl,
+    const float pressure[], const float height[], const float u_wind[],
+    const float v_wind[], const int N, HeightLayer mean_wind_layer_agl,
     HeightLayer wind_shear_layer_agl, const bool leftMover = false,
     const bool pressureWeighted = false) noexcept;
 
@@ -91,25 +113,53 @@ namespace sharp {
  *  and captures the motion of elevated supercells much better than
  *  the Bunkers 2000 method.
  *
- *  \param Profile      sharp::Profile of atmospheric data
- *  \param leftMover    Boolean flag for left or right deviant supercell
+ *  The input parameters eff_infl_lyr and mupcl (effective inflow layer 
+ *  bounds and the most unstable parcel, respectively) are required to be 
+ *  be precomputed and passed to this routine. These are expensive
+ *  operations that are presumed to be computed at some other point
+ *  in the analysis pipeline, so just pass those variables here. 
+ *
+ * \param   pressure        (Pa)
+ * \param   height          (meters)
+ * \param   u_wind          (m/s)
+ * \param   v_wind          (m/s)
+ * \param   N               (length of arrays)
+ * \param   eff_infl_lyr    {bottom, top}
+ * \param   mupcl           (Precomputed parcel) 
+ * \param   leftMover       (default=false)
+ *
+ * \return  storm_motion    {storm_u, storm_v}
  */
 [[nodiscard]] WindComponents storm_motion_bunkers(
-    Profile* prof, const bool leftMover = false) noexcept;
+    const float pressure[], const float height[], const float u_wind[],
+    const float v_wind[], const int N, PressureLayer eff_infl_lyr,
+    const Parcel* mupcl, const bool leftMover = false) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
  * \brief Computes Entrainment CAPE using a previously lifted parcel.
  *
- *
  * Computes Entrainment CAPE, or ECAPE, as described by Peters et al. 2023,
  * "An analytic formula for entraining CAPE in mid-latitude storm environments".
  *
- * \param prof      A sharp::Profile of atmospheric data
- * \param pcl       A sharp::Parcel with its sharp::LPL/attributes defined.
+ * \param   pressure        (Pa)
+ * \param   height          (meters)
+ * \param   temperature     (degK)
+ * \param   mse_arr         (???)
+ * \param   u_wind          (m/s)
+ * \param   v_wind          (m/s)
+ * \param   N               (length of arrays)
+ * \param   pcl             (Precomputed parcel)
+ *
+ * \return  ECAPE           (J/kg)
  */
-[[nodiscard]] float entrainment_cape(Profile* prof, Parcel* pcl) noexcept;
+[[nodiscard]] float entrainment_cape(const float pressure[],
+                                     const float height[],
+                                     const float temperature[],
+                                     const float mse_arr[],
+                                     const float u_wind[], const float v_wind[],
+                                     const int N, Parcel* pcl) noexcept;
 
 [[nodiscard]] float energy_helicity_index(float cape, float helicity) noexcept;
 
@@ -117,7 +167,7 @@ namespace sharp {
                                                   float eff_shear) noexcept;
 
 [[nodiscard]] float significant_tornado_parameter(
-    Profile* prof, Parcel pcl, float storm_relative_helicity,
+    Parcel pcl, float lcl_hght_agl, float storm_relative_helicity,
     float bulk_wind_difference) noexcept;
 
 }  // end namespace sharp
