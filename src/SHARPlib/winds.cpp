@@ -111,7 +111,6 @@ WindComponents mean_wind(PressureLayer layer, const float pressure[],
 #endif
 
     if (layer.bottom > pressure[0]) layer.bottom = pressure[0];
-
     if (layer.top < pressure[N - 1]) layer.top = pressure[N - 1];
 
     float pr_lvl = layer.bottom;

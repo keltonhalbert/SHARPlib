@@ -56,51 +56,51 @@ int sharp_LayerIndex_get_top(sharp_LayerIndex_t* i);
 
 void sharp_get_PressureLayer_index(sharp_PressureLayer_t* lyr,
                                    sharp_LayerIndex_t* idx,
-                                   const float* pressure, const int NZ);
+                                   const float* pressure, const int N);
 
 void sharp_get_HeightLayer_index(sharp_HeightLayer_t* lyr,
                                  sharp_LayerIndex_t* idx, 
-                                 const float* height, const int NZ);
+                                 const float* height, const int N);
 
 void sharp_HeightLayer_to_PressureLayer(sharp_HeightLayer_t* hlyr,
                                         sharp_PressureLayer_t* plyr,
                                         const float* pressure,
-                                        const float* height, const int NZ,
+                                        const float* height, const int N,
                                         int isAGL);
 
 void sharp_PressureLayer_to_HeightLayer(sharp_PressureLayer_t* plyr,
                                         sharp_HeightLayer_t* hlyr,
                                         const float* pressure,
-                                        const float* height, const int NZ,
+                                        const float* height, const int N,
                                         int toAGL);
 
 float sharp_PressureLayer_min(sharp_PressureLayer_t* plyr, const float* pres,
-                              const float* data, const int NZ, float* lvl_of_min);
+                              const float* data, const int N, float* lvl_of_min);
 
 float sharp_PressureLayer_max(sharp_PressureLayer_t* plyr, const float* pres,
-                              const float* data, const int NZ, float* lvl_of_max);
+                              const float* data, const int N, float* lvl_of_max);
 
 float sharp_HeightLayer_min(sharp_HeightLayer_t* hlyr, const float* hght,
-                            const float* data, const int NZ, float* lvl_of_min);
+                            const float* data, const int N, float* lvl_of_min);
 
 float sharp_HeightLayer_max(sharp_HeightLayer_t* hlyr, const float* hght,
-                            const float* data, const int NZ, float* lvl_of_max);
+                            const float* data, const int N, float* lvl_of_max);
 
 float sharp_PressureLayer_mean(sharp_PressureLayer_t* plyr,
                                const float* pressure, const float* data,
-                               const int NZ);
+                               const int N);
 
 float sharp_HeightLayer_mean(sharp_HeightLayer_t* hlyr, const float* height,
-                             const float* pressure, const float* data, const int NZ,
+                             const float* pressure, const float* data, const int N,
                              int isAGL);
 
 float sharp_PressureLayer_integrate(sharp_PressureLayer_t* plyr,
                                     const float* data, const float* pressure,
-                                    const int NZ, const int integ_sign, const int weighted);
+                                    const int N, const int integ_sign, const int weighted);
 
 float sharp_HeightLayer_integrate(sharp_HeightLayer_t* hlyr,
                                   const float* data, const float* height,
-                                  const int NZ, const int integ_sign, const int weighted);
+                                  const int N, const int integ_sign, const int weighted);
 
 #ifdef __cplusplus
 }

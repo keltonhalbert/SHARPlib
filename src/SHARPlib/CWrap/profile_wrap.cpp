@@ -45,11 +45,6 @@ float* sharp_Profile_get_mixr_ptr(sharp_Profile_t* p) {
     return static_cast<sharp::Profile*>(p->obj)->mixr;
 }
 
-float* sharp_Profile_get_relh_ptr(sharp_Profile_t* p) {
-    if (p == NULL) return NULL;
-    return static_cast<sharp::Profile*>(p->obj)->relh;
-}
-
 float* sharp_Profile_get_vtmp_ptr(sharp_Profile_t* p) {
     if (p == NULL) return NULL;
     return static_cast<sharp::Profile*>(p->obj)->vtmp;

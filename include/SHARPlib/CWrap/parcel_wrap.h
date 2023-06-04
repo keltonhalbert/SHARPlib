@@ -53,7 +53,7 @@ void sharp_lift_parcel_wobf(const float* pressure,
                             const int N, sharp_Parcel_t* pcl);
 
 void sharp_find_lfc_el(sharp_Parcel_t* pcl, const float* pres,
-                       const float* hght, const float* buoy, const int NZ);
+                       const float* hght, const float* buoy, const int N);
 
 void sharp_cape_cinh(const float* pressure, const float* height,
                      const float* buoyancy, const int N, sharp_Parcel_t* pcl);
