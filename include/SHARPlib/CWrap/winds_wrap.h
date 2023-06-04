@@ -56,32 +56,27 @@ void sharp_vector_to_components(sharp_WindVector_t* vec,
 
 void sharp_mean_wind(sharp_PressureLayer_t* plyr, sharp_WindComponents_t* cmp,
                      const float* pres, const float* u_wind,
-                     const float* v_wind, const int NZ);
-
-void sharp_mean_wind_npw(sharp_PressureLayer_t* plyr,
-                         sharp_WindComponents_t* cmp, const float* pres,
-                         const float* u_wind, const float* v_wind, const int NZ);
+                     const float* v_wind, const int N, const int weighted);
 
 void sharp_PressureLayer_wind_shear(sharp_PressureLayer_t* plyr,
                                     sharp_WindComponents_t* cmp,
                                     const float* pres, const float* u_wind,
-                                    const float* v_wind, const int NZ);
+                                    const float* v_wind, const int N);
 
 void sharp_HeightLayer_wind_shear(sharp_HeightLayer_t* hlyr,
                                   sharp_WindComponents_t* cmp,
                                   const float* hght, const float* u_wind,
-                                  const float* v_wind, const int NZ);
+                                  const float* v_wind, const int N);
 
 float sharp_HeightLayer_helicity(sharp_HeightLayer_t* hlyr,
                                  sharp_WindComponents_t* storm_motion,
                                  const float* height, const float* u_wind,
-                                 const float* v_wind, const int NZ);
+                                 const float* v_wind, const int N);
 
 float sharp_PressureLayer_helicity(sharp_PressureLayer_t* plyr,
                                    sharp_WindComponents_t* storm_motion,
-                                   const float* pressure, const float* height,
-                                   const float* u_wind, const float* v_wind,
-                                   const int NZ);
+                                   const float* pressure, const float* u_wind,
+                                   const float* v_wind, const int N);
 
 #ifdef __cplusplus // end of extern C
 }

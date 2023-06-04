@@ -65,6 +65,7 @@ void read_snd_file(const char* filename, float* pres, float* hght, float* tmpk,
                 pres[i] = pres[i] * 100.0;
                 tmpk[i] = tmpk[i] + 273.15;
                 dwpk[i] = dwpk[i] + 273.15;
+				wspd[i] = wspd[i] * 0.544444f;
                 ++i;
             }
         }
@@ -106,7 +107,7 @@ void load_sounding(const char* filename, sharp_Profile_t* prof) {
     for (int i = 0; i < NZ; ++i) {
         // wind speeds in these files are in knots,
         // but we want them in m/s instead
-        wspd[i] = wspd[i] * 0.5144444444444444f;
+        wspd[i] = wspd[i];
 
         float p = pres[i];
         float h = hght[i];
@@ -116,18 +117,17 @@ void load_sounding(const char* filename, sharp_Profile_t* prof) {
         float dir = wdir[i];
 
         mixr[i] = sharp_mixratio(p, d);
-        vtmp[i] = sharp_virtual_temperature(p, t, d);
+        vtmp[i] = sharp_virtual_temperature(t, mixr[i], 0.0, 0.0);
         theta[i] = sharp_theta(p, t, 100000.0);
         thetae[i] = sharp_thetae(p, t, d);
         uwin[i] = sharp_u_component(spd, dir);
         vwin[i] = sharp_v_component(spd, dir);
 
         // need to convert mixing ratio from g/kg to kg/kg
-        float specific_humidity = (1.0 - (mixr[i])) * (mixr[i]);
-        if (mixr[i] == -9999.0f) specific_humidity = -9999.0f;
+        float spfh = sharp_specific_humidity(mixr[i]); 
 
         float height_agl = hght[i] - hght[0];
-        mse[i] = sharp_moist_static_energy(height_agl, t, specific_humidity);
+        mse[i] = sharp_moist_static_energy(height_agl, t, spfh);
     }
 }
 
