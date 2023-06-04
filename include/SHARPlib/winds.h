@@ -261,7 +261,7 @@ struct WindComponents {
  * \return  {shear_u, shear_v}
  */
 template <typename L>
-[[nodiscard]] constexpr WindComponents wind_shear(L layer, const float coord[],
+[[nodiscard]] constexpr WindComponents wind_shear_generic(L layer, const float coord[],
                                                   const float u_wind[],
                                                   const float v_wind[],
                                                   const int N) noexcept {
@@ -270,9 +270,12 @@ template <typename L>
         return {MISSING, MISSING};
 #endif
 
+    float u_bot = MISSING;
+	float u_top = MISSING;
+	float v_bot = MISSING;
+	float v_top = MISSING;
     // This if statement disappears at compile time depending
     // on which kind of layer is passed
-    float u_bot, u_top, v_bot, v_top;
     if constexpr (layer.coord == LayerCoordinate::pressure) {
         if (layer.bottom > coord[0]) layer.bottom = coord[0];
         if (layer.top < coord[N - 1]) layer.top = coord[N - 1];
@@ -386,7 +389,7 @@ template <typename L>
  * \return  storm_relative_helicity
  */
 template <typename L>
-[[nodiscard]] float helicity(L layer, WindComponents storm_motion,
+[[nodiscard]] float helicity_generic(L layer, WindComponents storm_motion,
                              const float coord[], const float u_wind[],
                              const float v_wind[], const int N) noexcept {
 #ifndef NO_QC
