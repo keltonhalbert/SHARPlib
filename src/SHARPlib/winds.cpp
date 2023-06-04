@@ -131,29 +131,5 @@ WindComponents mean_wind(PressureLayer layer, const float pressure[],
     return {mean_u, mean_v};
 }
 
-WindComponents wind_shear(PressureLayer layer, const float pressure[],
-                          const float u_wind[], const float v_wind[],
-                          const int N) noexcept {
-    return wind_shear_generic(layer, pressure, u_wind, v_wind, N);
-}
-
-WindComponents wind_shear(HeightLayer layer_agl, const float height[],
-                          const float u_wind[], const float v_wind[],
-                          const int N) noexcept {
-    return wind_shear_generic(layer_agl, height, u_wind, v_wind, N);
-}
-
-float helicity(HeightLayer layer_agl, WindComponents storm_motion,
-               const float height[], const float u_wind[], const float v_wind[],
-               const int N) noexcept {
-    return helicity_generic(layer_agl, storm_motion, height, u_wind, v_wind, N);
-}
-
-float helicity(PressureLayer layer, WindComponents storm_motion,
-               const float pressure[], const float height[], const float u_wind[],
-               const float v_wind[], const int N) noexcept {
-    return helicity_generic(layer, storm_motion, pressure, u_wind, v_wind, N);
-}
-
 }  // end namespace sharp
 
