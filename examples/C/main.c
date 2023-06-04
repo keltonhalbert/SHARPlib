@@ -1,10 +1,11 @@
 #include <SHARPlib/CWrap/interp_wrap.h>
 #include <SHARPlib/CWrap/layer_wrap.h>
 #include <SHARPlib/CWrap/parcel_wrap.h>
-#include <SHARPlib/CWrap/profile_wrap.h>
 #include <SHARPlib/CWrap/thermo_wrap.h>
 #include <SHARPlib/CWrap/winds_wrap.h>
 #include <SHARPlib/CWrap/params/convective_wrap.h>
+
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -82,29 +83,16 @@ void read_snd_file(const char* filename, float* pres, float* hght, float* tmpk,
  * Sounding variables, such as mixing ratio and virtual temprature,
  * are computed and filled.
  */
-void load_sounding(const char* filename, sharp_Profile_t* prof) {
-    int NZ = get_num_levs_in_file(filename);
-    printf("NZ = %d\n", NZ);
+void load_sounding(const char* filename, float* pres, float* hght, float* tmpk,
+                   float* dwpk, float* mixr, float* vtmp, float* theta,
+                   float* thetae, float* mse, float* wdir, float* wspd,
+                   float* uwin, float* vwin, float* omeg, const int N) {
 
     // get the base data arrays and fill them with the data from the file
-    float* pres = sharp_Profile_get_pres_ptr(prof);
-    float* hght = sharp_Profile_get_hght_ptr(prof);
-    float* tmpk = sharp_Profile_get_tmpk_ptr(prof);
-    float* dwpk = sharp_Profile_get_dwpk_ptr(prof);
-    float* wdir = sharp_Profile_get_wdir_ptr(prof);
-    float* wspd = sharp_Profile_get_wspd_ptr(prof);
-    float* omeg = sharp_Profile_get_vvel_ptr(prof);
     read_snd_file(filename, pres, hght, tmpk, dwpk, wspd, wdir, omeg);
 
     // fill the other arrays with computed data
-    float* mixr = sharp_Profile_get_mixr_ptr(prof);
-    float* vtmp = sharp_Profile_get_vtmp_ptr(prof);
-    float* uwin = sharp_Profile_get_uwin_ptr(prof);
-    float* vwin = sharp_Profile_get_vwin_ptr(prof);
-    float* theta = sharp_Profile_get_theta_ptr(prof);
-    float* thetae = sharp_Profile_get_thetae_ptr(prof);
-    float* mse = sharp_Profile_get_mse_ptr(prof);
-    for (int i = 0; i < NZ; ++i) {
+    for (int i = 0; i < N; ++i) {
         // wind speeds in these files are in knots,
         // but we want them in m/s instead
         wspd[i] = wspd[i];
@@ -140,31 +128,33 @@ int main(int argc, char** argv) {
     const char* filename = "../../data/test_snds/20160524_2302_EF3_37.57_-100.13_108_613967.snd";
     int NZ = get_num_levs_in_file(filename);
 
-    // create a Profile with the required number of vertical levels
-    sharp_Profile_t* prof = sharp_Profile_create(NZ, 0);
+	float* pres = malloc(NZ*sizeof(float)); 
+    float* hght = malloc(NZ*sizeof(float)); 
+    float* tmpk = malloc(NZ*sizeof(float)); 
+	float* vtmp = malloc(NZ*sizeof(float)); 
+    float* dwpk = malloc(NZ*sizeof(float)); 
+    float* wdir = malloc(NZ*sizeof(float)); 
+    float* wspd = malloc(NZ*sizeof(float)); 
+    float* omeg = malloc(NZ*sizeof(float)); 
+	float* mixr = malloc(NZ*sizeof(float)); 
+	float* theta = malloc(NZ*sizeof(float)); 
+	float* thetae = malloc(NZ*sizeof(float)); 
+	float* buoy = malloc(NZ*sizeof(float));
+	float* mse = malloc(NZ*sizeof(float));
+	float* uwin = malloc(NZ*sizeof(float));
+	float* vwin = malloc(NZ*sizeof(float));
 
     // load the sounding from disk, and compute the remaining
     // variables needed from the base data.
     start = clock();
-    load_sounding(filename, prof);
+    load_sounding(filename, pres, hght, tmpk, dwpk, mixr, vtmp, theta, thetae,
+                  mse, wdir, wspd, uwin, vwin, omeg, NZ);
     end = clock();
     cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
     printf("Reading and preprocessing time: %fs\n", cpu_time_used);
 
     // print the contents of these arrays so that we
     // can see we've successfully loaded the data!
-    float* pres = sharp_Profile_get_pres_ptr(prof);
-    float* hght = sharp_Profile_get_hght_ptr(prof);
-    float* tmpk = sharp_Profile_get_tmpk_ptr(prof);
-	float* vtmp = sharp_Profile_get_vtmp_ptr(prof);
-    float* dwpk = sharp_Profile_get_dwpk_ptr(prof);
-    float* wdir = sharp_Profile_get_wdir_ptr(prof);
-    float* wspd = sharp_Profile_get_wspd_ptr(prof);
-    float* omeg = sharp_Profile_get_vvel_ptr(prof);
-	float* mixr = sharp_Profile_get_mixr_ptr(prof);
-	float* theta = sharp_Profile_get_theta_ptr(prof);
-	float* thetae = sharp_Profile_get_thetae_ptr(prof);
-	float* buoy = sharp_Profile_get_buoy_ptr(prof);
     for (int i = 0; i < NZ; ++i) {
         printf(
             "pres[%d] = %f hght[%d] = %f tmpk[%d] = %f dwpk[%d] = %f wdir[%d] "
@@ -186,6 +176,16 @@ int main(int argc, char** argv) {
 	sharp_define_parcel(pres, tmpk, dwpk, mixr, theta, thetae, NZ, mu_pcl, 3);
     // Finally the mixed layer parcel
 	sharp_define_parcel(pres, tmpk, dwpk, mixr, theta, thetae, NZ, ml_pcl, 4);
+
+	// NOTE: That's only if you want to use the convenience functions
+	// that compute the 100 mb mixed layer, the most unstable layer, 
+	// the forecast surface layer, and so on. If you have a known 
+	// starting parcel attribute, you can do the following:
+	//
+	// float pcl_pres = 950.0;
+	// float pcl_tmpk = 300.0;
+	// float pcl_dwpk = 295.0;
+	// sharp_define_custom_parcel(custom_pcl, pcl_pres, pcl_tmpk, pcl_dwpk);
 
     // Lift the parcel to compute buoyancy, followed by
     // integrating the CAPE and CINH. The buoyancy data is stored
@@ -220,9 +220,23 @@ int main(int argc, char** argv) {
 
     // We MUST clean up any objects we create,
     // otherwise we will leak memory! DON'T LEAK MEMORY!
-    sharp_Profile_delete(prof);
     sharp_Parcel_delete(sb_pcl);
     sharp_Parcel_delete(mu_pcl);
     sharp_Parcel_delete(ml_pcl);
+	free(pres);
+    free(hght);
+    free(tmpk);
+	free(vtmp);
+    free(dwpk);
+    free(wdir);
+    free(wspd);
+    free(omeg);
+	free(mixr);
+	free(theta);
+	free(thetae); 
+	free(buoy);
+	free(mse);
+	free(uwin);
+	free(vwin);
     return 0;
 }
