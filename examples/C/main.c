@@ -163,13 +163,13 @@ int main(int argc, char** argv) {
             wspd[i], i, omeg[i]);
     }
 
-    start = clock();
     // lets compute CAPE and CINH for a surface based, mixed layer,
     // and most unstable parcel. First, we need to create the parcels.
     sharp_Parcel_t* sb_pcl = sharp_Parcel_create();
     sharp_Parcel_t* mu_pcl = sharp_Parcel_create();
     sharp_Parcel_t* ml_pcl = sharp_Parcel_create();
 
+    start = clock();
     // set parcel attributes to the Surface Based Parcel
 	sharp_define_parcel(pres, tmpk, dwpk, mixr, theta, thetae, NZ, sb_pcl, 1);
     // Then the Most Unstable parcel
