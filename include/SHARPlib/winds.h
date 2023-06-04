@@ -261,7 +261,7 @@ struct WindComponents {
  * \return  {shear_u, shear_v}
  */
 template <typename L>
-[[nodiscard]] constexpr WindComponents wind_shear_generic(L layer, const float coord[],
+[[nodiscard]] constexpr WindComponents wind_shear(L layer, const float coord[],
                                                   const float u_wind[],
                                                   const float v_wind[],
                                                   const int N) noexcept {
@@ -310,53 +310,6 @@ template <typename L>
     return {u_top - u_bot, v_top - v_bot};
 }
 
-/**
- *
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Compue the wind shear for a given sharp::PressureLayer
- *
- * Computes the U and V components of the wind shear over a
- * sharp::PressureLayer given the vertical sounding arrays
- * of pressure, u_wind, v_wind, and their length.
- *
- * \param   layer   {bottom, top}
- * \param   pres    (Pa)
- * \param   u_wind  (m/s)
- * \param   v_wind  (m/s)
- * \param   N       (length of arrays)
- *
- * \return  {shear_u, shear_v}
- */
-[[nodiscard]] WindComponents wind_shear(PressureLayer layer,
-                                        const float pressure[],
-                                        const float u_wind[],
-                                        const float v_wind[],
-                                        const int N) noexcept;
-
-/**
- *
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Compue the wind shear for a given sharp::HeightLayer
- *
- * Computes the U and V components of the wind shear over a
- * sharp::HeightLayer given the vertical sounding arrays
- * of height, u_wind, v_wind, and their length.
- *
- * \param   layer   {bottom, top}
- * \param   height  (meters)
- * \param   u_wind  (m/s)
- * \param   v_wind  (m/s)
- * \param   N       (length of arrays)
- *
- * \return  {shear_u, shear_v}
- */
-[[nodiscard]] WindComponents wind_shear(HeightLayer layer_agl,
-                                        const float height[],
-                                        const float u_wind[],
-                                        const float v_wind[],
-                                        const int N) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -389,7 +342,7 @@ template <typename L>
  * \return  storm_relative_helicity
  */
 template <typename L>
-[[nodiscard]] float helicity_generic(L layer, WindComponents storm_motion,
+[[nodiscard]] float helicity(L layer, WindComponents storm_motion,
                              const float coord[], const float u_wind[],
                              const float v_wind[], const int N) noexcept {
 #ifndef NO_QC
@@ -465,63 +418,6 @@ template <typename L>
 
     return layer_helicity;
 }
-
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Computes the Storm Relative Helicity (SRH) over a given<!--
- * --> sharp::HeightLayer.
- *
- * Computes the Storm Relative Helicity (SRH) over a given sharp::HeightLayer
- * using storm motion vector components stored in sharp::WindComponents. This
- * integration occurs over the given arrays of height, u_wind, and v_wind,
- * with N elements in each. The integration only uses interpolation
- * for the top and bottom of the specified layer.
- *
- * The values in sharp::HeightLayer are expected in units above-ground-level
- * (AGL), and gets converted to above-mean-sea-level (MSL) during the
- * computation.
- *
- * \param   layer_agl       {bottom_agl, top_agl}
- * \param   storm_motion    {storm_u, storm_v}
- * \param   height          (meters)
- * \param   u_wind          (m/s)
- * \param   v_wind          (m/s)
- * \param   N               (length of arrays)
- *
- * \return  storm_relative_helicity
- */
-[[nodiscard]] float helicity(HeightLayer layer_agl, WindComponents storm_motion,
-                             const float height[], const float u_wind[],
-                             const float v_wind[], const int N) noexcept;
-
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Computes the Storm Relative Helicity (SRH) over a given<!--
- * --> sharp::PressureLayer.
- *
- * Computes the Storm Relative Helicity (SRH) over a given
- * sharp::PressureLayer using storm motion vector components stored in
- * sharp::WindComponents. This integration occurs over the given arrays of
- * height, u_wind, and v_wind, with num_levs elements in each. The
- * integration only uses interpolation for the top and bottom of the
- * specified layer, and uses raw data levels for everything else.
- *
- * \param   layer_agl       {bottom, top}
- * \param   storm_motion    {storm_u, storm_v}
- * \param   pressure        (Pa)
- * \param   height          (meters)
- * \param   u_wind          (m/s)
- * \param   v_wind          (m/s)
- * \param   N               (length of arrays)
- *
- * \return  storm_relative_helicity
- */
-[[nodiscard]] float helicity(PressureLayer layer, WindComponents storm_motion,
-                             const float pressure[], const float height[],
-                             const float u_wind[], const float v_wind[],
-                             const int N) noexcept;
 
 }  // end namespace sharp
 
