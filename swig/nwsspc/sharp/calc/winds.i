@@ -38,7 +38,6 @@ import_array();
  *  sure arrays are of the same size
  */
 %rename (mean_wind) _mean_wind;
-%rename (mean_wind_npw) _mean_wind_npw;
 %rename (wind_shear) _wind_shear;
 %rename (helicity) _helicity;
 
@@ -72,7 +71,8 @@ import_array();
 sharp::WindComponents _mean_wind(sharp::PressureLayer layer, 
                  const float* pres, int NZ1,
                  const float* u_wind, int NZ2,
-                 const float* v_wind, int NZ3) {
+                 const float* v_wind, int NZ3,
+                 bool weighted) {
     if ((NZ1 != NZ2) || (NZ1 != NZ3)) {
         PyErr_Format(
             PyExc_ValueError, "Arrays must be same length, got (%d, %d, %d)",
@@ -81,22 +81,7 @@ sharp::WindComponents _mean_wind(sharp::PressureLayer layer,
         return sharp::WindComponents();
     }
 
-    return sharp::mean_wind(layer, pres, u_wind, v_wind, NZ1);
-}
-
-sharp::WindComponents _mean_wind_npw(sharp::PressureLayer layer, 
-                 const float* pres, int NZ1,
-                 const float* u_wind, int NZ2,
-                 const float* v_wind, int NZ3) {
-    if ((NZ1 != NZ2) || (NZ1 != NZ3)) {
-        PyErr_Format(
-            PyExc_ValueError, "Arrays must be same length, got (%d, %d, %d)",
-            NZ1, NZ2, NZ3
-        );
-        return sharp::WindComponents();
-    }
-
-    return sharp::mean_wind_npw(layer, pres, u_wind, v_wind, NZ1);
+    return sharp::mean_wind(layer, pres, u_wind, v_wind, NZ1, weighted);
 }
 
 sharp::WindComponents _wind_shear(sharp::PressureLayer layer, 
@@ -158,7 +143,7 @@ float _helicity(sharp::PressureLayer layer,
         return 0.0;
     }
     
-    return sharp::helicity(layer, storm_motion, pres, height, u_wind, v_wind, NZ1); 
+    return sharp::helicity(layer, storm_motion, pres, u_wind, v_wind, NZ1); 
 }
 
 %}

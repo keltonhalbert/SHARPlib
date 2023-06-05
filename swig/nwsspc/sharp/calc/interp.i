@@ -44,11 +44,6 @@ import_array();
 
 %inline %{
 
-/**
- *  Wrap the interp_height function in such a way
- *  that we can use our numpy %apply map, and make
- *  sure arrays are of the same size
- */
 void _interp_height(const float height_vals[], const int N1,
                     const float vert_array[], const int N2,
                     const float data_array[], const int N3,
@@ -108,11 +103,6 @@ float _interp_height(float height_val,
 
 %inline %{
 
-/**
- *  Wrap the interp_pressure function in such a way
- *  that we can use our numpy %apply map, and make
- *  sure arrays are of the same size
- */
 void _interp_pressure(const float pressure_vals[], const int N1,
                       const float vert_array[], const int N2,
                       const float data_array[], const int N3,
