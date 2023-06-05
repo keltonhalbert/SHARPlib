@@ -146,7 +146,7 @@ namespace sharp {
  * \param   pressure        (Pa)
  * \param   height          (meters)
  * \param   temperature     (degK)
- * \param   mse_arr         (???)
+ * \param   mse_arr         ()
  * \param   u_wind          (m/s)
  * \param   v_wind          (m/s)
  * \param   N               (length of arrays)
