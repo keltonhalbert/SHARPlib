@@ -30,10 +30,29 @@ import_array();
     (const float virtemp_arr[], const int N5)
 }
 
+%apply (float* IN_ARRAY1, int DIM1) {
+    (const float pressure[], const int N1),
+    (const float height[], const int N2),
+    (const float u_wind[], const int N3),
+    (const float v_wind[], const int N4)
+}
+
 %rename (effective_inflow_layer) _effective_inflow_layer;
+%rename (storm_motion_bunkers) _storm_motion_bunkers;
+%rename (entrainment_cape) _entrainment_cape;
 %ignore effective_inflow_layer;
+%ignore storm_motion_bunkers;
+%ignore entrainment_cape;
 
 %exception _effective_inflow_layer {
+    $action
+    if (PyErr_Occurred()) SWIG_fail;
+}
+%exception _storm_motion_bunkers {
+    $action
+    if (PyErr_Occurred()) SWIG_fail;
+}
+%exception _entrainment_cape {
     $action
     if (PyErr_Occurred()) SWIG_fail;
 }
@@ -73,6 +92,65 @@ sharp::PressureLayer _effective_inflow_layer(
         cape_thresh, cinh_thresh, mupcl);
     free(buoy);
     return eil;
+}
+
+sharp::WindComponents _storm_motion_bunkers(
+                            const float pressure[], const int N1,
+                            const float height[], const int N2,
+                            const float u_wind[], const int N3,
+                            const float v_wind[], const int N4,
+                            sharp::HeightLayer mean_wind_layer_agl,
+                            sharp::HeightLayer wind_shear_layer_agl,
+                            const bool leftMover = false,
+                            const bool pressureWeighted = false) {
+    if ((N1 != N2) || (N1 != N3) || (N1 != N4)) {
+        PyErr_Format(PyExc_ValueError, 
+            "Arrays must be same lenght, insead got (%d, %d, %d, %d)",
+            N1, N2, N3, N4
+        );
+        return {sharp::MISSING, sharp::MISSING};
+    }
+
+    return sharp::storm_motion_bunkers(pressure, height, u_wind, v_wind, N1,
+                                       mean_wind_layer_agl, wind_shear_layer_agl,
+                                       leftMover, pressureWeighted);
+}
+
+sharp::WindComponents _storm_motion_bunkers(
+                            const float pressure[], const int N1,
+                            const float height[], const int N2,
+                            const float u_wind[], const int N3,
+                            const float v_wind[], const int N4,
+                            sharp::PressureLayer eff_lyr, 
+                            sharp::Parcel* mupcl, 
+                            const bool leftMover=false) {
+    if ((N1 != N2) || (N1 != N3) || (N1 != N4)) {
+        PyErr_Format(PyExc_ValueError, 
+            "Arrays must be same lenght, insead got (%d, %d, %d, %d)",
+            N1, N2, N3, N4
+        );
+        return {sharp::MISSING, sharp::MISSING};
+    }
+    return sharp::storm_motion_bunkers(pressure, height, u_wind, v_wind, N1,
+                                       eff_lyr, mupcl, leftMover);
+}
+
+float _entrainment_cape(const float pressure[], const int N1,
+                        const float height[], const int N2,
+                        const float temperature[], const int N3,
+                        const float mse_arr[], const int N4,
+                        const float u_wind[], const int N5,
+                        const float v_wind[], const int N6,
+                        sharp::Parcel* pcl) {
+	if ( (N1 != N2) || (N1 != N3) || (N1 != N4) || (N1 != N5) || (N1 != N6) ) {
+        PyErr_Format(PyExc_ValueError, 
+            "Arrays must be same lenght, insead got (%d, %d, %d, %d, %d, %d)",
+            N1, N2, N3, N4, N5, N6
+        );
+        return sharp::MISSING; 
+	}
+        return sharp::entrainment_cape(pressure, height, temperature, mse_arr,
+                                       u_wind, v_wind, N1, pcl);
 }
 
 %}
