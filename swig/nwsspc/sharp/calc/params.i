@@ -19,6 +19,5 @@
 
 %import "../include/SHARPlib/layer.h"
 %import "../include/SHARPlib/winds.h"
-%import "../include/SHARPlib/profile.h"
 %import "../include/SHARPlib/parcel.h"
 %include "../include/SHARPlib/params/convective.h"

@@ -32,9 +32,9 @@ Profile *create_profile(const float pres[], const float hght[],
                         const float wspd_or_u[], const float wdir_or_v[],
                         const int N, Source sounding_type,
                         const bool windComponents) {
-    Profile *prof = new Profile(NZ, sounding_type);
+    Profile *prof = new Profile(N, sounding_type);
 
-    for (int k = 0; k < NZ; ++k) {
+    for (int k = 0; k < N; ++k) {
         float p = pres[k];
         float h = hght[k];
         float t = tmpk[k];

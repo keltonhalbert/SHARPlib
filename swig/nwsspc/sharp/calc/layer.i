@@ -47,9 +47,15 @@ import_array();
     (const float data_arr[], const int N3)
 }
 
+%apply (float* IN_ARRAY1, int DIM1) {
+    (const float var_array[], const int N1),
+    (const float coord_array[], const int N2)
+}
+
 %apply float* OUTPUT { float* lvl_of_min } 
 %apply float* OUTPUT { float* lvl_of_max } 
 
+%rename (integrate_layer_trapz) _integrate_layer_trapz;
 %rename (pressure_layer_to_height) _pres_lyr_to_hght;
 %rename (height_layer_to_pressure) _hght_lyr_to_pres;
 %rename (layer_min) _layer_min;
@@ -58,6 +64,7 @@ import_array();
 
 %ignore pressure_layer_to_height;
 %ignore height_layer_to_pressure;
+%ignore integrate_layer_trapz;
 %ignore layer_min;
 %ignore layer_max;
 %ignore layer_mean;
@@ -68,6 +75,11 @@ import_array();
 }
 
 %exception _hght_lyr_to_pres {
+    $action
+    if (PyErr_Occurred()) SWIG_fail;
+}
+
+%exception _integ_layer_trapz {
     $action
     if (PyErr_Occurred()) SWIG_fail;
 }
@@ -207,6 +219,24 @@ float _layer_mean(sharp::PressureLayer layer,
     }
 
     return sharp::layer_mean(layer, pressure, data_arr, N1);
+}
+
+
+float _integrate_layer_trapz(sharp::HeightLayer layer, 
+                            const float var_array[], const int N1,
+                            const float coord_array[], const int N2,
+                            const int integ_sign = 0,
+                            const bool weighted = false) {
+    if (N1 != N2) {
+        PyErr_Format(
+            PyExc_ValueError, "Arrays must be same length, got (%d, %d)",
+            N1, N2
+        );
+        return sharp::MISSING;
+    }
+
+    return sharp::integrate_layer_trapz(layer, var_array, coord_array, N1,
+                                        integ_sign, weighted);
 }
 
 %}
