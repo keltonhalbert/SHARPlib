@@ -14,8 +14,8 @@ import nwsspc.sharp.calc.winds as winds
 import nwsspc.sharp.calc.layer as layer
 
 def load_sounding(filename):
-    names = ["pres", "hght", "tmpk", "dwpk", "wdir", "wspd"]
-    snd_df = pd.read_csv(filename, delimiter=",", comment="%", names=names, skiprows=5)
+    names = ["pres", "hght", "tmpk", "dwpk", "wdir", "wspd", "omeg"]
+    snd_df = pd.read_csv(filename, delimiter=",", comment="%", names=names, skiprows=7)
 
     pres = snd_df["pres"].to_numpy().astype('float32')*100.0
     hght = snd_df["hght"].to_numpy().astype('float32')
@@ -53,12 +53,20 @@ def test_interp(sounding):
     tmpk_3000m = interp.interp_height(3000.0, sounding["hght"], sounding["tmpk"])
     print("1 km Temperature: ", tmpk_1000m)
     print("3 km Temperature: ", tmpk_3000m)
+
+    hght_vals = np.arange(0, 3000.0, 100.0).astype('float32')
+    pres_vals = np.arange(sounding["pres"][0], sounding["pres"][0] - 100.0*100.0, -10.0*100.0).astype('float32')
+
+    tmpk_vals = interp.interp_height(hght_vals, sounding["hght"], sounding["tmpk"])
+    dwpk_vals = interp.interp_pressure(pres_vals, sounding["pres"], sounding["dwpk"])
+    print(tmpk_vals)
+    print(dwpk_vals)
     print("====================")
 
 def test_layer(sounding):
 
     print("====================")
-    print("Testing utility bindings...")
+    print("Testing layer bindings...")
     pres_layer = layer.PressureLayer(100000.0, 50000.0)
     hght_layer = layer.HeightLayer(1000.0, 3000.0)
 
@@ -70,6 +78,28 @@ def test_layer(sounding):
 
     print("Height Layer: 1000.0 m to 3000.0 m")
     print("Height Layer kbot: ", idx2.kbot, "ktop: ", idx2.ktop)
+
+    hlayer_from_player = layer.pressure_layer_to_height(pres_layer, sounding["pres"], sounding["hght"])
+    player_from_hlayer = layer.height_layer_to_pressure(hght_layer, sounding["pres"], sounding["hght"])
+
+    print(hlayer_from_player.bottom, hlayer_from_player.top)
+    print(player_from_hlayer.bottom, player_from_hlayer.top)
+
+    hlayer_min = layer.layer_min(hght_layer, sounding["hght"], sounding["dwpk"])
+    player_min = layer.layer_min(pres_layer, sounding["pres"], sounding["tmpk"])
+    print(hlayer_min)
+    print(player_min)
+
+    hlayer_max = layer.layer_max(hght_layer, sounding["hght"], sounding["dwpk"])
+    player_max = layer.layer_max(pres_layer, sounding["pres"], sounding["tmpk"])
+    print(hlayer_max)
+    print(player_max)
+
+    hlayer_mean = layer.layer_mean(hght_layer, sounding["hght"], sounding["pres"], sounding["dwpk"])
+    player_mean = layer.layer_mean(pres_layer, sounding["pres"], sounding["tmpk"])
+    print(hlayer_mean)
+    print(player_mean)
+
     print("====================")
 
 def test_winds(sounding):
@@ -110,33 +140,25 @@ def test_parcel(sounding):
     print("====================")
     print("Testing parcel bindings...")
 
-    ## example of processing a single parcel
-    prof = profile.create_profile(sounding["pres"], sounding["hght"], 
-                                  sounding["tmpk"], sounding["dwpk"], 
-                                  sounding["wspd"], sounding["wdir"], 
-                                  profile.Source_Observed, False) 
-    pcl = parcel.Parcel()
-    parcel.define_parcel(prof, pcl, parcel.LPL_MU)
-    parcel.parcel_wobf(prof, pcl)
-    print("Most Unstable Parcel: cape = ", pcl.cape, "cinh = ", pcl.cinh)
+    vtmp = np.zeros(sounding["pres"].shape, dtype='float32') 
+    mixr = np.zeros(sounding["pres"].shape, dtype='float32')
+    qi = np.zeros(sounding["pres"].shape, dtype='float32')
+    ql = np.zeros(sounding["pres"].shape, dtype='float32')
 
+    thermo.mixratio(sounding["pres"], sounding["dwpk"], mixr)
 
-    ## example of processing an array of parcels
-    prof_arr = np.array([prof, prof])
-    pcl_arr = np.array([parcel.Parcel(), parcel.Parcel()])
+    idx = 0
+    for p, t, m in zip(sounding["pres"], sounding["tmpk"], mixr):
+        vtmp[idx] = thermo.virtual_temperature(float(t), float(m))
+        idx = idx + 1 
 
-    ## define the LPL of each parcel
-    for pc, pf in zip(pcl_arr, prof_arr):
-        parcel.define_parcel(pf, pc, parcel.LPL_MU)
+    mupcl = parcel.Parcel()
+    eil = params.effective_inflow_layer(sounding["pres"], sounding["hght"], 
+                                        sounding["tmpk"], sounding["dwpk"], 
+                                        vtmp, mupcl)
+    print(eil.bottom, eil.top)
+    print(mupcl.pres, mupcl.lcl_pressure, mupcl.lfc_pressure, mupcl.eql_pressure, mupcl.cape, mupcl.cinh)
 
-    ## turn the parcel lifting routine into 
-    ## something vectorizable by numpy
-    cape_func = np.vectorize(parcel.parcel_wobf)
-
-    ## call the parcel routines on each profile/parcel combo
-    cape_func(prof_arr, pcl_arr)
-    print("Vectorized Most Unstable CAPE: cape = ", pcl_arr[0].cape, ",", pcl_arr[1].cape, 
-                                          "cinh = ", pcl_arr[0].cinh, ",", pcl_arr[1].cinh)
     print("====================")
 
 
@@ -144,9 +166,9 @@ def main():
     sounding = load_sounding("./hires-SPC.txt")
     test_interp(sounding)
     test_layer(sounding)
+    test_parcel(sounding)
     test_winds(sounding)
     test_thermo(sounding)
-    test_parcel(sounding)
 
 if __name__ == "__main__":
     main()
