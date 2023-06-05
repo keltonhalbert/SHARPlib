@@ -113,7 +113,6 @@ def test_winds(sounding):
 
     pres_layer = layer.PressureLayer(100000.0, 50000.0)
     hght_layer = layer.HeightLayer(0.0, 3000.0)
-    strm_motnv = params.storm_motion_bunkers(prof, False)
 
     comp1 = winds.mean_wind(pres_layer, sounding["pres"], sounding["uwin"], sounding["vwin"])
     comp2 = winds.mean_wind_npw(pres_layer, sounding["pres"], sounding["uwin"], sounding["vwin"])
@@ -158,6 +157,18 @@ def test_parcel(sounding):
                                         vtmp, mupcl)
     print(eil.bottom, eil.top)
     print(mupcl.pres, mupcl.lcl_pressure, mupcl.lfc_pressure, mupcl.eql_pressure, mupcl.cape, mupcl.cinh)
+
+    mw_lyr = layer.HeightLayer(0, 6000.0)
+    shr_lyr = layer.HeightLayer(0, 6000.0)
+    strm_right_np = params.storm_motion_bunkers(sounding["pres"], sounding["hght"], 
+                                                sounding["uwin"], sounding["vwin"],
+                                                mw_lyr, shr_lyr)
+    strm_right_eff = params.storm_motion_bunkers(sounding["pres"], sounding["hght"],
+                                                 sounding["uwin"], sounding["vwin"],
+                                                 eil, mupcl)
+
+    print("Bunkers Right (non-parcel): u = {0}\tv = {1}".format(strm_right_np.u, strm_right_np.v))
+    print("Bunkers Right (parcel): u = {0}\tv = {1}".format(strm_right_eff.u, strm_right_eff.v))
 
     print("====================")
 
