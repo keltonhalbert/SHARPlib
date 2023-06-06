@@ -576,7 +576,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \param   temperature         (degK)
  * \param   specific_humidity   (kg/kg)
  *
- * \return  moist static energy (???)
+ * \return  moist static energy ()
  */
 [[nodiscard]] float moist_static_energy(float height_agl, float temperature,
                                         float specific_humidity) noexcept;
