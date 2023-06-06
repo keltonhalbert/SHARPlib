@@ -190,6 +190,32 @@ def test_thermo(snd):
     vtmp2 = thermo.virtual_temperature(snd["tmpk"], mixr, ql, qi)
     print(vtmp2)
 
+    print("Wetbulb (K)")
+    print(thermo.wetbulb(100000.0, 300.0, 298.0))
+    wetb = thermo.wetbulb(snd["pres"], snd["tmpk"], snd["dwpk"])
+    print(wetb)
+
+    print("Theta Wetbulb (K)")
+    print(thermo.theta_wetbulb(100000.0, 300.0, 298.0))
+    twetb = thermo.theta_wetbulb(snd["pres"], snd["tmpk"], snd["dwpk"])
+    print(twetb)
+
+    print("Theta E (K)")
+    print(thermo.thetae(100000.0, 300.0, 298.0))
+    thte = thermo.thetae(snd["pres"], snd["tmpk"], snd["dwpk"])
+    print(thte)
+
+    print("Buoyancy (m/s^2)")
+    print(thermo.buoyancy(300.0, 300.0))
+    buoy = thermo.buoyancy(snd["tmpk"]+2, snd["tmpk"])
+    print(buoy)
+
+    print("Moist Static Energy")
+    print(thermo.moist_static_energy(0.0, 300.0, 0.010))
+    mse = thermo.moist_static_energy(snd["hght"] - snd["hght"][0], snd["tmpk"], spcf)
+    print(mse)
+
+
     print("====================")
 
 def test_parcel(snd):

@@ -363,7 +363,7 @@ enum class adiabat : int {
  */
 [[nodiscard]] float moist_adiabat_cm1(float pressure, float temperature,
                                       float new_pressure, float& qv_total,
-                                      float& qv, float&ql, float& qi,
+                                      float& qv, float& ql, float& qi,
                                       const float pres_incr,
                                       const float converge,
                                       const adiabat ma_type);
