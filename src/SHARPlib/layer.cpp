@@ -28,6 +28,18 @@
 namespace sharp {
 
 HeightLayer::HeightLayer(float bottom, float top, float delta) {
+    if ((std::isnan(bottom)) || (std::isnan(top))) {
+        throw std::range_error(fmt::format(
+            "RangeError: NaNs are not a valid range option for a HeightLayer. "
+            "Got bottom: {0} and top: {1}",
+            bottom, top));
+    }
+    if ((std::isinf(bottom)) || (std::isinf(top))) {
+        throw std::range_error(fmt::format(
+            "RangeError: infs are not a valid range option for a HeightLayer. "
+            "Got bottom: {0} and top: {1}",
+            bottom, top));
+    }
     if (bottom > top) {
         throw std::range_error(fmt::format(
             "RangeError: The top of the height layer must be > the bottom of "
@@ -40,6 +52,18 @@ HeightLayer::HeightLayer(float bottom, float top, float delta) {
 }
 
 PressureLayer::PressureLayer(float bottom, float top, float delta) {
+    if ((std::isnan(bottom)) || (std::isnan(top))) {
+        throw std::range_error(
+            fmt::format("RangeError: NaNs are not a valid range option for a "
+                        "PressureLayer. Got bottom: {0} and top: {1}",
+                        bottom, top));
+    }
+    if ((std::isinf(bottom)) || (std::isinf(top))) {
+        throw std::range_error(
+            fmt::format("RangeError: infs are not a valid range option for a "
+                        "PressureLayer. Got bottom: {0} and top: {1}",
+                        bottom, top));
+    }
     if (bottom < top) {
         throw std::range_error(fmt::format(
             "RangeError: The bottom of the pressure layer must be > the top of "

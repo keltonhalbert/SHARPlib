@@ -135,7 +135,7 @@ TEST_CASE("Testing new parcel definitions") {
 
 
     auto start_time = std::chrono::system_clock::now();
-    sharp::Profile* prof = read_sounding(fname5);
+    sharp::Profile* prof = read_sounding(fname4);
     auto end_time = std::chrono::system_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
 

@@ -1,23 +1,50 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include <iostream>
+#include <limits>
 #include <stdexcept>
 #include <cmath>
+#include <iostream>
 
 #include "doctest.h"
 #include <SHARPlib/layer.h>
 
-
 TEST_CASE("Testing HeightLayer structs") {
-    CHECK_THROWS_AS(
-        sharp::HeightLayer layer2( 1000.0, 0.0 ), const std::range_error&
-        );
+    float nanval = std::numeric_limits<float>::quiet_NaN();
+    float infval = std::numeric_limits<float>::infinity();
+
+    CHECK_THROWS_AS(sharp::HeightLayer layer1(100000.0f, 0.0f),
+                    const std::range_error&);
+    CHECK_THROWS_AS(sharp::HeightLayer layer2(nanval, nanval),
+                    const std::range_error&);
+    CHECK_THROWS_AS(sharp::HeightLayer layer3(100000.0f, nanval),
+                    const std::range_error&);
+    CHECK_THROWS_AS(sharp::HeightLayer layer4(nanval, 50000.0f),
+                    const std::range_error&);
+    CHECK_THROWS_AS(sharp::HeightLayer layer5(infval, infval),
+                    const std::range_error&);
+    CHECK_THROWS_AS(sharp::HeightLayer layer6(100000.0f, infval),
+                    const std::range_error&);
+    CHECK_THROWS_AS(sharp::HeightLayer layer7(infval, 50000.0f),
+                    const std::range_error&);
 }
 
-
 TEST_CASE("Testing PressureLayer structs") {
-    CHECK_THROWS_AS(
-        sharp::PressureLayer layer2( 100.0, 1000.0 ), const std::range_error&
-        );
+    float nanval = std::numeric_limits<float>::quiet_NaN();
+    float infval = std::numeric_limits<float>::infinity();
+
+    CHECK_THROWS_AS(sharp::PressureLayer layer1(100.0, 1000.0),
+                    const std::range_error&);
+    CHECK_THROWS_AS(sharp::PressureLayer layer2(nanval, nanval),
+                    const std::range_error&);
+    CHECK_THROWS_AS(sharp::PressureLayer layer3(100000.0f, nanval),
+                    const std::range_error&);
+    CHECK_THROWS_AS(sharp::PressureLayer layer4(nanval, 50000.0f),
+                    const std::range_error&);
+    CHECK_THROWS_AS(sharp::PressureLayer layer5(infval, infval),
+                    const std::range_error&);
+    CHECK_THROWS_AS(sharp::PressureLayer layer6(100000.0f, infval),
+                    const std::range_error&);
+    CHECK_THROWS_AS(sharp::PressureLayer layer7(infval, 50000.0f),
+                    const std::range_error&);
 }
 
 TEST_CASE("Testing conversion between layers") {

@@ -8,22 +8,22 @@
 
 TEST_CASE("Testing lerp (float)") {
 
-    CHECK(sharp::lerp((float)10.0, (float)20.0, (float)0) == (float)10.0);
-    CHECK(sharp::lerp((float)10.0, (float)20.0, (float)1) == (float)20.0);
-    CHECK(sharp::lerp((float)10.0, (float)20.0, (float)0.5) == (float)15.0);
+    CHECK(sharp::lerp(10.0f, 20.0f, 0.f) == 10.0f);
+    CHECK(sharp::lerp(10.0f, 20.0f, 1.f) == 20.0f);
+    CHECK(sharp::lerp(10.0f, 20.0f, 0.5f) == 15.0f);
 
     // make sure reordering the operations 
     // doesnt change the result!
-    CHECK(sharp::lerp((float)20.0, (float)10.0, (float)0) == (float)20.0);
-    CHECK(sharp::lerp((float)20.0, (float)10.0, (float)1) == (float)10.0);
-    CHECK(sharp::lerp((float)20.0, (float)10.0, (float)0.5) == (float)15.0);
+    CHECK(sharp::lerp(20.0f, 10.0f, 0.f) == 20.0f);
+    CHECK(sharp::lerp(20.0f, 10.0f, 1.f) == 10.0f);
+    CHECK(sharp::lerp(20.0f, 10.0f, 0.5f) == 15.0f);
 
     const float inf = std::numeric_limits<float>::infinity();
     // test the infinity bound - should return first arg
-    CHECK(sharp::lerp((float)10.0, (float)10.0, inf) == (float)10.0);
+    CHECK(sharp::lerp(10.0f, 10.0f, inf) == 10.0f);
 
     // this one should return infinity
-    CHECK(std::isinf(sharp::lerp((float)10.0, (float)50.0, inf)));
+    CHECK(std::isinf(sharp::lerp(10.0f, 50.0f, inf)));
 }
 
 TEST_CASE("Testing interp_height") {
@@ -51,6 +51,14 @@ TEST_CASE("Testing interp_height") {
                                           == doctest::Approx(1.1));
     CHECK(sharp::interp_height(391, height_arr, data_arr, arr_len) 
                                          == doctest::Approx(3.91));
+
+	// test missing values
+	constexpr float inf = std::numeric_limits<float>::infinity();
+	constexpr float nan = std::numeric_limits<float>::quiet_NaN();
+	CHECK(sharp::interp_height(sharp::MISSING, height_arr, data_arr, arr_len) == sharp::MISSING);
+	CHECK(sharp::interp_height(sharp::MISSING, height_arr, data_arr, arr_len) == sharp::MISSING);
+	CHECK(sharp::interp_height(inf, height_arr, data_arr, arr_len) == sharp::MISSING);
+	CHECK(sharp::interp_height(nan, height_arr, data_arr, arr_len) == sharp::MISSING);
 }
 
 TEST_CASE("Testing interp_pressure") {
@@ -80,5 +88,13 @@ TEST_CASE("Testing interp_pressure") {
                            == doctest::Approx(1.4868360226532418));
     CHECK(sharp::interp_pressure(925, pres_arr, data_arr, arr_len) 
                            == doctest::Approx(1.7399502648876880));
+
+	// test missing values
+	constexpr float inf = std::numeric_limits<float>::infinity();
+	constexpr float nan = std::numeric_limits<float>::quiet_NaN();
+	CHECK(sharp::interp_pressure(sharp::MISSING, pres_arr, data_arr, arr_len) == sharp::MISSING);
+	CHECK(sharp::interp_pressure(sharp::MISSING, pres_arr, data_arr, arr_len) == sharp::MISSING);
+	CHECK(sharp::interp_pressure(inf, pres_arr, data_arr, arr_len) == sharp::MISSING);
+	CHECK(sharp::interp_pressure(nan, pres_arr, data_arr, arr_len) == sharp::MISSING);
 }
 
