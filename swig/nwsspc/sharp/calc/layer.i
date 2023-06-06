@@ -239,6 +239,6 @@ float _integrate_layer_trapz(sharp::HeightLayer layer,
                                         integ_sign, weighted);
 }
 
-%}
+%} /*end inline*/
 
 %include "../include/SHARPlib/layer.h"

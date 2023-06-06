@@ -153,7 +153,7 @@ float _entrainment_cape(const float pressure[], const int N1,
                                        u_wind, v_wind, N1, pcl);
 }
 
-%}
+%} /* end inline */
 
 %import "../include/SHARPlib/layer.h"
 %import "../include/SHARPlib/winds.h"
