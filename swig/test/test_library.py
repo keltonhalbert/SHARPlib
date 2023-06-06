@@ -114,14 +114,16 @@ def test_winds(snd):
     pres_layer = layer.PressureLayer(100000.0, 50000.0)
     hght_layer = layer.HeightLayer(0.0, 3000.0)
 
-    comp1 = winds.mean_wind(pres_layer, snd["pres"], snd["uwin"], snd["vwin"])
-    comp2 = winds.mean_wind_npw(pres_layer, snd["pres"], snd["uwin"], snd["vwin"])
+    comp1 = winds.mean_wind(pres_layer, snd["pres"], snd["uwin"], snd["vwin"], True)
+    comp2 = winds.mean_wind(pres_layer, snd["pres"], snd["uwin"], snd["vwin"], False)
     print("Pressure Weighted Mean Wind: u = ", comp1.u, "v = ", comp1.v)
     print("Non-Pressure Weighted Mean Wind: u = ", comp2.u, "v = ", comp2.v)
 
     shear = winds.wind_shear(pres_layer, snd["pres"], snd["uwin"], snd["vwin"])
     print("1000 hPa - 500 hPa wind shear: u = ", shear.u, "v = ", shear.v)
 
+    strm_motnv = winds.WindComponents()
+    strm_motnv.u = 0.0; strm_motnv.v = 0.0
     helicity = winds.helicity(hght_layer, strm_motnv, snd["hght"], snd["uwin"], snd["vwin"])
     print("0-3 km AGL Storm Relative Helicity: ", helicity)
     print("====================")
