@@ -7,9 +7,9 @@
 // Based on NSHARP routines originally written by
 // John Hart and Rich Thompson at SPC.
 #include <SHARPlib/constants.h>
-#include <SHARPlib/thermo.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
+#include <SHARPlib/thermo.h>
 
 #include <cmath>
 

@@ -90,7 +90,7 @@ float _interp_height(float height_val,
     return sharp::interp_height(height_val, vert_array, data_array, N1);
 }
 
-%}
+%} /*end inline*/
 
 
 %rename (interp_pressure) _interp_pressure;
@@ -149,6 +149,5 @@ float _interp_pressure(float pres_val,
     return sharp::interp_pressure(pres_val, vert_array, data_array, N1);
 }
 
-%}
+%} /* end inline*/
 
-%include "../include/SHARPlib/interp.h"
