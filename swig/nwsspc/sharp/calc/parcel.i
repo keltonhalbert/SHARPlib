@@ -40,7 +40,7 @@ import_array();
 }
 
 %apply (float** ARGOUTVIEWM_ARRAY1, int* DIM1) {
-    (float** buoyancy_arr, int* N4)
+    (float** out_arr, int* NOUT)
 }
 %apply (float* IN_ARRAY1, int DIM1) {
     (const float pressure_arr[], const int N1),
@@ -56,10 +56,12 @@ import_array();
 
 %rename(define_parcel) _define_parcel;
 %rename(find_lfc_el) _find_lfc_el;
+%rename(lift_parcel) _lift_parcel;
 %rename(cape_cinh) _cape_cinh;
 
 %ignore define_parcel;
 %ignore find_lfc_el;
+%ignore lift_parcel;
 %ignore cape_cinh;
 
 %inline %{
@@ -85,7 +87,7 @@ void _define_parcel(const float pressure[], const int N1,
 void _lift_parcel(sharp::lifter_wobus liftpcl,
                   const float pressure_arr[], const int N1,
                   const float virtual_temperature_arr[], const int N2,
-                  float** buoyancy_arr, int* N3, sharp::Parcel* pcl) {
+                  float** out_arr, int* NOUT, sharp::Parcel* pcl) {
     if (N1 != N2) {
 		PyErr_Format(
             PyExc_ValueError, 
@@ -105,17 +107,17 @@ void _lift_parcel(sharp::lifter_wobus liftpcl,
         return;
     }
 
-    *buoyancy_arr = temp;
-    *N3 = N1;
+    *out_arr = temp;
+    *NOUT = N1;
 
     sharp::lift_parcel(liftpcl, pressure_arr, virtual_temperature_arr,
-                       *buoyancy_arr, N1, pcl);
+                       *out_arr, N1, pcl);
 }
 
 void _lift_parcel(sharp::lifter_cm1 liftpcl,
                   const float pressure_arr[], const int N1,
                   const float virtual_temperature_arr[], const int N2,
-                  float** buoyancy_arr, int* N3, sharp::Parcel* pcl) {
+                  float** out_arr, int* NOUT, sharp::Parcel* pcl) {
     if (N1 != N2) {
 		PyErr_Format(
             PyExc_ValueError, 
@@ -135,14 +137,14 @@ void _lift_parcel(sharp::lifter_cm1 liftpcl,
         return;
     }
 
-    *buoyancy_arr = temp;
-    *N3 = N1;
+    *out_arr = temp;
+    *NOUT = N1;
 
     sharp::lift_parcel(liftpcl, pressure_arr, virtual_temperature_arr,
-                       *buoyancy_arr, N1, pcl);
+                       *out_arr, N1, pcl);
 }
 
-void find_lfc_el(sharp::Parcel* pcl, const float pres_arr[], const int N1,
+void _find_lfc_el(sharp::Parcel* pcl, const float pres_arr[], const int N1,
                  const float hght_arr[], const int N2, const float buoy_arr[],
                  const int N3, float& lfc_pres, float& el_pres) {
     if ((N1 != N2) || (N1 != N3)) {
@@ -156,7 +158,7 @@ void find_lfc_el(sharp::Parcel* pcl, const float pres_arr[], const int N1,
     el_pres = pcl->eql_pressure;
 }
 
-void cape_cinh(const float pres_arr[], const int N1, 
+void _cape_cinh(const float pres_arr[], const int N1, 
                const float hght_arr[], const int N2,
 			   const float buoy_arr[], const int N3,
 			   sharp::Parcel* pcl, float& cape, float& cinh) {
