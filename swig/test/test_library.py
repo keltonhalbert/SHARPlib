@@ -5,7 +5,6 @@ import numpy as np
 ## needs to be imported first, or bad things
 ## happen
 import nwsspc.sharp.calc.constants as constants
-import nwsspc.sharp.calc.profile as profile
 import nwsspc.sharp.calc.interp as interp
 import nwsspc.sharp.calc.thermo as thermo
 import nwsspc.sharp.calc.parcel as parcel
@@ -106,11 +105,6 @@ def test_winds(snd):
 
     print("====================")
     print("Testing kinematic bindings...")
-    prof = profile.create_profile(snd["pres"], snd["hght"], 
-                                  snd["tmpk"], snd["dwpk"], 
-                                  snd["wspd"], snd["wdir"], 
-                                  profile.Source_Observed, False) 
-
     pres_layer = layer.PressureLayer(100000.0, 50000.0)
     hght_layer = layer.HeightLayer(0.0, 3000.0)
 
