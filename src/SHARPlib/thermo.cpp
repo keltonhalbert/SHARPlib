@@ -11,6 +11,7 @@
 #include <SHARPlib/layer.h>
 #include <SHARPlib/thermo.h>
 
+#include <algorithm>
 #include <cmath>
 
 namespace sharp {

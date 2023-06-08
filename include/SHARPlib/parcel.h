@@ -253,7 +253,7 @@ struct Parcel {
  * \param   thetae_arr      Array of eqiv. potential temperature (degK)
  * \param   N               The length of the arrays
  * \param   pcl             The sharp::Parcel to set the attributes to
- * \param   LPL             The type of sharp::Parcel to define 
+ * \param   source          The type of sharp::Parcel to define 
  */
 void define_parcel(const float pressure[], const float temperature[],
                    const float dewpoint[], const float wv_mixratio[],

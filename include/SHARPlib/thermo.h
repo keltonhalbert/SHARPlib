@@ -19,6 +19,9 @@
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
 
+#include <algorithm>
+#include <cmath>
+
 namespace sharp {
 
 /**
@@ -546,7 +549,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \param   pressure                (hPa)
  * \param   height                  (meters MSL)
  * \param   temperature             (degK)
- * \param   num_levs                (length of arrays)
+ * \param   N		                (length of arrays)
  *
  * \return  Temperature Lapse Rate  (degK/km)
  */
@@ -572,7 +575,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  *
  * \brief Compute moist static energy.
  *
- * \param   height AGL          (meters)
+ * \param   height_agl          (meters)
  * \param   temperature         (degK)
  * \param   specific_humidity   (kg/kg)
  *
