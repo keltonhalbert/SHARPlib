@@ -197,6 +197,7 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
 
 void cape_cinh(const float pres_arr[], const float hght_arr[],
                const float buoy_arr[], const int N, Parcel* pcl) noexcept {
+	if (pcl->lcl_pressure == MISSING) return;
     find_lfc_el(pcl, pres_arr, hght_arr, buoy_arr, N);
     if ((pcl->lfc_pressure != MISSING) && (pcl->eql_pressure != MISSING)) {
 		PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
