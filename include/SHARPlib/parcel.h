@@ -286,6 +286,10 @@ void lift_parcel(Lft liftpcl, const float pressure_arr[],
     float pres_lcl;
     float tmpk_lcl;
     drylift(pcl->pres, pcl->tmpk, pcl->dwpk, pres_lcl, tmpk_lcl);
+	// If we are lifting elevated parcel (i.e. EIL), we need to make
+	// sure out LCL isnt above the top of our data.
+	if (pcl->lcl_pressure < pressure_arr[N-1]) return;
+
     pcl->lcl_pressure = pres_lcl;
 
     const float qv_lcl = mixratio(pres_lcl, tmpk_lcl);
@@ -295,6 +299,7 @@ void lift_parcel(Lft liftpcl, const float pressure_arr[],
     // Define the dry and saturated lift layers
     PressureLayer dry_lyr = {pcl->pres, pcl->lcl_pressure};
     PressureLayer sat_lyr = {pcl->lcl_pressure, pressure_arr[N - 1]};
+
     // The LayerIndex excludes the top and bottom for interpolation reasons
     const LayerIndex dry_idx = get_layer_index(dry_lyr, pressure_arr, N);
     const LayerIndex sat_idx = get_layer_index(sat_lyr, pressure_arr, N);
