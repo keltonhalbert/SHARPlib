@@ -334,7 +334,7 @@ template <typename L>
  *
  * \param   layer           {bottom, top}
  * \param   storm_motion    {storm_u, storm_v}
- * \param   height          (meters)
+ * \param   coord           (meters or Pa)
  * \param   u_wind          (m/s)
  * \param   v_wind          (m/s)
  * \param   N               (length of arrays)

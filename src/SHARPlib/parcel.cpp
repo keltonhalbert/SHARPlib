@@ -71,9 +71,7 @@ void _mu(const float pressure[], const float temperature[],
  * \brief Sets the parcel initial values to the bottom 100mb mixed layer
  *
  * \param pressure      Array of pressure (Pa)
- * \param temperature   Array of temperature (degK)
- * \param dewpoint      Array of dewpoint (degK)
- * \param theta         Array of potential temperature (deg K)
+ * \param theta_arr     Array of potential temperature (deg K)
  * \param wv_mixratio   Array of water vapor mixing ratio (kg/kg)
  * \param N             Length of arrays
  * \param pcl           sharp::Parcel to define

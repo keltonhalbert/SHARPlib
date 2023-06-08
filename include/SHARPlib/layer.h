@@ -80,7 +80,6 @@ struct HeightLayer {
      * \param   top     (top of layer, meters)
      * \param   delta   (height increment, meters)
      *
-     * \return  {bottom, top} 
      */
     HeightLayer(float bot, float top, float delta = 100.0);
 };
@@ -120,7 +119,6 @@ struct PressureLayer {
      * \param   top     (top of layer, Pa)
      * \param   delta   (pressure increment, Pa)
      *
-     * \return  {bottom, top} 
      */
     PressureLayer(float bot, float top, float delta = -1000.0);
 };
@@ -415,7 +413,7 @@ constexpr float layer_min(L layer, const float coord_arr[],
  * \param   coord_arr       (coordinate units; Pa or meters)
  * \param   data_arr        (data array to find max on)
  * \param   N               (length of arrays)
- * \param   pres_of_max     (level of max val)
+ * \param   lvl_of_max      (level of max val)
  *
  * \return  layer_max
  */
@@ -556,6 +554,7 @@ template <typename T, typename L>
  * \param   pressure    (vertical pressure array; Pa)
  * \param   data_arr    (The data for which to compute a mean)
  * \param   N           (length of pressure and data arrays)
+ * \param 	isAGL 		(whether or not intput is in AGL or MSL)
  *
  * \return  layer_mean
  */
