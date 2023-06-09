@@ -34,8 +34,8 @@ PressureLayer effective_inflow_layer(
     int eff_kbot = 0;
     float eff_pbot = MISSING;
     float eff_ptop = MISSING;
+	float sfc_hght = height[0];
     Parcel maxpcl;
-	Parcel effpcl;
 
     // search for the effective inflow bottom
     for (int k = 0; k < N; ++k) {
@@ -44,9 +44,13 @@ PressureLayer effective_inflow_layer(
             continue;
         }
 #endif
+		Parcel effpcl;
         effpcl.pres = pressure[k];
         effpcl.tmpk = temperature[k];
         effpcl.dwpk = dewpoint[k];
+		// We don't want to lift every single profile...
+		if (height[k] - sfc_hght > 4000.0) break;
+
         lift_parcel(lifter, pressure, virtemp_arr, buoy_arr, N, &effpcl);
         cape_cinh(pressure, height, buoy_arr, N, &effpcl);
 
@@ -66,7 +70,7 @@ PressureLayer effective_inflow_layer(
             continue;
         }
 #endif
-
+		Parcel effpcl;
         effpcl.pres = pressure[k];
         effpcl.tmpk = temperature[k];
         effpcl.dwpk = dewpoint[k];
@@ -80,18 +84,8 @@ PressureLayer effective_inflow_layer(
         }
     }
 
-    if (mupcl) {
-		mupcl->pres = maxpcl.pres;
-		mupcl->tmpk = maxpcl.tmpk;
-		mupcl->dwpk = maxpcl.dwpk;
-		mupcl->lcl_pressure = maxpcl.lcl_pressure;
-		mupcl->lfc_pressure = maxpcl.lfc_pressure;
-		mupcl->eql_pressure = maxpcl.eql_pressure;
-		mupcl->cape = maxpcl.cape;
-		mupcl->cinh = maxpcl.cinh;
-
-	};
     if (eff_ptop == MISSING) return {MISSING, MISSING};
+	*mupcl = maxpcl;
     return {eff_pbot, eff_ptop};
 }
 
