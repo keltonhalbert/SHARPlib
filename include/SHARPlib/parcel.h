@@ -288,7 +288,7 @@ void lift_parcel(Lft liftpcl, const float pressure_arr[],
     drylift(pcl->pres, pcl->tmpk, pcl->dwpk, pres_lcl, tmpk_lcl);
 	// If we are lifting elevated parcel (i.e. EIL), we need to make
 	// sure out LCL isnt above the top of our data.
-	if (pcl->lcl_pressure < pressure_arr[N-1]) return;
+	if (pres_lcl < pressure_arr[N-1]) return;
 
     pcl->lcl_pressure = pres_lcl;
 
