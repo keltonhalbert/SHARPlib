@@ -220,60 +220,64 @@ float wetlift(float pressure, float temperature,
 }
 
 float _solve_cm1(float& pcl_pres_hi, float& pcl_pi_hi, float& pcl_t_hi,
-		         float& pcl_rv_hi, float& pcl_rl_hi, float& pcl_ri_hi,
-				 float pcl_pres_lo, float pcl_t_lo, float pcl_theta_lo,
-				 float pcl_rv_lo, float pcl_rl_lo, float pcl_ri_lo,
-				 float rv_total, bool ice=false, float converge=0.0002f) {
+                 float& pcl_rv_hi, float& pcl_rl_hi, float& pcl_ri_hi,
+                 float pcl_pres_lo, float pcl_t_lo, float pcl_theta_lo,
+                 float pcl_rv_lo, float pcl_rl_lo, float pcl_ri_lo,
+                 float rv_total, const bool ice = false, const float converge = 0.0002f) {
 
-	float pcl_theta_last = pcl_theta_lo;
-	bool not_converged = true;
-	float pcl_theta_hi = pcl_theta_lo;
-	int counter = 0;
-	while(not_converged) {
-		pcl_t_hi = pcl_theta_last * pcl_pi_hi;
+	// first guess - use the theta of the parcel
+	// before lifting, and update the first guess 
+	// accordingly
+    float pcl_theta_last = pcl_theta_lo;
+    float pcl_theta_hi = pcl_theta_lo;
+    bool not_converged = true;
+    int counter = 0;
 
-		float fliq = 1.0;
-		float fice = 0.0;
-		if (ice) {
-			fliq = std::max(
-				std::min((pcl_t_hi - 233.15f) / (ZEROCNK - 233.15f), 1.0f),
-				0.0f);
-			fice = 1.0f - fliq;
-		}
+    while (not_converged) {
+        pcl_t_hi = pcl_theta_last * pcl_pi_hi;
 
-		float rv_term = fliq * mixratio(pcl_pres_hi, pcl_t_hi) +
-						fice * mixratio_ice(pcl_pres_hi, pcl_t_hi);
-		pcl_rv_hi = std::min(rv_total, rv_term); 
-		pcl_ri_hi = std::max(fice*(rv_total - pcl_rv_hi), 0.0f);
-		pcl_rl_hi = std::max(rv_total - pcl_rv_hi - pcl_ri_hi, 0.0f);
+        float fliq = 1.0;
+        float fice = 0.0;
+        if (ice) {
+            fliq = std::max(
+                std::min((pcl_t_hi - 233.15f) / (ZEROCNK - 233.15f), 1.0f),
+                0.0f);
+            fice = 1.0f - fliq;
+        }
 
-		float tbar = 0.5f*(pcl_t_lo + pcl_t_hi);
-		float rvbar = 0.5f*(pcl_rv_lo + pcl_rv_hi);
-		float rlbar = 0.5f*(pcl_rl_lo + pcl_rl_hi);
-		float ribar = 0.5f*(pcl_ri_lo + pcl_ri_hi);
+        const float rv_term = fliq * mixratio(pcl_pres_hi, pcl_t_hi) +
+                              fice * mixratio_ice(pcl_pres_hi, pcl_t_hi);
+        pcl_rv_hi = std::min(rv_total, rv_term);
+        pcl_ri_hi = std::max(fice * (rv_total - pcl_rv_hi), 0.0f);
+        pcl_rl_hi = std::max(rv_total - pcl_rv_hi - pcl_ri_hi, 0.0f);
 
-		float LHV = LV1 - LV2 * tbar;
-		float LHS = LS1 - LS2 * tbar;
+        const float tbar = 0.5f * (pcl_t_lo + pcl_t_hi);
+        const float rvbar = 0.5f * (pcl_rv_lo + pcl_rv_hi);
+        const float rlbar = 0.5f * (pcl_rl_lo + pcl_rl_hi);
+        const float ribar = 0.5f * (pcl_ri_lo + pcl_ri_hi);
 
-		float RM = RDGAS + RVGAS * rvbar;
-		float CPM = CP_DRYAIR + CP_VAPOR * rvbar + CP_LIQUID * rlbar +
-					CP_ICE * ribar;
-		float term = LHV*(pcl_rl_hi-pcl_rl_lo)/(CPM*tbar)
-					+LHS*(pcl_ri_hi-pcl_ri_lo)/(CPM*tbar)
-					+(RM/CPM-ROCP)*std::log(pcl_pres_hi / pcl_pres_lo); 
+        const float LHV = LV1 - LV2 * tbar;
+        const float LHS = LS1 - LS2 * tbar;
 
-		pcl_theta_hi = pcl_theta_lo * std::exp(term);
-		counter += 1;
+        const float RM = RDGAS + RVGAS * rvbar;
+        const float CPM =
+            CP_DRYAIR + CP_VAPOR * rvbar + CP_LIQUID * rlbar + CP_ICE * ribar;
+        const float term =
+            LHV * (pcl_rl_hi - pcl_rl_lo) / (CPM * tbar) +
+            LHS * (pcl_ri_hi - pcl_ri_lo) / (CPM * tbar) +
+            (RM / CPM - ROCP) * std::log(pcl_pres_hi / pcl_pres_lo);
 
-		if (std::abs(pcl_theta_hi - pcl_theta_last) > converge) {
-			pcl_theta_last =
-				pcl_theta_last + 0.3 * (pcl_theta_hi - pcl_theta_last);
-		}
-		else {
-			not_converged = false;
-		}
-	}
-	return pcl_theta_hi;
+        pcl_theta_hi = pcl_theta_lo * std::exp(term);
+        counter += 1;
+
+        if (std::abs(pcl_theta_hi - pcl_theta_last) > converge) {
+            pcl_theta_last =
+                pcl_theta_last + 0.3 * (pcl_theta_hi - pcl_theta_last);
+        } else {
+            not_converged = false;
+        }
+    }
+    return pcl_theta_hi;
 }
 
 float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
@@ -285,9 +289,9 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
     rv_total = mixratio(pressure, temperature);
 
     // set up solver variables 
-    bool ice = (ma_type >= adiabat::pseudo_ice) ? true : false;
+    const bool ice = (ma_type >= adiabat::pseudo_ice) ? true : false;
     float dp = std::abs(pressure - new_pressure);
-    int n_iters = (dp < pres_incr) ? 1 : 1 + (int)(dp / pres_incr);
+    const int n_iters = (dp < pres_incr) ? 1 : 1 + (int)(dp / pres_incr);
     dp = (dp < pres_incr) ? dp : dp / (float)n_iters;
 
     // Start by setting the "top" variables.
