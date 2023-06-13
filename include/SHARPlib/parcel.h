@@ -73,7 +73,7 @@ struct lifter_cm1 {
     /**
      * \brief The iterative convergence criteria
      */
-    float converge = 0.0002f;
+    float converge = 0.001f;
 
     /**
      * \brief Used to keep track of mixing ratio for conserved/adiabatic lifting
