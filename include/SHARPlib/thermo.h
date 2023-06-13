@@ -208,6 +208,21 @@ enum class adiabat : int {
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
+ * \brief Compute the water vapor mixing ratio from specific humidity.
+ *
+ * Returns the water vapor mixing ratio in kg/kg given the specific 
+ * humidity in kg/kg. 
+ *
+ * \param	 q                     (kg/kg)    
+ *
+ * \return   mixratio              (kg/kg)
+ */
+[[nodiscard]] float mixratio(float q) noexcept;
+
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
  * \brief Compute the water vapor mixing ratio.
  *
  * Returns the water vapor mixing ratio in kg/kg given
@@ -250,11 +265,11 @@ enum class adiabat : int {
  *
  * Returns the specific humidity given the mixing ratio.
  *
- * \param   q                   (kg/kg)
+ * \param   rv                  (kg/kg)
  *
  * \return  specific_humidity   (unitless)
  */
-[[nodiscard]] float specific_humidity(float q) noexcept;
+[[nodiscard]] float specific_humidity(float rv) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -262,12 +277,14 @@ enum class adiabat : int {
  * \brief Compute the full virtual temperature.
  *
  * Returns the virtual temperature in degrees Kelvin given the dry-bulb 
- * temperature in degrees Kelvin, the water vapor mixing ratio (qv) in 
- * kg/kg, the liquid water mixing ratio (ql) in kg/kg, and the ice water
- * mixing ratio in kg/kg. 
+ * temperature in degrees Kelvin, the specific humidity of water vapor (qv) in 
+ * kg/kg, the specific humidity of liquid water (ql) in kg/kg, and the specific 
+ * himidity of ice water kg/kg. 
  *
  * For convenience, the ql and qi terms have a default value of zero to 
- * easily support returning just the virtual temperature from water vapor. 
+ * easily support returning just the virtual temperature from water vapor.
+ * If you are okay with lower accuracy, you may pass mixing ratios intead
+ * of specific humidities. 
  *
  * \param   temperature             (degK)
  * \param   qv                      (kg/kg)

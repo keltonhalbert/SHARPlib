@@ -78,22 +78,22 @@ struct lifter_cm1 {
     /**
      * \brief Used to keep track of mixing ratio for conserved/adiabatic lifting
      */
-    float qv_total = MISSING;
+    float rv_total = MISSING;
 
     /**
      * \brief Water vapor mixing ratio variable updated during parcel lifts
      */
-    float qv = 0.0;
+    float rv = 0.0;
 
     /**
      * \brief Liquid water mixing ratio variable updated during parcel lifts
      */
-    float ql = 0.0;
+    float rl = 0.0;
 
     /**
      * \brief Ice water mixing ratio variable updated during parcel lifts
      */
-    float qi = 0.0;
+    float ri = 0.0;
 
     /**
      * \brief Overloads operator() to call sharp::moist_adiabat_cm1
@@ -107,9 +107,9 @@ struct lifter_cm1 {
     [[nodiscard]] inline float operator()(float pres, float tmpk,
                                    float new_pres) noexcept {
         float pcl_tmpk = moist_adiabat_cm1(
-            pres, tmpk, new_pres, this->qv_total, this->qv, this->ql, this->qi,
+            pres, tmpk, new_pres, this->rv_total, this->rv, this->rl, this->ri,
             this->pressure_incr, this->converge, this->ma_type);
-        return virtual_temperature(pcl_tmpk, this->qv, this->ql, this->qi);
+        return virtual_temperature(pcl_tmpk, this->rv, this->rl, this->ri);
     }
 };
 

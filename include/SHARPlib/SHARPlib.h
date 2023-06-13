@@ -56,12 +56,10 @@ Profile *create_profile(const float pres[], const float hght[],
         prof->theta_e[k] = thte;
         prof->buoyancy[k] = 0.0f;
 
-        float specific_humidity = (1.0f - mixr) * (mixr);
-        if (mixr == MISSING) specific_humidity = MISSING;
-
+        float spfh = specific_humidity(mixr);
         float height_agl = prof->hght[k] - prof->hght[0];
         prof->moist_static_energy[k] =
-            moist_static_energy(height_agl, prof->tmpk[k], specific_humidity);
+            moist_static_energy(height_agl, prof->tmpk[k], spfh);
 
         if (windComponents) {
             // converting from knots to m/s

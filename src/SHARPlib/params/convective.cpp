@@ -200,10 +200,10 @@ float entrainment_cape(const float pressure[], const float height[],
     const float hsfc = height[0];
     for (int k = 0; k < N; ++k) {
         const float tmpk = temperature[k];
-        const float qsat = mixratio(pressure[k], tmpk);
-        const float rsat = specific_humidity(qsat);
+        const float rsat = mixratio(pressure[k], tmpk);
+        const float qsat = specific_humidity(rsat);
         const float height_agl = height[k] - hsfc;
-        const float mse_star = moist_static_energy(height_agl, tmpk, rsat);
+        const float mse_star = moist_static_energy(height_agl, tmpk, qsat);
         mse_diff[k] = buoyancy_dilution_potential(tmpk, mse_bar[k], mse_star);
     }
 
