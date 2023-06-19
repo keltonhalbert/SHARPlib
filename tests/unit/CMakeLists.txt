@@ -1,5 +1,3 @@
-project(SHARPlib_tests CXX)
-
 ## We want to add all of our tests to a custom target and exclude them from "make all" so that
 ## testing can be built and run optionally. The "make test" target will run the unit tests, but not 
 ## compile the tests themselves. We create the target SHARPlib_tests so that all unit tests can be
