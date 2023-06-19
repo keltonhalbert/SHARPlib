@@ -55,6 +55,7 @@ install(TARGETS SHARPlib DESTINATION lib)
 ## by other CMake projects that link to this library
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
     add_subdirectory(tests/unit)
+    add_subdirectory(tests/benchmark)
 endif ()
 
 enable_testing()
