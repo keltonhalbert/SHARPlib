@@ -27,10 +27,10 @@ endif()
 ## set some build options
 set(BENCHMARK_ENABLE_TESTING NO)
 set(CMAKE_BUILD_TYPE "Release")
-add_subdirectory(../../external/benchmark bench EXCLUDE_FROM_ALL)
+add_subdirectory(../../external/benchmark EXCLUDE_FROM_ALL bench)
 message(STATUS ${CMAKE_BUILD_TYPE})
 
-add_executable(bench_sharp_algorithms bench_algorithms.cpp)
+add_executable(bench_sharp_algorithms EXCLUDE_FROM_ALL bench_algorithms.cpp)
 target_link_libraries(bench_sharp_algorithms benchmark::benchmark)
 
 

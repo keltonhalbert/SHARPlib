@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(SHARP)
+project(SHARPlib CXX)
 include(CTest)
 
 ## Useful macro for setting the CXX standard
@@ -24,11 +24,11 @@ file(GLOB SOURCES "src/SHARPlib/*.cpp" "src/SHARPlib/params/*.cpp")
 ## Add the library build command
 ## The library target is SHARP, we are building a static lib,
 ## and the sources are proviced
-add_library(SHARP STATIC ${SOURCES})
+add_library(SHARPlib STATIC ${SOURCES})
 
 ## We are telling the build process that the SHARP library
 ## should use the C++ linker, and setting compile options
-set_target_properties(SHARP PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(SHARPlib PROPERTIES LINKER_LANGUAGE CXX)
 add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 
 ## Check if the build type is set and default to
@@ -38,8 +38,8 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O3 -ftree-vectorize -funroll-loops -march=native")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -ftree-vectorize -funroll-loops -march=native")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O3 -flto -ftree-vectorize -funroll-loops -march=native")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -flto -ftree-vectorize -funroll-loops -march=native")
 
 ## used for passing custom build options
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
@@ -48,16 +48,13 @@ set(LOCAL_PREFIX "${CMAKE_SOURCE_DIR}")
 set(CMAKE_INSTALL_PREFIX "${LOCAL_PREFIX}")
 
 ## install it to the PROJECT_ROOT/lib directory
-install(TARGETS SHARP DESTINATION lib)
+install(TARGETS SHARPlib DESTINATION lib)
 
-## add unit test directory
-add_subdirectory(tests/unit)
-add_test(NAME sharp_thermo COMMAND test_sharp_thermo)
-add_test(NAME sharp_interp COMMAND test_sharp_interp)
-add_test(NAME sharp_parcel COMMAND test_sharp_parcel)
-add_test(NAME sharp_layer COMMAND test_sharp_layer)
-add_test(NAME sharp_winds COMMAND test_sharp_winds)
-add_test(NAME sharp_algs COMMAND test_sharp_algs)
 
-## add benchmarking test directory
-add_subdirectory(tests/benchmark)
+## This ensures that tests arent unintentionally added or built
+## by other CMake projects that link to this library
+if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+    add_subdirectory(tests/unit)
+endif ()
+
+enable_testing()
