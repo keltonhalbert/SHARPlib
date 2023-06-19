@@ -16,7 +16,7 @@ use_cxx17()
 
 ## Bring the headers into the project
 include_directories(include)
-include_directories(external/fmt/include EXCLUDE_FROM_ALL)
+include_directories(external/fmt/include)
 
 ## add all CPP files as sources
 file(GLOB SOURCES "src/SHARPlib/*.cpp" "src/SHARPlib/params/*.cpp")
