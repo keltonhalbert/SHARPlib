@@ -80,12 +80,35 @@ static void bench_sharp_pressure_lower_bound(benchmark::State& state) {
 	ptrdiff_t N = state.range(0);
 	auto pressure = std::make_unique<float[]>(N);
 	float lev = fill_array(pressure, N, 100000.0, 500.0);
-	auto cmp = std::greater<float>();
+	constexpr auto cmp = std::greater<float>();
 
 	// This is the section that will be timed
 	for (auto _ : state) {
 		// generate a random float between pbot and ptop
 		auto lower = sharp::lower_bound(pressure.get(), N, lev, cmp);
+		benchmark::DoNotOptimize(lower);
+		benchmark::ClobberMemory();
+	}
+
+	state.SetItemsProcessed(state.iterations() * state.range(0));
+	state.SetComplexityN(state.range(0));
+}
+
+/**
+ * \brief Benchmark the SHARP implementation of upper_bound on pressure data 
+ */
+static void bench_sharp_pressure_upper_bound(benchmark::State& state) {
+	// set up and fill our pressure array -- we use make_unique
+	// so that memory is managed auromatically instead of manually
+	ptrdiff_t N = state.range(0);
+	auto pressure = std::make_unique<float[]>(N);
+	float lev = fill_array(pressure, N, 100000.0, 500.0);
+	constexpr auto cmp = std::greater<float>();
+
+	// This is the section that will be timed
+	for (auto _ : state) {
+		// generate a random float between pbot and ptop
+		auto lower = sharp::upper_bound(pressure.get(), N, lev, cmp);
 		benchmark::DoNotOptimize(lower);
 		benchmark::ClobberMemory();
 	}
@@ -103,7 +126,7 @@ static void bench_sharp_height_lower_bound(benchmark::State& state) {
 	ptrdiff_t N = state.range(0);
 	auto height = std::make_unique<float[]>(N);
 	float lev = fill_array(height, N);
-	auto cmp = std::less<float>();
+	constexpr auto cmp = std::less<float>();
 
 	// This is the section that will be timed
 	for (auto _ : state) {
@@ -117,26 +140,59 @@ static void bench_sharp_height_lower_bound(benchmark::State& state) {
 	state.SetComplexityN(state.range(0));
 }
 
+/**
+ * \brief Benchmark the SHARP implementation of lower_bound on height data 
+ */
+static void bench_sharp_height_upper_bound(benchmark::State& state) {
+	// set up and fill our pressure array -- we use make_unique
+	// so that memory is managed auromatically instead of manually
+	ptrdiff_t N = state.range(0);
+	auto height = std::make_unique<float[]>(N);
+	float lev = fill_array(height, N);
+	constexpr auto cmp = std::less<float>();
+
+	// This is the section that will be timed
+	for (auto _ : state) {
+		// generate a random float between pbot and ptop
+		auto lower = sharp::upper_bound(height.get(), N, lev, cmp);
+		benchmark::DoNotOptimize(lower);
+		benchmark::ClobberMemory();
+	}
+
+	state.SetItemsProcessed(state.iterations() * state.range(0));
+	state.SetComplexityN(state.range(0));
+}
+
 // Configure the benchmarks to run over a range of
 // array sizes, and attempt to compute the time complexity
 BENCHMARK(bench_std_lower_bound)
 	->RangeMultiplier(2)
-	->Range(2, 2 << 18)
+	->Range(4, 2 << 18)
     ->Complexity();	
 
 BENCHMARK(bench_std_upper_bound)
 	->RangeMultiplier(2)
-	->Range(2, 2 << 18)
+	->Range(4, 2 << 18)
     ->Complexity();	
 
 BENCHMARK(bench_sharp_pressure_lower_bound)
 	->RangeMultiplier(2)
-	->Range(2, 2 << 18)
+	->Range(4, 2 << 18)
+    ->Complexity();	
+
+BENCHMARK(bench_sharp_pressure_upper_bound)
+	->RangeMultiplier(2)
+	->Range(4, 2 << 18)
     ->Complexity();	
 
 BENCHMARK(bench_sharp_height_lower_bound)
 	->RangeMultiplier(2)
-	->Range(2, 2 << 18)
+	->Range(4, 2 << 18)
+    ->Complexity();	
+
+BENCHMARK(bench_sharp_height_upper_bound)
+	->RangeMultiplier(2)
+	->Range(4, 2 << 18)
     ->Complexity();	
 
 // main method macro
