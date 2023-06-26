@@ -12,14 +12,14 @@
 #include <iostream>
 
 
-auto array_from_range = [](const float hght_bottom, const float hght_top,
+auto array_from_range = [](const float bottom, const float top,
 				   const std::ptrdiff_t size) {
-    auto hght_arr = std::make_unique<float[]>(size);
-	float delta_z = (hght_top - hght_bottom) / static_cast<float>(size);
+    auto arr = std::make_unique<float[]>(size);
+	float delta = (top - bottom) / static_cast<float>(size);
     for (int k = 0; k < size; ++k) {
-        hght_arr[k] = hght_bottom + static_cast<float>(k) * delta_z;
+        arr[k] = bottom + static_cast<float>(k) * delta;
     }
-    return hght_arr;
+    return arr;
 };
 
 static float random_lev(const float bot=0, const float top=15000.0) {
