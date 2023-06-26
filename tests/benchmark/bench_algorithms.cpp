@@ -11,20 +11,19 @@
 #include <algorithm>
 #include <iostream>
 
-/**
- * \brief Fill an array with values between hbot and htop and return a random value in that range
- *
- * Fill an array contained within a unique pointer of size N with values between hbot and htop,
- * and return a random value within that range to test on the array. 
- */
-static float fill_array(std::unique_ptr<float[]>& array, const ptrdiff_t N, 
-						const float bot=0, const float top=15000.0) {
-	const float delta = (top - bot) / N;
-	for (ptrdiff_t i = 0; i < N; ++i) {
-		array[i] = bot + delta*static_cast<float>(i);
-	}
 
-	// generate a random pressure level and return it
+auto array_from_range = [](const float hght_bottom, const float hght_top,
+				   const std::ptrdiff_t size) {
+    auto hght_arr = std::make_unique<float[]>(size);
+	float delta_z = (hght_top - hght_bottom) / static_cast<float>(size);
+    for (int k = 0; k < size; ++k) {
+        hght_arr[k] = hght_bottom + static_cast<float>(k) * delta_z;
+    }
+    return hght_arr;
+};
+
+static float random_lev(const float bot=0, const float top=15000.0) {
+	// generate a random level and return it
 	float lev = bot + static_cast <float>(std::rand())/(static_cast <float>(RAND_MAX/(top-bot)));
 	return lev;
 }
@@ -36,8 +35,8 @@ static void bench_std_lower_bound(benchmark::State& state) {
 	// set up and fill our pressure array -- we use make_unique
 	// so that memory is managed auromatically instead of manually
 	ptrdiff_t N = state.range(0);
-	auto height = std::make_unique<float[]>(N);
-	float lev = fill_array(height, N);
+	auto height = array_from_range(0.0f, 15000.0f, N);
+	float lev = random_lev(0.0f, 15000.0f);
 
 	// This is the section that will be timed
 	for (auto _ : state) {
@@ -57,8 +56,8 @@ static void bench_std_upper_bound(benchmark::State& state) {
 	// set up and fill our pressure array -- we use make_unique
 	// so that memory is managed auromatically instead of manually
 	ptrdiff_t N = state.range(0);
-	auto height = std::make_unique<float[]>(N);
-	float lev = fill_array(height, N);
+	auto height = array_from_range(0.0f, 15000.0f, N);
+	float lev = random_lev(0.0f, 15000.0f);
 
 	// This is the section that will be timed
 	for (auto _ : state) {
@@ -78,8 +77,8 @@ static void bench_sharp_pressure_lower_bound(benchmark::State& state) {
 	// set up and fill our pressure array -- we use make_unique
 	// so that memory is managed auromatically instead of manually
 	ptrdiff_t N = state.range(0);
-	auto pressure = std::make_unique<float[]>(N);
-	float lev = fill_array(pressure, N, 100000.0, 500.0);
+	auto pressure = array_from_range(100000.0f, 500.0f, N);
+	float lev = random_lev(100000.0f, 500.0f);
 	constexpr auto cmp = std::greater<float>();
 
 	// This is the section that will be timed
@@ -101,8 +100,8 @@ static void bench_sharp_pressure_upper_bound(benchmark::State& state) {
 	// set up and fill our pressure array -- we use make_unique
 	// so that memory is managed auromatically instead of manually
 	ptrdiff_t N = state.range(0);
-	auto pressure = std::make_unique<float[]>(N);
-	float lev = fill_array(pressure, N, 100000.0, 500.0);
+	auto pressure = array_from_range(100000.0f, 500.0f, N);
+	float lev = random_lev(100000.0f, 500.0f);
 	constexpr auto cmp = std::greater<float>();
 
 	// This is the section that will be timed
@@ -124,8 +123,8 @@ static void bench_sharp_height_lower_bound(benchmark::State& state) {
 	// set up and fill our pressure array -- we use make_unique
 	// so that memory is managed auromatically instead of manually
 	ptrdiff_t N = state.range(0);
-	auto height = std::make_unique<float[]>(N);
-	float lev = fill_array(height, N);
+	auto height = array_from_range(0.0f, 15000.0f, N);
+	float lev = random_lev(0.0f, 15000.0f);
 	constexpr auto cmp = std::less<float>();
 
 	// This is the section that will be timed
@@ -147,8 +146,8 @@ static void bench_sharp_height_upper_bound(benchmark::State& state) {
 	// set up and fill our pressure array -- we use make_unique
 	// so that memory is managed auromatically instead of manually
 	ptrdiff_t N = state.range(0);
-	auto height = std::make_unique<float[]>(N);
-	float lev = fill_array(height, N);
+	auto height = array_from_range(0.0f, 15000.0f, N);
+	float lev = random_lev(0.0f, 15000.0f);
 	constexpr auto cmp = std::less<float>();
 
 	// This is the section that will be timed
