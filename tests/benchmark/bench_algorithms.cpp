@@ -16,7 +16,7 @@ auto array_from_range = [](const float bottom, const float top,
 				   const std::ptrdiff_t size) {
     auto arr = std::make_unique<float[]>(size);
 	float delta = (top - bottom) / static_cast<float>(size);
-    for (int k = 0; k < size; ++k) {
+    for (std::ptrdiff_t k = 0; k < size; ++k) {
         arr[k] = bottom + static_cast<float>(k) * delta;
     }
     return arr;
@@ -166,32 +166,32 @@ static void bench_sharp_height_upper_bound(benchmark::State& state) {
 // array sizes, and attempt to compute the time complexity
 BENCHMARK(bench_std_lower_bound)
 	->RangeMultiplier(2)
-	->Range(4, 2 << 18)
+	->Range(4, 2 << 24)
     ->Complexity();	
 
 BENCHMARK(bench_std_upper_bound)
 	->RangeMultiplier(2)
-	->Range(4, 2 << 18)
+	->Range(4, 2 << 24)
     ->Complexity();	
 
 BENCHMARK(bench_sharp_pressure_lower_bound)
 	->RangeMultiplier(2)
-	->Range(4, 2 << 18)
+	->Range(4, 2 << 24)
     ->Complexity();	
 
 BENCHMARK(bench_sharp_pressure_upper_bound)
 	->RangeMultiplier(2)
-	->Range(4, 2 << 18)
+	->Range(4, 2 << 24)
     ->Complexity();	
 
 BENCHMARK(bench_sharp_height_lower_bound)
 	->RangeMultiplier(2)
-	->Range(4, 2 << 18)
+	->Range(4, 2 << 24)
     ->Complexity();	
 
 BENCHMARK(bench_sharp_height_upper_bound)
 	->RangeMultiplier(2)
-	->Range(4, 2 << 18)
+	->Range(4, 2 << 24)
     ->Complexity();	
 
 // main method macro
