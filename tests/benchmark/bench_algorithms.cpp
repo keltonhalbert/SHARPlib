@@ -45,7 +45,7 @@ static void bench_std_lower_bound(benchmark::State& state) {
 		benchmark::ClobberMemory();
 	}
 
-	state.SetItemsProcessed(state.iterations() * state.range(0));
+	state.SetItemsProcessed(state.iterations());
 	state.SetComplexityN(state.range(0));
 }
 
@@ -66,7 +66,7 @@ static void bench_std_upper_bound(benchmark::State& state) {
 		benchmark::ClobberMemory();
 	}
 
-	state.SetItemsProcessed(state.iterations() * state.range(0));
+	state.SetItemsProcessed(state.iterations());
 	state.SetComplexityN(state.range(0));
 }
 
@@ -89,7 +89,7 @@ static void bench_sharp_pressure_lower_bound(benchmark::State& state) {
 		benchmark::ClobberMemory();
 	}
 
-	state.SetItemsProcessed(state.iterations() * state.range(0));
+	state.SetItemsProcessed(state.iterations());
 	state.SetComplexityN(state.range(0));
 }
 
@@ -112,7 +112,7 @@ static void bench_sharp_pressure_upper_bound(benchmark::State& state) {
 		benchmark::ClobberMemory();
 	}
 
-	state.SetItemsProcessed(state.iterations() * state.range(0));
+	state.SetItemsProcessed(state.iterations());
 	state.SetComplexityN(state.range(0));
 }
 
@@ -135,7 +135,7 @@ static void bench_sharp_height_lower_bound(benchmark::State& state) {
 		benchmark::ClobberMemory();
 	}
 
-	state.SetItemsProcessed(state.iterations() * state.range(0));
+	state.SetItemsProcessed(state.iterations());
 	state.SetComplexityN(state.range(0));
 }
 
@@ -158,7 +158,7 @@ static void bench_sharp_height_upper_bound(benchmark::State& state) {
 		benchmark::ClobberMemory();
 	}
 
-	state.SetItemsProcessed(state.iterations() * state.range(0));
+	state.SetItemsProcessed(state.iterations());
 	state.SetComplexityN(state.range(0));
 }
 
