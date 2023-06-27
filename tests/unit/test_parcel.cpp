@@ -1,10 +1,10 @@
-#define doctest_config_implement_with_main
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include <sharplib/constants.h>
-#include <sharplib/layer.h>
-#include <sharplib/parcel.h>
-#include <sharplib/profile.h>
-#include <sharplib/winds.h>
+#include <SHARPlib/constants.h>
+#include <SHARPlib/layer.h>
+#include <SHARPlib/parcel.h>
+#include <SHARPlib/profile.h>
+#include <SHARPlib/winds.h>
 
 #include <iostream>
 #include <memory>
@@ -28,16 +28,16 @@ auto tmpk_snd = [](const float tmpk_sfc, const float delta_tmpk_cap,
                    const std::ptrdiff_t size) {
     // get the indices corresponding to the pbl top
     // and the tropopause...
-    sharp::heightlayer free_troposphere =
-        sharp::heightlayer(hght_pbl_top, hght_trop_top);
-    sharp::layerindex idx =
+    sharp::HeightLayer free_troposphere =
+        sharp::HeightLayer(hght_pbl_top, hght_trop_top);
+    sharp::LayerIndex idx =
         sharp::get_layer_index(free_troposphere, height, size);
 
     const float dse_pbl = sharp::moist_static_energy(0.0f, tmpk_sfc, 0.0f);
     // use the temperature lapse rate to get a
     // dry static energy rate of change
     const float delta_dse_trop =
-        sharp::gravity - (sharp::cp_dryair * delta_tmpk_troposphere);
+        sharp::GRAVITY - (sharp::CP_DRYAIR * delta_tmpk_troposphere);
 
     auto tmpk_arr = std::make_unique<float[]>(size);
     tmpk_arr[0] = tmpk_sfc;
@@ -45,7 +45,7 @@ auto tmpk_snd = [](const float tmpk_sfc, const float delta_tmpk_cap,
     // calculate the temperature of the boundary layer
     // profile assuming a constant dry static energy
     for (int k = 1; k < idx.kbot; ++k) {
-        tmpk_arr[k] = (dse_pbl - height[k] * sharp::gravity) / sharp::cp_dryair;
+        tmpk_arr[k] = (dse_pbl - height[k] * sharp::GRAVITY) / sharp::CP_DRYAIR;
     }
 
     // add a capping inversion to the top of the boundary layer
@@ -59,7 +59,7 @@ auto tmpk_snd = [](const float tmpk_sfc, const float delta_tmpk_cap,
     for (int k = idx.kbot; k < idx.ktop + 1; ++k) {
         float dse = dse_troposphere_bottom +
                     delta_dse_trop * (height[k] - hght_pbl_top);
-        tmpk_arr[k] = (dse - sharp::gravity * height[k]) / sharp::cp_dryair;
+        tmpk_arr[k] = (dse - sharp::GRAVITY * height[k]) / sharp::CP_DRYAIR;
     }
 
     // temperature above the tropopause is isothermal
@@ -79,7 +79,7 @@ auto pres_dry_snd = [](const float pres_sfc, const float height[],
         float tmpk_mean = 0.5f * (tmpk[k] + tmpk[k - 1]);
         float delta_z = height[k] - height[k - 1];
         float delta_p =
-            -(sharp::gravity * delta_z) / (sharp::rdgas * tmpk_mean);
+            -(sharp::GRAVITY * delta_z) / (sharp::RDGAS * tmpk_mean);
         pres_arr[k] = pres_arr[k - 1] * std::exp(delta_p);
     }
 
@@ -98,7 +98,7 @@ auto pres_moist_snd = [](const float pres_sfc, const float height[],
         const float tv_mean = sharp::virtual_temperature(tmpk_mean, mixr_mean);
         const float delta_z = height[k] - height[k - 1];
         const float delta_p =
-            -(sharp::gravity * delta_z) / (sharp::rdgas * tv_mean);
+            -(sharp::GRAVITY * delta_z) / (sharp::RDGAS * tv_mean);
         pres_arr[k] = pres_arr[k - 1] * std::exp(delta_p);
     }
 
@@ -138,16 +138,16 @@ auto vtmpk_snd = [](const float tmpk[], const float mixr[],
     return vtmpk_arr;
 };
 
-auto theta_snd = [](const float pres[], const float tmpk[],
-                    const std::ptrdiff_t size) {
-    auto theta_arr = std::make_unique<float[]>(size);
-    for (std::ptrdiff_t k = 0; k < size; ++k) {
-        theta_arr[k] = sharp::theta(pres[k], tmpk[k]);
-    }
-    return theta_arr;
-};
+//auto theta_snd = [](const float pres[], const float tmpk[],
+//                    const std::ptrdiff_t size) {
+//    auto theta_arr = std::make_unique<float[]>(size);
+//    for (std::ptrdiff_t k = 0; k < size; ++k) {
+//        theta_arr[k] = sharp::theta(pres[k], tmpk[k]);
+//    }
+//    return theta_arr;
+//};
 
-test_case("testing new parcel definitions") {
+TEST_CASE("testing new parcel definitions") {
     const std::ptrdiff_t n = 5000;
     const float pres_sfc = 100000.0f;
     const float tmpk_sfc = 301.5f;
@@ -176,7 +176,7 @@ test_case("testing new parcel definitions") {
 
     printf("%f\n", hght[1] - hght[0]);
 
-    sharp::parcel sfc_pcl;
+    sharp::Parcel sfc_pcl;
     sfc_pcl.pres = pres[0];
     sfc_pcl.tmpk = tmpk[0];
     sfc_pcl.dwpk = dwpk[0];
