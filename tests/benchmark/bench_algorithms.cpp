@@ -190,33 +190,27 @@ static void bench_sharp_height_upper_bound(benchmark::State& state) {
 // Configure the benchmarks to run over a range of
 // array sizes, and attempt to compute the time complexity
 BENCHMARK(bench_std_lower_bound)
-	->RangeMultiplier(2)
-	->Range(4, 2 << 24)
+	->DenseRange(50, 7000, 100)
     ->Complexity();	
 
 BENCHMARK(bench_std_upper_bound)
-	->RangeMultiplier(2)
-	->Range(4, 2 << 24)
+	->DenseRange(50, 7000, 100)
     ->Complexity();	
 
 BENCHMARK(bench_sharp_pressure_lower_bound)
-	->RangeMultiplier(2)
-	->Range(4, 2 << 24)
+	->DenseRange(50, 7000, 100)
     ->Complexity();	
 
 BENCHMARK(bench_sharp_pressure_upper_bound)
-	->RangeMultiplier(2)
-	->Range(4, 2 << 24)
+	->DenseRange(50, 7000, 100)
     ->Complexity();	
 
 BENCHMARK(bench_sharp_height_lower_bound)
-	->RangeMultiplier(2)
-	->Range(4, 2 << 24)
+	->DenseRange(50, 7000, 100)
     ->Complexity();	
 
 BENCHMARK(bench_sharp_height_upper_bound)
-	->RangeMultiplier(2)
-	->Range(4, 2 << 24)
+	->DenseRange(50, 7000, 100)
     ->Complexity();	
 
 // main method macro
