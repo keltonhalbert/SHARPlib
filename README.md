@@ -14,7 +14,14 @@ Another note to the Style Guide is that, where possible/appropriate, full or ver
 
 
 ### Unit Testing Framework
-For unit tests, we make use of the [doctest singe header source library](https://github.com/doctest/doctest) found in the `tests` directory. CMake will automatically configure and build the tests in the `tests` directory, and can also be run interactively with command line arguments with the compiled binary. To learn more, see the doctests github page and documentation. 
+For unit tests, we make use of the [doctest singe header source library](https://github.com/doctest/doctest) found in the `tests` directory. In order to build and run the tests, execute the following commands from the project root directory:
+```
+mkdir build; cd build
+cmake ..
+make SHARPlb_tests
+make test
+```
+NOTE: Right now, on Apple CLang, (and potentially CLang as a whole) some of the kinematics unit tests don't pass. Don't be alarmed if that's the case, it's just a difference in how the compilars treat certain things and will be remedied in the future. 
 
 ### Building the Static Library
 To build the static library, simply run the following commands from the project root directory:
