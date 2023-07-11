@@ -29,7 +29,6 @@ To build the static library, simply run the following commands from the project 
 mkdir build; cd build
 cmake .. 
 make
-make test
 make install
 ```
 It will install the static library to PROJECT_ROOT/lib.
