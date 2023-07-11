@@ -39,7 +39,7 @@ jobs:
 
       - name: Build
         # Build your program with the given configuration
-        run: 
+        run: | 
           make SHARPlib_tests
           cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
