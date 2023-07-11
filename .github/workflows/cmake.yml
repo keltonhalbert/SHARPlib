@@ -40,8 +40,8 @@ jobs:
       - name: Build
         # Build your program with the given configuration
         run: | 
-          make SHARPlib_tests
           cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+          cd ${{github.workspace}}/build; make SHARPlib_tests 
 
       - name: Test
         working-directory: ${{github.workspace}}/build
