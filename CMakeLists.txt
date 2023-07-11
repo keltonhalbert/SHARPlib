@@ -38,7 +38,7 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O3 -flto -ftree-vectorize -funroll-loops -march=native")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O3 -ftree-vectorize -funroll-loops -march=native")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -ftree-vectorize -funroll-loops -march=native")
 
 ## used for passing custom build options
