@@ -50,19 +50,14 @@ template <typename T, typename C = std::less<>>
 [[nodiscard]] constexpr int lower_bound(const T array[], const int N,
                                         const T& value,
                                         const C cmp = C{}) noexcept {
-    int first = 0;
-    int count = N - 1;
-    while (count > 0) {
-        int idx = first;
-        int step = count >> 1;
-        idx += step;
-        T element = array[idx];
-
-        first = cmp(element, value) ? ++idx : first;
-        count = cmp(element, value) ? count - (step+1) : step;
+    int len = N;
+    int idx = 0;
+    while (len > 1) {
+        int half = len / 2;
+        idx += cmp(array[idx + half - 1], value) * half;
+        len -= half; // = ceil(len / 2)
     }
-
-    return first;
+    return idx;
 }
 
 /**
@@ -95,19 +90,14 @@ template <typename T, typename C = std::less<>>
 [[nodiscard]] constexpr int upper_bound(const T array[], const int N,
                                         const T& value,
                                         const C cmp = C{}) noexcept {
-    int first = 0;
-    int count = N - 1;
-    while (count > 0) {
-        int idx = first;
-        int step = count >> 1;
-        idx += step;
-        T element = array[idx];
-
-        first = cmp(value, element) ? first: ++idx;
-        count = cmp(value, element) ? step: count - (step+1);
+    int len = N;
+    int idx = 0;
+    while (len > 1) {
+        int half = len / 2;
+        idx += !cmp(value, array[idx + half - 1]) * half;
+        len -= half; // = ceil(len / 2)
     }
-
-    return first;
+    return idx;
 }
 
 /**
