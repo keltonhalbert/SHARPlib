@@ -21,7 +21,7 @@ cmake ..
 make SHARPlb_tests
 make test
 ```
-NOTE: Right now, on Apple CLang, (and potentially CLang as a whole) some of the kinematics unit tests don't pass. Don't be alarmed if that's the case, it's just a difference in how the compilars treat certain things and will be remedied in the future. 
+NOTE: Right now, on Apple CLang, (and potentially CLang as a whole) some of the kinematics unit tests don't pass. Don't be alarmed if that's the case, it's just a difference in how the compilers treat certain things and will be remedied in the future. 
 
 ### Building the Static Library
 To build the static library, simply run the following commands from the project root directory:
