@@ -6,4 +6,4 @@
 	url = git@github.com:fmtlib/fmt.git
 [submodule "external/benchmark"]
 	path = external/benchmark
-	url = https://github.com/google/benchmark.git
+	url = git@github.com:google/benchmark.git
