@@ -167,8 +167,8 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
         }
 
         // keep track of buoyancy so that we pick the max CAPE layer
-        const float condition = ((lfc_pres != MISSING) & (lyr_top > 0.0));
-        pos_buoy += condition * (htop - hbot) * lyr_top;
+        const float condition = ((lfc_pres != MISSING) & (lyr_top > 0));
+        pos_buoy += condition * lyr_top * (htop - hbot);
         // EL condition
         if ((lfc_pres != MISSING) && ((lyr_bot >= 0) && (lyr_top < 0))) {
             for (eql_pres = pbot - 500; eql_pres > ptop + 500;
@@ -191,8 +191,10 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
         buoy_bot = buoy_top;
         lyr_bot = lyr_top;
     }
-    pcl->lfc_pressure = lfc_pres;
-    pcl->eql_pressure = eql_pres;
+    if (pos_buoy > 0.0f) {
+        pcl->lfc_pressure = lfc_pres;
+        pcl->eql_pressure = eql_pres;
+    }
 }
 
 void cape_cinh(const float pres_arr[], const float hght_arr[],
