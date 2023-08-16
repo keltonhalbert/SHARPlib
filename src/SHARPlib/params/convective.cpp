@@ -181,7 +181,12 @@ float entrainment_cape(const float pressure[], const float height[],
                        const float temperature[], const float mse_arr[],
                        const float u_wind[], const float v_wind[], const int N,
                        Parcel *pcl) noexcept {
-    if ((pcl->lfc_pressure == MISSING) || (pcl->lfc_pressure == MISSING)) {
+    // if cape is zero, we get a divide by zero issue later. 
+    // there can "technically" be LFC/EL without CAPE because of very,
+    // very shallow buoyancy near zero when searching for LFC/EL. 
+    // To-Do: maybe refactor LFC/EL search?
+    if ((pcl->lfc_pressure == MISSING) || (pcl->lfc_pressure == MISSING)
+        || (pcl->cape == 0)) {
         return 0.0;
     }
 
