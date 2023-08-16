@@ -36,6 +36,14 @@ import_array();
     (const float u_wind[], const int N3),
     (const float v_wind[], const int N4)
 }
+%apply (float* IN_ARRAY1, int DIM1) {
+    (const float pressure[], const int N1),
+    (const float height[], const int N2),
+    (const float temperature[], const int N3),
+    (const float mse_arr[], const int N4),
+    (const float u_wind[], const int N5),
+    (const float v_wind[], const int N6)
+}
 
 %rename (effective_inflow_layer) _effective_inflow_layer;
 %rename (storm_motion_bunkers) _storm_motion_bunkers;
