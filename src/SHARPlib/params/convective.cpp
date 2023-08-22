@@ -330,12 +330,12 @@ float significant_tornado_parameter(Parcel pcl, float lcl_hght_agl,
         lcl_term = ((2000.0 - lcl_hght_agl) / 1000.0);
 
     // units of comparisons are m/s
-    if (bulk_wind_difference > 30.8667)
+    if (bulk_wind_difference > 30)
         shear_term = 1.5;
-    else if (bulk_wind_difference < 12.8611)
+    else if (bulk_wind_difference < 12.5)
         shear_term = 0.0;
     else
-        shear_term = bulk_wind_difference / 20.5778;
+        shear_term = bulk_wind_difference / 20.0;
 
     if (storm_relative_helicity == MISSING)
         srh_term = 0.0;
