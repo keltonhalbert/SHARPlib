@@ -4,14 +4,6 @@
     #define SWIG_FILE_WITH_INIT
     #include <SHARPlib/parcel.h>
 %}
-/* Import Numpy Array Functionality */
-%include "numpy.i"
-%init %{
-import_array();
-%}
-
-%import "../include/SHARPlib/thermo.h"
-%import "../include/SHARPlib/layer.h"
 
 %include exception.i
 
@@ -21,8 +13,18 @@ import_array();
     }
     catch (const std::runtime_error& e) {
         SWIG_exception(SWIG_RuntimeError, e.what());
+        return NULL;
     }
 }
+
+/* Import Numpy Array Functionality */
+%include "numpy.i"
+%init %{
+import_array();
+%}
+
+%import "../include/SHARPlib/thermo.h"
+%import "../include/SHARPlib/layer.h"
 
 /* Set up argument typemap */
 %apply float& OUTPUT { float& lfc_pres } 
