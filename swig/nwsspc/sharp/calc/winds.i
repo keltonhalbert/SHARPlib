@@ -4,6 +4,19 @@
     #define SWIG_FILE_WITH_INIT
     #include <SHARPlib/winds.h>
 %}
+
+%include exception.i
+
+%exception {
+    try {
+        $action
+    }
+    catch (const std::runtime_error& e) {
+        SWIG_exception(SWIG_RuntimeError, e.what());
+        return NULL;
+    }
+}
+
 %import "../include/SHARPlib/layer.h"
 
 /* Import Numpy Array Functionality */
@@ -55,26 +68,6 @@ import_array();
 %ignore wind_shear;
 %ignore mean_wind;
 %ignore helicity;
-
-%exception _mean_wind {
-    $action
-    if (PyErr_Occurred()) SWIG_fail;
-}
-
-%exception _mean_wind_npw {
-    $action
-    if (PyErr_Occurred()) SWIG_fail;
-}
-
-%exception _wind_shear {
-    $action
-    if (PyErr_Occurred()) SWIG_fail;
-}
-
-%exception _helicity {
-    $action
-    if (PyErr_Occurred()) SWIG_fail;
-}
 
 %inline %{
 
