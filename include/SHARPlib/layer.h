@@ -176,7 +176,7 @@ template <typename L, typename Cb, typename Ct>
                                                    const float coord[],
                                                    const int N,
                                                    const Cb bottom_comp,
-                                                   const Ct top_comp) noexcept {
+                                                   const Ct top_comp)  {
     // bounds check out search!
     if (bottom_comp(layer.bottom, coord[0])) {
         layer.bottom = coord[0];
@@ -222,7 +222,7 @@ template <typename L, typename Cb, typename Ct>
  */
 [[nodiscard]] LayerIndex get_layer_index(PressureLayer& layer,
                                          const float pressure[],
-                                         const int N) noexcept;
+                                         const int N) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -249,7 +249,7 @@ template <typename L, typename Cb, typename Ct>
  */
 [[nodiscard]] LayerIndex get_layer_index(HeightLayer& layer,
                                          const float height[],
-                                         const int N) noexcept;
+                                         const int N) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -273,7 +273,7 @@ template <typename L, typename Cb, typename Ct>
  */
 [[nodiscard]] PressureLayer height_layer_to_pressure(
     HeightLayer layer, const float pressure[], const float height[],
-    const int N, const bool isAGL = false) noexcept;
+    const int N, const bool isAGL = false) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -296,7 +296,7 @@ template <typename L, typename Cb, typename Ct>
  */
 [[nodiscard]] HeightLayer pressure_layer_to_height(
     PressureLayer layer, const float pressure[], const float height[],
-    const int N, const bool toAGL = false) noexcept;
+    const int N, const bool toAGL = false) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -327,7 +327,7 @@ template <typename L, typename C>
 [[nodiscard]] constexpr float layer_minmax(L layer, const float coord_arr[],
                                            const float data_arr[], const int N,
                                            float* lvl_min_or_max,
-                                           const C comp) noexcept {
+                                           const C comp)  {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
         return MISSING;
@@ -390,7 +390,7 @@ template <typename L, typename C>
 template <typename L>
 constexpr float layer_min(L layer, const float coord_arr[],
                           const float data_arr[], const int N,
-                          float* lvl_of_min = nullptr) noexcept {
+                          float* lvl_of_min = nullptr)  {
     constexpr auto comp = std::less<float>();
     return layer_minmax(layer, coord_arr, data_arr, N, lvl_of_min, comp);
 }
@@ -420,7 +420,7 @@ constexpr float layer_min(L layer, const float coord_arr[],
 template <typename L>
 constexpr float layer_max(L layer, const float coord_arr[],
                           const float data_arr[], const int N,
-                          float* lvl_of_max = nullptr) noexcept {
+                          float* lvl_of_max = nullptr)  {
     constexpr auto comp = std::greater<float>();
     return layer_minmax(layer, coord_arr, data_arr, N, lvl_of_max, comp);
 }
@@ -449,7 +449,7 @@ constexpr float layer_max(L layer, const float coord_arr[],
 template <typename T, typename L>
 [[nodiscard]] constexpr T integrate_layer_trapz(
     L layer, const T var_array[], const T coord_array[], const int N,
-    const int integ_sign = 0, const bool weighted = false) noexcept {
+    const int integ_sign = 0, const bool weighted = false)  {
 
     T var_lyr_bottom;
     T coord_lyr_bottom = layer.bottom;
@@ -536,7 +536,7 @@ template <typename T, typename L>
  * \return  layer_mean
  */
 [[nodiscard]] float layer_mean(PressureLayer layer, const float pressure[],
-                               const float data_arr[], const int N) noexcept;
+                               const float data_arr[], const int N) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -560,7 +560,7 @@ template <typename T, typename L>
  */
 [[nodiscard]] float layer_mean(HeightLayer layer, const float height[],
                                const float pressure[], const float data_arr[],
-                               const int N, const bool isAGL = false) noexcept;
+                               const int N, const bool isAGL = false) ;
 
 }  // end namespace sharp
 

@@ -49,7 +49,7 @@ namespace sharp {
 template <typename T, typename C = std::less<>>
 [[nodiscard]] constexpr int lower_bound(const T array[], const int N,
                                         const T& value,
-                                        const C cmp = C{}) noexcept {
+                                        const C cmp = C{})  {
     int len = N;
     int idx = 0;
     while (len > 1) {
@@ -89,7 +89,7 @@ template <typename T, typename C = std::less<>>
 template <typename T, typename C = std::less<>>
 [[nodiscard]] constexpr int upper_bound(const T array[], const int N,
                                         const T& value,
-                                        const C cmp = C{}) noexcept {
+                                        const C cmp = C{})  {
     int len = N;
     int idx = 0;
     while (len > 1) {
@@ -122,7 +122,7 @@ template <typename T, typename C = std::less<>>
 template <typename _T>
 [[nodiscard]] inline constexpr _T _integ_trapz(
     _T var_top, _T var_bottom, _T coord_top, _T coord_bottom, _T& weights,
-    const bool weighted = false) noexcept {
+    const bool weighted = false)  {
     weights += (weighted) * (coord_top - coord_bottom);
     return ((var_top + var_bottom) / 2.0f) * (coord_top - coord_bottom);
 }

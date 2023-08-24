@@ -48,7 +48,7 @@ namespace sharp {
  * \return  The value between __a and __b at distance __t between them.
  */
 template <typename _Fp>
-[[nodiscard]] constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept {
+[[nodiscard]] constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t)  {
     if ((__a <= 0 && __b >= 0) || (__a >= 0 && __b <= 0))
         return __t * __b + (1 - __t) * __a;
 
@@ -89,7 +89,7 @@ template <typename _Fp>
  *
  * \return  The value between __a and __b at distance __t between them.
  */
-[[nodiscard]] constexpr float lerp(float __a, float __b, float __t) noexcept {
+[[nodiscard]] constexpr float lerp(float __a, float __b, float __t)  {
     return __lerp(__a, __b, __t);
 }
 
@@ -116,7 +116,7 @@ template <typename _Fp>
  * \return  The value of data_arr at the requested height_val.
  */
 [[nodiscard]] float interp_height(float height_val, const float height_arr[],
-                                  const float data_arr[], const int N) noexcept;
+                                  const float data_arr[], const int N) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -142,7 +142,7 @@ template <typename _Fp>
 [[nodiscard]] float interp_pressure(float pressure_val,
                                     const float pressure_arr[],
                                     const float data_arr[],
-                                    const int N) noexcept;
+                                    const int N) ;
 
 }  // end namespace sharp
 
