@@ -53,7 +53,7 @@ struct lifter_wobus {
      * \return  The virtual temperature of the lifted parcel 
      */
     [[nodiscard]] inline float operator()(float pres, float tmpk,
-                                   float new_pres) const noexcept {
+                                   float new_pres) const  {
         float pcl_tmpk = wetlift(pres, tmpk, new_pres);
         return virtual_temperature(pcl_tmpk, mixratio(new_pres, pcl_tmpk));
     }
@@ -105,7 +105,7 @@ struct lifter_cm1 {
      * \return  The virtual temperature of the lifted parcel 
      */
     [[nodiscard]] inline float operator()(float pres, float tmpk,
-                                   float new_pres) noexcept {
+                                   float new_pres)  {
         float pcl_tmpk = moist_adiabat_cm1(
             pres, tmpk, new_pres, this->rv_total, this->rv, this->rl, this->ri,
             this->pressure_incr, this->converge, this->ma_type);
@@ -258,7 +258,7 @@ struct Parcel {
 void define_parcel(const float pressure[], const float temperature[],
                    const float dewpoint[], const float wv_mixratio[],
                    const float theta_arr[], const float thetae_arr[],
-                   const int N, Parcel& pcl, LPL source) noexcept;
+                   const int N, Parcel& pcl, LPL source) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -281,7 +281,7 @@ void define_parcel(const float pressure[], const float temperature[],
 template <typename Lft>
 void lift_parcel(Lft liftpcl, const float pressure_arr[],
                  const float virtual_temperature_arr[], float buoyancy_arr[],
-                 const int N, Parcel* pcl) noexcept {
+                 const int N, Parcel* pcl)  {
     // Lift the parcel from the LPL to the LCL
     float pres_lcl;
     float tmpk_lcl;
@@ -348,7 +348,7 @@ void lift_parcel(Lft liftpcl, const float pressure_arr[],
  * \param   N           The length of the arrays
  */
 void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
-                 const float buoy_arr[], const int N) noexcept;
+                 const float buoy_arr[], const int N) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -368,7 +368,7 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
  * \param   pcl         A sharp::Parcel corresponding to the buoyancy array. 
  */
 void cape_cinh(const float pres_arr[], const float hght_arr[],
-               const float buoy_arr[], const int N, Parcel* pcl) noexcept;
+               const float buoy_arr[], const int N, Parcel* pcl) ;
 
 }  // end namespace sharp
 

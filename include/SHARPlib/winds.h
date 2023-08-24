@@ -69,7 +69,7 @@ struct WindComponents {
  * \return  u_component     (m/s)
  */
 [[nodiscard]] float u_component(float wind_speed,
-                                float wind_direction) noexcept;
+                                float wind_direction) ;
 
 /**
  *
@@ -86,7 +86,7 @@ struct WindComponents {
  * \return  v_component     (m/s)
  */
 [[nodiscard]] float v_component(float wind_speed,
-                                float wind_direction) noexcept;
+                                float wind_direction) ;
 
 /**
  *
@@ -102,7 +102,7 @@ struct WindComponents {
  *
  * \return  wind_direction  (degrees from North)
  */
-[[nodiscard]] float vector_angle(float u_comp, float v_comp) noexcept;
+[[nodiscard]] float vector_angle(float u_comp, float v_comp) ;
 
 /**
  *
@@ -118,7 +118,7 @@ struct WindComponents {
  *
  * \return  wind_speed  (m/s)
  */
-[[nodiscard]] float vector_magnitude(float u_comp, float v_comp) noexcept;
+[[nodiscard]] float vector_magnitude(float u_comp, float v_comp) ;
 
 /**
  *
@@ -141,7 +141,7 @@ struct WindComponents {
  * \return  wind_speed  (m/s)
  */
 [[nodiscard]] float vector_magnitude_precise(float u_comp,
-                                             float v_comp) noexcept;
+                                             float v_comp) ;
 
 /**
  *
@@ -160,7 +160,7 @@ struct WindComponents {
  * \return  {wind_speed, wind_direction}
  */
 [[nodiscard]] WindVector components_to_vector(float u_comp,
-                                              float v_comp) noexcept;
+                                              float v_comp) ;
 
 /**
  *
@@ -177,7 +177,7 @@ struct WindComponents {
  *
  * \return  {wind_speed, wind_direction}
  */
-[[nodiscard]] WindVector components_to_vector(WindComponents comp) noexcept;
+[[nodiscard]] WindVector components_to_vector(WindComponents comp) ;
 
 /**
  *
@@ -195,7 +195,7 @@ struct WindComponents {
  * \return  {u_comp, v_comp}
  */
 [[nodiscard]] WindComponents vector_to_components(
-    float wind_speed, float wind_direction) noexcept;
+    float wind_speed, float wind_direction) ;
 
 /**
  *
@@ -211,7 +211,7 @@ struct WindComponents {
  *
  * \return  {u_comp, v_comp}
  */
-[[nodiscard]] WindComponents vector_to_components(WindVector vect) noexcept;
+[[nodiscard]] WindComponents vector_to_components(WindVector vect) ;
 
 /**
  *
@@ -235,7 +235,7 @@ struct WindComponents {
 [[nodiscard]] WindComponents mean_wind(PressureLayer layer, const float pres[],
                                        const float u_wind[],
                                        const float v_wind[],
-                                       const int N, const bool weighted) noexcept;
+                                       const int N, const bool weighted) ;
 
 /**
  *
@@ -264,7 +264,7 @@ template <typename L>
 [[nodiscard]] constexpr WindComponents wind_shear(L layer, const float coord[],
                                                   const float u_wind[],
                                                   const float v_wind[],
-                                                  const int N) noexcept {
+                                                  const int N)  {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING))
         return {MISSING, MISSING};
@@ -344,7 +344,7 @@ template <typename L>
 template <typename L>
 [[nodiscard]] float helicity(L layer, WindComponents storm_motion,
                              const float coord[], const float u_wind[],
-                             const float v_wind[], const int N) noexcept {
+                             const float v_wind[], const int N)  {
 #ifndef NO_QC
     if ((storm_motion.u == MISSING) || (storm_motion.v == MISSING)) {
         return MISSING;

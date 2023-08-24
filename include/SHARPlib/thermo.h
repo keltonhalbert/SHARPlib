@@ -83,7 +83,7 @@ enum class adiabat : int {
  *
  * \return  wobf            (degK)
  */
-[[nodiscard]] float wobf(float temperature) noexcept;
+[[nodiscard]] float wobf(float temperature) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -104,7 +104,7 @@ enum class adiabat : int {
  *
  * \return  vapor_pressure (Pa)
  */
-[[nodiscard]] float vapor_pressure(float pressure, float temperature) noexcept;
+[[nodiscard]] float vapor_pressure(float pressure, float temperature) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -126,7 +126,7 @@ enum class adiabat : int {
  * \return  vapor_pressure (Pa)
  */
 [[nodiscard]] float vapor_pressure_ice(float pressure,
-                                       float temperature) noexcept;
+                                       float temperature) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -145,7 +145,7 @@ enum class adiabat : int {
  *
  * \return   lcl_temperature (degK)
  */
-[[nodiscard]] float lcl_temperature(float temperature, float dewpoint) noexcept;
+[[nodiscard]] float lcl_temperature(float temperature, float dewpoint) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -166,7 +166,7 @@ enum class adiabat : int {
  * \return   temperature    (degC)
  */
 [[nodiscard]] float temperature_at_mixratio(float wv_mixratio,
-                                            float pressure) noexcept;
+                                            float pressure) ;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -183,7 +183,7 @@ enum class adiabat : int {
  * \return   pressure              (Pa)
  */
 [[nodiscard]] float theta_level(float potential_temperature,
-                                float temperature) noexcept;
+                                float temperature) ;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -203,7 +203,7 @@ enum class adiabat : int {
  * \return   potential_temperature (degK)
  */
 [[nodiscard]] float theta(float pressure, float temperature,
-                          float ref_pressure=THETA_REF_PRESSURE) noexcept;
+                          float ref_pressure=THETA_REF_PRESSURE) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -217,7 +217,7 @@ enum class adiabat : int {
  *
  * \return   mixratio              (kg/kg)
  */
-[[nodiscard]] float mixratio(float q) noexcept;
+[[nodiscard]] float mixratio(float q) ;
 
 
 /**
@@ -237,7 +237,7 @@ enum class adiabat : int {
  *
  * \return   mixratio              (kg/kg)
  */
-[[nodiscard]] float mixratio(float pressure, float temperature) noexcept;
+[[nodiscard]] float mixratio(float pressure, float temperature) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -256,7 +256,7 @@ enum class adiabat : int {
  *
  * \return   mixratio              (kg/kg)
  */
-[[nodiscard]] float mixratio_ice(float pressure, float temperature) noexcept;
+[[nodiscard]] float mixratio_ice(float pressure, float temperature) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -269,7 +269,7 @@ enum class adiabat : int {
  *
  * \return  specific_humidity   (unitless)
  */
-[[nodiscard]] float specific_humidity(float rv) noexcept;
+[[nodiscard]] float specific_humidity(float rv) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -295,7 +295,7 @@ enum class adiabat : int {
  */
 [[nodiscard]] float virtual_temperature(float temperature, float qv,
                                         float ql = 0.0f,
-                                        float qi = 0.0f) noexcept;
+                                        float qi = 0.0f) ;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -320,7 +320,7 @@ enum class adiabat : int {
  * \return  lifted_temperature  (degK)
  */
 [[nodiscard]] float saturated_lift(float pressure, float theta_sat,
-                                   const float converge = 0.001f) noexcept;
+                                   const float converge = 0.001f) ;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -344,7 +344,7 @@ enum class adiabat : int {
  * \return   lifted_temperature    (degK)
  */
 [[nodiscard]] float wetlift(float pressure, float temperature,
-                            float lifted_pressure) noexcept;
+                            float lifted_pressure) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -412,7 +412,7 @@ enum class adiabat : int {
  * \param    temperature_at_lcl    (degK)
  */
 void drylift(float pressure, float temperature, float dewpoint,
-             float& pressure_at_lcl, float& temperature_at_lcl) noexcept;
+             float& pressure_at_lcl, float& temperature_at_lcl) ;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -440,7 +440,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \return  lifted_index_temperature    (degK)
  */
 [[nodiscard]] float lifted(float pressure, float temperature, float dewpoint,
-                           float lifted_pressure) noexcept;
+                           float lifted_pressure) ;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -469,7 +469,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \return  wetbulb_temperature     (degK)
  */
 [[nodiscard]] float wetbulb(float pressure, float temperature,
-                            float dewpoint) noexcept;
+                            float dewpoint) ;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -500,7 +500,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \return  wetbulb_potential_temperature   (degK)
  */
 [[nodiscard]] float theta_wetbulb(float pressure, float temperature,
-                                  float dewpoint) noexcept;
+                                  float dewpoint) ;
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -532,7 +532,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \return   equivalent_potential_temperature   (degK)
  */
 [[nodiscard]] float thetae(float pressure, float temperature,
-                           float dewpoint) noexcept;
+                           float dewpoint) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -551,7 +551,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \return  Temperature Lapse Rate  (degK/km)
  */
 [[nodiscard]] float lapse_rate(HeightLayer layer_agl, const float height[],
-                               const float temperature[], const int N) noexcept;
+                               const float temperature[], const int N) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -572,7 +572,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  */
 [[nodiscard]] float lapse_rate(PressureLayer layer, const float pressure[],
                                const float height[], const float temperature[],
-                               const int N) noexcept;
+                               const int N) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -585,7 +585,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \return  buoyancy            (m/s^2)
  */
 [[nodiscard]] float buoyancy(float pcl_temperature,
-                             float env_temperature) noexcept;
+                             float env_temperature) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -599,7 +599,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \return  moist static energy ()
  */
 [[nodiscard]] float moist_static_energy(float height_agl, float temperature,
-                                        float specific_humidity) noexcept;
+                                        float specific_humidity) ;
 
 [[nodiscard]] float buoyancy_dilution_potential(const float temperature,
                                                 const float mse_bar,

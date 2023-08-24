@@ -62,7 +62,7 @@ namespace sharp {
     const float pressure[], const float height[], const float temperature[],
     const float dewpoint[], const float virtemp_arr[], float buoy_arr[],
     const int N, const float cape_thresh = 100.0,
-    const float cinh_thresh = -250.0, Parcel* mupcl = nullptr) noexcept;
+    const float cinh_thresh = -250.0, Parcel* mupcl = nullptr) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -93,7 +93,7 @@ namespace sharp {
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const int N, HeightLayer mean_wind_layer_agl,
     HeightLayer wind_shear_layer_agl, const bool leftMover = false,
-    const bool pressureWeighted = false) noexcept;
+    const bool pressureWeighted = false) ;
 
 /**
  *  \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -133,7 +133,7 @@ namespace sharp {
 [[nodiscard]] WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const int N, PressureLayer eff_infl_lyr,
-    const Parcel* mupcl, const bool leftMover = false) noexcept;
+    const Parcel* mupcl, const bool leftMover = false) ;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -159,16 +159,16 @@ namespace sharp {
                                      const float temperature[],
                                      const float mse_arr[],
                                      const float u_wind[], const float v_wind[],
-                                     const int N, Parcel* pcl) noexcept;
+                                     const int N, Parcel* pcl) ;
 
-[[nodiscard]] float energy_helicity_index(float cape, float helicity) noexcept;
+[[nodiscard]] float energy_helicity_index(float cape, float helicity) ;
 
 [[nodiscard]] float supercell_composite_parameter(float mu_cape, float eff_srh,
-                                                  float eff_shear) noexcept;
+                                                  float eff_shear) ;
 
 [[nodiscard]] float significant_tornado_parameter(
     Parcel pcl, float lcl_hght_agl, float storm_relative_helicity,
-    float bulk_wind_difference) noexcept;
+    float bulk_wind_difference) ;
 
 }  // end namespace sharp
 

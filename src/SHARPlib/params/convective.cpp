@@ -25,7 +25,7 @@ PressureLayer effective_inflow_layer(
     const float pressure[], const float height[], const float temperature[],
     const float dewpoint[], const float virtemp_arr[], float buoy_arr[],
     const int N, const float cape_thresh, const float cinh_thresh,
-    Parcel *mupcl) noexcept {
+    Parcel *mupcl)  {
     // TO-DO: At some point, this will need to be
     // templated or generalized to take other parcel
     // lifters once things progress to that level...
@@ -93,7 +93,7 @@ WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const int N, HeightLayer mean_wind_layer_agl,
     HeightLayer wind_shear_layer_agl, const bool leftMover = false,
-    const bool pressureWeighted = false) noexcept {
+    const bool pressureWeighted = false)  {
 
     constexpr float deviation = 7.5; // deviation from mean wind in m/s
 
@@ -143,7 +143,7 @@ WindComponents storm_motion_bunkers(
 [[nodiscard]] WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const int N, PressureLayer eff_infl_lyr,
-    const Parcel *mupcl, const bool leftMover = false) noexcept {
+    const Parcel *mupcl, const bool leftMover = false)  {
 
     HeightLayer shr_layer = {0, 6000.0};
     HeightLayer dflt_mw_lyr = {0.0, 6000.0};
@@ -180,7 +180,7 @@ WindComponents storm_motion_bunkers(
 float entrainment_cape(const float pressure[], const float height[],
                        const float temperature[], const float mse_arr[],
                        const float u_wind[], const float v_wind[], const int N,
-                       Parcel *pcl) noexcept {
+                       Parcel *pcl)  {
     // if cape is zero, we get a divide by zero issue later. 
     // there can "technically" be LFC/EL without CAPE because of very,
     // very shallow buoyancy near zero when searching for LFC/EL. 
@@ -277,7 +277,7 @@ float entrainment_cape(const float pressure[], const float height[],
     return E_tilde * pcl->cape;
 }
 
-float energy_helicity_index(float cape, float helicity) noexcept {
+float energy_helicity_index(float cape, float helicity)  {
 #ifndef NO_QC
     if ((cape == MISSING) || (helicity == MISSING)) {
         return MISSING;
@@ -287,7 +287,7 @@ float energy_helicity_index(float cape, float helicity) noexcept {
 }
 
 float supercell_composite_parameter(float mu_cape, float eff_srh,
-                                    float eff_shear) noexcept {
+                                    float eff_shear)  {
 #ifndef NO_QC
     if ((mu_cape == MISSING) || (eff_srh == MISSING) ||
         (eff_shear == MISSING)) {
@@ -310,7 +310,7 @@ float supercell_composite_parameter(float mu_cape, float eff_srh,
 
 float significant_tornado_parameter(Parcel pcl, float lcl_hght_agl,
                                     float storm_relative_helicity,
-                                    float bulk_wind_difference) noexcept {
+                                    float bulk_wind_difference)  {
     float cinh_term, lcl_term, shear_term, srh_term, cape_term;
     if (pcl.cape == MISSING) return MISSING;
 
