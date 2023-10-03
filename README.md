@@ -18,7 +18,7 @@ For unit tests, we make use of the [doctest singe header source library](https:/
 ```
 mkdir build; cd build
 cmake ..
-make SHARPlb_tests
+make SHARPlib_tests
 make test
 ```
 NOTE: Right now, on Apple CLang, (and potentially CLang as a whole) some of the kinematics unit tests don't pass. Don't be alarmed if that's the case, it's just a difference in how the compilers treat certain things and will be remedied in the future. 
