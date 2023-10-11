@@ -17,6 +17,7 @@
 
 namespace sharp {
 
+float ptype();
 
 
 } // namespace sharp
