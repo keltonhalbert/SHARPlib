@@ -143,6 +143,45 @@ template <typename _Fp>
                                     const float pressure_arr[],
                                     const float data_arr[],
                                     const int N) noexcept;
+/**
+ *  \author Nathan Dahl - NWS Storm Prediction Center/OU-CIWRO (mutated from Kelton's code)
+ * 
+ *  \brief Use linear interpolation to obtain the lowest height
+ *  above the surface where a given variable equals a desired value
+ *  (e.g., the height of the 0 C isotherm).
+ *  
+ *  The height array must be in ascending order and monotonic. Note that the
+ *  given variable is assumed to generally decrease with height; if the surface value
+ *  is less than te desired value, the code will return a "missing" value for the height.
+ *  
+ *  param   data_val        The variable value corresponding to the desired height
+ *  param   data_arr        Array containing the vertical profile of the variable
+ *  param   height_arr      Array containing the height levels of the profile
+ *  param   N               The profile array length (number of elements)
+ *  
+ *  \return  The value of height_arr at the requested data_val.
+*/
+[[nodiscard]] float interp_hghtlevel(float data_val,
+                                    const float data_arr[],
+                                    const float height_arr[],
+                                    const int N) noexcept;
+
+/**
+ *  \author Nathan Dahl - NWS Storm Prediction Center/OU-CIWRO
+ *
+ *  \brief Search for lowest altitude at which wetbulb temperature is zero, using
+ *  linear interpolation between levels
+ *
+ *  param   p_arr           Array containing the pressure levels of the profile
+ *  param   t_arr	    Array containing the vertical temperature profile
+ *  param   td_arr          Array containing the vertical dewpoint profile
+ *  param   height_arr      Array containing the height levels of the profile
+ *  param   N               The array length (number of elements)
+ *
+ *  \return The lowest altitude at which the wetbulb temperature is zero
+*/
+[[nodiscard]] float interp_wbzh(const float p_arr[], const float t_arr[], const float td_arr[],
+                          const float height_arr[], const int N) noexcept;
 
 }  // end namespace sharp
 

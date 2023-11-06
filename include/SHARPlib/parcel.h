@@ -369,6 +369,68 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
  */
 void cape_cinh(const float pres_arr[], const float hght_arr[],
                const float buoy_arr[], const int N, Parcel* pcl) noexcept;
+/**
+ * \author Nathan Dahl - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Find the convective temperature for a given profile
+ *
+ * Starting from the surface temperature and the dewpoint obtained from the 
+ * 100-mb mean mixing ratio, searches for and returns the surface temperature 
+ * required to produce CAPE > 0 and CINH > mincinh (which defaults to 50 J/kg). 
+ *
+ * \param   pres_arr    The pressure coordinate array (Pa)
+ * \param   hght_arr    The height coordinate array (meters)
+ * \param   b_arr       Array of buoyancy (m/s^2)
+ * \param   vt_arr	Array of virtual temperature (K)
+ * \param   t0		surface temperature (K)
+ * \param   td0         100-mb mixed layer dewpoint
+ * \param   N           Length of arrays
+ * \param   mincinh     Minimum CINH (J/kg) allowed for convective temperature
+ */
+template <typename Lft>
+float cnvtv_temp(Lft lifter, const float pres_arr[], const float hght_arr[],
+                 const float b_arr[], const float vt_arr[],
+                 const float t0, const float td0,
+                 const int N, const float mincinh) noexcept {
+        Parcel pcl;
+
+        if (N<1) return MISSING;
+
+        if ((int)mincinh == -1) mincinh = -1.0;
+
+        pcl.pres = pres_arr[0];
+        pcl.tmpk = t0;
+        pcl.dwpk = td0;
+
+        /*
+        * Do a quick search to find whether to continue.
+        * If you need to heat up more than 25C, don't compute.
+        */
+
+        pcl.tmpk = t0+25.0;
+        lift_parcel(lifter, pres_arr, vt_arr, b_arr, N, &pcl);
+        cape_cinh(pres_arr, hght_arr, b_arr, N, &pcl);
+        if ((pcl.cape == 0.0 ) || (pcl.cinh < mincinh)) {
+                return MISSING;
+        }
+
+        pcl.tmpk = t0;
+        pcl.cinh = -999.0;
+        while (pcl.cinh < mincinh ) {
+                lift_parcel(lifter, pres_arr, vt_arr, b_arr, N, &pcl);
+                cape_cinh(pres_arr, hght_arr, b_arr, N, &pcl);
+                if(pcl.cape>0 && pcl.cinh>=mincinh) {
+                        return pcl.tmpk;
+                }
+                if(pcl.cinh < -100.0) {
+                        pcl.tmpk += 2.0;
+                }
+                else {
+                        pcl.tmpk += 0.5;
+                }
+        }
+        return MISSING;
+}
 
 }  // end namespace sharp
 

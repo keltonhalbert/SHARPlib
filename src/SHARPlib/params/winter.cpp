@@ -16,10 +16,6 @@
 
 namespace sharp {
 
-float ptype() {
-// comment
-    return 0.0;
-}
 
 
 } // namespace sharp
