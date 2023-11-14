@@ -372,6 +372,33 @@ void cape_cinh(const float pres_arr[], const float hght_arr[],
 /**
  * \author Nathan Dahl - NWS Storm Prediction Center/OU-CIWRO
  *
+ * \brief Calculate integrated precipitable water
+ *
+ * \param   pres_arr    Array of pressure (Pa)
+ * \param   wv_mixratio Array of water vapor mixing ratio (kg/kg)
+ * \param   lower	Bottom of integration layer (Pa)
+ * \param   upper	Top of integration layer (Pa)
+ * \param   N		Length of arrays
+ *
+ */
+float precip_water(const float pres_arr[], const float wv_mixratio[],
+                float lower, float upper, const int N) noexcept;
+/**
+ * \author Nathan Dahl - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Calculate maximum thetaE difference between surface and pressure ptop
+ *
+ * \param   pres_arr    Array of pressure (Pa)
+ * \param   thetae      Array of thetaE (K)
+ * \param   ptop        Pressure at top of layer to check
+ * \param   N           Length of arrays
+ *
+ */
+float ThetaE_diff(const float pres_arr[], const float thetae[],
+        const float ptop, const int N) noexcept;
+/**
+ * \author Nathan Dahl - NWS Storm Prediction Center/OU-CIWRO
+ *
  * \brief Find the convective temperature for a given profile
  *
  * Starting from the surface temperature and the dewpoint obtained from the 
