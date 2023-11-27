@@ -5,6 +5,18 @@
     #include <SHARPlib/interp.h>
 %}
 
+%include exception.i
+
+%exception {
+    try {
+        $action
+    }
+    catch (const std::runtime_error& e) {
+        SWIG_exception(SWIG_RuntimeError, e.what());
+        return NULL;
+    }
+}
+
 /* Import Numpy Array Functionality */
 %include "numpy.i"
 %init %{
@@ -36,11 +48,6 @@ import_array();
 
 %rename (interp_height) _interp_height;
 %ignore interp_height;
-
-%exception _interp_height {
-    $action
-    if (PyErr_Occurred()) SWIG_fail;
-}
 
 %inline %{
 
@@ -95,11 +102,6 @@ float _interp_height(float height_val,
 
 %rename (interp_pressure) _interp_pressure;
 %ignore interp_pressure;
-
-%exception _interp_pressure {
-    $action
-    if (PyErr_Occurred()) SWIG_fail;
-}
 
 %inline %{
 

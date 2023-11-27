@@ -21,7 +21,7 @@
 
 namespace sharp {
 
-float u_component(float wind_speed, float wind_direction) noexcept {
+float u_component(float wind_speed, float wind_direction)  {
 #ifndef NO_QC
     if ((wind_direction == MISSING) || (wind_speed == MISSING)) return MISSING;
 #endif
@@ -29,7 +29,7 @@ float u_component(float wind_speed, float wind_direction) noexcept {
     return -1.0 * wind_speed * std::sin(wind_direction);
 }
 
-float v_component(float wind_speed, float wind_direction) noexcept {
+float v_component(float wind_speed, float wind_direction)  {
 #ifndef NO_QC
     if ((wind_direction == MISSING) || (wind_speed == MISSING)) return MISSING;
 #endif
@@ -37,7 +37,7 @@ float v_component(float wind_speed, float wind_direction) noexcept {
     return -1.0 * wind_speed * std::cos(wind_direction);
 }
 
-float vector_angle(float u_comp, float v_comp) noexcept {
+float vector_angle(float u_comp, float v_comp)  {
 #ifndef NO_QC
     if ((u_comp == MISSING) || (v_comp == MISSING)) return MISSING;
 #endif
@@ -49,28 +49,28 @@ float vector_angle(float u_comp, float v_comp) noexcept {
     return wind_direction;
 }
 
-float vector_magnitude(float u_comp, float v_comp) noexcept {
+float vector_magnitude(float u_comp, float v_comp)  {
 #ifndef NO_QC
     if ((u_comp == MISSING) || (v_comp == MISSING)) return MISSING;
 #endif
     return std::sqrt((u_comp * u_comp) + (v_comp * v_comp));
 }
 
-float vector_magnitude_precise(float u_comp, float v_comp) noexcept {
+float vector_magnitude_precise(float u_comp, float v_comp)  {
 #ifndef NO_QC
     if ((u_comp == MISSING) || (v_comp == MISSING)) return MISSING;
 #endif
     return std::hypot(u_comp, v_comp);
 }
 
-WindVector components_to_vector(float u_comp, float v_comp) noexcept {
+WindVector components_to_vector(float u_comp, float v_comp)  {
     const float wind_speed = vector_magnitude(u_comp, v_comp);
     const float wind_direction = vector_angle(u_comp, v_comp);
 
     return {wind_speed, wind_direction};
 }
 
-WindVector components_to_vector(WindComponents comp) noexcept {
+WindVector components_to_vector(WindComponents comp)  {
     const float wind_speed = vector_magnitude(comp.u, comp.v);
     const float wind_direction = vector_angle(comp.u, comp.v);
 
@@ -78,7 +78,7 @@ WindVector components_to_vector(WindComponents comp) noexcept {
 }
 
 WindComponents vector_to_components(float wind_speed,
-                                    float wind_direction) noexcept {
+                                    float wind_direction)  {
 #ifndef NO_QC
     if ((wind_direction == MISSING) || (wind_speed == MISSING))
         return {MISSING, MISSING};
@@ -90,7 +90,7 @@ WindComponents vector_to_components(float wind_speed,
     return {u_comp, v_comp};
 }
 
-WindComponents vector_to_components(WindVector vect) noexcept {
+WindComponents vector_to_components(WindVector vect)  {
 #ifndef NO_QC
     if ((vect.speed == MISSING) || (vect.direction == MISSING))
         return {MISSING, MISSING};
@@ -104,7 +104,7 @@ WindComponents vector_to_components(WindVector vect) noexcept {
 
 WindComponents mean_wind(PressureLayer layer, const float pressure[],
                          const float u_wind[], const float v_wind[],
-                         const int N, const bool weighted) noexcept {
+                         const int N, const bool weighted)  {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING))
         return {MISSING, MISSING};

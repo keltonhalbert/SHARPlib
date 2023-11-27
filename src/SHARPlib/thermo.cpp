@@ -16,7 +16,7 @@
 
 namespace sharp {
 
-float wobf(float temperature) noexcept {
+float wobf(float temperature)  {
 #ifndef NO_QC
     if (temperature == MISSING) return MISSING;
 #endif
@@ -39,7 +39,7 @@ float wobf(float temperature) noexcept {
     }
 }
 
-float vapor_pressure(float pressure, float temperature) noexcept {
+float vapor_pressure(float pressure, float temperature)  {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING)) return MISSING;
 #endif
@@ -50,7 +50,7 @@ float vapor_pressure(float pressure, float temperature) noexcept {
     return std::min(es, pressure * 0.5f);
 }
 
-float vapor_pressure_ice(float pressure, float temperature) noexcept {
+float vapor_pressure_ice(float pressure, float temperature)  {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING)) return MISSING;
 #endif
@@ -61,7 +61,7 @@ float vapor_pressure_ice(float pressure, float temperature) noexcept {
     return std::min(es, pressure * 0.5f);
 }
 
-float lcl_temperature(float temperature, float dewpoint) noexcept {
+float lcl_temperature(float temperature, float dewpoint)  {
 #ifndef NO_QC
     if ((temperature == MISSING) || (dewpoint == MISSING)) {
         return MISSING;
@@ -75,7 +75,7 @@ float lcl_temperature(float temperature, float dewpoint) noexcept {
     return (1.0f / (term_1 + term_2)) + c1;
 }
 
-float temperature_at_mixratio(float wv_mixratio, float pressure) noexcept {
+float temperature_at_mixratio(float wv_mixratio, float pressure)  {
 #ifndef NO_QC
     if ((wv_mixratio == MISSING) || (pressure == MISSING)) {
         return MISSING;
@@ -88,7 +88,7 @@ float temperature_at_mixratio(float wv_mixratio, float pressure) noexcept {
     return ZEROCNK + (243.5f * el - 440.8f) / (19.48f - el);
 }
 
-float theta_level(float potential_temperature, float temperature) noexcept {
+float theta_level(float potential_temperature, float temperature)  {
 #ifndef NO_QC
     if ((potential_temperature == MISSING) || (temperature == MISSING)) {
         return MISSING;
@@ -99,7 +99,7 @@ float theta_level(float potential_temperature, float temperature) noexcept {
            std::pow((potential_temperature / temperature), CPOR);
 }
 
-float theta(float pressure, float temperature, float ref_pressure) noexcept {
+float theta(float pressure, float temperature, float ref_pressure)  {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING) ||
         (ref_pressure == MISSING)) {
@@ -109,14 +109,14 @@ float theta(float pressure, float temperature, float ref_pressure) noexcept {
     return (temperature * std::pow(ref_pressure / pressure, ROCP));
 }
 
-float mixratio(float q) noexcept {
+float mixratio(float q)  {
 #ifndef NO_QC
 	if (q == MISSING) return MISSING;
 #endif
 	return q / (1.0f - q);
 }
 
-float mixratio(float pressure, float temperature) noexcept {
+float mixratio(float pressure, float temperature)  {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING)) {
         return MISSING;
@@ -127,7 +127,7 @@ float mixratio(float pressure, float temperature) noexcept {
     return (EPSILON*e)/(pressure-e);
 }
 
-float mixratio_ice(float pressure, float temperature) noexcept {
+float mixratio_ice(float pressure, float temperature)  {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING)) {
         return MISSING;
@@ -137,7 +137,7 @@ float mixratio_ice(float pressure, float temperature) noexcept {
     return (EPSILON*e)/(pressure-e);
 }
 
-float specific_humidity(float rv) noexcept {
+float specific_humidity(float rv)  {
 #ifndef NO_QC
     if (rv == MISSING) return MISSING;
 #endif
@@ -145,7 +145,7 @@ float specific_humidity(float rv) noexcept {
 }
 
 float virtual_temperature(float temperature, float qv, float ql,
-                          float qi) noexcept {
+                          float qi)  {
 #ifndef NO_QC
     if (qv == MISSING) {
         return temperature;
@@ -161,7 +161,7 @@ float virtual_temperature(float temperature, float qv, float ql,
 }
 
 float saturated_lift(float pressure, float theta_sat,
-                     const float converge) noexcept {
+                     const float converge)  {
 #ifndef NO_QC
     if ((pressure == MISSING) || (theta_sat == MISSING)) {
         return MISSING;
@@ -199,7 +199,7 @@ float saturated_lift(float pressure, float theta_sat,
 }
 
 float wetlift(float pressure, float temperature,
-              float lifted_pressure) noexcept {
+              float lifted_pressure)  {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING) ||
         (lifted_pressure == MISSING)) {
@@ -340,7 +340,7 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
 }
 
 void drylift(float pressure, float temperature, float dewpoint,
-             float& pressure_at_lcl, float& temperature_at_lcl) noexcept {
+             float& pressure_at_lcl, float& temperature_at_lcl)  {
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING) ||
         (dewpoint == MISSING)) {
@@ -361,7 +361,7 @@ void drylift(float pressure, float temperature, float dewpoint,
 }
 
 float lifted(float pressure, float temperature, float dewpoint,
-             float lifted_pressure) noexcept {
+             float lifted_pressure)  {
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING) ||
         (dewpoint == MISSING)) {
@@ -379,7 +379,7 @@ float lifted(float pressure, float temperature, float dewpoint,
     return wetlift(pressure_at_lcl, temperature_at_lcl, lifted_pressure);
 }
 
-float wetbulb(float pressure, float temperature, float dewpoint) noexcept {
+float wetbulb(float pressure, float temperature, float dewpoint)  {
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING) ||
         (dewpoint == MISSING)) {
@@ -398,7 +398,7 @@ float wetbulb(float pressure, float temperature, float dewpoint) noexcept {
 }
 
 float theta_wetbulb(float pressure, float temperature,
-                    float dewpoint) noexcept {
+                    float dewpoint)  {
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING) ||
         (dewpoint == MISSING)) {
@@ -416,7 +416,7 @@ float theta_wetbulb(float pressure, float temperature,
     return wetlift(pressure_at_lcl, temperature_at_lcl, THETA_REF_PRESSURE);
 }
 
-float thetae(float pressure, float temperature, float dewpoint) noexcept {
+float thetae(float pressure, float temperature, float dewpoint)  {
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING) ||
         (dewpoint == MISSING)) {
@@ -440,7 +440,7 @@ float thetae(float pressure, float temperature, float dewpoint) noexcept {
 }
 
 float lapse_rate(HeightLayer layer_agl, const float height[],
-                 const float temperature[], const int N) noexcept {
+                 const float temperature[], const int N)  {
 #ifndef NO_QC
     if ((layer_agl.bottom == MISSING) || (layer_agl.top == MISSING)) {
         return MISSING;
@@ -476,7 +476,7 @@ float lapse_rate(HeightLayer layer_agl, const float height[],
 
 float lapse_rate(PressureLayer layer, const float pressure[],
                  const float height[], const float temperature[],
-                 const int N) noexcept {
+                 const int N)  {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
         return MISSING;
@@ -497,13 +497,13 @@ float lapse_rate(PressureLayer layer, const float pressure[],
     return lapse_rate(h_layer, height, temperature, N);
 }
 
-float buoyancy(float pcl_temperature, float env_temperature) noexcept {
+float buoyancy(float pcl_temperature, float env_temperature)  {
     return GRAVITY * (pcl_temperature - env_temperature) /
            (env_temperature);
 }
 
 float moist_static_energy(float height_agl, float temperature,
-                          float specific_humidity) noexcept {
+                          float specific_humidity)  {
 #ifndef NO_QC
     if ((height_agl == MISSING) || (temperature == MISSING) ||
         (specific_humidity == MISSING)) {

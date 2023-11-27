@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(SHARPlib CXX)
+include(GNUInstallDirs)
 include(CTest)
 
 ## Useful macro for setting the CXX standard
