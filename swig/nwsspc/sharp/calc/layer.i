@@ -13,6 +13,7 @@
     }
     catch (const std::runtime_error& e) {
         SWIG_exception(SWIG_RuntimeError, e.what());
+        return NULL;
     }
 }
 
@@ -69,35 +70,6 @@ import_array();
 %ignore layer_max;
 %ignore layer_mean;
 
-%exception _pres_lyr_to_hght {
-    $action
-    if (PyErr_Occurred()) SWIG_fail;
-}
-
-%exception _hght_lyr_to_pres {
-    $action
-    if (PyErr_Occurred()) SWIG_fail;
-}
-
-%exception _integ_layer_trapz {
-    $action
-    if (PyErr_Occurred()) SWIG_fail;
-}
-
-%exception _layer_min {
-    $action
-    if (PyErr_Occurred()) SWIG_fail;
-}
-
-%exception _layer_max {
-    $action
-    if (PyErr_Occurred()) SWIG_fail;
-}
-
-%exception _layer_mean {
-    $action
-    if (PyErr_Occurred()) SWIG_fail;
-}
 
 %inline %{
 

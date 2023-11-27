@@ -5,6 +5,18 @@
     #include <SHARPlib/thermo.h>
 %}
 
+%include exception.i
+
+%exception {
+    try {
+        $action
+    }
+    catch (const std::runtime_error& e) {
+        SWIG_exception(SWIG_RuntimeError, e.what());
+        return NULL;
+    }
+}
+
 /* Import Numpy Array Functionality */
 %include "numpy.i"
 %init %{
@@ -121,16 +133,6 @@ import_array();
 %ignore wetbulb;
 %ignore thetae;
 %ignore theta;
-
-%exception _mixratio {
-	$action
-	if (PyErr_Occurred()) SWIG_fail;
-}
-
-%exception _lapse_rate {
-    $action
-    if (PyErr_Occurred()) SWIG_fail;
-}
 
 %inline %{
 

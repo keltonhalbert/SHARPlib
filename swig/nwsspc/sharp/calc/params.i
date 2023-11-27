@@ -7,11 +7,6 @@
 %}
 
 %include exception.i
-/* Import Numpy Array Functionality */
-%include "numpy.i"
-%init %{
-import_array();
-%}
 
 %exception {
     try {
@@ -19,8 +14,15 @@ import_array();
     }
     catch (const std::runtime_error& e) {
         SWIG_exception(SWIG_RuntimeError, e.what());
+        return NULL;
     }
 }
+
+/* Import Numpy Array Functionality */
+%include "numpy.i"
+%init %{
+import_array();
+%}
 
 %apply (float* IN_ARRAY1, int DIM1) {
     (const float pressure[], const int N1),
@@ -51,19 +53,6 @@ import_array();
 %ignore effective_inflow_layer;
 %ignore storm_motion_bunkers;
 %ignore entrainment_cape;
-
-%exception _effective_inflow_layer {
-    $action
-    if (PyErr_Occurred()) SWIG_fail;
-}
-%exception _storm_motion_bunkers {
-    $action
-    if (PyErr_Occurred()) SWIG_fail;
-}
-%exception _entrainment_cape {
-    $action
-    if (PyErr_Occurred()) SWIG_fail;
-}
 
 %inline %{
 

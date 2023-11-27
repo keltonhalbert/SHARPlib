@@ -12,13 +12,18 @@ Though there are likely to be instances where it will need to be deviated from, 
 
 Another note to the Style Guide is that, where possible/appropriate, full or verbose variable names are preferred to abbreviated ones when working with function parameters. For example, `temperature` or `pressure` is preferable to `temp` or `pres` when defining function arguments, so that it is abundantly clear to the code reader what is being passed through. This is especially the case with temperature, as `temp` is commonly used to refer to temporary variables, leading to confusion. 
 
+### BEFORE YOU BUILD
+SHARPlib has some light-weight dependencies for testing, benchmarking, documentation building, and string formatting. These can easily be downloaded for building by runing the following command to download the dependencies from GitHub over SSH:
+```
+git submodule update --init --recursive 
+```
 
 ### Unit Testing Framework
 For unit tests, we make use of the [doctest singe header source library](https://github.com/doctest/doctest) found in the `tests` directory. In order to build and run the tests, execute the following commands from the project root directory:
 ```
 mkdir build; cd build
 cmake ..
-make SHARPlb_tests
+make SHARPlib_tests
 make test
 ```
 NOTE: Right now, on Apple CLang, (and potentially CLang as a whole) some of the kinematics unit tests don't pass. Don't be alarmed if that's the case, it's just a difference in how the compilers treat certain things and will be remedied in the future. 
