@@ -32,7 +32,7 @@ namespace sharp {
  * \param pcl           sharp::Parcel to define
  */
 void _sfc(const float pressure[], const float temperature[],
-          const float dewpoint[], const int N, Parcel& pcl) noexcept {
+          const float dewpoint[], const int N, Parcel& pcl)  {
     pcl.pres = pressure[0];
     pcl.tmpk = temperature[0];
     pcl.dwpk = dewpoint[0];
@@ -52,7 +52,7 @@ void _sfc(const float pressure[], const float temperature[],
  */
 void _mu(const float pressure[], const float temperature[],
          const float dewpoint[], const float thetae[], const int N,
-         Parcel& pcl) noexcept {
+         Parcel& pcl)  {
     // Search for the most unstable parcel in the bottom
     // 400 hPa of the profile
     static constexpr float mu_depth = 40000.0f; // 400 hPa in Pa
@@ -77,7 +77,7 @@ void _mu(const float pressure[], const float temperature[],
  * \param pcl           sharp::Parcel to define
  */
 void _ml(const float pressure[], const float theta_arr[],
-         const float wv_mixratio[], const int N, Parcel& pcl) noexcept {
+         const float wv_mixratio[], const int N, Parcel& pcl)  {
     static constexpr float ml_depth = 10000.0; // 100 hPa in Pa
 	const float sfcpres = pressure[0];
     PressureLayer mix_layer(sfcpres, sfcpres - ml_depth);
@@ -98,7 +98,7 @@ void define_parcel(const float pressure[], const float temperature[],
                    const float dewpoint[],
                    const float wv_mixratio[], const float theta_arr[],
                    const float thetae[], const int N, Parcel& pcl,
-                   LPL source) noexcept {
+                   LPL source)  {
     pcl.source = source;
 
     if (source == LPL::SFC) {
@@ -126,7 +126,7 @@ void define_parcel(const float pressure[], const float temperature[],
 }
 
 void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
-                 const float buoy_arr[], const int N) noexcept {
+                 const float buoy_arr[], const int N)  {
     PressureLayer sat_lyr = {pcl->lcl_pressure, pres_arr[N - 1]};
     LayerIndex lyr_idx = get_layer_index(sat_lyr, pres_arr, N);
 
@@ -198,7 +198,7 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
 }
 
 void cape_cinh(const float pres_arr[], const float hght_arr[],
-               const float buoy_arr[], const int N, Parcel* pcl) noexcept {
+               const float buoy_arr[], const int N, Parcel* pcl)  {
 	if (pcl->lcl_pressure == MISSING) return;
     find_lfc_el(pcl, pres_arr, hght_arr, buoy_arr, N);
     if ((pcl->lfc_pressure != MISSING) && (pcl->eql_pressure != MISSING)) {

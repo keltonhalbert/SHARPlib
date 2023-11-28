@@ -76,7 +76,7 @@ PressureLayer::PressureLayer(float bottom, float top, float delta) {
 }
 
 LayerIndex get_layer_index(PressureLayer& layer, const float pressure[],
-                           const int N) noexcept {
+                           const int N)  {
     static constexpr auto bottom_comp = std::greater<float>();
     static constexpr auto top_comp = std::less<float>();
 
@@ -84,7 +84,7 @@ LayerIndex get_layer_index(PressureLayer& layer, const float pressure[],
 }
 
 LayerIndex get_layer_index(HeightLayer& layer, const float height[],
-                           const int N) noexcept {
+                           const int N)  {
     static constexpr auto bottom_comp = std::less<float>();
     static constexpr auto top_comp = std::greater<float>();
 
@@ -94,7 +94,7 @@ LayerIndex get_layer_index(HeightLayer& layer, const float height[],
 PressureLayer height_layer_to_pressure(HeightLayer layer,
                                        const float pressure[],
                                        const float height[], const int N,
-                                       const bool isAGL) noexcept {
+                                       const bool isAGL)  {
     if (isAGL) {
         layer.bottom += height[0];
         layer.top += height[0];
@@ -113,7 +113,7 @@ PressureLayer height_layer_to_pressure(HeightLayer layer,
 HeightLayer pressure_layer_to_height(PressureLayer layer,
                                      const float pressure[],
                                      const float height[], const int N,
-                                     const bool toAGL) noexcept {
+                                     const bool toAGL)  {
     if ((layer.bottom > pressure[0]) || (layer.top < pressure[N-1])) {
         return {MISSING, MISSING};
     }
@@ -130,7 +130,7 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
 }
 
 float layer_mean(PressureLayer layer, const float pressure[],
-                 const float data_arr[], const int N) noexcept {
+                 const float data_arr[], const int N)  {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
         return MISSING;
@@ -150,7 +150,7 @@ float layer_mean(PressureLayer layer, const float pressure[],
 
 float layer_mean(HeightLayer layer, const float height[],
                  const float pressure[], const float data_arr[], const int N,
-                 const bool isAGL) noexcept {
+                 const bool isAGL)  {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
         return MISSING;
