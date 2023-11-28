@@ -15,6 +15,7 @@
 #include <SHARPlib/algorithms.h>
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
+#include <SHARPlib/thermo.h>
 
 #include <cmath>
 #include <functional>
@@ -108,6 +109,69 @@ float interp_pressure(float pressure_val, const float pressure_arr[],
 
     // return the linear interpolation
     return lerp(data_bot, data_top, dp_norm);
+}
+
+float interp_hghtlevel(float data_val, const float data_arr[],
+                      const float height_arr[], const int N) noexcept {
+#ifndef NO_QC
+    if (data_val == MISSING) return MISSING;
+#endif
+
+    static constexpr auto comp = std::greater<float>();
+    int idx_top = lower_bound(data_arr, N, data_val, comp);
+    int idx_bot = idx_top - 1;
+
+#ifndef NO_QC
+    if (idx_bot < 0) {
+        return MISSING;
+    }
+    for (; idx_bot > 0; --idx_bot) {
+        if (height_arr[idx_bot] != MISSING) break;
+    }
+
+    for (; idx_top < N; ++idx_top) {
+        if (height_arr[idx_top] != MISSING) break;
+    }
+
+    // in the case the data are still missing at this point,
+    // return a missing value
+    if ((data_arr[idx_bot] == MISSING) || (data_arr[idx_top] == MISSING))
+        return MISSING;
+#endif
+
+    const float height_bot = height_arr[idx_bot];
+    const float height_top = height_arr[idx_top];
+    const float data_bot = data_arr[idx_bot];
+    const float data_top = data_arr[idx_top];
+
+    // normalize the distance between values
+    // to a range of 0-1 for the lerp routine
+    const float dv_norm = (data_val - data_bot) / (data_top - data_bot);
+
+    // return the linear interpolation
+    return lerp(height_bot, height_top, dv_norm);
+}
+
+float interp_wbzh(const float p_arr[], const float t_arr[], const float td_arr[],
+                      const float height_arr[], const int N) noexcept {
+
+    int i;
+    float temwet1, temwet2;
+    float dv_norm = MISSING;
+
+    temwet2 = wetbulb(p_arr[0],t_arr[0],td_arr[0]);
+    for (i=1; i<N; i++) {
+	temwet1 = temwet2;
+	temwet2 = wetbulb(p_arr[i],t_arr[i],td_arr[i]);
+	if(temwet1*temwet2<0) {
+		dv_norm = (0.0 - temwet1) / (temwet2 - temwet1);
+		return lerp(height_arr[i-1],height_arr[i],dv_norm);
+	}
+    }
+
+    // in the case the data are still missing at this point,
+    // return a missing value
+    return MISSING;
 }
 
 }  // end namespace sharp

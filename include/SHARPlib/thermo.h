@@ -605,6 +605,49 @@ void drylift(float pressure, float temperature, float dewpoint,
                                                 const float mse_bar,
                                                 const float saturation_mse);
 
+/**
+ * \author Nathan Dahl - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Compute forecast max temperature (C) based on mixing depth (default=100 mb)
+ *
+ * \param   mixlyr    pressure level of top of mixing layer (Pa, -1= default to 100 mb above sfc)
+ * \param   p_arr     array containing pressure values of profile levels (Pa)
+ * \param   t_arr     array containing temperature profile (K)
+ *
+ * \return  max forecast temperature in Celsius
+ */
+[[nodiscard]] float max_temp(float mixlyr, const float p_arr[], const float t_arr[], int N) noexcept;
+
+/**
+ * \author Nathan Dahl - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Compute relative humidity using vapor pressure obtained from temperature and dewpoint
+ *
+ * \param   pressure     atmospheric pressure (hPa, used as sanity check)
+ * \param   temperature  temperature (K)
+ * \param   dewpoint     dewpoint(K)
+ *
+ * \return  relative humidity (%)
+ */
+[[nodiscard]] float relh(float pressure, float temperature, float dewpoint) noexcept;
+
+/**
+ * \author Nathan Dahl - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Compute the maximum lapse rate between two specified levels using a specified layer depth
+ *
+ * \param   height       array containing heights of profile levels (m)
+ * \param   temperature  array containing temperature profile
+ * \param   N            length of arrays
+ * \param   bot          bottom level of lapse rate search
+ * \param   top          top level of lapse rate search
+ * \param   depth	 depth of layer over which lapse rate is calculated
+ *
+ * \return  maximum lapse rate (C/km) between bot and top
+ */
+[[nodiscard]] float lapse_rate_max(const float height[], const float temperature[], const int N,
+			     float bot, float top, float depth) noexcept; 
+
 }  // end namespace sharp
 
 #endif // __SHARP_THERMP_H__

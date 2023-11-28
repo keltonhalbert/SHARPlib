@@ -527,5 +527,50 @@ float buoyancy_dilution_potential(float temperature, float mse_bar,
            (mse_bar - saturation_mse);
 }
 
+float max_temp(float mixlyr, const float p_arr[], const float t_arr[], int N) noexcept {
+        float temp, maxt;
+
+        maxt = MISSING;
+        if (N<1) return MISSING;
+        /* ----- See if default layer is specified ----- */
+        if (mixlyr == -1) mixlyr = p_arr[0] - 100.0;
+
+        temp = interp_pressure(mixlyr, p_arr, t_arr, N) + 2.0;
+        maxt = (temp * pow( p_arr[0] / mixlyr , 0.28571428)) - 273.15;
+
+        return maxt;
+}
+
+float relh(float pressure, float temperature, float dewpoint) noexcept {
+#ifndef NO_QC
+	if ((temperature == MISSING) || (pressure == MISSING) || (dewpoint == MISSING)) return MISSING;
+#endif
+	const float tmpc = temperature - ZEROCNK;
+	const float dwpc = dewpoint - ZEROCNK;
+	return 100.0f*vapor_pressure(pressure,dewpoint)/vapor_pressure(pressure,temperature);
+}
+
+float lapse_rate_max(const float height[], const float temperature[], const int N,
+	float bot, float top, float depth) noexcept {
+        float z, zbagl, ztagl, maxlr, lr;
+	HeightLayer hght_lyr = {0, 0};
+#ifndef NO_QC
+	if((bot==MISSING) || (top==MISSING) || (depth==MISSING)) return MISSING;
+	if((bot<height[0]) || (top>height[N-1])) return MISSING;
+#endif
+        maxlr = MISSING;
+
+        // Loop through every 250 m over depth to get max LR
+        for (z=bot; z<=(top-depth); z+=250) {
+		hght_lyr.bottom = z-height[0];
+		hght_lyr.top = z-height[0]+depth;
+	        lr = lapse_rate(hght_lyr,height,temperature,N);
+                if ( lr > maxlr) {
+	                maxlr = lr;
+		}
+	}
+        return maxlr;
+}
+
 }  // end namespace sharp
 
