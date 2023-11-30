@@ -1,10 +1,11 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <SHARPlib/constants.h>
+#include <SHARPlib/interp.h>
+
 #include <cmath>
 #include <limits>
 
 #include "doctest.h"
-#include <SHARPlib/interp.h>
-#include <SHARPlib/constants.h>
 
 TEST_CASE("Testing lerp (float)") {
     CHECK(sharp::lerp(10.0f, 20.0f, 0.f) == 10.0f);
@@ -103,4 +104,46 @@ TEST_CASE("Testing interp_pressure") {
     // To-Do: NaN check doesn't work, so fix it
     // CHECK(sharp::interp_pressure(nan, pres_arr, data_arr, arr_len) ==
     // sharp::MISSING);
+}
+
+TEST_CASE("Testing interp_level in pressure coords") {
+    constexpr float pres_arr[10] = {1000, 900, 800, 700, 600,
+                                    500,  400, 300, 200, 100};
+    constexpr float data_arr[10] = {
+        10, sharp::MISSING, 1, -1, -1, -10, -30, -50, -60, -70};
+    constexpr int arr_len = 10;
+
+    CHECK(sharp::interp_coord(10.0f, data_arr, pres_arr, arr_len, true) ==
+          1000.0f);
+    CHECK(sharp::interp_coord(0.0f, data_arr, pres_arr, arr_len, true) ==
+          doctest::Approx(748.331f));
+    CHECK(sharp::interp_coord(-1.f, data_arr, pres_arr, arr_len, true) ==
+          doctest::Approx(700));
+    CHECK(sharp::interp_coord(-70.f, data_arr, pres_arr, arr_len, true) ==
+          doctest::Approx(100));
+    CHECK(sharp::interp_coord(-100.f, data_arr, pres_arr, arr_len, true) ==
+          sharp::MISSING);
+    CHECK(sharp::interp_coord(5.f, data_arr, pres_arr, arr_len, true) ==
+          doctest::Approx(883.407));
+}
+
+TEST_CASE("Testing interp_level in height coords") {
+    constexpr float hght_arr[10] = {0,    100,  500,  1000,  2000,
+                                    3000, 6000, 9000, 12000, 15000};
+    constexpr float data_arr[10] = {
+        10, sharp::MISSING, 1, -1, -1, -10, -30, -50, -60, -70};
+    constexpr int arr_len = 10;
+
+    CHECK(sharp::interp_coord(10.0f, data_arr, hght_arr, arr_len, false) ==
+          0.0f);
+    CHECK(sharp::interp_coord(0.0f, data_arr, hght_arr, arr_len, false) ==
+          doctest::Approx(750.0f));
+    CHECK(sharp::interp_coord(-1.f, data_arr, hght_arr, arr_len, false) ==
+          doctest::Approx(1000));
+    CHECK(sharp::interp_coord(-70.f, data_arr, hght_arr, arr_len, false) ==
+          doctest::Approx(15000));
+    CHECK(sharp::interp_coord(-100.f, data_arr, hght_arr, arr_len, false) ==
+          sharp::MISSING);
+    CHECK(sharp::interp_coord(5.f, data_arr, hght_arr, arr_len, false) ==
+          doctest::Approx(277.778));
 }

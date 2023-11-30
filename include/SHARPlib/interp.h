@@ -17,8 +17,6 @@
 
 #include <SHARPlib/constants.h>
 
-#include <cmath>
-
 namespace sharp {
 
 /**
@@ -29,13 +27,13 @@ namespace sharp {
  * This routine was copied from the C++20 <cmath> standard template library.
  * It is used to linearly interpolate between A and B over a normalized
  * distance T, where 0 <= T <= 1. Full documentation and details can be found
- * in the paper located here: 
+ * in the paper located here:
  * https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p0811r3.html
  *
  * This linear interpolation guarantees the following:
  *
  * 1. Exactness: lerp(a,b,0)==a & lerp(a,b,1)==b
- * 2. Monotonicity: cmp(lerp(a,b,t2), lerp(a,b,t1)) * cmp(t2, t1) <!-- 
+ * 2. Monotonicity: cmp(lerp(a,b,t2), lerp(a,b,t1)) * cmp(t2, t1) <!--
  * -->* cmp(b,a) >= 0, where cmp is an arithmetic three-way comparison function
  * 3. Determinacy: result of NaN only for lerp(a,a,INFINITY)
  * 4. Boundedness: t<0 || t>1 || isfinite(lerp(a,b,t))
@@ -48,7 +46,7 @@ namespace sharp {
  * \return  The value between __a and __b at distance __t between them.
  */
 template <typename _Fp>
-[[nodiscard]] constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t)  {
+[[nodiscard]] constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) noexcept {
     if ((__a <= 0 && __b >= 0) || (__a >= 0 && __b <= 0))
         return __t * __b + (1 - __t) * __a;
 
@@ -77,7 +75,7 @@ template <typename _Fp>
  * This linear interpolation guarantees the following:
  *
  * 1. Exactness: lerp(a,b,0)==a & lerp(a,b,1)==b
- * 2. Monotonicity: cmp(lerp(a,b,t2), lerp(a,b,t1)) * cmp(t2, t1) <!-- 
+ * 2. Monotonicity: cmp(lerp(a,b,t2), lerp(a,b,t1)) * cmp(t2, t1) <!--
  * -->* cmp(b,a) >= 0, where cmp is an arithmetic three-way comparison function
  * 3. Determinacy: result of NaN only for lerp(a,a,INFINITY)
  * 4. Boundedness: t<0 || t>1 || isfinite(lerp(a,b,t))
@@ -89,7 +87,7 @@ template <typename _Fp>
  *
  * \return  The value between __a and __b at distance __t between them.
  */
-[[nodiscard]] constexpr float lerp(float __a, float __b, float __t)  {
+[[nodiscard]] constexpr float lerp(float __a, float __b, float __t) noexcept {
     return __lerp(__a, __b, __t);
 }
 
@@ -105,7 +103,7 @@ template <typename _Fp>
  * The height array must be sorted in ascending order and monotonic.
  * For performance reasons, this routine assumes your data is well
  * ordered. If weird stuff happens, check the ordering of your array
- * values first.Duplicate height values or decreasing height values 
+ * values first.Duplicate height values or decreasing height values
  * may produce unexpected results.
  *
  * \param   height_val  The height value to interpolate data to
@@ -116,7 +114,7 @@ template <typename _Fp>
  * \return  The value of data_arr at the requested height_val.
  */
 [[nodiscard]] float interp_height(float height_val, const float height_arr[],
-                                  const float data_arr[], const int N) ;
+                                  const float data_arr[], const int N) noexcept;
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -142,47 +140,31 @@ template <typename _Fp>
 [[nodiscard]] float interp_pressure(float pressure_val,
                                     const float pressure_arr[],
                                     const float data_arr[],
-                                    const int N);
-/**
- *  \author Nathan Dahl - NWS Storm Prediction Center/OU-CIWRO (mutated from Kelton's code)
- * 
- *  \brief Use linear interpolation to obtain the lowest height
- *  above the surface where a given variable equals a desired value
- *  (e.g., the height of the 0 C isotherm).
- *  
- *  The height array must be in ascending order and monotonic. Note that the
- *  given variable is assumed to generally decrease with height; if the surface value
- *  is less than te desired value, the code will return a "missing" value for the height.
- *  
- *  param   data_val        The variable value corresponding to the desired height
- *  param   data_arr        Array containing the vertical profile of the variable
- *  param   height_arr      Array containing the height levels of the profile
- *  param   N               The profile array length (number of elements)
- *  
- *  \return  The value of height_arr at the requested data_val.
-*/
-[[nodiscard]] float interp_hghtlevel(float data_val,
-                                    const float data_arr[],
-                                    const float height_arr[],
                                     const int N) noexcept;
 
 /**
- *  \author Nathan Dahl - NWS Storm Prediction Center/OU-CIWRO
+ *  \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- *  \brief Search for lowest altitude at which wetbulb temperature is zero, using
- *  linear interpolation between levels
+ *  \brief Search for the lowest-altitude coordinate value <!--
+ *  -->corresponding to a data value.
  *
- *  param   p_arr           Array containing the pressure levels of the profile
- *  param   t_arr	    Array containing the vertical temperature profile
- *  param   td_arr          Array containing the vertical dewpoint profile
- *  param   height_arr      Array containing the height levels of the profile
- *  param   N               The array length (number of elements)
+ *  The inverse of sharp::interp_pressure and sharp::interp_height.
+ *  Given a data value (e.g. 273.15 Kelvin Temperature), find the
+ *  lowest altitude occurrence of that value and interpolate to find
+ *  its vertical coordinate (either pressure or height). This performs
+ *  a bottom-up search and returns after finding the first occurrence of
+ *  the given value.
  *
- *  \return The lowest altitude at which the wetbulb temperature is zero
-*/
-[[nodiscard]] float interp_wbzh(const float p_arr[], const float t_arr[], const float td_arr[],
-                          const float height_arr[], const int N) noexcept;
+ *  \param  data_val    The data value to find (e.g. temperature value)
+ *  \param  data_arr    The array of data values (e.g. temperature)
+ *  \param  coord_arr   The array of coordinate values (height or pres)
+ *  \param  N           The length of the given arrays
+ *  \param  is_pres     Flag denoting whether coordinate is pressure or height
+ */
+[[nodiscard]] float interp_coord(float data_val, const float data_arr[],
+                                 const float coord_arr[], const int N,
+                                 const bool is_pres) noexcept;
 
 }  // end namespace sharp
 
-#endif // __SHARP_INTERP_H__
+#endif  // __SHARP_INTERP_H__
