@@ -19,7 +19,6 @@
 #include <SHARPlib/layer.h>
 #include <SHARPlib/thermo.h>
 
-
 namespace sharp {
 
 ////////////    FUNCTORS    ///////////
@@ -50,10 +49,10 @@ struct lifter_wobus {
      * \param   tmpk        Parcel temperature (degK)
      * \param   new_pres    Final level of parcel after lift (Pa)
      *
-     * \return  The virtual temperature of the lifted parcel 
+     * \return  The virtual temperature of the lifted parcel
      */
     [[nodiscard]] inline float operator()(float pres, float tmpk,
-                                   float new_pres) const  {
+                                          float new_pres) const {
         float pcl_tmpk = wetlift(pres, tmpk, new_pres);
         return virtual_temperature(pcl_tmpk, mixratio(new_pres, pcl_tmpk));
     }
@@ -68,7 +67,7 @@ struct lifter_cm1 {
     /**
      * \brief The pressure increment (Pa) to use for the iterative solver
      */
-    float pressure_incr = 500.0f; 
+    float pressure_incr = 500.0f;
 
     /**
      * \brief The iterative convergence criteria
@@ -102,10 +101,10 @@ struct lifter_cm1 {
      * \param   tmpk        Parcel temperature (degK)
      * \param   new_pres    Final level of parcel after lift (Pa)
      *
-     * \return  The virtual temperature of the lifted parcel 
+     * \return  The virtual temperature of the lifted parcel
      */
     [[nodiscard]] inline float operator()(float pres, float tmpk,
-                                   float new_pres)  {
+                                          float new_pres) {
         float pcl_tmpk = moist_adiabat_cm1(
             pres, tmpk, new_pres, this->rv_total, this->rv, this->rl, this->ri,
             this->pressure_incr, this->converge, this->ma_type);
@@ -115,7 +114,6 @@ struct lifter_cm1 {
 
 //
 ////////////  END FUNCTORS   ///////////
-
 
 /**
  * \brief Enum that defines the lifted parcel level (LPL) of origin.
@@ -172,7 +170,7 @@ enum class LPL : int {
      * \brief Mean Effective Inflow Layer Parcel
      */
     EIL = 6,  // Mean effective inflow layer
-	END,
+    END,
 };
 
 /**
@@ -253,12 +251,12 @@ struct Parcel {
  * \param   thetae_arr      Array of eqiv. potential temperature (degK)
  * \param   N               The length of the arrays
  * \param   pcl             The sharp::Parcel to set the attributes to
- * \param   source          The type of sharp::Parcel to define 
+ * \param   source          The type of sharp::Parcel to define
  */
 void define_parcel(const float pressure[], const float temperature[],
                    const float dewpoint[], const float wv_mixratio[],
                    const float theta_arr[], const float thetae_arr[],
-                   const int N, Parcel& pcl, LPL source) ;
+                   const int N, Parcel& pcl, LPL source);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -268,8 +266,8 @@ void define_parcel(const float pressure[], const float temperature[],
  * Lifts a sharp::Parcel dry adiabatically from its sharp::LPL to its
  * LCL dry adiabatically, and then moist adiabatically from the
  * LCL to the top of the profile. The moist adiabat used is determined
- * bu the type of lifting functor passed to the function (i.e. 
- * sharp::lifter_wobus or sharp::lifter_cm1). 
+ * bu the type of lifting functor passed to the function (i.e.
+ * sharp::lifter_wobus or sharp::lifter_cm1).
  *
  * \param   liftpcl
  * \param   pressure_arr                Array of env pressure (Pa)
@@ -281,14 +279,14 @@ void define_parcel(const float pressure[], const float temperature[],
 template <typename Lft>
 void lift_parcel(Lft liftpcl, const float pressure_arr[],
                  const float virtual_temperature_arr[], float buoyancy_arr[],
-                 const int N, Parcel* pcl)  {
+                 const int N, Parcel* pcl) {
     // Lift the parcel from the LPL to the LCL
     float pres_lcl;
     float tmpk_lcl;
     drylift(pcl->pres, pcl->tmpk, pcl->dwpk, pres_lcl, tmpk_lcl);
-	// If we are lifting elevated parcel (i.e. EIL), we need to make
-	// sure out LCL isnt above the top of our data.
-	if (pres_lcl < pressure_arr[N-1]) return;
+    // If we are lifting elevated parcel (i.e. EIL), we need to make
+    // sure out LCL isnt above the top of our data.
+    if (pres_lcl < pressure_arr[N - 1]) return;
 
     pcl->lcl_pressure = pres_lcl;
 
@@ -304,16 +302,16 @@ void lift_parcel(Lft liftpcl, const float pressure_arr[],
     const LayerIndex dry_idx = get_layer_index(dry_lyr, pressure_arr, N);
     const LayerIndex sat_idx = get_layer_index(sat_lyr, pressure_arr, N);
 
-	// zero out any residual buoyancy from
-	// other parcels that may have been lifted
-	for (int k = 0; k < dry_idx.kbot; ++k) {
-		buoyancy_arr[k] = 0.0;
-	}
+    // zero out any residual buoyancy from
+    // other parcels that may have been lifted
+    for (int k = 0; k < dry_idx.kbot; ++k) {
+        buoyancy_arr[k] = 0.0;
+    }
 
     // Fill the array with dry parcel buoyancy.
     // Virtual potential temperature (Theta-V)
     // is conserved for a parcels dry ascent to the LCL
-    for (int k = dry_idx.kbot; k < dry_idx.ktop+1; ++k) {
+    for (int k = dry_idx.kbot; k < dry_idx.ktop + 1; ++k) {
         const float pcl_vtmp =
             theta(THETA_REF_PRESSURE, thetav_lcl, pressure_arr[k]);
         buoyancy_arr[k] = buoyancy(pcl_vtmp, virtual_temperature_arr[k]);
@@ -326,7 +324,6 @@ void lift_parcel(Lft liftpcl, const float pressure_arr[],
         const float pcl_vtmpk = liftpcl(pres_lcl, tmpk_lcl, pcl_pres);
         const float env_vtmpk = virtual_temperature_arr[k];
         buoyancy_arr[k] = buoyancy(pcl_vtmpk, env_vtmpk);
-
     }
 }
 
@@ -338,7 +335,7 @@ void lift_parcel(Lft liftpcl, const float pressure_arr[],
  * Searches the buoyancy array for the LFC and EL combination that
  * results in the most CAPE in the given profile. The buoyancy array is
  * typically computed by calling sharp::lift_parcel. Once the LFC and EL
- * are found, the values are set in sharp::Parcel.lfc_pres and 
+ * are found, the values are set in sharp::Parcel.lfc_pres and
  * sharp::Parcel.eql_pres.
  *
  * \param   pcl         a sharp::Parcel with its sharp::LPL/attributes defined
@@ -348,7 +345,7 @@ void lift_parcel(Lft liftpcl, const float pressure_arr[],
  * \param   N           The length of the arrays
  */
 void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
-                 const float buoy_arr[], const int N) ;
+                 const float buoy_arr[], const int N);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -359,13 +356,13 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
  * will integrate the area between the LFC and EL to compute CAPE,
  * and integrate the area between the LPL and LCL to compute CINH.
  *
- * The results are set in pcl->cape and pcl->cinh. 
+ * The results are set in pcl->cape and pcl->cinh.
  *
  * \param   pres_arr    Array of pressure (Pa)
  * \param   hght_arr    Array of height (meters)
  * \param   buoy_arr    Array of buoyancy (m/s^2)
  * \param   N           Length of arrays
- * \param   pcl         A sharp::Parcel corresponding to the buoyancy array. 
+ * \param   pcl         A sharp::Parcel corresponding to the buoyancy array.
  */
 void cape_cinh(const float pres_arr[], const float hght_arr[],
                const float buoy_arr[], const int N, Parcel* pcl);
@@ -382,7 +379,7 @@ void cape_cinh(const float pres_arr[], const float hght_arr[],
  *
  */
 float precip_water(const float pres_arr[], const float wv_mixratio[],
-                float lower, float upper, const int N) noexcept;
+                   float lower, float upper, const int N) noexcept;
 /**
  * \author Nathan Dahl - NWS Storm Prediction Center/OU-CIWRO
  *
@@ -395,15 +392,15 @@ float precip_water(const float pres_arr[], const float wv_mixratio[],
  *
  */
 float ThetaE_diff(const float pres_arr[], const float thetae[],
-        const float ptop, const int N) noexcept;
+                  const float ptop, const int N) noexcept;
 /**
  * \author Nathan Dahl - NWS Storm Prediction Center/OU-CIWRO
  *
  * \brief Find the convective temperature for a given profile
  *
- * Starting from the surface temperature and the dewpoint obtained from the 
- * 100-mb mean mixing ratio, searches for and returns the surface temperature 
- * required to produce CAPE > 0 and CINH > mincinh (which defaults to 50 J/kg). 
+ * Starting from the surface temperature and the dewpoint obtained from the
+ * 100-mb mean mixing ratio, searches for and returns the surface temperature
+ * required to produce CAPE > 0 and CINH > mincinh (which defaults to 50 J/kg).
  *
  * \param   pres_arr    The pressure coordinate array (Pa)
  * \param   hght_arr    The height coordinate array (meters)
@@ -416,12 +413,11 @@ float ThetaE_diff(const float pres_arr[], const float thetae[],
  */
 template <typename Lft>
 float cnvtv_temp(Lft lifter, const float pres_arr[], const float hght_arr[],
-                 const float b_arr[], const float vt_arr[],
-                 const float t0, const float td0,
-                 const int N, float mincinh) noexcept {
+                 const float b_arr[], const float vt_arr[], const float t0,
+                 const float td0, const int N, float mincinh) noexcept {
     Parcel pcl;
 
-    if (N<1) return MISSING;
+    if (N < 1) return MISSING;
 
     if ((int)mincinh == -1) mincinh = -1.0;
 
@@ -430,36 +426,34 @@ float cnvtv_temp(Lft lifter, const float pres_arr[], const float hght_arr[],
     pcl.dwpk = td0;
 
     /*
-    * Do a quick search to find whether to continue.
-    * If you need to heat up more than 25C, don't compute.
-    */
+     * Do a quick search to find whether to continue.
+     * If you need to heat up more than 25C, don't compute.
+     */
 
-    pcl.tmpk = t0+25.0;
+    pcl.tmpk = t0 + 25.0;
     lift_parcel(lifter, pres_arr, vt_arr, b_arr, N, &pcl);
     cape_cinh(pres_arr, hght_arr, b_arr, N, &pcl);
-    if ((pcl.cape == 0.0 ) || (pcl.cinh < mincinh)) {
-            return MISSING;
+    if ((pcl.cape == 0.0) || (pcl.cinh < mincinh)) {
+        return MISSING;
     }
 
     pcl.tmpk = t0;
     pcl.cinh = -999.0;
-    while (pcl.cinh < mincinh ) {
-            lift_parcel(lifter, pres_arr, vt_arr, b_arr, N, &pcl);
-            cape_cinh(pres_arr, hght_arr, b_arr, N, &pcl);
-            if(pcl.cape>0 && pcl.cinh>=mincinh) {
-                    return pcl.tmpk;
-            }
-            if(pcl.cinh < -100.0) {
-                    pcl.tmpk += 2.0;
-            }
-            else {
-                    pcl.tmpk += 0.5;
-            }
+    while (pcl.cinh < mincinh) {
+        lift_parcel(lifter, pres_arr, vt_arr, b_arr, N, &pcl);
+        cape_cinh(pres_arr, hght_arr, b_arr, N, &pcl);
+        if (pcl.cape > 0 && pcl.cinh >= mincinh) {
+            return pcl.tmpk;
+        }
+        if (pcl.cinh < -100.0) {
+            pcl.tmpk += 2.0;
+        } else {
+            pcl.tmpk += 0.5;
+        }
     }
     return MISSING;
 }
 
 }  // end namespace sharp
 
-
-#endif // __SHARP_PARCEL_H__
+#endif  // __SHARP_PARCEL_H__

@@ -39,7 +39,7 @@ Profile::Profile(const int num_levs, Source sounding_type) : NZ(num_levs) {
     moist_static_energy = new float[num_levs];
     buoyancy = new float[num_levs];
 
-    //NZ = num_levs;
+    // NZ = num_levs;
     snd_type = sounding_type;
 }
 
@@ -67,4 +67,3 @@ Profile::~Profile() {
 }
 
 }  // end namespace sharp
-

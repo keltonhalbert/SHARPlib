@@ -27,7 +27,7 @@ enum class Source : int {
     Observed = 0,
     PFC = 1,
     ACARS = 2,
-	END,
+    END,
 };
 
 /**
@@ -141,4 +141,4 @@ struct Profile {
 
 }  // end namespace sharp
 
-#endif // __SHARP_PROFILE_H__
+#endif  // __SHARP_PROFILE_H__

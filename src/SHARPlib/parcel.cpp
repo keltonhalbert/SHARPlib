@@ -14,9 +14,8 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
-#include <SHARPlib/thermo.h>
 #include <SHARPlib/parcel.h>
-
+#include <SHARPlib/thermo.h>
 
 namespace sharp {
 
@@ -32,7 +31,7 @@ namespace sharp {
  * \param pcl           sharp::Parcel to define
  */
 void _sfc(const float pressure[], const float temperature[],
-          const float dewpoint[], const int N, Parcel& pcl)  {
+          const float dewpoint[], const int N, Parcel& pcl) {
     pcl.pres = pressure[0];
     pcl.tmpk = temperature[0];
     pcl.dwpk = dewpoint[0];
@@ -52,10 +51,10 @@ void _sfc(const float pressure[], const float temperature[],
  */
 void _mu(const float pressure[], const float temperature[],
          const float dewpoint[], const float thetae[], const int N,
-         Parcel& pcl)  {
+         Parcel& pcl) {
     // Search for the most unstable parcel in the bottom
     // 400 hPa of the profile
-    static constexpr float mu_depth = 40000.0f; // 400 hPa in Pa
+    static constexpr float mu_depth = 40000.0f;  // 400 hPa in Pa
     PressureLayer mu_layer(pressure[0], pressure[0] - mu_depth);
 
     // layer_max returns the max, and will set the pressure
@@ -77,16 +76,14 @@ void _mu(const float pressure[], const float temperature[],
  * \param pcl           sharp::Parcel to define
  */
 void _ml(const float pressure[], const float theta_arr[],
-         const float wv_mixratio[], const int N, Parcel& pcl)  {
-    static constexpr float ml_depth = 10000.0; // 100 hPa in Pa
-	const float sfcpres = pressure[0];
+         const float wv_mixratio[], const int N, Parcel& pcl) {
+    static constexpr float ml_depth = 10000.0;  // 100 hPa in Pa
+    const float sfcpres = pressure[0];
     PressureLayer mix_layer(sfcpres, sfcpres - ml_depth);
 
     // get the mean attributes of the lowest 100 hPa
-    const float mean_mixr =
-        layer_mean(mix_layer, pressure, wv_mixratio, N);
-    const float mean_thta =
-        layer_mean(mix_layer, pressure, theta_arr, N);
+    const float mean_mixr = layer_mean(mix_layer, pressure, wv_mixratio, N);
+    const float mean_thta = layer_mean(mix_layer, pressure, theta_arr, N);
 
     // set the parcel attributes
     pcl.pres = sfcpres;
@@ -95,10 +92,9 @@ void _ml(const float pressure[], const float theta_arr[],
 }
 
 void define_parcel(const float pressure[], const float temperature[],
-                   const float dewpoint[],
-                   const float wv_mixratio[], const float theta_arr[],
-                   const float thetae[], const int N, Parcel& pcl,
-                   LPL source)  {
+                   const float dewpoint[], const float wv_mixratio[],
+                   const float theta_arr[], const float thetae[], const int N,
+                   Parcel& pcl, LPL source) {
     pcl.source = source;
 
     if (source == LPL::SFC) {
@@ -126,7 +122,7 @@ void define_parcel(const float pressure[], const float temperature[],
 }
 
 void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
-                 const float buoy_arr[], const int N)  {
+                 const float buoy_arr[], const int N) {
     PressureLayer sat_lyr = {pcl->lcl_pressure, pres_arr[N - 1]};
     LayerIndex lyr_idx = get_layer_index(sat_lyr, pres_arr, N);
 
@@ -198,12 +194,12 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
 }
 
 void cape_cinh(const float pres_arr[], const float hght_arr[],
-               const float buoy_arr[], const int N, Parcel* pcl)  {
-	if (pcl->lcl_pressure == MISSING) return;
+               const float buoy_arr[], const int N, Parcel* pcl) {
+    if (pcl->lcl_pressure == MISSING) return;
     find_lfc_el(pcl, pres_arr, hght_arr, buoy_arr, N);
     if ((pcl->lfc_pressure != MISSING) && (pcl->eql_pressure != MISSING)) {
-		PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
-		PressureLayer lpl_lfc = {pcl->pres, pcl->lfc_pressure};
+        PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
+        PressureLayer lpl_lfc = {pcl->pres, pcl->lfc_pressure};
         HeightLayer lfc_el_ht =
             pressure_layer_to_height(lfc_el, pres_arr, hght_arr, N);
         HeightLayer lpl_lfc_ht =
@@ -211,15 +207,14 @@ void cape_cinh(const float pres_arr[], const float hght_arr[],
 
         pcl->cinh =
             integrate_layer_trapz(lpl_lfc_ht, buoy_arr, hght_arr, N, -1);
-        pcl->cape =
-            integrate_layer_trapz(lfc_el_ht, buoy_arr, hght_arr, N, 1);
+        pcl->cape = integrate_layer_trapz(lfc_el_ht, buoy_arr, hght_arr, N, 1);
     }
 }
 
 float precip_water(const float pres_arr[], const float wv_mixratio[],
-		float lower, float upper, const int N) noexcept {
-	int vflg, lptr, uptr, i;
-	float rtem, tot, d1, d2, p1, p2;
+                   float lower, float upper, const int N) noexcept {
+    int vflg, lptr, uptr, i;
+    float rtem, tot, d1, d2, p1, p2;
 
     if (N < 1) return MISSING;
     if (lower < 100) return MISSING;
@@ -229,42 +224,42 @@ float precip_water(const float pres_arr[], const float wv_mixratio[],
     if (upper == -1) upper = 400.0;
 
     /* ----- Make sure this is a valid layer ----- */
-	vflg = 0;
-	while (vflg<1 && upper<800.0) {
-		rtem = interp_pressure(upper,pres_arr,wv_mixratio,N);
-		if(rtem<-0.0001) { 
-			upper = upper+50.0;
-		} else {
-			vflg=1;
-		}
-		if(upper>pres_arr[0]) {
-			return MISSING;
-		}
-	}
-	if(interp_pressure(upper,pres_arr,wv_mixratio,N) < -0.0001) {
-		lower = pres_arr[0];
-	}
+    vflg = 0;
+    while (vflg < 1 && upper < 800.0) {
+        rtem = interp_pressure(upper, pres_arr, wv_mixratio, N);
+        if (rtem < -0.0001) {
+            upper = upper + 50.0;
+        } else {
+            vflg = 1;
+        }
+        if (upper > pres_arr[0]) {
+            return MISSING;
+        }
+    }
+    if (interp_pressure(upper, pres_arr, wv_mixratio, N) < -0.0001) {
+        lower = pres_arr[0];
+    }
 
     /* ----- Find lowest observation in layer ----- */
     i = 0;
     while (pres_arr[i] > lower) i++;
-    while (wv_mixratio[i]<-0.0001) i++;
+    while (wv_mixratio[i] < -0.0001) i++;
     lptr = i;
     if (pres_arr[i] == lower) lptr++;
 
     /* ----- Find highest observation in layer ----- */
-    i=N-1;
+    i = N - 1;
     while (pres_arr[i] < upper) i--;
     uptr = i;
     if (pres_arr[i] == upper) uptr--;
 
     /* ----- Start with interpolated bottom layer ----- */
-    d1 = interp_pressure(lower,pres_arr,wv_mixratio,N);
+    d1 = interp_pressure(lower, pres_arr, wv_mixratio, N);
     p1 = lower;
 
     tot = 0;
     for (i = lptr; i <= uptr; i++) {
-        if (wv_mixratio[i]<-0.0001) {
+        if (wv_mixratio[i] < -0.0001) {
             /* ----- Calculate every level that reports a mixing ratio ----- */
             d2 = wv_mixratio[i];
             p2 = pres_arr[i];
@@ -273,43 +268,40 @@ float precip_water(const float pres_arr[], const float wv_mixratio[],
             d1 = d2;
             p1 = p2;
         }
-	}
+    }
 
     /* ----- Finish with interpolated top layer ----- */
-    d2 = interp_pressure(upper,pres_arr,wv_mixratio,N);
+    d2 = interp_pressure(upper, pres_arr, wv_mixratio, N);
     p2 = upper;
     rtem = (d1 + d2) / 2.0;
     tot = tot + rtem * (p1 - p2);
 
     /* ----- Convert to inches (from Pa*kg/kg) ----- */
-    return tot*0.000040173;
+    return tot * 0.000040173;
 }
 
 float ThetaE_diff(const float pres_arr[], const float thetae[],
-        const float ptop, const int N) noexcept {
+                  const float ptop, const int N) noexcept {
     int i;
     float maxe = -999.0, mine = 999.0, the, pt, tt, tdt, pmx, pmn;
 
-    if (N<1) return MISSING;
+    if (N < 1) return MISSING;
 
     for (i = 1; i < N; i++) {
-        if (pres_arr[i]>0 && thetae[i]>0) {
+        if (pres_arr[i] > 0 && thetae[i] > 0) {
             if (pres_arr[i] < ptop) break;
             if (thetae[i] > maxe) {
-              maxe = thetae[i];
-              pmx = pres_arr[i];
+                maxe = thetae[i];
+                pmx = pres_arr[i];
             }
             if (thetae[i] < mine) {
-              mine = thetae[i];
-              pmn = pres_arr[i];
+                mine = thetae[i];
+                pmn = pres_arr[i];
             }
         }
     }
-    if(pmx<pmn) return 0.0;
+    if (pmx < pmn) return 0.0;
     return (maxe - mine);
 }
 
-
-
 }  // end namespace sharp
-
