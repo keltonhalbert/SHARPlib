@@ -311,6 +311,10 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
         float pcl_t_lo = pcl_t_hi;
 
         pcl_pres_hi = pcl_pres_hi - dp;
+        // To-Do: It may be computationally more efficient to have Pi
+        // pre-computed, rather than calling std::pow within the loop.
+        // Getting pressure/temperature from Pi should take fewer
+        // operations than computing pi each time.
         pcl_pi_hi = std::pow(pcl_pres_hi / THETA_REF_PRESSURE, ROCP);
 
         // call the iterative solver to get the new parcel
