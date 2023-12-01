@@ -132,7 +132,6 @@ float interp_coord(float data_val, const float data_arr[],
 
         const float data_top = data_arr[idx_top];
         const float coord_top = coord_arr[idx_top];
-
         if (((data_bot <= data_val) && (data_top >= data_val)) ||
             ((data_bot >= data_val) && (data_top <= data_val))) {
             const float dist =

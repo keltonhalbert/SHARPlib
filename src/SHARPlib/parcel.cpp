@@ -221,14 +221,14 @@ float precip_water(const float pres_arr[], const float wv_mixratio[],
 	int vflg, lptr, uptr, i;
 	float rtem, tot, d1, d2, p1, p2;
 
-        if (N < 1) return MISSING;
-        if (lower < 100) return MISSING;
+    if (N < 1) return MISSING;
+    if (lower < 100) return MISSING;
 
-        /* ----- See if default layer is specified ----- */
-        if (lower == -1) lower = pres_arr[0];
-        if (upper == -1) upper = 400.0;
+    /* ----- See if default layer is specified ----- */
+    if (lower == -1) lower = pres_arr[0];
+    if (upper == -1) upper = 400.0;
 
-        /* ----- Make sure this is a valid layer ----- */
+    /* ----- Make sure this is a valid layer ----- */
 	vflg = 0;
 	while (vflg<1 && upper<800.0) {
 		rtem = interp_pressure(upper,pres_arr,wv_mixratio,N);
@@ -245,68 +245,68 @@ float precip_water(const float pres_arr[], const float wv_mixratio[],
 		lower = pres_arr[0];
 	}
 
-        /* ----- Find lowest observation in layer ----- */
-        i = 0;
-        while (pres_arr[i] > lower) i++;
-        while (wv_mixratio[i]<-0.0001) i++;
-        lptr = i;
-        if (pres_arr[i] == lower) lptr++;
+    /* ----- Find lowest observation in layer ----- */
+    i = 0;
+    while (pres_arr[i] > lower) i++;
+    while (wv_mixratio[i]<-0.0001) i++;
+    lptr = i;
+    if (pres_arr[i] == lower) lptr++;
 
-        /* ----- Find highest observation in layer ----- */
-        i=N-1;
-        while (pres_arr[i] < upper) i--;
-        uptr = i;
-        if (pres_arr[i] == upper) uptr--;
+    /* ----- Find highest observation in layer ----- */
+    i=N-1;
+    while (pres_arr[i] < upper) i--;
+    uptr = i;
+    if (pres_arr[i] == upper) uptr--;
 
-        /* ----- Start with interpolated bottom layer ----- */
-        d1 = interp_pressure(lower,pres_arr,wv_mixratio,N);
-        p1 = lower;
+    /* ----- Start with interpolated bottom layer ----- */
+    d1 = interp_pressure(lower,pres_arr,wv_mixratio,N);
+    p1 = lower;
 
-        tot = 0;
-        for (i = lptr; i <= uptr; i++) {
-                if (wv_mixratio[i]<-0.0001) {
-                        /* ----- Calculate every level that reports a mixing ratio ----- */
-                        d2 = wv_mixratio[i];
-                        p2 = pres_arr[i];
-                        rtem = (d1 + d2) / 2;
-                        tot = tot + rtem * (p1 - p2);
-                        d1 = d2;
-                        p1 = p2;
-                }
+    tot = 0;
+    for (i = lptr; i <= uptr; i++) {
+        if (wv_mixratio[i]<-0.0001) {
+            /* ----- Calculate every level that reports a mixing ratio ----- */
+            d2 = wv_mixratio[i];
+            p2 = pres_arr[i];
+            rtem = (d1 + d2) / 2;
+            tot = tot + rtem * (p1 - p2);
+            d1 = d2;
+            p1 = p2;
+        }
 	}
 
-        /* ----- Finish with interpolated top layer ----- */
-        d2 = interp_pressure(upper,pres_arr,wv_mixratio,N);
-        p2 = upper;
-        rtem = (d1 + d2) / 2.0;
-        tot = tot + rtem * (p1 - p2);
+    /* ----- Finish with interpolated top layer ----- */
+    d2 = interp_pressure(upper,pres_arr,wv_mixratio,N);
+    p2 = upper;
+    rtem = (d1 + d2) / 2.0;
+    tot = tot + rtem * (p1 - p2);
 
-        /* ----- Convert to inches (from Pa*kg/kg) ----- */
-        return tot*0.000040173;
+    /* ----- Convert to inches (from Pa*kg/kg) ----- */
+    return tot*0.000040173;
 }
 
 float ThetaE_diff(const float pres_arr[], const float thetae[],
         const float ptop, const int N) noexcept {
-        int i;
-        float maxe = -999.0, mine = 999.0, the, pt, tt, tdt, pmx, pmn;
+    int i;
+    float maxe = -999.0, mine = 999.0, the, pt, tt, tdt, pmx, pmn;
 
-        if (N<1) return MISSING;
+    if (N<1) return MISSING;
 
-        for (i = 1; i < N; i++) {
-                if (pres_arr[i]>0 && thetae[i]>0) {
-                        if (pres_arr[i] < ptop) break;
-                        if (thetae[i] > maxe) {
-                          maxe = thetae[i];
-                          pmx = pres_arr[i];
-                        }
-                        if (thetae[i] < mine) {
-                          mine = thetae[i];
-                          pmn = pres_arr[i];
-                        }
-                }
+    for (i = 1; i < N; i++) {
+        if (pres_arr[i]>0 && thetae[i]>0) {
+            if (pres_arr[i] < ptop) break;
+            if (thetae[i] > maxe) {
+              maxe = thetae[i];
+              pmx = pres_arr[i];
+            }
+            if (thetae[i] < mine) {
+              mine = thetae[i];
+              pmn = pres_arr[i];
+            }
         }
-        if(pmx<pmn) return 0.0;
-        return (maxe - mine);
+    }
+    if(pmx<pmn) return 0.0;
+    return (maxe - mine);
 }
 
 

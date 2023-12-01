@@ -418,45 +418,45 @@ template <typename Lft>
 float cnvtv_temp(Lft lifter, const float pres_arr[], const float hght_arr[],
                  const float b_arr[], const float vt_arr[],
                  const float t0, const float td0,
-                 const int N, const float mincinh) noexcept {
-        Parcel pcl;
+                 const int N, float mincinh) noexcept {
+    Parcel pcl;
 
-        if (N<1) return MISSING;
+    if (N<1) return MISSING;
 
-        if ((int)mincinh == -1) mincinh = -1.0;
+    if ((int)mincinh == -1) mincinh = -1.0;
 
-        pcl.pres = pres_arr[0];
-        pcl.tmpk = t0;
-        pcl.dwpk = td0;
+    pcl.pres = pres_arr[0];
+    pcl.tmpk = t0;
+    pcl.dwpk = td0;
 
-        /*
-        * Do a quick search to find whether to continue.
-        * If you need to heat up more than 25C, don't compute.
-        */
+    /*
+    * Do a quick search to find whether to continue.
+    * If you need to heat up more than 25C, don't compute.
+    */
 
-        pcl.tmpk = t0+25.0;
-        lift_parcel(lifter, pres_arr, vt_arr, b_arr, N, &pcl);
-        cape_cinh(pres_arr, hght_arr, b_arr, N, &pcl);
-        if ((pcl.cape == 0.0 ) || (pcl.cinh < mincinh)) {
-                return MISSING;
-        }
+    pcl.tmpk = t0+25.0;
+    lift_parcel(lifter, pres_arr, vt_arr, b_arr, N, &pcl);
+    cape_cinh(pres_arr, hght_arr, b_arr, N, &pcl);
+    if ((pcl.cape == 0.0 ) || (pcl.cinh < mincinh)) {
+            return MISSING;
+    }
 
-        pcl.tmpk = t0;
-        pcl.cinh = -999.0;
-        while (pcl.cinh < mincinh ) {
-                lift_parcel(lifter, pres_arr, vt_arr, b_arr, N, &pcl);
-                cape_cinh(pres_arr, hght_arr, b_arr, N, &pcl);
-                if(pcl.cape>0 && pcl.cinh>=mincinh) {
-                        return pcl.tmpk;
-                }
-                if(pcl.cinh < -100.0) {
-                        pcl.tmpk += 2.0;
-                }
-                else {
-                        pcl.tmpk += 0.5;
-                }
-        }
-        return MISSING;
+    pcl.tmpk = t0;
+    pcl.cinh = -999.0;
+    while (pcl.cinh < mincinh ) {
+            lift_parcel(lifter, pres_arr, vt_arr, b_arr, N, &pcl);
+            cape_cinh(pres_arr, hght_arr, b_arr, N, &pcl);
+            if(pcl.cape>0 && pcl.cinh>=mincinh) {
+                    return pcl.tmpk;
+            }
+            if(pcl.cinh < -100.0) {
+                    pcl.tmpk += 2.0;
+            }
+            else {
+                    pcl.tmpk += 0.5;
+            }
+    }
+    return MISSING;
 }
 
 }  // end namespace sharp

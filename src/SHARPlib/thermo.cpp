@@ -23,19 +23,19 @@ float wobf(float temperature)  {
     float pol;
     const float x = temperature - ZEROCNK - 20.0f;
     if (x <= 0.0f) {
-       pol = 1.0f + x * (-8.841660499999999e-03f + x * ( 1.4714143e-04f \
+        pol = 1.0f + x * (-8.841660499999999e-03f + x * ( 1.4714143e-04f \
                  + x * (-9.671989000000001e-07f + x * (-3.2607217e-08f \
                  + x * (-3.8598073e-10f)))));
-       pol = pol * pol;
-       return (15.13f / (pol * pol))+ZEROCNK;
+        pol = pol * pol;
+        return (15.13f / (pol * pol))+ZEROCNK;
     }
     else {
-       pol = x * (4.9618922e-07f + x * (-6.1059365e-09f + \
+        pol = x * (4.9618922e-07f + x * (-6.1059365e-09f + \
              x * (3.9401551e-11f + x * (-1.2588129e-13f + \
              x * (1.6688280e-16f)))));
-       pol = 1.0f + x * (3.6182989e-03f + x * (-1.3603273e-05f + pol));
-       pol = pol * pol;
-       return (29.93f / (pol * pol) + 0.96f * x - 14.8f)+ZEROCNK;
+        pol = 1.0f + x * (3.6182989e-03f + x * (-1.3603273e-05f + pol));
+        pol = pol * pol;
+        return (29.93f / (pol * pol) + 0.96f * x - 14.8f)+ZEROCNK;
     }
 }
 
@@ -528,17 +528,17 @@ float buoyancy_dilution_potential(float temperature, float mse_bar,
 }
 
 float max_temp(float mixlyr, const float p_arr[], const float t_arr[], int N) noexcept {
-        float temp, maxt;
+    float temp, maxt;
 
-        maxt = MISSING;
-        if (N<1) return MISSING;
-        /* ----- See if default layer is specified ----- */
-        if (mixlyr == -1) mixlyr = p_arr[0] - 100.0;
+    maxt = MISSING;
+    if (N<1) return MISSING;
+    /* ----- See if default layer is specified ----- */
+    if (mixlyr == -1) mixlyr = p_arr[0] - 100.0;
 
-        temp = interp_pressure(mixlyr, p_arr, t_arr, N) + 2.0;
-        maxt = (temp * pow( p_arr[0] / mixlyr , 0.28571428)) - 273.15;
+    temp = interp_pressure(mixlyr, p_arr, t_arr, N) + 2.0;
+    maxt = (temp * pow( p_arr[0] / mixlyr , 0.28571428)) - 273.15;
 
-        return maxt;
+    return maxt;
 }
 
 float relh(float pressure, float temperature, float dewpoint) noexcept {
@@ -558,15 +558,15 @@ float lapse_rate_max(const float height[], const float temperature[], const int 
 	if((bot==MISSING) || (top==MISSING) || (depth==MISSING)) return MISSING;
 	if((bot<height[0]) || (top>height[N-1])) return MISSING;
 #endif
-        maxlr = MISSING;
+    maxlr = MISSING;
 
-        // Loop through every 250 m over depth to get max LR
-        for (z=bot; z<=(top-depth); z+=250) {
+    // Loop through every 250 m over depth to get max LR
+    for (z=bot; z<=(top-depth); z+=250) {
 		hght_lyr.bottom = z-height[0];
 		hght_lyr.top = z-height[0]+depth;
-	        lr = lapse_rate(hght_lyr,height,temperature,N);
-                if ( lr > maxlr) {
-	                maxlr = lr;
+        lr = lapse_rate(hght_lyr,height,temperature,N);
+        if ( lr > maxlr) {
+            maxlr = lr;
 		}
 	}
         return maxlr;
