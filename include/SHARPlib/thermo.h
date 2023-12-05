@@ -646,4 +646,4 @@ void drylift(float pressure, float temperature, float dewpoint,
 
 }  // end namespace sharp
 
-#endif  // __SHARP_THERMP_H__
+#endif  // __SHARP_THERMO_H__
