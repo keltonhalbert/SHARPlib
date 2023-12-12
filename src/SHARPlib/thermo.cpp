@@ -573,4 +573,17 @@ float lapse_rate_max(const float height[], const float temperature[],
     return maxlr;
 }
 
+// Only compile this code if we're building
+// the Web Assembly (WASM) code through
+// Emscripten to bind it to javascript.
+#ifdef __EMSCRIPTEN__
+#include <emscripten/bind.h>
+using namespace emscripten;
+
+EMSCRIPTEN_BINDINGS(sharplib_thermo) {
+    function("theta", &sharp::theta);
+    function("virtual_temperature", &sharp::virtual_temperature);
+}  // end emscripten bindings
+#endif
+
 }  // end namespace sharp
