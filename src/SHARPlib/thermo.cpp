@@ -573,6 +573,8 @@ float lapse_rate_max(const float height[], const float temperature[],
     return maxlr;
 }
 
+}  // end namespace sharp
+
 // Only compile this code if we're building
 // the Web Assembly (WASM) code through
 // Emscripten to bind it to javascript.
@@ -581,9 +583,33 @@ float lapse_rate_max(const float height[], const float temperature[],
 using namespace emscripten;
 
 EMSCRIPTEN_BINDINGS(sharplib_thermo) {
+    function("vapor_pressure", &sharp::vapor_pressure);
+    function("vapor_pressure_ice", &sharp::vapor_pressure_ice);
+    function("lcl_temperature", &sharp::lcl_temperature);
+    function("temperature_at_mixratio", &sharp::temperature_at_mixratio);
+    function("theta_level", &sharp::theta_level);
     function("theta", &sharp::theta);
+    function("mixratio_from_spfh",
+             select_overload<float(float)>(&sharp::mixratio));
+    function("mixratio",
+             select_overload<float(float, float)>(&sharp::mixratio));
+    function("mixratio_ice", &sharp::mixratio_ice);
+    function("specific_humidity", &sharp::specific_humidity);
     function("virtual_temperature", &sharp::virtual_temperature);
+    function("wetlift", &sharp::wetlift);
+
+    // To-Do: So far these commented out functions don't compile because
+    // they require pointers and references. Need to look into these.
+    // function("moist_adiabat_cm1", &sharp::moist_adiabat_cm1);
+    //  function("drylift", &sharp::drylift);
+    function("thetae", &sharp::thetae);
+    // function("lapse_rate",
+    //          select_overload<float(sharp::HeightLayer, float*, float*, int)>(
+    //              &sharp::lapse_rate));
+    function("buoyancy", &sharp::buoyancy);
+    function("moist_static_energy", &sharp::moist_static_energy);
+    function("buoyancy_dilution_potential",
+             &sharp::buoyancy_dilution_potential);
+
 }  // end emscripten bindings
 #endif
-
-}  // end namespace sharp
