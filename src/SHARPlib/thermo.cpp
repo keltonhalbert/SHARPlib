@@ -236,33 +236,39 @@ float _solve_cm1(float& pcl_pres_hi, float& pcl_pi_hi, float& pcl_t_hi,
         float fliq = 1.0;
         float fice = 0.0;
         if (ice) {
+            // Bryan and Fritsch 2004, eq. 29 and eq. 30
             fliq = std::max(
                 std::min((pcl_t_hi - 233.15f) / (ZEROCNK - 233.15f), 1.0f),
                 0.0f);
             fice = 1.0f - fliq;
         }
 
+        // Bryan and Fritsch 2004, eq. 28
         const float rv_term = fliq * mixratio(pcl_pres_hi, pcl_t_hi) +
                               fice * mixratio_ice(pcl_pres_hi, pcl_t_hi);
         pcl_rv_hi = std::min(rv_total, rv_term);
+        // Bryan and Fritsch 2004, eq. 31
         pcl_ri_hi = std::max(fice * (rv_total - pcl_rv_hi), 0.0f);
+        // Bryan and Fritsch 2004, eq. 32
         pcl_rl_hi = std::max(rv_total - pcl_rv_hi - pcl_ri_hi, 0.0f);
 
         const float tbar = 0.5f * (pcl_t_lo + pcl_t_hi);
         const float rvbar = 0.5f * (pcl_rv_lo + pcl_rv_hi);
         const float rlbar = 0.5f * (pcl_rl_lo + pcl_rl_hi);
         const float ribar = 0.5f * (pcl_ri_lo + pcl_ri_hi);
-
+        // Bryan and Fritsch 2004, eq. 33
         const float LHV = LV1 - LV2 * tbar;
+        // Bryan and Fritsch 2004, eq. 34
         const float LHS = LS1 - LS2 * tbar;
+        const float LHF = LHS - LHV;
 
         const float RM = RDGAS + RVGAS * rvbar;
         const float CPM =
             CP_DRYAIR + CP_VAPOR * rvbar + CP_LIQUID * rlbar + CP_ICE * ribar;
         const float term =
-            LHV * (pcl_rl_hi - pcl_rl_lo) / (CPM * tbar) +
-            LHS * (pcl_ri_hi - pcl_ri_lo) / (CPM * tbar) +
-            (RM / CPM - ROCP) * std::log(pcl_pres_hi / pcl_pres_lo);
+            ((RM / CPM) - ROCP) * std::log(pcl_pres_hi / pcl_pres_lo) +
+            (LHV * (pcl_rl_hi - pcl_rl_lo) / (CPM * tbar)) +
+            (LHS * (pcl_ri_hi - pcl_ri_lo) / (CPM * tbar));
 
         pcl_theta_hi = pcl_theta_lo * std::exp(term);
         counter += 1;
@@ -311,6 +317,7 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
         float pcl_t_lo = pcl_t_hi;
 
         pcl_pres_hi = pcl_pres_hi - dp;
+        printf("%f\n", pcl_pres_hi);
         // To-Do: It may be computationally more efficient to have Pi
         // pre-computed, rather than calling std::pow within the loop.
         // Getting pressure/temperature from Pi should take fewer
@@ -574,3 +581,42 @@ float lapse_rate_max(const float height[], const float temperature[],
 }
 
 }  // end namespace sharp
+
+// Only compile this code if we're building
+// the Web Assembly (WASM) code through
+// Emscripten to bind it to javascript.
+#ifdef __EMSCRIPTEN__
+#include <emscripten/bind.h>
+using namespace emscripten;
+
+EMSCRIPTEN_BINDINGS(sharplib_thermo) {
+    function("vapor_pressure", &sharp::vapor_pressure);
+    function("vapor_pressure_ice", &sharp::vapor_pressure_ice);
+    function("lcl_temperature", &sharp::lcl_temperature);
+    function("temperature_at_mixratio", &sharp::temperature_at_mixratio);
+    function("theta_level", &sharp::theta_level);
+    function("theta", &sharp::theta);
+    function("mixratio_from_spfh",
+             select_overload<float(float)>(&sharp::mixratio));
+    function("mixratio",
+             select_overload<float(float, float)>(&sharp::mixratio));
+    function("mixratio_ice", &sharp::mixratio_ice);
+    function("specific_humidity", &sharp::specific_humidity);
+    function("virtual_temperature", &sharp::virtual_temperature);
+    function("wetlift", &sharp::wetlift);
+
+    // To-Do: So far these commented out functions don't compile because
+    // they require pointers and references. Need to look into these.
+    // function("moist_adiabat_cm1", &sharp::moist_adiabat_cm1);
+    //  function("drylift", &sharp::drylift);
+    function("thetae", &sharp::thetae);
+    // function("lapse_rate",
+    //          select_overload<float(sharp::HeightLayer, float*, float*, int)>(
+    //              &sharp::lapse_rate));
+    function("buoyancy", &sharp::buoyancy);
+    function("moist_static_energy", &sharp::moist_static_energy);
+    function("buoyancy_dilution_potential",
+             &sharp::buoyancy_dilution_potential);
+
+}  // end emscripten bindings
+#endif
