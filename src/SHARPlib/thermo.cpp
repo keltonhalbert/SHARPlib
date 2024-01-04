@@ -265,6 +265,12 @@ float _solve_cm1(float& pcl_pres_hi, float& pcl_pi_hi, float& pcl_t_hi,
         const float RM = RDGAS + RVGAS * rvbar;
         const float CPM =
             CP_DRYAIR + CP_VAPOR * rvbar + CP_LIQUID * rlbar + CP_ICE * ribar;
+
+        // This confused me for a very long time, becasue it differs from the
+        // equations referenced in the paper. This is derived in terms of
+        // the liquid water and ice mixing ratios, rather than vapor and ice
+        // as per the papers. The difference between approaches is within
+        // 0.001 K of each other.
         const float term =
             ((RM / CPM) - ROCP) * std::log(pcl_pres_hi / pcl_pres_lo) +
             (LHV * (pcl_rl_hi - pcl_rl_lo) / (CPM * tbar)) +
@@ -289,13 +295,16 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
                         const adiabat ma_type) {
     // This is the total water vapor mixing ratio at the beginning
     // of parcel ascent, which is most likely the LCL or LPL value
-    rv_total = mixratio(pressure, temperature);
+    // TO-DO: This may not work appropriately for a descenting parcel
+    // where it is assumed to be saturated with liquid...
+    // rv_total = mixratio(pressure, temperature);
 
     // set up solver variables
     const bool ice = (ma_type >= adiabat::pseudo_ice) ? true : false;
-    float dp = std::abs(pressure - new_pressure);
-    const int n_iters = (dp < pres_incr) ? 1 : 1 + (int)(dp / pres_incr);
-    dp = (dp < pres_incr) ? dp : dp / (float)n_iters;
+    float dp = new_pressure - pressure;
+    const int n_iters =
+        (std::abs(dp) < pres_incr) ? 1 : (int)(std::abs(dp) / pres_incr);
+    dp = (std::abs(dp) < pres_incr) ? dp : dp / (float)n_iters;
 
     // Start by setting the "top" variables.
     float pcl_theta_hi = theta(pressure, temperature, THETA_REF_PRESSURE);
@@ -316,8 +325,7 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
         float pcl_ri_lo = pcl_ri_hi;
         float pcl_t_lo = pcl_t_hi;
 
-        pcl_pres_hi = pcl_pres_hi - dp;
-        printf("%f\n", pcl_pres_hi);
+        pcl_pres_hi = pcl_pres_hi + dp;
         // To-Do: It may be computationally more efficient to have Pi
         // pre-computed, rather than calling std::pow within the loop.
         // Getting pressure/temperature from Pi should take fewer

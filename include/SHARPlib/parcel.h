@@ -77,6 +77,9 @@ struct lifter_cm1 {
     /**
      * \brief Used to keep track of mixing ratio for conserved/adiabatic lifting
      */
+
+    // TO-DO: Need to find a better way to handle this paramater for both
+    // ascending and descending parcels.
     float rv_total = MISSING;
 
     /**
