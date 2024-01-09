@@ -252,6 +252,13 @@ float _solve_cm1(float& pcl_pres_hi, float& pcl_pi_hi, float& pcl_t_hi,
         // Bryan and Fritsch 2004, eq. 32
         pcl_rl_hi = std::max(rv_total - pcl_rv_hi - pcl_ri_hi, 0.0f);
 
+        // this works for saturated descent
+        // pcl_rv_hi = std::max(rv_total, rv_term);
+        // // Bryan and Fritsch 2004, eq. 31
+        // // pcl_ri_hi = std::max(fice * (rv_total - pcl_rv_hi), 0.0f);
+        // // Bryan and Fritsch 2004, eq. 32
+        // pcl_rl_hi = std::max(rv_total - pcl_rv_hi - pcl_ri_hi, 0.0f);
+
         const float tbar = 0.5f * (pcl_t_lo + pcl_t_hi);
         const float rvbar = 0.5f * (pcl_rv_lo + pcl_rv_hi);
         const float rlbar = 0.5f * (pcl_rl_lo + pcl_rl_hi);
@@ -297,10 +304,14 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
     // of parcel ascent, which is most likely the LCL or LPL value
     // TO-DO: This may not work appropriately for a descenting parcel
     // where it is assumed to be saturated with liquid...
-    // rv_total = mixratio(pressure, temperature);
+    rv_total = mixratio(pressure, temperature);
 
     // set up solver variables
-    const bool ice = (ma_type >= adiabat::pseudo_ice) ? true : false;
+    const bool ice =
+        ((ma_type == adiabat::pseudo_ice) || (ma_type == adiabat::adiab_ice))
+            ? true
+            : false;
+
     float dp = new_pressure - pressure;
     const int n_iters =
         (std::abs(dp) < pres_incr) ? 1 : (int)(std::abs(dp) / pres_incr);
@@ -314,6 +325,11 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
     float pcl_rv_hi = mixratio(pcl_pres_hi, pcl_t_hi);
     float pcl_rl_hi = 0.0f;
     float pcl_ri_hi = 0.0f;
+
+    // This works for saturated descent
+    // float pcl_rl_hi = mixratio(pcl_pres_hi, pcl_t_hi);
+    // float pcl_rv_hi = 0.0f;
+    // float pcl_ri_hi = 0.0f;
 
     // Iterate the required number of times to reach the new pressure
     // level from the old one in increments of dp
