@@ -227,6 +227,7 @@ float _solve_cm1(float& pcl_pres_hi, float& pcl_pi_hi, float& pcl_t_hi,
     // accordingly
     float pcl_theta_last = pcl_theta_lo;
     float pcl_theta_hi = pcl_theta_lo;
+    float dp = pcl_pres_hi - pcl_pres_lo;
     bool not_converged = true;
     int counter = 0;
 
@@ -246,18 +247,16 @@ float _solve_cm1(float& pcl_pres_hi, float& pcl_pi_hi, float& pcl_t_hi,
         // Bryan and Fritsch 2004, eq. 28
         const float rv_term = fliq * mixratio(pcl_pres_hi, pcl_t_hi) +
                               fice * mixratio_ice(pcl_pres_hi, pcl_t_hi);
-        pcl_rv_hi = std::min(rv_total, rv_term);
+
+        if (dp < 0) {
+            pcl_rv_hi = std::min(rv_total, rv_term);
+        } else {
+            pcl_rv_hi = std::max(rv_total, rv_term);
+        }
         // Bryan and Fritsch 2004, eq. 31
         pcl_ri_hi = std::max(fice * (rv_total - pcl_rv_hi), 0.0f);
         // Bryan and Fritsch 2004, eq. 32
         pcl_rl_hi = std::max(rv_total - pcl_rv_hi - pcl_ri_hi, 0.0f);
-
-        // this works for saturated descent
-        // pcl_rv_hi = std::max(rv_total, rv_term);
-        // // Bryan and Fritsch 2004, eq. 31
-        // // pcl_ri_hi = std::max(fice * (rv_total - pcl_rv_hi), 0.0f);
-        // // Bryan and Fritsch 2004, eq. 32
-        // pcl_rl_hi = std::max(rv_total - pcl_rv_hi - pcl_ri_hi, 0.0f);
 
         const float tbar = 0.5f * (pcl_t_lo + pcl_t_hi);
         const float rvbar = 0.5f * (pcl_rv_lo + pcl_rv_hi);
@@ -279,8 +278,8 @@ float _solve_cm1(float& pcl_pres_hi, float& pcl_pi_hi, float& pcl_t_hi,
         // as per the papers. The difference between approaches is within
         // 0.001 K of each other.
         const float term =
-            ((RM / CPM) - ROCP) * std::log(pcl_pres_hi / pcl_pres_lo) +
-            (LHV * (pcl_rl_hi - pcl_rl_lo) / (CPM * tbar)) +
+            ((RM / CPM) - ROCP) * std::log(pcl_pres_hi / pcl_pres_lo) -
+            (LHV * (pcl_rv_hi - pcl_rv_lo) / (CPM * tbar)) +
             (LHS * (pcl_ri_hi - pcl_ri_lo) / (CPM * tbar));
 
         pcl_theta_hi = pcl_theta_lo * std::exp(term);
@@ -325,11 +324,6 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
     float pcl_rv_hi = mixratio(pcl_pres_hi, pcl_t_hi);
     float pcl_rl_hi = 0.0f;
     float pcl_ri_hi = 0.0f;
-
-    // This works for saturated descent
-    // float pcl_rl_hi = mixratio(pcl_pres_hi, pcl_t_hi);
-    // float pcl_rv_hi = 0.0f;
-    // float pcl_ri_hi = 0.0f;
 
     // Iterate the required number of times to reach the new pressure
     // level from the old one in increments of dp
