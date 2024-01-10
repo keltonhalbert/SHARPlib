@@ -251,7 +251,7 @@ float _solve_cm1(float& pcl_pres_hi, float& pcl_pi_hi, float& pcl_t_hi,
         if (dp < 0) {
             pcl_rv_hi = std::min(rv_total, rv_term);
         } else {
-            pcl_rv_hi = std::max(rv_total, rv_term);
+            pcl_rv_hi = rv_term;
         }
         // Bryan and Fritsch 2004, eq. 31
         pcl_ri_hi = std::max(fice * (rv_total - pcl_rv_hi), 0.0f);
@@ -299,12 +299,6 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
                         float& rv_total, float& rv, float& rl, float& ri,
                         const float pres_incr, const float converge,
                         const adiabat ma_type) {
-    // This is the total water vapor mixing ratio at the beginning
-    // of parcel ascent, which is most likely the LCL or LPL value
-    // TO-DO: This may not work appropriately for a descenting parcel
-    // where it is assumed to be saturated with liquid...
-    rv_total = mixratio(pressure, temperature);
-
     // set up solver variables
     const bool ice =
         ((ma_type == adiabat::pseudo_ice) || (ma_type == adiabat::adiab_ice))
@@ -324,6 +318,15 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
     float pcl_rv_hi = mixratio(pcl_pres_hi, pcl_t_hi);
     float pcl_rl_hi = 0.0f;
     float pcl_ri_hi = 0.0f;
+
+    // This is the total water vapor mixing ratio at the beginning
+    // of parcel ascent, which is most likely the LCL or LPL value
+    // TO-DO: Need to figure out how to handle this for descending parcels,
+    // because using the initial saturation mixing ratio for descent will
+    // not produce the same adiabat as ascending. Using the water vapor mixing
+    // ratio at the LCL for both ascent and descent works perfectly.
+    rv_total = mixratio(pressure, temperature);
+    if (dp > 0) rv_total = 0.022789251059293747;
 
     // Iterate the required number of times to reach the new pressure
     // level from the old one in increments of dp
