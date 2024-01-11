@@ -325,8 +325,7 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
     // because using the initial saturation mixing ratio for descent will
     // not produce the same adiabat as ascending. Using the water vapor mixing
     // ratio at the LCL for both ascent and descent works perfectly.
-    rv_total = mixratio(pressure, temperature);
-    if (dp > 0) rv_total = 0.022789251059293747;
+    if (rv_total == MISSING) rv_total = mixratio(pressure, temperature);
 
     // Iterate the required number of times to reach the new pressure
     // level from the old one in increments of dp
