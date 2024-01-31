@@ -4,11 +4,10 @@
  * \author
  *   Kelton Halbert                     \n
  *   Email: kelton.halbert@noaa.gov     \n
- *   License: Apache 2.0                \n
  * \date    2023-05-19
  *
  * Written for the NWS Storm Prediction Center,
- * based on NSHARP routines written by John Hart 
+ * based on NSHARP routines written by John Hart
  * Rich Thompson.
  */
 
@@ -22,11 +21,11 @@ extern "C" {
 #include <SHARPlib/CWrap/layer_wrap.h>
 
 struct sharp_WindVector {
-    void *obj;
+    void* obj;
 };
 
 struct sharp_WindComponents {
-    void *obj;
+    void* obj;
 };
 
 typedef struct sharp_WindVector sharp_WindVector_t;
@@ -78,8 +77,8 @@ float sharp_PressureLayer_helicity(sharp_PressureLayer_t* plyr,
                                    const float* pressure, const float* u_wind,
                                    const float* v_wind, const int N);
 
-#ifdef __cplusplus // end of extern C
+#ifdef __cplusplus  // end of extern C
 }
 #endif
 
-#endif // __SHARP_WINDS_WRAP_H__
+#endif  // __SHARP_WINDS_WRAP_H__
