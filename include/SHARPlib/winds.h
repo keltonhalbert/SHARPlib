@@ -5,7 +5,6 @@
  * \author
  *   Kelton Halbert                  \n
  *   Email: kelton.halbert@noaa.gov  \n
- *   License: Apache 2.0             \n
  * \date   2022-10-13
  *
  * Written for the NWS Storm Predidiction Center \n
@@ -68,8 +67,7 @@ struct WindComponents {
  *
  * \return  u_component     (m/s)
  */
-[[nodiscard]] float u_component(float wind_speed,
-                                float wind_direction) ;
+[[nodiscard]] float u_component(float wind_speed, float wind_direction);
 
 /**
  *
@@ -85,8 +83,7 @@ struct WindComponents {
  *
  * \return  v_component     (m/s)
  */
-[[nodiscard]] float v_component(float wind_speed,
-                                float wind_direction) ;
+[[nodiscard]] float v_component(float wind_speed, float wind_direction);
 
 /**
  *
@@ -102,7 +99,7 @@ struct WindComponents {
  *
  * \return  wind_direction  (degrees from North)
  */
-[[nodiscard]] float vector_angle(float u_comp, float v_comp) ;
+[[nodiscard]] float vector_angle(float u_comp, float v_comp);
 
 /**
  *
@@ -118,7 +115,7 @@ struct WindComponents {
  *
  * \return  wind_speed  (m/s)
  */
-[[nodiscard]] float vector_magnitude(float u_comp, float v_comp) ;
+[[nodiscard]] float vector_magnitude(float u_comp, float v_comp);
 
 /**
  *
@@ -140,8 +137,7 @@ struct WindComponents {
  *
  * \return  wind_speed  (m/s)
  */
-[[nodiscard]] float vector_magnitude_precise(float u_comp,
-                                             float v_comp) ;
+[[nodiscard]] float vector_magnitude_precise(float u_comp, float v_comp);
 
 /**
  *
@@ -159,8 +155,7 @@ struct WindComponents {
  *
  * \return  {wind_speed, wind_direction}
  */
-[[nodiscard]] WindVector components_to_vector(float u_comp,
-                                              float v_comp) ;
+[[nodiscard]] WindVector components_to_vector(float u_comp, float v_comp);
 
 /**
  *
@@ -177,7 +172,7 @@ struct WindComponents {
  *
  * \return  {wind_speed, wind_direction}
  */
-[[nodiscard]] WindVector components_to_vector(WindComponents comp) ;
+[[nodiscard]] WindVector components_to_vector(WindComponents comp);
 
 /**
  *
@@ -194,8 +189,8 @@ struct WindComponents {
  *
  * \return  {u_comp, v_comp}
  */
-[[nodiscard]] WindComponents vector_to_components(
-    float wind_speed, float wind_direction) ;
+[[nodiscard]] WindComponents vector_to_components(float wind_speed,
+                                                  float wind_direction);
 
 /**
  *
@@ -211,7 +206,7 @@ struct WindComponents {
  *
  * \return  {u_comp, v_comp}
  */
-[[nodiscard]] WindComponents vector_to_components(WindVector vect) ;
+[[nodiscard]] WindComponents vector_to_components(WindVector vect);
 
 /**
  *
@@ -223,7 +218,7 @@ struct WindComponents {
  * and arrays of pressure and wind components with a length of N.
  *
  *
- * \param   layer       {bottom, top} 
+ * \param   layer       {bottom, top}
  * \param   pres        (Pa)
  * \param   u_wind      (m/s)
  * \param   v_wind      (m/s)
@@ -234,14 +229,14 @@ struct WindComponents {
  */
 [[nodiscard]] WindComponents mean_wind(PressureLayer layer, const float pres[],
                                        const float u_wind[],
-                                       const float v_wind[],
-                                       const int N, const bool weighted) ;
+                                       const float v_wind[], const int N,
+                                       const bool weighted);
 
 /**
  *
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- * \brief Compue the wind shear for a given layer 
+ * \brief Compue the wind shear for a given layer
  *
  * Computes the U and V components of the wind shear over a
  * layer given the vertical sounding arrays
@@ -264,16 +259,16 @@ template <typename L>
 [[nodiscard]] constexpr WindComponents wind_shear(L layer, const float coord[],
                                                   const float u_wind[],
                                                   const float v_wind[],
-                                                  const int N)  {
+                                                  const int N) {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING))
         return {MISSING, MISSING};
 #endif
 
     float u_bot = MISSING;
-	float u_top = MISSING;
-	float v_bot = MISSING;
-	float v_top = MISSING;
+    float u_top = MISSING;
+    float v_bot = MISSING;
+    float v_top = MISSING;
     // This if statement disappears at compile time depending
     // on which kind of layer is passed
     if constexpr (layer.coord == LayerCoordinate::pressure) {
@@ -310,19 +305,18 @@ template <typename L>
     return {u_top - u_bot, v_top - v_bot};
 }
 
-
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
  * \brief Computes the Storm Relative Helicity (SRH) over a given layer
  *
  * Computes the Storm Relative Helicity (SRH) over a given layer
- * using storm motion vector components stored in sharp::WindComponents. 
+ * using storm motion vector components stored in sharp::WindComponents.
  * This tempalte is the generalized form that will fill in the appropriate
  * interpolation calls and coordinate arrays depending on whether a
- * sharp::PressureLayer or sharp::HeightLayer gets passed to this 
+ * sharp::PressureLayer or sharp::HeightLayer gets passed to this
  * template. The other API instances are just static instantiations
- * of this template. 
+ * of this template.
  *
  * This integration occurs over the given arrays of coord, u_wind, and v_wind,
  * with N elements in each. The integration only uses interpolation
@@ -344,7 +338,7 @@ template <typename L>
 template <typename L>
 [[nodiscard]] float helicity(L layer, WindComponents storm_motion,
                              const float coord[], const float u_wind[],
-                             const float v_wind[], const int N)  {
+                             const float v_wind[], const int N) {
 #ifndef NO_QC
     if ((storm_motion.u == MISSING) || (storm_motion.v == MISSING)) {
         return MISSING;
@@ -421,4 +415,4 @@ template <typename L>
 
 }  // end namespace sharp
 
-#endif // __SHARP_WINDS_H__
+#endif  // __SHARP_WINDS_H__

@@ -1,11 +1,10 @@
 /**
  * \file
  * \brief Routines used to computed derived sounding parameters <!--
- * --> from vertical atmospheric profiles. 
- * \author 
- *     Kelton Halbert                  \n 
- *     Email: kelton.halbert@noaa.gov  \n 
- *     License: Apache 2.0             \n 
+ * --> from vertical atmospheric profiles.
+ * \author
+ *     Kelton Halbert                  \n
+ *     Email: kelton.halbert@noaa.gov  \n
  * \date 2022-10-13
  *
  * Written for the NWS Storm Predidiction Center \n
@@ -17,9 +16,9 @@
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/layer.h>
+#include <SHARPlib/parcel.h>
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
-#include <SHARPlib/parcel.h>
 
 namespace sharp {
 
@@ -37,13 +36,13 @@ namespace sharp {
  * Standard/default values for cape_thresh and cinh_thresh have been
  * experimentally determined to be cape_thresh = 100 J/kg and
  * cinh_thresh = -250 J/kg. If a pointer to a parcel object is passed
- * as the last arguments, the most ustanble parcel found during the 
- * EIL search will be returned to that pointer. 
+ * as the last arguments, the most ustanble parcel found during the
+ * EIL search will be returned to that pointer.
  *
- * All arrays are treated as inputs (and expected to be precomputed) except 
- * for the buoyancy array. It is more accurately meant to be an empty buffer 
- * array that can be used to hold buoyancy values during parcel lifting and 
- * integration. 
+ * All arrays are treated as inputs (and expected to be precomputed) except
+ * for the buoyancy array. It is more accurately meant to be an empty buffer
+ * array that can be used to hold buoyancy values during parcel lifting and
+ * integration.
  *
  * \param   pressure        (Pa)
  * \param   height          (meters)
@@ -62,7 +61,7 @@ namespace sharp {
     const float pressure[], const float height[], const float temperature[],
     const float dewpoint[], const float virtemp_arr[], float buoy_arr[],
     const int N, const float cape_thresh = 100.0,
-    const float cinh_thresh = -250.0, Parcel* mupcl = nullptr) ;
+    const float cinh_thresh = -250.0, Parcel* mupcl = nullptr);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -93,7 +92,7 @@ namespace sharp {
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const int N, HeightLayer mean_wind_layer_agl,
     HeightLayer wind_shear_layer_agl, const bool leftMover = false,
-    const bool pressureWeighted = false) ;
+    const bool pressureWeighted = false);
 
 /**
  *  \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -113,11 +112,11 @@ namespace sharp {
  *  and captures the motion of elevated supercells much better than
  *  the Bunkers 2000 method.
  *
- *  The input parameters eff_infl_lyr and mupcl (effective inflow layer 
- *  bounds and the most unstable parcel, respectively) are required to be 
+ *  The input parameters eff_infl_lyr and mupcl (effective inflow layer
+ *  bounds and the most unstable parcel, respectively) are required to be
  *  be precomputed and passed to this routine. These are expensive
  *  operations that are presumed to be computed at some other point
- *  in the analysis pipeline, so just pass those variables here. 
+ *  in the analysis pipeline, so just pass those variables here.
  *
  * \param   pressure        (Pa)
  * \param   height          (meters)
@@ -125,7 +124,7 @@ namespace sharp {
  * \param   v_wind          (m/s)
  * \param   N               (length of arrays)
  * \param   eff_infl_lyr    {bottom, top}
- * \param   mupcl           (Precomputed parcel) 
+ * \param   mupcl           (Precomputed parcel)
  * \param   leftMover       (default=false)
  *
  * \return  {storm_u, storm_v}
@@ -133,7 +132,7 @@ namespace sharp {
 [[nodiscard]] WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const int N, PressureLayer eff_infl_lyr,
-    const Parcel* mupcl, const bool leftMover = false) ;
+    const Parcel* mupcl, const bool leftMover = false);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -159,18 +158,18 @@ namespace sharp {
                                      const float temperature[],
                                      const float mse_arr[],
                                      const float u_wind[], const float v_wind[],
-                                     const int N, Parcel* pcl) ;
+                                     const int N, Parcel* pcl);
 
-[[nodiscard]] float energy_helicity_index(float cape, float helicity) ;
+[[nodiscard]] float energy_helicity_index(float cape, float helicity);
 
 [[nodiscard]] float supercell_composite_parameter(float mu_cape, float eff_srh,
-                                                  float eff_shear) ;
+                                                  float eff_shear);
 
-[[nodiscard]] float significant_tornado_parameter(
-    Parcel pcl, float lcl_hght_agl, float storm_relative_helicity,
-    float bulk_wind_difference) ;
+[[nodiscard]] float significant_tornado_parameter(Parcel pcl,
+                                                  float lcl_hght_agl,
+                                                  float storm_relative_helicity,
+                                                  float bulk_wind_difference);
 
 }  // end namespace sharp
 
-
-#endif // __SHARP_PARAMS_H__
+#endif  // __SHARP_PARAMS_H__

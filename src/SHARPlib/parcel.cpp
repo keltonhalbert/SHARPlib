@@ -4,7 +4,6 @@
  * \author
  *   Kelton Halbert                  \n
  *   Email: kelton.halbert@noaa.gov  \n
- *   License: Apache 2.0             \n
  * \date   2022-11-09
  *
  * Written for the NWS Storm Predidiction Center \n
@@ -14,9 +13,8 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
-#include <SHARPlib/thermo.h>
 #include <SHARPlib/parcel.h>
-
+#include <SHARPlib/thermo.h>
 
 namespace sharp {
 
@@ -32,7 +30,7 @@ namespace sharp {
  * \param pcl           sharp::Parcel to define
  */
 void _sfc(const float pressure[], const float temperature[],
-          const float dewpoint[], const int N, Parcel& pcl)  {
+          const float dewpoint[], const int N, Parcel& pcl) {
     pcl.pres = pressure[0];
     pcl.tmpk = temperature[0];
     pcl.dwpk = dewpoint[0];
@@ -52,10 +50,10 @@ void _sfc(const float pressure[], const float temperature[],
  */
 void _mu(const float pressure[], const float temperature[],
          const float dewpoint[], const float thetae[], const int N,
-         Parcel& pcl)  {
+         Parcel& pcl) {
     // Search for the most unstable parcel in the bottom
     // 400 hPa of the profile
-    static constexpr float mu_depth = 40000.0f; // 400 hPa in Pa
+    static constexpr float mu_depth = 40000.0f;  // 400 hPa in Pa
     PressureLayer mu_layer(pressure[0], pressure[0] - mu_depth);
 
     // layer_max returns the max, and will set the pressure
@@ -77,16 +75,14 @@ void _mu(const float pressure[], const float temperature[],
  * \param pcl           sharp::Parcel to define
  */
 void _ml(const float pressure[], const float theta_arr[],
-         const float wv_mixratio[], const int N, Parcel& pcl)  {
-    static constexpr float ml_depth = 10000.0; // 100 hPa in Pa
-	const float sfcpres = pressure[0];
+         const float wv_mixratio[], const int N, Parcel& pcl) {
+    static constexpr float ml_depth = 10000.0;  // 100 hPa in Pa
+    const float sfcpres = pressure[0];
     PressureLayer mix_layer(sfcpres, sfcpres - ml_depth);
 
     // get the mean attributes of the lowest 100 hPa
-    const float mean_mixr =
-        layer_mean(mix_layer, pressure, wv_mixratio, N);
-    const float mean_thta =
-        layer_mean(mix_layer, pressure, theta_arr, N);
+    const float mean_mixr = layer_mean(mix_layer, pressure, wv_mixratio, N);
+    const float mean_thta = layer_mean(mix_layer, pressure, theta_arr, N);
 
     // set the parcel attributes
     pcl.pres = sfcpres;
@@ -95,10 +91,9 @@ void _ml(const float pressure[], const float theta_arr[],
 }
 
 void define_parcel(const float pressure[], const float temperature[],
-                   const float dewpoint[],
-                   const float wv_mixratio[], const float theta_arr[],
-                   const float thetae[], const int N, Parcel& pcl,
-                   LPL source)  {
+                   const float dewpoint[], const float wv_mixratio[],
+                   const float theta_arr[], const float thetae[], const int N,
+                   Parcel& pcl, LPL source) {
     pcl.source = source;
 
     if (source == LPL::SFC) {
@@ -126,7 +121,7 @@ void define_parcel(const float pressure[], const float temperature[],
 }
 
 void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
-                 const float buoy_arr[], const int N)  {
+                 const float buoy_arr[], const int N) {
     PressureLayer sat_lyr = {pcl->lcl_pressure, pres_arr[N - 1]};
     LayerIndex lyr_idx = get_layer_index(sat_lyr, pres_arr, N);
 
@@ -198,12 +193,12 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
 }
 
 void cape_cinh(const float pres_arr[], const float hght_arr[],
-               const float buoy_arr[], const int N, Parcel* pcl)  {
-	if (pcl->lcl_pressure == MISSING) return;
+               const float buoy_arr[], const int N, Parcel* pcl) {
+    if (pcl->lcl_pressure == MISSING) return;
     find_lfc_el(pcl, pres_arr, hght_arr, buoy_arr, N);
     if ((pcl->lfc_pressure != MISSING) && (pcl->eql_pressure != MISSING)) {
-		PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
-		PressureLayer lpl_lfc = {pcl->pres, pcl->lfc_pressure};
+        PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
+        PressureLayer lpl_lfc = {pcl->pres, pcl->lfc_pressure};
         HeightLayer lfc_el_ht =
             pressure_layer_to_height(lfc_el, pres_arr, hght_arr, N);
         HeightLayer lpl_lfc_ht =
@@ -211,10 +206,8 @@ void cape_cinh(const float pres_arr[], const float hght_arr[],
 
         pcl->cinh =
             integrate_layer_trapz(lpl_lfc_ht, buoy_arr, hght_arr, N, -1);
-        pcl->cape =
-            integrate_layer_trapz(lfc_el_ht, buoy_arr, hght_arr, N, 1);
+        pcl->cape = integrate_layer_trapz(lfc_el_ht, buoy_arr, hght_arr, N, 1);
     }
 }
 
 }  // end namespace sharp
-
