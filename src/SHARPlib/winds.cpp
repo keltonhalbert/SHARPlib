@@ -5,7 +5,6 @@
  * \author
  *   Kelton Halbert                  \n
  *   Email: kelton.halbert@noaa.gov  \n
- *   License: Apache 2.0             \n
  * \date   2022-10-13
  *
  * Written for the NWS Storm Predidiction Center \n
@@ -21,7 +20,7 @@
 
 namespace sharp {
 
-float u_component(float wind_speed, float wind_direction)  {
+float u_component(float wind_speed, float wind_direction) {
 #ifndef NO_QC
     if ((wind_direction == MISSING) || (wind_speed == MISSING)) return MISSING;
 #endif
@@ -29,7 +28,7 @@ float u_component(float wind_speed, float wind_direction)  {
     return -1.0 * wind_speed * std::sin(wind_direction);
 }
 
-float v_component(float wind_speed, float wind_direction)  {
+float v_component(float wind_speed, float wind_direction) {
 #ifndef NO_QC
     if ((wind_direction == MISSING) || (wind_speed == MISSING)) return MISSING;
 #endif
@@ -37,7 +36,7 @@ float v_component(float wind_speed, float wind_direction)  {
     return -1.0 * wind_speed * std::cos(wind_direction);
 }
 
-float vector_angle(float u_comp, float v_comp)  {
+float vector_angle(float u_comp, float v_comp) {
 #ifndef NO_QC
     if ((u_comp == MISSING) || (v_comp == MISSING)) return MISSING;
 #endif
@@ -49,36 +48,35 @@ float vector_angle(float u_comp, float v_comp)  {
     return wind_direction;
 }
 
-float vector_magnitude(float u_comp, float v_comp)  {
+float vector_magnitude(float u_comp, float v_comp) {
 #ifndef NO_QC
     if ((u_comp == MISSING) || (v_comp == MISSING)) return MISSING;
 #endif
     return std::sqrt((u_comp * u_comp) + (v_comp * v_comp));
 }
 
-float vector_magnitude_precise(float u_comp, float v_comp)  {
+float vector_magnitude_precise(float u_comp, float v_comp) {
 #ifndef NO_QC
     if ((u_comp == MISSING) || (v_comp == MISSING)) return MISSING;
 #endif
     return std::hypot(u_comp, v_comp);
 }
 
-WindVector components_to_vector(float u_comp, float v_comp)  {
+WindVector components_to_vector(float u_comp, float v_comp) {
     const float wind_speed = vector_magnitude(u_comp, v_comp);
     const float wind_direction = vector_angle(u_comp, v_comp);
 
     return {wind_speed, wind_direction};
 }
 
-WindVector components_to_vector(WindComponents comp)  {
+WindVector components_to_vector(WindComponents comp) {
     const float wind_speed = vector_magnitude(comp.u, comp.v);
     const float wind_direction = vector_angle(comp.u, comp.v);
 
     return {wind_speed, wind_direction};
 }
 
-WindComponents vector_to_components(float wind_speed,
-                                    float wind_direction)  {
+WindComponents vector_to_components(float wind_speed, float wind_direction) {
 #ifndef NO_QC
     if ((wind_direction == MISSING) || (wind_speed == MISSING))
         return {MISSING, MISSING};
@@ -90,7 +88,7 @@ WindComponents vector_to_components(float wind_speed,
     return {u_comp, v_comp};
 }
 
-WindComponents vector_to_components(WindVector vect)  {
+WindComponents vector_to_components(WindVector vect) {
 #ifndef NO_QC
     if ((vect.speed == MISSING) || (vect.direction == MISSING))
         return {MISSING, MISSING};
@@ -104,7 +102,7 @@ WindComponents vector_to_components(WindVector vect)  {
 
 WindComponents mean_wind(PressureLayer layer, const float pressure[],
                          const float u_wind[], const float v_wind[],
-                         const int N, const bool weighted)  {
+                         const int N, const bool weighted) {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING))
         return {MISSING, MISSING};
@@ -119,8 +117,8 @@ WindComponents mean_wind(PressureLayer layer, const float pressure[],
     float weight = 0;
     while (pr_lvl >= layer.top) {
         float w = (weighted) ? pr_lvl : 1.0f;
-        u_sum += interp_pressure(pr_lvl, pressure, u_wind, N) * w; 
-        v_sum += interp_pressure(pr_lvl, pressure, v_wind, N) * w; 
+        u_sum += interp_pressure(pr_lvl, pressure, u_wind, N) * w;
+        v_sum += interp_pressure(pr_lvl, pressure, v_wind, N) * w;
         weight += w;
         pr_lvl += layer.delta;
     }
@@ -131,4 +129,3 @@ WindComponents mean_wind(PressureLayer layer, const float pressure[],
 }
 
 }  // end namespace sharp
-

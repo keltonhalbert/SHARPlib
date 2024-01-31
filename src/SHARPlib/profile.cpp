@@ -5,7 +5,6 @@
  * \author
  *   Kelton Halbert                  \n
  *   Email: kelton.halbert@noaa.gov  \n
- *   License: Apache 2.0             \n
  * \date   2022-10-13
  *
  * Written for the NWS Storm Predidiction Center \n
@@ -39,7 +38,7 @@ Profile::Profile(const int num_levs, Source sounding_type) : NZ(num_levs) {
     moist_static_energy = new float[num_levs];
     buoyancy = new float[num_levs];
 
-    //NZ = num_levs;
+    // NZ = num_levs;
     snd_type = sounding_type;
 }
 
@@ -67,4 +66,3 @@ Profile::~Profile() {
 }
 
 }  // end namespace sharp
-

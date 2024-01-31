@@ -4,7 +4,6 @@
  * \author
  *   Kelton Halbert                  \n
  *   Email: kelton.halbert@noaa.gov  \n
- *   License: Apache 2.0             \n
  * \date   2023-05-30
  *
  * Written for the NWS Storm Predidiction Center \n
@@ -14,8 +13,4 @@
 
 #include <SHARPlib/params/fire.h>
 
-namespace sharp {
-
-
-
-} // namespace sharp
+namespace sharp {}  // namespace sharp
