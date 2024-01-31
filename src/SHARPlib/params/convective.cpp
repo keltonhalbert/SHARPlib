@@ -5,7 +5,6 @@
  * \author
  *   Kelton Halbert                  \n
  *   Email: kelton.halbert@noaa.gov  \n
- *   License: Apache 2.0             \n
  * \date   2022-10-13
  *
  * Written for the NWS Storm Predidiction Center \n
@@ -15,9 +14,9 @@
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/layer.h>
+#include <SHARPlib/parcel.h>
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
-#include <SHARPlib/parcel.h>
 
 namespace sharp {
 
@@ -25,7 +24,7 @@ PressureLayer effective_inflow_layer(
     const float pressure[], const float height[], const float temperature[],
     const float dewpoint[], const float virtemp_arr[], float buoy_arr[],
     const int N, const float cape_thresh, const float cinh_thresh,
-    Parcel *mupcl)  {
+    Parcel *mupcl) {
     // TO-DO: At some point, this will need to be
     // templated or generalized to take other parcel
     // lifters once things progress to that level...
@@ -34,7 +33,7 @@ PressureLayer effective_inflow_layer(
     int eff_kbot = 0;
     float eff_pbot = MISSING;
     float eff_ptop = MISSING;
-	float sfc_hght = height[0];
+    float sfc_hght = height[0];
     Parcel maxpcl;
 
     // search for the effective inflow bottom
@@ -44,12 +43,12 @@ PressureLayer effective_inflow_layer(
             continue;
         }
 #endif
-		Parcel effpcl;
+        Parcel effpcl;
         effpcl.pres = pressure[k];
         effpcl.tmpk = temperature[k];
         effpcl.dwpk = dewpoint[k];
-		// We don't want to lift every single profile...
-		if (height[k] - sfc_hght > 4000.0) break;
+        // We don't want to lift every single profile...
+        if (height[k] - sfc_hght > 4000.0) break;
 
         lift_parcel(lifter, pressure, virtemp_arr, buoy_arr, N, &effpcl);
         cape_cinh(pressure, height, buoy_arr, N, &effpcl);
@@ -70,7 +69,7 @@ PressureLayer effective_inflow_layer(
             continue;
         }
 #endif
-		Parcel effpcl;
+        Parcel effpcl;
         effpcl.pres = pressure[k];
         effpcl.tmpk = temperature[k];
         effpcl.dwpk = dewpoint[k];
@@ -85,17 +84,18 @@ PressureLayer effective_inflow_layer(
     }
 
     if (eff_ptop == MISSING) return {MISSING, MISSING};
-	*mupcl = maxpcl;
+    *mupcl = maxpcl;
     return {eff_pbot, eff_ptop};
 }
 
-WindComponents storm_motion_bunkers(
-    const float pressure[], const float height[], const float u_wind[],
-    const float v_wind[], const int N, HeightLayer mean_wind_layer_agl,
-    HeightLayer wind_shear_layer_agl, const bool leftMover = false,
-    const bool pressureWeighted = false)  {
-
-    constexpr float deviation = 7.5; // deviation from mean wind in m/s
+WindComponents storm_motion_bunkers(const float pressure[],
+                                    const float height[], const float u_wind[],
+                                    const float v_wind[], const int N,
+                                    HeightLayer mean_wind_layer_agl,
+                                    HeightLayer wind_shear_layer_agl,
+                                    const bool leftMover = false,
+                                    const bool pressureWeighted = false) {
+    constexpr float deviation = 7.5;  // deviation from mean wind in m/s
 
     PressureLayer mw_lyr = height_layer_to_pressure(mean_wind_layer_agl,
                                                     pressure, height, N, true);
@@ -143,8 +143,7 @@ WindComponents storm_motion_bunkers(
 [[nodiscard]] WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const int N, PressureLayer eff_infl_lyr,
-    const Parcel *mupcl, const bool leftMover = false)  {
-
+    const Parcel *mupcl, const bool leftMover = false) {
     HeightLayer shr_layer = {0, 6000.0};
     HeightLayer dflt_mw_lyr = {0.0, 6000.0};
 
@@ -180,18 +179,18 @@ WindComponents storm_motion_bunkers(
 float entrainment_cape(const float pressure[], const float height[],
                        const float temperature[], const float mse_arr[],
                        const float u_wind[], const float v_wind[], const int N,
-                       Parcel *pcl)  {
-    // if cape is zero, we get a divide by zero issue later. 
+                       Parcel *pcl) {
+    // if cape is zero, we get a divide by zero issue later.
     // there can "technically" be LFC/EL without CAPE because of very,
-    // very shallow buoyancy near zero when searching for LFC/EL. 
+    // very shallow buoyancy near zero when searching for LFC/EL.
     // To-Do: maybe refactor LFC/EL search?
-    if ((pcl->lfc_pressure == MISSING) || (pcl->lfc_pressure == MISSING)
-        || (pcl->cape == 0)) {
+    if ((pcl->lfc_pressure == MISSING) || (pcl->lfc_pressure == MISSING) ||
+        (pcl->cape == 0)) {
         return 0.0;
     }
 
-    float* mse_diff = new float[N];
-    float* mse_bar = new float[N];
+    float *mse_diff = new float[N];
+    float *mse_bar = new float[N];
 
     // compute MSE_bar
     mse_bar[0] = mse_arr[0];
@@ -252,7 +251,7 @@ float entrainment_cape(const float pressure[], const float height[],
     constexpr float sigma = 1.6;
     constexpr float alpha = 0.8;
     const float pitchfork = (VKSQ * (alpha * alpha) * (PI * PI) * L) /
-                      (PRANDTL * (sigma * sigma) * H);
+                            (PRANDTL * (sigma * sigma) * H);
     const float V_sr_tilde = V_sr_mean / std::sqrt(2.0f * pcl->cape);
     const float V_sr_tilde_sq = V_sr_tilde * V_sr_tilde;
     const float N_tilde = NCAPE / pcl->cape;
@@ -277,7 +276,7 @@ float entrainment_cape(const float pressure[], const float height[],
     return E_tilde * pcl->cape;
 }
 
-float energy_helicity_index(float cape, float helicity)  {
+float energy_helicity_index(float cape, float helicity) {
 #ifndef NO_QC
     if ((cape == MISSING) || (helicity == MISSING)) {
         return MISSING;
@@ -287,7 +286,7 @@ float energy_helicity_index(float cape, float helicity)  {
 }
 
 float supercell_composite_parameter(float mu_cape, float eff_srh,
-                                    float eff_shear)  {
+                                    float eff_shear) {
 #ifndef NO_QC
     if ((mu_cape == MISSING) || (eff_srh == MISSING) ||
         (eff_shear == MISSING)) {
@@ -310,7 +309,7 @@ float supercell_composite_parameter(float mu_cape, float eff_srh,
 
 float significant_tornado_parameter(Parcel pcl, float lcl_hght_agl,
                                     float storm_relative_helicity,
-                                    float bulk_wind_difference)  {
+                                    float bulk_wind_difference) {
     float cinh_term, lcl_term, shear_term, srh_term, cape_term;
     if (pcl.cape == MISSING) return MISSING;
 

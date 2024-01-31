@@ -4,11 +4,10 @@
  * \author
  *   Kelton Halbert                     \n
  *   Email: kelton.halbert@noaa.gov     \n
- *   License: Apache 2.0                \n
  * \date    2023-05-19
  *
  * Written for the NWS Storm Prediction Center,
- * based on NSHARP routines written by John Hart 
+ * based on NSHARP routines written by John Hart
  * Rich Thompson.
  */
 
@@ -19,19 +18,17 @@
 extern "C" {
 #endif
 
-
 struct sharp_PressureLayer {
-    void *obj;
+    void* obj;
 };
 
 struct sharp_HeightLayer {
-    void *obj;
+    void* obj;
 };
 
 struct sharp_LayerIndex {
-    void *obj;
+    void* obj;
 };
-
 
 typedef struct sharp_PressureLayer sharp_PressureLayer_t;
 typedef struct sharp_HeightLayer sharp_HeightLayer_t;
@@ -59,8 +56,8 @@ void sharp_get_PressureLayer_index(sharp_PressureLayer_t* lyr,
                                    const float* pressure, const int N);
 
 void sharp_get_HeightLayer_index(sharp_HeightLayer_t* lyr,
-                                 sharp_LayerIndex_t* idx, 
-                                 const float* height, const int N);
+                                 sharp_LayerIndex_t* idx, const float* height,
+                                 const int N);
 
 void sharp_HeightLayer_to_PressureLayer(sharp_HeightLayer_t* hlyr,
                                         sharp_PressureLayer_t* plyr,
@@ -75,10 +72,12 @@ void sharp_PressureLayer_to_HeightLayer(sharp_PressureLayer_t* plyr,
                                         int toAGL);
 
 float sharp_PressureLayer_min(sharp_PressureLayer_t* plyr, const float* pres,
-                              const float* data, const int N, float* lvl_of_min);
+                              const float* data, const int N,
+                              float* lvl_of_min);
 
 float sharp_PressureLayer_max(sharp_PressureLayer_t* plyr, const float* pres,
-                              const float* data, const int N, float* lvl_of_max);
+                              const float* data, const int N,
+                              float* lvl_of_max);
 
 float sharp_HeightLayer_min(sharp_HeightLayer_t* hlyr, const float* hght,
                             const float* data, const int N, float* lvl_of_min);
@@ -91,16 +90,17 @@ float sharp_PressureLayer_mean(sharp_PressureLayer_t* plyr,
                                const int N);
 
 float sharp_HeightLayer_mean(sharp_HeightLayer_t* hlyr, const float* height,
-                             const float* pressure, const float* data, const int N,
-                             int isAGL);
+                             const float* pressure, const float* data,
+                             const int N, int isAGL);
 
 float sharp_PressureLayer_integrate(sharp_PressureLayer_t* plyr,
                                     const float* data, const float* pressure,
-                                    const int N, const int integ_sign, const int weighted);
+                                    const int N, const int integ_sign,
+                                    const int weighted);
 
-float sharp_HeightLayer_integrate(sharp_HeightLayer_t* hlyr,
-                                  const float* data, const float* height,
-                                  const int N, const int integ_sign, const int weighted);
+float sharp_HeightLayer_integrate(sharp_HeightLayer_t* hlyr, const float* data,
+                                  const float* height, const int N,
+                                  const int integ_sign, const int weighted);
 
 #ifdef __cplusplus
 }
