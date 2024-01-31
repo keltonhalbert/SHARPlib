@@ -4,17 +4,15 @@
  * \author
  *   Kelton Halbert                     \n
  *   Email: kelton.halbert@noaa.gov     \n
- *   License: Apache 2.0                \n
  * \date    2023-05-19
  *
  * Written for the NWS Storm Prediction Center,
- * based on NSHARP routines written by John Hart 
+ * based on NSHARP routines written by John Hart
  * Rich Thompson.
  */
 
 #ifndef __SHARP_THERMO_WRAP_H__
 #define __SHARP_THERMO_WRAP_H__
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -83,7 +81,7 @@ float sharp_buoyancy_dilution_potential(float temperature, float mse_bar,
                                         float saturation_mse);
 
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 #endif
 
 #endif

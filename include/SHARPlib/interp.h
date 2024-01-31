@@ -4,7 +4,6 @@
  * \author
  *   Kelton Halbert                  \n
  *   Email: kelton.halbert@noaa.gov  \n
- *   License: Apache 2.0             \n
  * \date   2022-10-13
  *
  * Written for the NWS Storm Predidiction Center \n
@@ -29,13 +28,13 @@ namespace sharp {
  * This routine was copied from the C++20 <cmath> standard template library.
  * It is used to linearly interpolate between A and B over a normalized
  * distance T, where 0 <= T <= 1. Full documentation and details can be found
- * in the paper located here: 
+ * in the paper located here:
  * https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p0811r3.html
  *
  * This linear interpolation guarantees the following:
  *
  * 1. Exactness: lerp(a,b,0)==a & lerp(a,b,1)==b
- * 2. Monotonicity: cmp(lerp(a,b,t2), lerp(a,b,t1)) * cmp(t2, t1) <!-- 
+ * 2. Monotonicity: cmp(lerp(a,b,t2), lerp(a,b,t1)) * cmp(t2, t1) <!--
  * -->* cmp(b,a) >= 0, where cmp is an arithmetic three-way comparison function
  * 3. Determinacy: result of NaN only for lerp(a,a,INFINITY)
  * 4. Boundedness: t<0 || t>1 || isfinite(lerp(a,b,t))
@@ -48,7 +47,7 @@ namespace sharp {
  * \return  The value between __a and __b at distance __t between them.
  */
 template <typename _Fp>
-[[nodiscard]] constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t)  {
+[[nodiscard]] constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) {
     if ((__a <= 0 && __b >= 0) || (__a >= 0 && __b <= 0))
         return __t * __b + (1 - __t) * __a;
 
@@ -77,7 +76,7 @@ template <typename _Fp>
  * This linear interpolation guarantees the following:
  *
  * 1. Exactness: lerp(a,b,0)==a & lerp(a,b,1)==b
- * 2. Monotonicity: cmp(lerp(a,b,t2), lerp(a,b,t1)) * cmp(t2, t1) <!-- 
+ * 2. Monotonicity: cmp(lerp(a,b,t2), lerp(a,b,t1)) * cmp(t2, t1) <!--
  * -->* cmp(b,a) >= 0, where cmp is an arithmetic three-way comparison function
  * 3. Determinacy: result of NaN only for lerp(a,a,INFINITY)
  * 4. Boundedness: t<0 || t>1 || isfinite(lerp(a,b,t))
@@ -89,7 +88,7 @@ template <typename _Fp>
  *
  * \return  The value between __a and __b at distance __t between them.
  */
-[[nodiscard]] constexpr float lerp(float __a, float __b, float __t)  {
+[[nodiscard]] constexpr float lerp(float __a, float __b, float __t) {
     return __lerp(__a, __b, __t);
 }
 
@@ -105,7 +104,7 @@ template <typename _Fp>
  * The height array must be sorted in ascending order and monotonic.
  * For performance reasons, this routine assumes your data is well
  * ordered. If weird stuff happens, check the ordering of your array
- * values first.Duplicate height values or decreasing height values 
+ * values first.Duplicate height values or decreasing height values
  * may produce unexpected results.
  *
  * \param   height_val  The height value to interpolate data to
@@ -116,7 +115,7 @@ template <typename _Fp>
  * \return  The value of data_arr at the requested height_val.
  */
 [[nodiscard]] float interp_height(float height_val, const float height_arr[],
-                                  const float data_arr[], const int N) ;
+                                  const float data_arr[], const int N);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -141,9 +140,8 @@ template <typename _Fp>
  */
 [[nodiscard]] float interp_pressure(float pressure_val,
                                     const float pressure_arr[],
-                                    const float data_arr[],
-                                    const int N) ;
+                                    const float data_arr[], const int N);
 
 }  // end namespace sharp
 
-#endif // __SHARP_INTERP_H__
+#endif  // __SHARP_INTERP_H__

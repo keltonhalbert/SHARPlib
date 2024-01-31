@@ -5,7 +5,6 @@
  * \author
  *   Kelton Halbert                  \n
  *   Email: kelton.halbert@noaa.gov  \n
- *   License: Apache 2.0             \n
  * \date   2022-10-13
  *
  * Written for the NWS Storm Predidiction Center \n
@@ -83,7 +82,7 @@ enum class adiabat : int {
  *
  * \return  wobf            (degK)
  */
-[[nodiscard]] float wobf(float temperature) ;
+[[nodiscard]] float wobf(float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -91,7 +90,7 @@ enum class adiabat : int {
  * \brief Compute the vapor pressure over liquid water
  *
  * Computes the vapor pressure (or saturation vapor pressure) in
- * Pascals (Pa) over liquid water given the temperature in 
+ * Pascals (Pa) over liquid water given the temperature in
  * degrees Kelvin (or dewpoint temperature in degrees Kelvin).
  * The air pressure is used as a minimum floor for extremely
  * cold temperatures and low pressures.
@@ -104,15 +103,15 @@ enum class adiabat : int {
  *
  * \return  vapor_pressure (Pa)
  */
-[[nodiscard]] float vapor_pressure(float pressure, float temperature) ;
+[[nodiscard]] float vapor_pressure(float pressure, float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- * \brief Compute the vapor pressure over ice 
+ * \brief Compute the vapor pressure over ice
  *
  * Computes the vapor pressure (or saturation vapor pressure) in
- * Pascals (Pa) over ice given the temperature in 
+ * Pascals (Pa) over ice given the temperature in
  * degrees Kelvin (or dewpoint temperature in degrees Kelvin).
  * The air pressure is used as a minimum floor for extremely
  * cold temperatures and low pressures.
@@ -125,8 +124,7 @@ enum class adiabat : int {
  *
  * \return  vapor_pressure (Pa)
  */
-[[nodiscard]] float vapor_pressure_ice(float pressure,
-                                       float temperature) ;
+[[nodiscard]] float vapor_pressure_ice(float pressure, float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -145,7 +143,7 @@ enum class adiabat : int {
  *
  * \return   lcl_temperature (degK)
  */
-[[nodiscard]] float lcl_temperature(float temperature, float dewpoint) ;
+[[nodiscard]] float lcl_temperature(float temperature, float dewpoint);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -165,8 +163,7 @@ enum class adiabat : int {
  *
  * \return   temperature    (degC)
  */
-[[nodiscard]] float temperature_at_mixratio(float wv_mixratio,
-                                            float pressure) ;
+[[nodiscard]] float temperature_at_mixratio(float wv_mixratio, float pressure);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -182,8 +179,7 @@ enum class adiabat : int {
  *
  * \return   pressure              (Pa)
  */
-[[nodiscard]] float theta_level(float potential_temperature,
-                                float temperature) ;
+[[nodiscard]] float theta_level(float potential_temperature, float temperature);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -191,8 +187,8 @@ enum class adiabat : int {
  * \brief Compute the potential temperature.
  *
  * Returns the potential temperature in degrees Kelvin of
- * a parcel given its pressure in Pascals and temperature 
- * in degrees Kelvin. The final argument is the reference 
+ * a parcel given its pressure in Pascals and temperature
+ * in degrees Kelvin. The final argument is the reference
  * level, which is usually 100000.0 Pa, conveniently also
  * called sharp::THETA_REF_PRESSURE.
  *
@@ -203,22 +199,21 @@ enum class adiabat : int {
  * \return   potential_temperature (degK)
  */
 [[nodiscard]] float theta(float pressure, float temperature,
-                          float ref_pressure=THETA_REF_PRESSURE) ;
+                          float ref_pressure = THETA_REF_PRESSURE);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
  * \brief Compute the water vapor mixing ratio from specific humidity.
  *
- * Returns the water vapor mixing ratio in kg/kg given the specific 
- * humidity in kg/kg. 
+ * Returns the water vapor mixing ratio in kg/kg given the specific
+ * humidity in kg/kg.
  *
- * \param	 q                     (kg/kg)    
+ * \param	 q                     (kg/kg)
  *
  * \return   mixratio              (kg/kg)
  */
-[[nodiscard]] float mixratio(float q) ;
-
+[[nodiscard]] float mixratio(float q);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -237,7 +232,7 @@ enum class adiabat : int {
  *
  * \return   mixratio              (kg/kg)
  */
-[[nodiscard]] float mixratio(float pressure, float temperature) ;
+[[nodiscard]] float mixratio(float pressure, float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -256,7 +251,7 @@ enum class adiabat : int {
  *
  * \return   mixratio              (kg/kg)
  */
-[[nodiscard]] float mixratio_ice(float pressure, float temperature) ;
+[[nodiscard]] float mixratio_ice(float pressure, float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -269,22 +264,22 @@ enum class adiabat : int {
  *
  * \return  specific_humidity   (unitless)
  */
-[[nodiscard]] float specific_humidity(float rv) ;
+[[nodiscard]] float specific_humidity(float rv);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
  * \brief Compute the full virtual temperature.
  *
- * Returns the virtual temperature in degrees Kelvin given the dry-bulb 
- * temperature in degrees Kelvin, the specific humidity of water vapor (qv) in 
- * kg/kg, the specific humidity of liquid water (ql) in kg/kg, and the specific 
- * himidity of ice water kg/kg. 
+ * Returns the virtual temperature in degrees Kelvin given the dry-bulb
+ * temperature in degrees Kelvin, the specific humidity of water vapor (qv) in
+ * kg/kg, the specific humidity of liquid water (ql) in kg/kg, and the specific
+ * himidity of ice water kg/kg.
  *
- * For convenience, the ql and qi terms have a default value of zero to 
+ * For convenience, the ql and qi terms have a default value of zero to
  * easily support returning just the virtual temperature from water vapor.
  * If you are okay with lower accuracy, you may pass mixing ratios intead
- * of specific humidities. 
+ * of specific humidities.
  *
  * \param   temperature             (degK)
  * \param   qv                      (kg/kg)
@@ -294,8 +289,7 @@ enum class adiabat : int {
  * \return  virtual_temperature     (degK)
  */
 [[nodiscard]] float virtual_temperature(float temperature, float qv,
-                                        float ql = 0.0f,
-                                        float qi = 0.0f) ;
+                                        float ql = 0.0f, float qi = 0.0f);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -305,7 +299,7 @@ enum class adiabat : int {
  *
  * Compute the temperature at which the moist adiabat intersects a line
  * of constant pressure on a Skew-T log-P diagram. The wet-bulb potential
- * temperature, given by theta_sat, defines a moist adiabat in degrees Kelvin, 
+ * temperature, given by theta_sat, defines a moist adiabat in degrees Kelvin,
  * and the temperature at the given pressure level in Pascals (Pa) is returned.
  *
  * This function relies on the Wobus Function ( sharp::wobf ), and it was shown
@@ -320,7 +314,7 @@ enum class adiabat : int {
  * \return  lifted_temperature  (degK)
  */
 [[nodiscard]] float saturated_lift(float pressure, float theta_sat,
-                                   const float converge = 0.001f) ;
+                                   const float converge = 0.001f);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -329,7 +323,7 @@ enum class adiabat : int {
  * -->adiabatically to a new level.
  *
  * With a given parcel defined by a pressure and temperature (in Pascals and
- * degrees Kelvin), lift it moist adiabatically to a new pressure level 
+ * degrees Kelvin), lift it moist adiabatically to a new pressure level
  * (in Pascals) and return the temperture of the parcel at that level.
  *
  * This function relies on the Wobus Function ( sharp::wobf ), and it was shown
@@ -344,7 +338,7 @@ enum class adiabat : int {
  * \return   lifted_temperature    (degK)
  */
 [[nodiscard]] float wetlift(float pressure, float temperature,
-                            float lifted_pressure) ;
+                            float lifted_pressure);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -353,20 +347,20 @@ enum class adiabat : int {
  * -->adiabatically to a new level.
  *
  *  With a given parcel defined by a pressure and temperature (in Pascals and
- *  degrees Kelvin), lift it moist adiabatically to a new pressure level 
+ *  degrees Kelvin), lift it moist adiabatically to a new pressure level
  *  (in Pascals) and return the temperature of the parcel at that level.
  *
  *  This function is based on/ripped from George Byran's (NCAR) routine in CM1.
  *  It has several options for convergence criteria, pressure increments, and
- *  the type of moist adiabat/assumptions (i.e. pseudoadiabatic, adiabatic, 
- *  liquid, liquid+ice). The sharp::adiabat defines the types of adiabats, 
+ *  the type of moist adiabat/assumptions (i.e. pseudoadiabatic, adiabatic,
+ *  liquid, liquid+ice). The sharp::adiabat defines the types of adiabats,
  *  and the float references to qv, ql, and qi are used to keep budgets of the
- *  moisture variables. 
+ *  moisture variables.
  *
  *  NOTE: qv_total should most likely be the water vapor mixing ratio either
  *  at the parcel's sharp::LPL, or the water vapor mixing ratio at the LCL
  *  (these are going to be the same value). Essentially, the total water vapor
- *  before condensation. 
+ *  before condensation.
  *
  * \param   pressure        (Pa)
  * \param   temperature     (degK)
@@ -412,7 +406,7 @@ enum class adiabat : int {
  * \param    temperature_at_lcl    (degK)
  */
 void drylift(float pressure, float temperature, float dewpoint,
-             float& pressure_at_lcl, float& temperature_at_lcl) ;
+             float& pressure_at_lcl, float& temperature_at_lcl);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -440,7 +434,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \return  lifted_index_temperature    (degK)
  */
 [[nodiscard]] float lifted(float pressure, float temperature, float dewpoint,
-                           float lifted_pressure) ;
+                           float lifted_pressure);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -468,8 +462,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  *
  * \return  wetbulb_temperature     (degK)
  */
-[[nodiscard]] float wetbulb(float pressure, float temperature,
-                            float dewpoint) ;
+[[nodiscard]] float wetbulb(float pressure, float temperature, float dewpoint);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -500,7 +493,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \return  wetbulb_potential_temperature   (degK)
  */
 [[nodiscard]] float theta_wetbulb(float pressure, float temperature,
-                                  float dewpoint) ;
+                                  float dewpoint);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -531,8 +524,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  *
  * \return   equivalent_potential_temperature   (degK)
  */
-[[nodiscard]] float thetae(float pressure, float temperature,
-                           float dewpoint) ;
+[[nodiscard]] float thetae(float pressure, float temperature, float dewpoint);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -551,12 +543,12 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \return  Temperature Lapse Rate  (degK/km)
  */
 [[nodiscard]] float lapse_rate(HeightLayer layer_agl, const float height[],
-                               const float temperature[], const int N) ;
+                               const float temperature[], const int N);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
  *
- * \brief compute the lapse rate over the given sharp::PressureLayer 
+ * \brief compute the lapse rate over the given sharp::PressureLayer
  *
  * Computes the lapse rate over a given sharp::PressureLayer. This routine
  * handles converting the pressure layer into a height layer, and
@@ -572,7 +564,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  */
 [[nodiscard]] float lapse_rate(PressureLayer layer, const float pressure[],
                                const float height[], const float temperature[],
-                               const int N) ;
+                               const int N);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -584,8 +576,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  *
  * \return  buoyancy            (m/s^2)
  */
-[[nodiscard]] float buoyancy(float pcl_temperature,
-                             float env_temperature) ;
+[[nodiscard]] float buoyancy(float pcl_temperature, float env_temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -599,7 +590,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \return  moist static energy ()
  */
 [[nodiscard]] float moist_static_energy(float height_agl, float temperature,
-                                        float specific_humidity) ;
+                                        float specific_humidity);
 
 [[nodiscard]] float buoyancy_dilution_potential(const float temperature,
                                                 const float mse_bar,
@@ -607,4 +598,4 @@ void drylift(float pressure, float temperature, float dewpoint,
 
 }  // end namespace sharp
 
-#endif // __SHARP_THERMP_H__
+#endif  // __SHARP_THERMP_H__

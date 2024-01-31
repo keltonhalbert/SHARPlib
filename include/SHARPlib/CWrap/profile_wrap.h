@@ -1,14 +1,13 @@
 /**
  * \file
- * \brief Header defining the C wrapper interface to the Profile structure 
+ * \brief Header defining the C wrapper interface to the Profile structure
  * \author
  *   Kelton Halbert                     \n
  *   Email: kelton.halbert@noaa.gov     \n
- *   License: Apache 2.0                \n
  * \date    2023-05-19
  *
  * Written for the NWS Storm Prediction Center,
- * based on NSHARP routines written by John Hart 
+ * based on NSHARP routines written by John Hart
  * Rich Thompson.
  */
 
@@ -20,11 +19,11 @@ extern "C" {
 #endif
 
 struct sharp_Profile {
-    void *obj;
+    void* obj;
 };
 typedef struct sharp_Profile sharp_Profile_t;
 
-sharp_Profile_t* sharp_Profile_create(const int NZ, int sounding_type); 
+sharp_Profile_t* sharp_Profile_create(const int NZ, int sounding_type);
 void sharp_Profile_delete(sharp_Profile_t* p);
 
 float* sharp_Profile_get_pres_ptr(sharp_Profile_t* p);
@@ -47,4 +46,4 @@ float* sharp_Profile_get_buoy_ptr(sharp_Profile_t* p);
 }
 #endif
 
-#endif // __SHARP_PROFILE_WRAP_H__
+#endif  // __SHARP_PROFILE_WRAP_H__

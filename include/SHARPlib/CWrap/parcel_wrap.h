@@ -4,11 +4,10 @@
  * \author
  *   Kelton Halbert                     \n
  *   Email: kelton.halbert@noaa.gov     \n
- *   License: Apache 2.0                \n
  * \date    2023-05-19
  *
  * Written for the NWS Storm Prediction Center,
- * based on NSHARP routines written by John Hart 
+ * based on NSHARP routines written by John Hart
  * Rich Thompson.
  */
 
@@ -22,7 +21,7 @@ extern "C" {
 #include <SHARPlib/CWrap/profile_wrap.h>
 
 struct sharp_Parcel {
-    void *obj;
+    void* obj;
 };
 
 typedef struct sharp_Parcel sharp_Parcel_t;
@@ -58,9 +57,8 @@ void sharp_find_lfc_el(sharp_Parcel_t* pcl, const float* pres,
 void sharp_cape_cinh(const float* pressure, const float* height,
                      const float* buoyancy, const int N, sharp_Parcel_t* pcl);
 
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __SHARP_PARCEL_WRAP_H__
+#endif  // __SHARP_PARCEL_WRAP_H__

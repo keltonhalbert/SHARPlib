@@ -4,7 +4,6 @@
  * \author
  *   Kelton Halbert                  \n
  *   Email: kelton.halbert@noaa.gov  \n
- *   License: Apache 2.0             \n
  * \date   2023-04-12
  *
  * Written for the NWS Storm Predidiction Center \n
@@ -44,18 +43,17 @@ namespace sharp {
  * \param   value   The value for lower-bound comparison
  * \param   cmp     The comparitor
  *
- * \return  Index of lower bound 
+ * \return  Index of lower bound
  */
 template <typename T, typename C = std::less<>>
 [[nodiscard]] constexpr int lower_bound(const T array[], const int N,
-                                        const T& value,
-                                        const C cmp = C{})  {
+                                        const T& value, const C cmp = C{}) {
     int len = N;
     int idx = 0;
     while (len > 1) {
         int half = len / 2;
         idx += cmp(array[idx + half - 1], value) * half;
-        len -= half; // = ceil(len / 2)
+        len -= half;  // = ceil(len / 2)
     }
     return idx;
 }
@@ -88,14 +86,13 @@ template <typename T, typename C = std::less<>>
  */
 template <typename T, typename C = std::less<>>
 [[nodiscard]] constexpr int upper_bound(const T array[], const int N,
-                                        const T& value,
-                                        const C cmp = C{})  {
+                                        const T& value, const C cmp = C{}) {
     int len = N;
     int idx = 0;
     while (len > 1) {
         int half = len / 2;
         idx += !cmp(value, array[idx + half - 1]) * half;
-        len -= half; // = ceil(len / 2)
+        len -= half;  // = ceil(len / 2)
     }
     return idx;
 }
@@ -120,13 +117,14 @@ template <typename T, typename C = std::less<>>
  * \return  The area under the curve
  */
 template <typename _T>
-[[nodiscard]] inline constexpr _T _integ_trapz(
-    _T var_top, _T var_bottom, _T coord_top, _T coord_bottom, _T& weights,
-    const bool weighted = false)  {
+[[nodiscard]] inline constexpr _T _integ_trapz(_T var_top, _T var_bottom,
+                                               _T coord_top, _T coord_bottom,
+                                               _T& weights,
+                                               const bool weighted = false) {
     weights += (weighted) * (coord_top - coord_bottom);
     return ((var_top + var_bottom) / 2.0f) * (coord_top - coord_bottom);
 }
 
-} // end namespace sharp
+}  // end namespace sharp
 
-#endif // __SHARP_ALGORITHMS_H__
+#endif  // __SHARP_ALGORITHMS_H__

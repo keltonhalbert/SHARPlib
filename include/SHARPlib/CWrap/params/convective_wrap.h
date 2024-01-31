@@ -1,14 +1,13 @@
 /**
  * \file
- * \brief Header defining the C wrapper interface to derived parameters 
+ * \brief Header defining the C wrapper interface to derived parameters
  * \author
  *   Kelton Halbert                     \n
  *   Email: kelton.halbert@noaa.gov     \n
- *   License: Apache 2.0                \n
  * \date    2023-05-19
  *
  * Written for the NWS Storm Prediction Center,
- * based on NSHARP routines written by John Hart 
+ * based on NSHARP routines written by John Hart
  * Rich Thompson.
  */
 
@@ -19,10 +18,10 @@
 extern "C" {
 #endif
 
-#include <SHARPlib/CWrap/profile_wrap.h>
 #include <SHARPlib/CWrap/layer_wrap.h>
-#include <SHARPlib/CWrap/winds_wrap.h>
 #include <SHARPlib/CWrap/parcel_wrap.h>
+#include <SHARPlib/CWrap/profile_wrap.h>
+#include <SHARPlib/CWrap/winds_wrap.h>
 
 void sharp_effective_inflow_layer(const float* pressure, const float* height,
                                   const float* temperature,
@@ -60,7 +59,7 @@ float sharp_significant_tornado_parameter(sharp_Parcel_t* pcl,
                                           float bulk_shear);
 
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 #endif
 
-#endif // __SHARP_PARAMS_WRAP_H__
+#endif  // __SHARP_PARAMS_WRAP_H__
