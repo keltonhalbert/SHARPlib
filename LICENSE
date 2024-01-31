@@ -2,15 +2,26 @@ Copyright (c) 2024, Board of Regents of the University of Oklahoma
 
 All rights reserved.
 
-Copyright 2024 Board of Regents of the University of Oklahoma. This computer program was produced at the University of Oklahoma (“University”). The computer program, software, and/or if the computer program is modified to produce derivative works and/or adaptations, are subject to the CC BY-NC-SA 4.0 Creative Commons License which can be found at the following URL: https://creativecommons.org/licenses/by-nc-sa/4.0/.  Additionally, redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+Copyright 2024 Board of Regents of the University of Oklahoma. This computer program was produced
+at the University of Oklahoma (“University”). The computer program, software, and/or if the computer
+program is modified to produce derivative works and/or adaptations, are subject to the CC BY-NC-SA 4.0
+Creative Commons License which can be found at the following URL:
+https://creativecommons.org/licenses/by-nc-sa/4.0/. Additionally, redistribution and use in source and
+binary forms, with or without modification, are permitted provided that the following conditions are
+met:
 
-* Redistributions of source code must retain the above copyright notice and attribution, this list of conditions, and the following disclaimer.
+* Redistributions of source code must retain the above copyright notice and attribution, this list of
+conditions, and the following disclaimer.
 
-* Redistributions in binary form must reproduce the above copyright notice and attribution, this list of conditions, and the following disclaimer in the documentation and/or other materials provided with the distribution.
+* Redistributions in binary form must reproduce the above copyright notice and attribution, this list of
+conditions, and the following disclaimer in the documentation and/or other materials provided with the
+distribution.
 
-* Neither the name of the University, the U.S. Government, nor the names of its contributors may be used to endorse or promote products derived from the computer program and/or any modification(s) made thereto.
+* Neither the name of the University, the U.S. Government, nor the names of its contributors may be
+used to endorse or promote products derived from the computer program and/or any modification(s)
+made thereto.
 
-THIS COMPUTER PROGRAM IS PROVIDED BY THE UNIVERITY AND CONTRIBUTORS "AS IS"
+THIS COMPUTER PROGRAM IS PROVIDED BY THE UNIVERSITY AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 DISCLAIMED. IN NO EVENT SHALL THE UNIVERSITY OR CONTRIBUTORS BE LIABLE
@@ -20,4 +31,3 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS COMPUTER PROGRAM, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
