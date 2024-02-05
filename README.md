@@ -56,6 +56,8 @@ make VERBOSE=1
 
 ### Building the Python bindings
 To build the python bindings, simply nagivate to the swig directory and install via pip. The python bindings require having SWIG installed, as well as a C++17 compatible compiler. The bindings will be installed in the following namespace tree: ```nwsspc.sharp.calc```.
+
+**WARNING**: You will need SWIG >= 4.1 for the library to compile. This is available through the conda-forge channel: ```conda install -c conda-forge swig==4.1```.
 ```
 cd swig
 CC=/path/to/compilers/g++ pip install .
