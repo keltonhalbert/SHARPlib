@@ -1,11 +1,16 @@
-// Author: Kelton Halbert
-// Email: kelton.halbert@noaa.gov
-// License: Apache 2.0
-// Date: 2022-10-13
-//
-// Written for the NWS Storm Predidiction Center
-// Based on NSHARP routines originally written by
-// John Hart and Rich Thompson at SPC.
+/**
+ * \file
+ * \brief Thermodynamic routines that do <!--
+ * -->not directly involve parcel based ascent
+ * \author
+ *   Kelton Halbert                  \n
+ *   Email: kelton.halbert@noaa.gov  \n
+ * \date   2022-10-13
+ *
+ * Written for the NWS Storm Predidiction Center \n
+ * Based on NSHARP routines originally written by
+ * John Hart and Rich Thompson at SPC.
+ */
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
@@ -596,42 +601,3 @@ float lapse_rate_max(const float height[], const float temperature[],
 }
 
 }  // end namespace sharp
-
-// Only compile this code if we're building
-// the Web Assembly (WASM) code through
-// Emscripten to bind it to javascript.
-#ifdef __EMSCRIPTEN__
-#include <emscripten/bind.h>
-using namespace emscripten;
-
-EMSCRIPTEN_BINDINGS(sharplib_thermo) {
-    function("vapor_pressure", &sharp::vapor_pressure);
-    function("vapor_pressure_ice", &sharp::vapor_pressure_ice);
-    function("lcl_temperature", &sharp::lcl_temperature);
-    function("temperature_at_mixratio", &sharp::temperature_at_mixratio);
-    function("theta_level", &sharp::theta_level);
-    function("theta", &sharp::theta);
-    function("mixratio_from_spfh",
-             select_overload<float(float)>(&sharp::mixratio));
-    function("mixratio",
-             select_overload<float(float, float)>(&sharp::mixratio));
-    function("mixratio_ice", &sharp::mixratio_ice);
-    function("specific_humidity", &sharp::specific_humidity);
-    function("virtual_temperature", &sharp::virtual_temperature);
-    function("wetlift", &sharp::wetlift);
-
-    // To-Do: So far these commented out functions don't compile because
-    // they require pointers and references. Need to look into these.
-    // function("moist_adiabat_cm1", &sharp::moist_adiabat_cm1);
-    //  function("drylift", &sharp::drylift);
-    function("thetae", &sharp::thetae);
-    // function("lapse_rate",
-    //          select_overload<float(sharp::HeightLayer, float*, float*, int)>(
-    //              &sharp::lapse_rate));
-    function("buoyancy", &sharp::buoyancy);
-    function("moist_static_energy", &sharp::moist_static_energy);
-    function("buoyancy_dilution_potential",
-             &sharp::buoyancy_dilution_potential);
-
-}  // end emscripten bindings
-#endif

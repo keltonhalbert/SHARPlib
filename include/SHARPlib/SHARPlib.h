@@ -5,7 +5,6 @@
  * \author
  *   Kelton Halbert                  \n
  *   Email: kelton.halbert@noaa.gov  \n
- *   License: Apache 2.0             \n
  * \date   2022-12-01
  *
  * Written for the NWS Storm Predidiction Center \n
@@ -19,11 +18,11 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
+#include <SHARPlib/params/convective.h>
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/profile.h>
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
-#include <SHARPlib/params/convective.h>
 
 namespace sharp {
 
@@ -45,10 +44,10 @@ Profile *create_profile(const float pres[], const float hght[],
         float thta = theta(p, t, sharp::THETA_REF_PRESSURE);
         float thte = thetae(p, t, d);
 
-        prof->pres[k] = p; 
-        prof->hght[k] = h; 
+        prof->pres[k] = p;
+        prof->hght[k] = h;
         prof->tmpk[k] = t;
-        prof->dwpk[k] = d; 
+        prof->dwpk[k] = d;
 
         prof->vtmp[k] = vtmp;
         prof->mixr[k] = mixr;
@@ -85,4 +84,4 @@ Profile *create_profile(const float pres[], const float hght[],
 
 }  // end namespace sharp
 
-#endif // __SHARPLIB_H__
+#endif  // __SHARPLIB_H__

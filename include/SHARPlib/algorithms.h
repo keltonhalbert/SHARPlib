@@ -4,7 +4,6 @@
  * \author
  *   Kelton Halbert                  \n
  *   Email: kelton.halbert@noaa.gov  \n
- *   License: Apache 2.0             \n
  * \date   2023-04-12
  *
  * Written for the NWS Storm Predidiction Center \n
