@@ -61,6 +61,9 @@ import_array();
 	(const float temperature[], const int N2)
 }
 %apply (float* IN_ARRAY1, int DIM1) {
+    (const float spechum[], const int N1)
+}
+%apply (float* IN_ARRAY1, int DIM1) {
     (const float qv[], const int N1)
 }
 %apply (float* IN_ARRAY1, int DIM1) {
@@ -335,6 +338,32 @@ void _theta(const float pressure[], const int N1,
 
     for (int k = 0; k < N1; ++k) {
         temp[k] = sharp::theta(pressure[k], temperature[k], ref_pressure);
+    }
+
+    *out_arr = temp;
+    *NOUT = N1;
+    return;
+}
+
+float _mixratio(float spechum) {
+	return sharp::mixratio(spechum);
+}
+
+void _mixratio(const float spechum[], const int N1, 
+               float** out_arr, int* NOUT) {
+
+    float* temp = (float *)malloc(N1*sizeof(float));
+    if (temp == NULL) {
+        PyErr_Format(
+            PyExc_MemoryError, 
+            "Could not allocate memory for output array of size %d.", 
+            N1
+        );
+        return;
+    }
+
+    for (int k = 0; k < N1; ++k) {
+        temp[k] = sharp::mixratio(spechum[k]);
     }
 
     *out_arr = temp;
