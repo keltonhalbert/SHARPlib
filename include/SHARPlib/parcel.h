@@ -6,6 +6,11 @@
  *   Email: kelton.halbert@noaa.gov  \n
  * \date   2022-11-09
  *
+ * \contributor
+ *   Amelia Urquhart                 \n
+ *   Email: amelia.r.h.urquhart-1@ou.edu\n
+ * \date   2022-11-09
+ *
  * Written for the NWS Storm Predidiction Center \n
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
@@ -109,6 +114,13 @@ struct lifter_cm1 {
             this->pressure_incr, this->converge, this->ma_type);
         return virtual_temperature(pcl_tmpk, this->rv, this->rl, this->ri);
     }
+};
+
+/**
+ * Based on the lifting routines from Peters et al.
+ */
+struct lifter_peters_et_al {
+
 };
 
 //
