@@ -50,6 +50,32 @@ enum class adiabat : int {
 };
 
 /**
+ * \brief Defines the kinds of ascent types used by sharp::peters_lift
+ */
+enum class ascent_type : int {
+    /**
+     * \brief Pseudoadiabatic non-entraining
+     */
+    pseudo_nonentr = 1,
+
+    /**
+     * \brief Pseudoadiabatic entraining
+     */
+    pseudo_entr = 2,
+
+    /**
+     * \brief Irreversible adiabatic non-entraining
+     */
+	adiab_nonentr = 3,
+
+    /**
+     * \brief Irreversible adiabatic entraining
+     */
+	adiab_entr = 4,
+    END,
+};
+
+/**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
  *
  * \brief Computes the difference between the wet-bulb potential<!--
@@ -381,6 +407,86 @@ enum class adiabat : int {
                                       const float pres_incr,
                                       const float converge,
                                       const adiabat ma_type);
+
+/**
+ * \author Amelia Urquhart - Oklahoma Weather Lab/OU-SoM
+ *
+ * \brief Compute the temperature of a parcel lifted moist <!--
+ * -->adiabatically to a new level.
+ *
+ *  With a given parcel defined by a pressure and temperature (in Pascals and
+ *  degrees Kelvin), lift it moist adiabatically to a new pressure level
+ *  (in Pascals) and return the temperature of the parcel at that level.
+ *
+ *  This function is done in terms of dT/dz, conversion to dT/dp is handled
+ *  elsewhere.
+ *
+ *  NOTE: Even though the value of qt is identical to qv for the dry lifting
+ *  stage, qt is still needed so the lifting function can update it alongside
+ *  with qv.
+ *
+ * \param   pressure         (Pa)
+ * \param   temperature      (degK)
+ * \param   new_pressure     (Pa)
+ * \param   qv               (kg/kg)
+ * \param   temperature_env  (degK)
+ * \param   qv_env           (kg/kg)
+ * \param   pres_incr        (Pa)
+ * \param   entrainment_rate (1/m)
+ * \param   ma_type          (sharp::ascent_type)
+ *
+ * \return  pcl_temperature (degK)
+ */
+[[nodiscard]] float dry_adiabat_peters_et_al(float pressure, float temperature,
+                                      float dz, float& qv,
+									  float& qt,
+									  float temperature_env,
+									  float qv_env,
+                                      const float pres_incr,
+                                      const float entrainment_rate,
+                                      const ascent_type ma_type);
+
+/**
+ * \author Amelia Urquhart - Oklahoma Weather Lab/OU-SoM
+ *
+ * \brief Compute the temperature of a parcel lifted moist <!--
+ * -->adiabatically to a new level.
+ *
+ *  With a given parcel defined by a pressure and temperature (in Pascals and
+ *  degrees Kelvin), lift it moist adiabatically to a new pressure level
+ *  (in Pascals) and return the temperature of the parcel at that level.
+ *
+ *  This function is an implementation of Equation 32 from Peters et al. 2022,
+ *  (https://journals.ametsoc.org/view/journals/atsc/79/3/JAS-D-21-0118.1.xml)
+ *
+ *  NOTE: qt includes the mass fraction of both water vapor and cloud condensate
+ *  added together. It is constant in non-entraining irreversible adiabatic
+ *  ascent, but can change in all three other ascent types.
+ *
+ *  NOTE: It is assumed that the cloud condensate in the environment is negligible,
+ *  so Dr. Peters's formula assumes that qv_env is equal to qt_env.
+ *
+ * \param   pressure         (Pa)
+ * \param   temperature      (degK)
+ * \param   new_pressure     (Pa)
+ * \param   qv               (kg/kg)
+ * \param   qt               (kg/kg)
+ * \param   temperature_env  (degK)
+ * \param   qv_env           (kg/kg)
+ * \param   pres_incr        (Pa)
+ * \param   entrainment_rate (1/m)
+ * \param   ma_type          (sharp::ascent_type)
+ *
+ * \return  pcl_temperature (degK)
+ */
+[[nodiscard]] float moist_adiabat_peters_et_al(float pressure, float temperature,
+                                      float new_pressure, float& qv,
+                                      float& qt,
+									  float temperature_env,
+									  float qv_env,
+                                      const float pres_incr,
+                                      const float entrainment_rate,
+                                      const ascent_type ma_type);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN

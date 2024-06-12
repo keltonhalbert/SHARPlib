@@ -117,10 +117,25 @@ struct lifter_cm1 {
 };
 
 /**
- * Based on the lifting routines from Peters et al.
+ * \author Amelia Urquhart - Oklahoma Weather Lab/OU-SoM
+ *
+ * \brief Lifts a sharp::Parcel according to the lifting formulas from Peters et al. 2022
  */
 struct lifter_peters_et_al {
+    /**
+     * \brief The type of moist adiabat to use, as defined by sharp::ascent_type
+     */
+    ascent_type ma_type = ascent_type::adiab_entr;
 
+    /**
+     * \brief Water vapor mass fraction variable updated during parcel lifts [WIP]
+     */
+    float qv = MISSING;
+
+    /**
+     * \brief Total vapor (water vapor + cloud condensate) mass fraction variable updated during parcel lifts [WIP]
+     */
+    float qt = MISSING;
 };
 
 //

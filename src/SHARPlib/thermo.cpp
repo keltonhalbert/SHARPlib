@@ -165,6 +165,19 @@ float virtual_temperature(float temperature, float qv, float ql, float qi) {
     return (temperature * ((1.0f + (qv / EPSILON)) / (1.0f + qv + ql + qi)));
 }
 
+float density_temperature(float temperature, float qv, float qt) {
+#ifndef NO_QC
+    if (qv == MISSING) {
+        return temperature;
+    } else if (temperature == MISSING) {
+        return MISSING;
+    } else if ((qt == MISSING)) {
+        qt = qv;
+    }
+#endif
+    return (temperature * (1 - qt + qv / EPSILON));
+}
+
 float saturated_lift(float pressure, float theta_sat, const float converge) {
 #ifndef NO_QC
     if ((pressure == MISSING) || (theta_sat == MISSING)) {
@@ -337,6 +350,30 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
     rl = pcl_rl_hi;
     ri = pcl_ri_hi;
     return pcl_t_hi;
+}
+
+float dry_adiabat_peters_et_al(float pressure, float temperature,
+                                      float qv, float dz, 
+									  float temperature_env,
+									  float qv_env,
+                                      const float entrainment_rate,
+                                      const ascent_type ma_type) {
+	float temperature_entrainment = -entrainment_rate * (temperature - temperature_env);
+
+    float density_temperature_parcel = density_temperature(temperature, qv, qv);
+    float density_temperature_env = density_temperature(temperature_env, qv_env, qv_env);
+
+	float buoyancy = GRAVITY * (density_temperature_parcel - density_temperature_env)/density_temperature_env;
+
+	float cp_moist_air = (1 - qv) * CP_DRYAIR + qv * CP_VAPOR; // CHANGE BEFORE FINALIZING
+
+    float term_1 = -GRAVITY / CP_DRYAIR;
+    float term_2 = 1 + (buoyancy + GRAVITY);
+    float term_3 = cp_moist_air / CP_DRYAIR;
+
+	float dT_dz = term_1 * (term_2/term_3) + temperature_entrainment; // Eq 19 in Peters et al 2022
+
+    return dT_dz;
 }
 
 void drylift(float pressure, float temperature, float dewpoint,
