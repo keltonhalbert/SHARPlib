@@ -368,12 +368,14 @@ float dry_adiabat_peters_et_al(float pressure, float temperature,
 	float cp_moist_air = (1 - qv) * CP_DRYAIR + qv * CP_VAPOR; // CHANGE BEFORE FINALIZING
 
     float term_1 = -GRAVITY / CP_DRYAIR;
-    float term_2 = 1 + (buoyancy + GRAVITY);
+    float term_2 = 1 + (buoyancy / GRAVITY);
     float term_3 = cp_moist_air / CP_DRYAIR;
 
 	float dT_dz = term_1 * (term_2/term_3) + temperature_entrainment; // Eq 19 in Peters et al 2022
 
-    return dT_dz;
+    float new_temperature = temperature + dT_dz * dz;
+
+    return new_temperature;
 }
 
 void drylift(float pressure, float temperature, float dewpoint,
