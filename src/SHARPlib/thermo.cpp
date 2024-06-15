@@ -507,6 +507,15 @@ float saturated_adiabatic_lapse_rate_peters_et_al(float temperature,
     return dT_dz;
 }
 
+float moist_adiabat_peters_et_al(float pressure, float temperature,
+                                      float& qv, float& qt, float new_pressure, 
+									  Profile* prof,
+                                      const float pres_incr,
+                                      const float entrainment_rate,
+                                      const ascent_type ma_type) {
+
+}
+
 void drylift(float pressure, float temperature, float dewpoint,
              float& pressure_at_lcl, float& temperature_at_lcl) {
 #ifndef NO_QC

@@ -17,6 +17,7 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
+#include <SHARPlib/profile.h>
 
 #include <algorithm>
 #include <cmath>
@@ -502,8 +503,7 @@ enum class ascent_type : int {
 [[nodiscard]] float moist_adiabat_peters_et_al(float pressure, float temperature,
                                       float new_pressure, float& qv,
                                       float& qt,
-									  float temperature_env,
-									  float qv_env,
+									  Profile* profile,
                                       const float pres_incr,
                                       const float entrainment_rate,
                                       const ascent_type ma_type);

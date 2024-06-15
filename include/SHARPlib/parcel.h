@@ -21,6 +21,7 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
+#include <SHARPlib/params/convective.h>
 #include <SHARPlib/thermo.h>
 
 namespace sharp {
@@ -128,6 +129,11 @@ struct lifter_peters_et_al {
     ascent_type ma_type = ascent_type::adiab_entr;
 
     /**
+     * \brief The entrainment rate used by the lifter
+     */
+    float entr_rate = MISSING;
+
+    /**
      * \brief The pressure increment (Pa) to use for the iterative solver
      */
     float pressure_incr = 500.0f;
@@ -149,8 +155,17 @@ struct lifter_peters_et_al {
 
     /**
      * \brief Internal temperature variable updated during parcel lifts [WIP]
+     * 
+     * Keeps track of the last temperature lifted to for efficiency's sake
      */
     float temperature = MISSING;
+
+    /**
+     * \brief Internal pressure variable updated during parcel lifts [WIP]
+     * 
+     * Keeps track of the last temperature lifted to for efficiency's sake
+     */
+    float pressure = MISSING;
 
     /**
      * \brief Water vapor mass fraction variable updated during parcel lifts [WIP]
@@ -163,6 +178,11 @@ struct lifter_peters_et_al {
     float qt = MISSING;
 
     /**
+     * \brief Environmental profile used by the lifter
+     */
+    Profile* profile;
+
+    /**
      * \brief Overloads operator() to call sharp::moist_adiabat_peters_et_al
      *
      * \param   pres        Parcel pressure (Pa)
@@ -173,14 +193,69 @@ struct lifter_peters_et_al {
      */
     [[nodiscard]] inline float operator()(float pres, float tmpk,
                                           float new_pres) {
-        // float pcl_tmpk = moist_adiabat_cm1(
-        //     pres, tmpk, new_pres, this->rv_total, this->rv, this->rl, this->ri,
-        //     this->pressure_incr, this->converge, this->ma_type);
-        // return virtual_temperature(pcl_tmpk, this->rv, this->rl, this->ri);
 
-        float pcl_tmpk = tmpk - pres - new_pres;
+        bool can_do_efficient_lift = true;
+
+        // Checks whether lifting can be continued from the last time operator 
+        // was called. Massively increases efficiency if profile is sorted in
+        // order of increasing height.
+        if(new_pres > pressure) {
+            can_do_efficient_lift = false;
+        }
+
+        float pcl_tmpk;
+
+        // TODO!!! Write actual moist adiabat solver code.
+        // THIS WILL BE PAINFUL.
+        if(can_do_efficient_lift) {
+            pcl_tmpk = moist_adiabat_peters_et_al(pressure, temperature, new_pres, 
+                this->qv, this->qt, this->profile, this->pressure_incr, 
+                this->entr_rate, this->ma_type);
+        } else {
+            pcl_tmpk = moist_adiabat_peters_et_al(pres, tmpk, new_pres, 
+                this->qv, this->qt, this->profile, this->pressure_incr, 
+                this->entr_rate, this->ma_type);
+        }
+
+        pressure = new_pres;
+        temperature = pcl_tmpk;
 
         return density_temperature(pcl_tmpk, qv, qt);
+    }
+
+    /**
+     * If using entrainment, this must be run to give the lifter an 
+     * environmental profile. If not using entrainment, this can be ignored.
+     */
+    void set_profile(Profile* prof) {
+        profile = prof;
+    }
+
+    /**
+     * If using entrainment, this must be run to determine the entrainment rate
+     */
+    void determine_entrainment_rate(Profile* prof, LPL lpl) {
+    // Written at 4 AM, will definitely need to be double-checked
+        Parcel pcl;
+
+        define_parcel(prof->pres, prof->tmpk, prof->dwpk, prof->mixr,
+                             prof->theta, prof->theta_e, prof->NZ, pcl,
+                             lpl);
+
+        lifter_peters_et_al lifter;
+
+        if(ma_type == ascent_type::adiab_entr || ma_type == ascent_type::adiab_nonentr) {
+            lifter.ma_type = ascent_type::adiab_nonentr;
+        }
+
+        if(ma_type == ascent_type::pseudo_entr || ma_type == ascent_type::pseudo_nonentr) {
+            lifter.ma_type = ascent_type::pseudo_nonentr;
+        }
+
+        lift_parcel(lifter, prof->pres, prof->vtmp, prof->buoyancy,
+                           prof->NZ, &pcl);
+
+        entr_rate = entrainment_rate(prof->pres, prof->hght, prof->tmpk, prof->moist_static_energy, prof->uwin, prof->vwin, prof->NZ, &pcl);
     }
 };
 
