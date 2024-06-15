@@ -166,7 +166,7 @@ namespace sharp {
  * \brief Computes Entrainment Rate using a previously lifted parcel.
  *
  * Computes Entrainment Rate based on a formula from John Peter's 
- * ECAPE_FUNCTIONS Python script. Method is copied from Kelton's ECAPE code
+ * ECAPE_FUNCTIONS Python script. Function is copied from Kelton's ECAPE code
  * and altered to compute entrainment rate instead.
  *
  * \param   pressure        (Pa)

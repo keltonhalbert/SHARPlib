@@ -326,7 +326,7 @@ enum class ascent_type : int {
  * given the dry-bulb temperature in degrees Kelvin, the specific humidity of
  * water vapor (qv) in kg/kg, and the total water mass fraction (qt) in kg/kg.
  *
- * As with the virtual temperature method, if you are okay with lower accuracy,
+ * As with the virtual temperature function, if you are okay with lower accuracy,
  * you may pass mixing ratios instead of specific humidities.
  *
  * \param   temperature             (degK)
@@ -507,6 +507,77 @@ enum class ascent_type : int {
                                       const float pres_incr,
                                       const float entrainment_rate,
                                       const ascent_type ma_type);
+
+/**
+ * \author Amelia Urquhart - OU-SoM
+ *
+ * \brief Compute the saturation mass fraction
+ *
+ *  With a given pressure and temperature (in Pascals and degrees Kelvin), 
+ *  compute the saturation mass fraction with respect to water, ice, or a
+ *  mixed-phase state.
+ *
+ *  This function is an implementation of Equations 11, 12, and 20 from 
+ *  Peters et al. 2022,
+ *  (https://journals.ametsoc.org/view/journals/atsc/79/3/JAS-D-21-0118.1.xml)
+ *
+ * \param   temperature      (degK)
+ * \param   pressure         (Pa)
+ * \param   ice_flag (0 for water, 1 for mixed-phase, 2 for ice)
+ * \param   warmest_mixed_phase_temp (degK)
+ * \param   coldest_mixed_phase_temp (degK)
+ *
+ * \return  lapse_rate (K/m)
+ */
+float saturation_mixing_ratio(float temperature,
+                float pressure,
+                int ice_flag,
+                float warmest_mixed_phase_temp = 273.15,
+                float coldest_mixed_phase_temp = 253.15);
+
+/**
+ * \author Amelia Urquhart - OU-SoM
+ *
+ * \brief Compute the temperature of a parcel lifted moist <!--
+ * -->adiabatically to a new level.
+ *
+ *  With a given parcel defined by a pressure and temperature (in Pascals and
+ *  degrees Kelvin), lift it moist adiabatically to a new pressure level
+ *  (in Pascals) and return the temperature of the parcel at that level.
+ *
+ *  This function is an implementation of Equation 32 from Peters et al. 2022,
+ *  (https://journals.ametsoc.org/view/journals/atsc/79/3/JAS-D-21-0118.1.xml)
+ *
+ *  NOTE: qt includes the mass fraction of both water vapor and cloud condensate
+ *  added together. It is constant in non-entraining irreversible adiabatic
+ *  ascent, but can change in all three other ascent types.
+ *
+ *  NOTE: It is assumed that the cloud condensate in the environment is negligible,
+ *  so Dr. Peters's formula assumes that qv_env is equal to qt_env.
+ *
+ * \param   temperature      (degK)
+ * \param   qt               (kg/kg)
+ * \param   pressure         (Pa)
+ * \param   temperature_env  (degK)
+ * \param   qv_env           (kg/kg)
+ * \param   entrainment_rate (1/m)
+ * \param   precip_rate      (1/m)
+ * \param   qt_entrainment   ([kg/kg]/m)
+ * \param   warmest_mixed_phase_temp (degK)
+ * \param   coldest_mixed_phase_temp (degK)
+ *
+ * \return  lapse_rate (K/m)
+ */
+float saturated_adiabatic_lapse_rate_peters_et_al(float temperature, 
+                                        float qt, 
+                                        float pressure, 
+                                        float temperature_env,
+                                        float qv_env,
+                                        float entrainment_rate,
+                                        float precip_rate,
+                                        float qt_entrainment = MISSING,
+                                        float warmest_mixed_phase_temp = 273.15,
+                                        float coldest_mixed_phase_temp = 253.15);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN

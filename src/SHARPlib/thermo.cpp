@@ -366,7 +366,7 @@ float dry_adiabat_peters_et_al(float pressure, float temperature,
 
 	float buoyancy = GRAVITY * (density_temperature_parcel - density_temperature_env)/density_temperature_env;
 
-	float cp_moist_air = (1 - qv) * CP_DRYAIR + qv * CP_VAPOR; // CHANGE BEFORE FINALIZING
+	float cp_moist_air = (1 - qv) * CP_DRYAIR + qv * CP_VAPOR;
 
     float term_1 = -GRAVITY / CP_DRYAIR;
     float term_2 = 1 + (buoyancy / GRAVITY);
@@ -381,6 +381,130 @@ float dry_adiabat_peters_et_al(float pressure, float temperature,
     qt = new_qv;
 
     return new_temperature;
+}
+
+float ice_fraction(float temperature,
+                    float warmest_mixed_phase_temp = 273.15,
+                    float coldest_mixed_phase_temp = 253.15) {
+
+}
+
+float deriv_ice_fraction(float temperature,
+                    float warmest_mixed_phase_temp = 273.15,
+                    float coldest_mixed_phase_temp = 253.15) {
+    
+}
+
+float saturation_mixing_ratio(float temperature,
+                float pressure,
+                int ice_flag,
+                float warmest_mixed_phase_temp = 273.15,
+                float coldest_mixed_phase_temp = 253.15) {
+    switch (ice_flag)
+    {
+    case 0:
+        float term_1 = (CP_VAPOR - CP_LIQUID) / RVGAS;
+        float term_2 = (EXP_LV - T_TRIP * (CP_VAPOR - CP_LIQUID)) / RVGAS;
+
+        // Saturation vapor pressure with respect to liquid I think
+		float esl = std::exp((temperature - T_TRIP) * term_2 / (temperature * 
+                T_TRIP)) * VAPPRES_REF * std::pow(temperature / T_TRIP, term_1);
+
+        float r_sat = EPSILON * esl / (pressure - esl);
+
+        return r_sat;
+    
+    case 1:
+        float omega = ice_fraction(temperature, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+
+        float r_sat_liquid = saturation_mixing_ratio(temperature, pressure, 0, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+        float r_sat_ice = saturation_mixing_ratio(temperature, pressure, 2, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+
+        float r_sat = (1 - omega) * r_sat_liquid + omega * r_sat_ice;
+
+        return r_sat;
+
+    case 2:
+        float term_1 = (CP_VAPOR - CP_ICE) / RVGAS;
+        float term_2 = (EXP_LV - T_TRIP * (CP_VAPOR - CP_ICE)) / RVGAS;
+
+        // Saturation vapor pressure with respect to liquid I think
+		float esi = std::exp((temperature - T_TRIP) * term_2 / (temperature * 
+                T_TRIP)) * VAPPRES_REF * std::pow(temperature / T_TRIP, term_1);
+
+        float r_sat = EPSILON * esi / (pressure - esi);
+
+        return r_sat;
+    default:
+        saturation_mixing_ratio(temperature, pressure, 1, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+    }
+}
+
+float saturated_adiabatic_lapse_rate_peters_et_al(float temperature, 
+                                        float qt, 
+                                        float pressure, 
+                                        float temperature_env,
+                                        float qv_env,
+                                        float entrainment_rate,
+                                        float precip_rate,
+                                        float qt_entrainment = MISSING,
+                                        float warmest_mixed_phase_temp = 273.15,
+                                        float coldest_mixed_phase_temp = 253.15) {
+    float omega = ice_fraction(temperature, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+    float d_omega = deriv_ice_fraction(temperature, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+
+    float q_vsl = (1 - qt) * saturation_mixing_ratio(temperature, pressure, 0, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+    float q_vsi = (1 - qt) * saturation_mixing_ratio(temperature, pressure, 2, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+
+    // Computes water vapor mass fraction in the parcel. Is more efficient and 
+    // robust than keeping track externally
+    float qv = (1 - omega) * q_vsl + omega + q_vsi;
+
+    float temperature_entrainment = -entrainment_rate * (temperature - temperature_env);
+    float qv_entrainment = -entrainment_rate * (qv - qv_env);
+
+    if(qt_entrainment == MISSING) {
+        qt_entrainment = -entrainment_rate * (qt - qv_env) - precip_rate * (qt - qv);
+    }
+
+    float q_condensate = qt - qv;
+
+    float ql = q_condensate * (1 - omega);
+    float qi = q_condensate * omega;
+
+    float cp_moist_air = (1 - qt) * CP_DRYAIR + qv * CP_VAPOR + ql * CP_LIQUID + qi * CP_ICE;
+
+    float density_temperature_parcel = density_temperature(temperature, qv, qt);
+    float density_temperature_env = density_temperature(temperature_env, qv_env, qv_env);
+
+    float buoyancy = GRAVITY * (density_temperature_parcel - density_temperature_env) / density_temperature_env;
+
+    float L_v = EXP_LV + (temperature - T_TRIP) * (CP_VAPOR - CP_LIQUID);
+    float L_i = EXP_LF + (temperature - T_TRIP) * (CP_LIQUID - CP_ICE);
+
+    float L_s = L_v + omega * L_i;
+
+    float Q_vsl = q_vsl / (EPSILON - EPSILON * qt + qv);
+    float Q_vsi = q_vsi / (EPSILON - EPSILON * qt + qv);
+
+    float Q_M = (1 - omega) * (q_vsl) / (1 - Q_vsl) + omega * (q_vsi) / (1 - Q_vsi);
+    float L_M = (1 - omega) * L_v * (q_vsl) / (1 - Q_vsl) + omega * (L_v + L_i) * (q_vsi) / (1 - Q_vsi);
+    // Moist air gas constant for environmental air
+    float R_m_env = (1 - qv_env) * RDGAS + qv_env * RVGAS;
+
+    float term_1 = buoyancy;
+    float term_2 = GRAVITY;
+    float term_3 = ((L_s * Q_M) / (R_m_env * temperature_env)) * GRAVITY;
+    float term_4 = (cp_moist_air);
+    float term_5 = L_s * (qv_entrainment + qv) / (1 - qt) * qt_entrainment;
+
+    float term_6 = cp_moist_air;
+    float term_7 = (L_i * (qt - qv) - L_s * (q_vsi - q_vsl)) * d_omega;
+    float term_8 = (L_s * L_M) / (RVGAS * temperature * temperature);
+
+    float dT_dz = -(term_1 + term_2 + term_3 - term_4 - term_5) / (term_6 - term_7 + term_8);
+
+    return dT_dz;
 }
 
 void drylift(float pressure, float temperature, float dewpoint,
