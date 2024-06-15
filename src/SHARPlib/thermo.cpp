@@ -353,12 +353,13 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
 }
 
 float dry_adiabat_peters_et_al(float pressure, float temperature,
-                                      float qv, float dz, 
+                                      float& qv, float& qt, float dz, 
 									  float temperature_env,
 									  float qv_env,
                                       const float entrainment_rate,
                                       const ascent_type ma_type) {
 	float temperature_entrainment = -entrainment_rate * (temperature - temperature_env);
+	float qv_entrainment = -entrainment_rate * (qv - qv_env);
 
     float density_temperature_parcel = density_temperature(temperature, qv, qv);
     float density_temperature_env = density_temperature(temperature_env, qv_env, qv_env);
@@ -374,6 +375,10 @@ float dry_adiabat_peters_et_al(float pressure, float temperature,
 	float dT_dz = term_1 * (term_2/term_3) + temperature_entrainment; // Eq 19 in Peters et al 2022
 
     float new_temperature = temperature + dT_dz * dz;
+    float new_qv = qv + qv_entrainment * dz;
+
+    qv = new_qv;
+    qt = new_qv;
 
     return new_temperature;
 }

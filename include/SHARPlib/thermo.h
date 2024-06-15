@@ -304,7 +304,7 @@ enum class ascent_type : int {
  *
  * For convenience, the ql and qi terms have a default value of zero to
  * easily support returning just the virtual temperature from water vapor.
- * If you are okay with lower accuracy, you may pass mixing ratios intead
+ * If you are okay with lower accuracy, you may pass mixing ratios instead
  * of specific humidities.
  *
  * \param   temperature             (degK)
@@ -316,6 +316,26 @@ enum class ascent_type : int {
  */
 [[nodiscard]] float virtual_temperature(float temperature, float qv,
                                         float ql = 0.0f, float qi = 0.0f);
+
+/**
+ * \author Amelia Urquhart - OU-SoM
+ *
+ * \brief Computes the density temperature.
+ *
+ * Returns the density temperature according to Table 1 in Peters et al 2022
+ * given the dry-bulb temperature in degrees Kelvin, the specific humidity of
+ * water vapor (qv) in kg/kg, and the total water mass fraction (qt) in kg/kg.
+ *
+ * As with the virtual temperature method, if you are okay with lower accuracy,
+ * you may pass mixing ratios instead of specific humidities.
+ *
+ * \param   temperature             (degK)
+ * \param   qv                      (kg/kg)
+ * \param   qt                      (kg/kg)
+ *
+ * \return  density_temperature     (degK)
+ */
+[[nodiscard]] float density_temperature(float temperature, float qv, float qt);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -409,7 +429,7 @@ enum class ascent_type : int {
                                       const adiabat ma_type);
 
 /**
- * \author Amelia Urquhart - Oklahoma Weather Lab/OU-SoM
+ * \author Amelia Urquhart - OU-SoM
  *
  * \brief Compute the temperature of a parcel lifted moist <!--
  * -->adiabatically to a new level.
@@ -447,7 +467,7 @@ enum class ascent_type : int {
                                       const ascent_type ma_type);
 
 /**
- * \author Amelia Urquhart - Oklahoma Weather Lab/OU-SoM
+ * \author Amelia Urquhart - OU-SoM
  *
  * \brief Compute the temperature of a parcel lifted moist <!--
  * -->adiabatically to a new level.

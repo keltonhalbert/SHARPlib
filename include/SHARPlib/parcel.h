@@ -117,7 +117,7 @@ struct lifter_cm1 {
 };
 
 /**
- * \author Amelia Urquhart - Oklahoma Weather Lab/OU-SoM
+ * \author Amelia Urquhart - OU-SoM
  *
  * \brief Lifts a sharp::Parcel according to the lifting formulas from Peters et al. 2022
  */
@@ -128,6 +128,31 @@ struct lifter_peters_et_al {
     ascent_type ma_type = ascent_type::adiab_entr;
 
     /**
+     * \brief The pressure increment (Pa) to use for the iterative solver
+     */
+    float pressure_incr = 500.0f;
+
+    /**
+     * \brief The iterative convergence criteria
+     */
+    float converge = 0.001f;
+
+    /**
+     * \brief The warm limit of the mixed phase range of temperatures (Kelvin)
+     */
+    float mixed_phase_warm = 273.15;
+
+    /**
+     * \brief The cold limit of the mixed phase range of temperatures (Kelvin)
+     */
+    float mixed_phase_cold = 253.15; 
+
+    /**
+     * \brief Internal temperature variable updated during parcel lifts [WIP]
+     */
+    float temperature = MISSING;
+
+    /**
      * \brief Water vapor mass fraction variable updated during parcel lifts [WIP]
      */
     float qv = MISSING;
@@ -136,6 +161,27 @@ struct lifter_peters_et_al {
      * \brief Total vapor (water vapor + cloud condensate) mass fraction variable updated during parcel lifts [WIP]
      */
     float qt = MISSING;
+
+    /**
+     * \brief Overloads operator() to call sharp::moist_adiabat_peters_et_al
+     *
+     * \param   pres        Parcel pressure (Pa)
+     * \param   tmpk        Parcel temperature (degK)
+     * \param   new_pres    Final level of parcel after lift (Pa)
+     *
+     * \return  The density temperature of the lifted parcel
+     */
+    [[nodiscard]] inline float operator()(float pres, float tmpk,
+                                          float new_pres) {
+        // float pcl_tmpk = moist_adiabat_cm1(
+        //     pres, tmpk, new_pres, this->rv_total, this->rv, this->rl, this->ri,
+        //     this->pressure_incr, this->converge, this->ma_type);
+        // return virtual_temperature(pcl_tmpk, this->rv, this->rl, this->ri);
+
+        float pcl_tmpk = tmpk - pres - new_pres;
+
+        return density_temperature(pcl_tmpk, qv, qt);
+    }
 };
 
 //

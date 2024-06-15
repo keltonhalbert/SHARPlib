@@ -160,6 +160,33 @@ namespace sharp {
                                      const float u_wind[], const float v_wind[],
                                      const int N, Parcel* pcl);
 
+/**
+ * \author Amelia Urquhart - OU-SoM
+ *
+ * \brief Computes Entrainment Rate using a previously lifted parcel.
+ *
+ * Computes Entrainment Rate based on a formula from John Peter's 
+ * ECAPE_FUNCTIONS Python script. Method is copied from Kelton's ECAPE code
+ * and altered to compute entrainment rate instead.
+ *
+ * \param   pressure        (Pa)
+ * \param   height          (meters)
+ * \param   temperature     (degK)
+ * \param   mse_arr         ()
+ * \param   u_wind          (m/s)
+ * \param   v_wind          (m/s)
+ * \param   N               (length of arrays)
+ * \param   pcl             (Precomputed parcel)
+ *
+ * \return  Entrainment Rate (m^-1)
+ */
+[[nodiscard]] float entrainment_rate(const float pressure[],
+                                     const float height[],
+                                     const float temperature[],
+                                     const float mse_arr[],
+                                     const float u_wind[], const float v_wind[],
+                                     const int N, Parcel* pcl);
+
 [[nodiscard]] float energy_helicity_index(float cape, float helicity);
 
 [[nodiscard]] float supercell_composite_parameter(float mu_cape, float eff_srh,
