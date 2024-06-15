@@ -21,10 +21,222 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
-#include <SHARPlib/params/convective.h>
 #include <SHARPlib/thermo.h>
+#include <SHARPlib/winds.h>
 
 namespace sharp {
+
+/**
+ * \brief Enum that defines the lifted parcel level (LPL) of origin.
+ *
+ * The SFC parcel is a surface-based parcel, where the parcel initial attributes
+ * are set to the surface pressure, temperature, and dewpoint.
+ *
+ * The FCST parcel is a forecast-surface-based parcel, in which the afternoon
+ * surface temperature and dewpoint are estimated and set as the parcel starting
+ * values.
+ *
+ * The MU parcel is the most unstable parcel, in which the parcel attributes are
+ * set to the pressure, temperature, and dewpoint of the maximum Theta-E level
+ * within the bottom 400 hPa of the profile.
+ *
+ * The ML parcel is the mixed-layer parcel, in which the mean theta and water
+ * vapor mixing ratio within the lowest 100 hPa are used to estimate a boundary
+ * layer mean, and lifted from the surface.
+ *
+ * The EIL parcel is the mean Effective Inflow Layer parcel, in which a parcel
+ * is lifted from the center of the Effective Inflow Layer
+ *
+ * The USR parcel means that the parcel initial lifting attributes have already
+ * been set by the programmer or user, and there is no need for them to be
+ * set or modified.
+ */
+enum class LPL : int {
+    /**
+     * \brief Surface Based Parcel
+     */
+    SFC = 1,
+
+    /**
+     * \brief Forecast Surface Parcel
+     */
+    FCST = 2,
+
+    /**
+     * \brief Most Unstable Parcel
+     */
+    MU = 3,  // most unstable
+
+    /**
+     * \brief 100mb Mixed Layer Parcel
+     */
+    ML = 4,  // 100mb mixed layer
+
+    /**
+     * \brief User-defined Parcel
+     */
+    USR = 5,  // user-defined
+
+    /**
+     * \brief Mean Effective Inflow Layer Parcel
+     */
+    EIL = 6,  // Mean effective inflow layer
+    END,
+};
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Data that defines a Parcel, its attributes, and derived quantities.
+ *
+ * Contains information about a Parcel's starting level and
+ * thermodynamic attributes, as well as paramaters computed
+ * using the parcel.
+ */
+struct Parcel {
+    /**
+     * \brief Parcel starting pressure (hPa)
+     */
+    float pres = MISSING;
+
+    /**
+     * \brief Parcel starting temperature (degC)
+     */
+    float tmpk = MISSING;
+
+    /**
+     * \brief Parcel starting dewpoint (degC)
+     */
+    float dwpk = MISSING;
+
+    /**
+     * \brief Pressure at the Lifted Condensation Level (hPa)
+     */
+    float lcl_pressure = MISSING;
+
+    /**
+     * \brief Pressure at the Level of Free Convection (hPa)
+     */
+    float lfc_pressure = MISSING;
+
+    /**
+     * \brief Pressure at the parcel Equilibrium Level (hPa)
+     */
+    float eql_pressure = MISSING;
+
+    /**
+     * \brief Parcel Convective Available Potential Energy (J/kg) between the
+     * LFC and EL
+     */
+    float cape = 0.0;
+
+    /**
+     * \brief Parcel Convective Inhibition (J/kg) between the LFC and EL
+     */
+    float cinh = 0.0;
+
+    /**
+     * \brief The type of parcel this is
+     */
+    LPL source;
+};
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Sets the Lifted Parcel Level (LPL) attributes for a sharp::Parcel.
+ *
+ * Before computing CAPE and CINH, the parcel's level of origin, or the
+ * Lifted Parcel Level (LPL), must be set. The enum sharp::LPL defines
+ * common lifting levels, and passing the appropriate enum member
+ * will set the sharp::Parcel attributes to that type of parcel or level.
+ *
+ * If you wish to set a custom LPL, you can do so and then set the
+ * source to sharp::LPL::USR.
+ *
+ * \param   pressure        Array of pressure (Pa)
+ * \param   temperature     Array of temperature (degK)
+ * \param   dewpoint        Array of dewpoint temperature (degK)
+ * \param   wv_mixratio     Array of water vapor mixing ratio (kg/kg)
+ * \param   theta_arr       Array of potential temperature (degK)
+ * \param   thetae_arr      Array of eqiv. potential temperature (degK)
+ * \param   N               The length of the arrays
+ * \param   pcl             The sharp::Parcel to set the attributes to
+ * \param   source          The type of sharp::Parcel to define
+ */
+void define_parcel(const float pressure[], const float temperature[],
+                   const float dewpoint[], const float wv_mixratio[],
+                   const float theta_arr[], const float thetae_arr[],
+                   const int N, Parcel& pcl, LPL source);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *
+ * \brief Lifts a sharp::Parcel to compute buoyancy
+ *
+ * Lifts a sharp::Parcel dry adiabatically from its sharp::LPL to its
+ * LCL dry adiabatically, and then moist adiabatically from the
+ * LCL to the top of the profile. The moist adiabat used is determined
+ * bu the type of lifting functor passed to the function (i.e.
+ * sharp::lifter_wobus or sharp::lifter_cm1).
+ *
+ * \param   liftpcl
+ * \param   pressure_arr                Array of env pressure (Pa)
+ * \param   virtual_temperature_arr     Array of env virtual temperature (degK)
+ * \param   buoyancy_arr                The array to fill with Buoyancy (m/s^2)
+ * \param   N                           The length of the arrays
+ * \param   pcl                         The sharp::Parcel to lift
+ */
+template <typename Lft>
+void lift_parcel(Lft liftpcl, const float pressure_arr[],
+                 const float virtual_temperature_arr[], float buoyancy_arr[],
+                 const int N, Parcel* pcl) {
+    // Lift the parcel from the LPL to the LCL
+    float pres_lcl;
+    float tmpk_lcl;
+    drylift(pcl->pres, pcl->tmpk, pcl->dwpk, pres_lcl, tmpk_lcl);
+    // If we are lifting elevated parcel (i.e. EIL), we need to make
+    // sure out LCL isnt above the top of our data.
+    if (pres_lcl < pressure_arr[N - 1]) return;
+
+    pcl->lcl_pressure = pres_lcl;
+
+    const float qv_lcl = mixratio(pres_lcl, tmpk_lcl);
+    const float thetav_lcl = theta(
+        pres_lcl, virtual_temperature(tmpk_lcl, qv_lcl), THETA_REF_PRESSURE);
+
+    // Define the dry and saturated lift layers
+    PressureLayer dry_lyr = {pcl->pres, pcl->lcl_pressure};
+    PressureLayer sat_lyr = {pcl->lcl_pressure, pressure_arr[N - 1]};
+
+    // The LayerIndex excludes the top and bottom for interpolation reasons
+    const LayerIndex dry_idx = get_layer_index(dry_lyr, pressure_arr, N);
+    const LayerIndex sat_idx = get_layer_index(sat_lyr, pressure_arr, N);
+
+    // zero out any residual buoyancy from
+    // other parcels that may have been lifted
+    for (int k = 0; k < dry_idx.kbot; ++k) {
+        buoyancy_arr[k] = 0.0;
+    }
+
+    // Fill the array with dry parcel buoyancy.
+    // Virtual potential temperature (Theta-V)
+    // is conserved for a parcels dry ascent to the LCL
+    for (int k = dry_idx.kbot; k < dry_idx.ktop + 1; ++k) {
+        const float pcl_vtmp =
+            theta(THETA_REF_PRESSURE, thetav_lcl, pressure_arr[k]);
+        buoyancy_arr[k] = buoyancy(pcl_vtmp, virtual_temperature_arr[k]);
+    }
+
+    // fill the array with the moist parcel buoyancy
+    for (int k = sat_idx.kbot; k < N; ++k) {
+        // compute above-lcl buoyancy here
+        const float pcl_pres = pressure_arr[k];
+        const float pcl_vtmpk = liftpcl(pres_lcl, tmpk_lcl, pcl_pres);
+        const float env_vtmpk = virtual_temperature_arr[k];
+        buoyancy_arr[k] = buoyancy(pcl_vtmpk, env_vtmpk);
+    }
+}
 
 ////////////    FUNCTORS    ///////////
 //
@@ -257,222 +469,168 @@ struct lifter_peters_et_al {
 
         entr_rate = entrainment_rate(prof->pres, prof->hght, prof->tmpk, prof->moist_static_energy, prof->uwin, prof->vwin, prof->NZ, &pcl);
     }
+
+    // Has to be copied here outside of convective.h to avoid circular include
+    float entrainment_rate(const float pressure[], const float height[],
+                        const float temperature[], const float mse_arr[],
+                        const float u_wind[], const float v_wind[], const int N,
+                        Parcel *pcl) {
+        // if cape is zero, we get a divide by zero issue later.
+        // there can "technically" be LFC/EL without CAPE because of very,
+        // very shallow buoyancy near zero when searching for LFC/EL.
+        // To-Do: maybe refactor LFC/EL search?
+        if ((pcl->lfc_pressure == MISSING) || (pcl->lfc_pressure == MISSING) ||
+            (pcl->cape == 0)) {
+            return 0.0;
+        }
+
+        float *mse_diff = new float[N];
+        float *mse_bar = new float[N];
+
+        // compute MSE_bar
+        mse_bar[0] = mse_arr[0];
+        const float psfc = pressure[0];
+        for (int k = 1; k < N; ++k) {
+            PressureLayer mn_lyr = {psfc, pressure[k]};
+            mse_bar[k] = layer_mean(mn_lyr, pressure, mse_arr, N);
+        }
+
+        // compute MSE_star
+        const float hsfc = height[0];
+        for (int k = 0; k < N; ++k) {
+            const float tmpk = temperature[k];
+            const float rsat = mixratio(pressure[k], tmpk);
+            const float qsat = specific_humidity(rsat);
+            const float height_agl = height[k] - hsfc;
+            const float mse_star = moist_static_energy(height_agl, tmpk, qsat);
+            mse_diff[k] = buoyancy_dilution_potential(tmpk, mse_bar[k], mse_star);
+        }
+
+        // compute NCAPE
+        PressureLayer plyr = {pcl->lfc_pressure, pcl->eql_pressure};
+        HeightLayer hlyr = pressure_layer_to_height(plyr, pressure, height, N);
+        const float NCAPE = integrate_layer_trapz(hlyr, mse_diff, height, N);
+
+        // Compute the Bunkers non-parcel based storm motion
+        WindComponents strm_mtn =
+            storm_motion_bunkers(pressure, height, u_wind, v_wind, N, {0.0, 6000.0},
+                                {0.0, 6000.0}, false, false);
+
+        // get the mean 0-1km storm relative wind
+        HeightLayer layer = {hsfc + 0.0f, hsfc + 1000.0f};
+        LayerIndex layer_idx = get_layer_index(layer, height, N);
+
+        // loop from the surface to the last level before 1km AGL.
+        float V_sr_mean = 0.0;
+        int count = 0;
+        for (int k = 0; k < layer_idx.ktop + 1; ++k) {
+    #ifndef NO_QC
+            if ((u_wind[k] == MISSING) || (v_wind[k] == MISSING)) {
+                continue;
+            }
+    #endif
+            V_sr_mean +=
+                vector_magnitude(u_wind[k] - strm_mtn.u, v_wind[k] - strm_mtn.v);
+            count += 1;
+        }
+        const float u_1km = interp_height(layer.top, height, u_wind, N);
+        const float v_1km = interp_height(layer.top, height, v_wind, N);
+
+        V_sr_mean += vector_magnitude(u_1km - strm_mtn.u, v_1km - strm_mtn.v);
+        V_sr_mean = V_sr_mean / (count + 1);
+
+        // now for all of the ECAPE nonsense
+        constexpr float L = 120.0;
+        const float H =
+            interp_pressure(pcl->eql_pressure, pressure, height, N) - hsfc;
+        constexpr float sigma = 1.6;
+        constexpr float alpha = 0.8;
+        const float pitchfork = (VKSQ * (alpha * alpha) * (PI * PI) * L) /
+                                (PRANDTL * (sigma * sigma) * H);
+        const float V_sr_tilde = V_sr_mean / std::sqrt(2.0f * pcl->cape);
+        const float V_sr_tilde_sq = V_sr_tilde * V_sr_tilde;
+        const float N_tilde = NCAPE / pcl->cape;
+
+        const float term1 = pitchfork / V_sr_tilde_sq;
+        const float term2 = 1.0f + pitchfork + term1 * N_tilde;
+        const float term3 = 4.0f * term1 * (1.0f - pitchfork * N_tilde);
+        const float sqrt_term = term2 * term2 + term3;
+
+        // in the case of a negative solution,
+        // set ECAPE to 0;
+        if (sqrt_term < 0) {
+            return 0;
+        }
+
+        const float E_tilde = V_sr_tilde_sq + (-1.0f - pitchfork - (term1)*N_tilde +
+                                            std::sqrt(sqrt_term)) /
+                                                (2.0f * term1);
+        delete[] mse_diff;
+        delete[] mse_bar;
+
+        float E_tilde_no_vsr = E_tilde - V_sr_tilde_sq;
+
+        float entrainment_rate = ((2 * (1 - E_tilde_no_vsr)) / (E_tilde_no_vsr + N_tilde)) / H;
+
+        return entrainment_rate;
+    }
+
+    // Has to be copied here outside of convective.h to avoid circular include
+    WindComponents storm_motion_bunkers(const float pressure[],
+                                        const float height[], const float u_wind[],
+                                        const float v_wind[], const int N,
+                                        HeightLayer mean_wind_layer_agl,
+                                        HeightLayer wind_shear_layer_agl,
+                                        const bool leftMover = false,
+                                        const bool pressureWeighted = false) {
+        constexpr float deviation = 7.5;  // deviation from mean wind in m/s
+
+        PressureLayer mw_lyr = height_layer_to_pressure(mean_wind_layer_agl,
+                                                        pressure, height, N, true);
+
+        WindComponents layer_mean_wind = {MISSING, MISSING};
+        layer_mean_wind =
+            mean_wind(mw_lyr, pressure, u_wind, v_wind, N, pressureWeighted);
+
+        // The shear is computed by finding the 500m deep
+        // mean winds at the top and bottom of the wind_shear_layer
+        // and then differencing the two. Means are not pressure weighted
+        // for the non-parcel based method.
+        HeightLayer h_layer_lo = {wind_shear_layer_agl.bottom,
+                                wind_shear_layer_agl.bottom + 500.0f};
+        HeightLayer h_layer_hi = {wind_shear_layer_agl.top - 500.0f,
+                                wind_shear_layer_agl.top};
+
+        PressureLayer p_layer_lo =
+            height_layer_to_pressure(h_layer_lo, pressure, height, N, true);
+        PressureLayer p_layer_hi =
+            height_layer_to_pressure(h_layer_hi, pressure, height, N, true);
+
+        WindComponents winds_lo =
+            mean_wind(p_layer_lo, pressure, u_wind, v_wind, N, false);
+        WindComponents winds_hi =
+            mean_wind(p_layer_hi, pressure, u_wind, v_wind, N, false);
+
+        const float shear_u = winds_hi.u - winds_lo.u;
+        const float shear_v = winds_hi.v - winds_lo.v;
+        const float mag = vector_magnitude(shear_u, shear_v);
+
+        float storm_u = MISSING;
+        float storm_v = MISSING;
+
+        if (leftMover) {
+            storm_u = layer_mean_wind.u - ((deviation / mag) * shear_v);
+            storm_v = layer_mean_wind.v + ((deviation / mag) * shear_u);
+        } else {
+            storm_u = layer_mean_wind.u + ((deviation / mag) * shear_v);
+            storm_v = layer_mean_wind.v - ((deviation / mag) * shear_u);
+        }
+        return {storm_u, storm_v};
+    }
 };
 
 //
 ////////////  END FUNCTORS   ///////////
-
-/**
- * \brief Enum that defines the lifted parcel level (LPL) of origin.
- *
- * The SFC parcel is a surface-based parcel, where the parcel initial attributes
- * are set to the surface pressure, temperature, and dewpoint.
- *
- * The FCST parcel is a forecast-surface-based parcel, in which the afternoon
- * surface temperature and dewpoint are estimated and set as the parcel starting
- * values.
- *
- * The MU parcel is the most unstable parcel, in which the parcel attributes are
- * set to the pressure, temperature, and dewpoint of the maximum Theta-E level
- * within the bottom 400 hPa of the profile.
- *
- * The ML parcel is the mixed-layer parcel, in which the mean theta and water
- * vapor mixing ratio within the lowest 100 hPa are used to estimate a boundary
- * layer mean, and lifted from the surface.
- *
- * The EIL parcel is the mean Effective Inflow Layer parcel, in which a parcel
- * is lifted from the center of the Effective Inflow Layer
- *
- * The USR parcel means that the parcel initial lifting attributes have already
- * been set by the programmer or user, and there is no need for them to be
- * set or modified.
- */
-enum class LPL : int {
-    /**
-     * \brief Surface Based Parcel
-     */
-    SFC = 1,
-
-    /**
-     * \brief Forecast Surface Parcel
-     */
-    FCST = 2,
-
-    /**
-     * \brief Most Unstable Parcel
-     */
-    MU = 3,  // most unstable
-
-    /**
-     * \brief 100mb Mixed Layer Parcel
-     */
-    ML = 4,  // 100mb mixed layer
-
-    /**
-     * \brief User-defined Parcel
-     */
-    USR = 5,  // user-defined
-
-    /**
-     * \brief Mean Effective Inflow Layer Parcel
-     */
-    EIL = 6,  // Mean effective inflow layer
-    END,
-};
-
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Data that defines a Parcel, its attributes, and derived quantities.
- *
- * Contains information about a Parcel's starting level and
- * thermodynamic attributes, as well as paramaters computed
- * using the parcel.
- */
-struct Parcel {
-    /**
-     * \brief Parcel starting pressure (hPa)
-     */
-    float pres = MISSING;
-
-    /**
-     * \brief Parcel starting temperature (degC)
-     */
-    float tmpk = MISSING;
-
-    /**
-     * \brief Parcel starting dewpoint (degC)
-     */
-    float dwpk = MISSING;
-
-    /**
-     * \brief Pressure at the Lifted Condensation Level (hPa)
-     */
-    float lcl_pressure = MISSING;
-
-    /**
-     * \brief Pressure at the Level of Free Convection (hPa)
-     */
-    float lfc_pressure = MISSING;
-
-    /**
-     * \brief Pressure at the parcel Equilibrium Level (hPa)
-     */
-    float eql_pressure = MISSING;
-
-    /**
-     * \brief Parcel Convective Available Potential Energy (J/kg) between the
-     * LFC and EL
-     */
-    float cape = 0.0;
-
-    /**
-     * \brief Parcel Convective Inhibition (J/kg) between the LFC and EL
-     */
-    float cinh = 0.0;
-
-    /**
-     * \brief The type of parcel this is
-     */
-    LPL source;
-};
-
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Sets the Lifted Parcel Level (LPL) attributes for a sharp::Parcel.
- *
- * Before computing CAPE and CINH, the parcel's level of origin, or the
- * Lifted Parcel Level (LPL), must be set. The enum sharp::LPL defines
- * common lifting levels, and passing the appropriate enum member
- * will set the sharp::Parcel attributes to that type of parcel or level.
- *
- * If you wish to set a custom LPL, you can do so and then set the
- * source to sharp::LPL::USR.
- *
- * \param   pressure        Array of pressure (Pa)
- * \param   temperature     Array of temperature (degK)
- * \param   dewpoint        Array of dewpoint temperature (degK)
- * \param   wv_mixratio     Array of water vapor mixing ratio (kg/kg)
- * \param   theta_arr       Array of potential temperature (degK)
- * \param   thetae_arr      Array of eqiv. potential temperature (degK)
- * \param   N               The length of the arrays
- * \param   pcl             The sharp::Parcel to set the attributes to
- * \param   source          The type of sharp::Parcel to define
- */
-void define_parcel(const float pressure[], const float temperature[],
-                   const float dewpoint[], const float wv_mixratio[],
-                   const float theta_arr[], const float thetae_arr[],
-                   const int N, Parcel& pcl, LPL source);
-
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Lifts a sharp::Parcel to compute buoyancy
- *
- * Lifts a sharp::Parcel dry adiabatically from its sharp::LPL to its
- * LCL dry adiabatically, and then moist adiabatically from the
- * LCL to the top of the profile. The moist adiabat used is determined
- * bu the type of lifting functor passed to the function (i.e.
- * sharp::lifter_wobus or sharp::lifter_cm1).
- *
- * \param   liftpcl
- * \param   pressure_arr                Array of env pressure (Pa)
- * \param   virtual_temperature_arr     Array of env virtual temperature (degK)
- * \param   buoyancy_arr                The array to fill with Buoyancy (m/s^2)
- * \param   N                           The length of the arrays
- * \param   pcl                         The sharp::Parcel to lift
- */
-template <typename Lft>
-void lift_parcel(Lft liftpcl, const float pressure_arr[],
-                 const float virtual_temperature_arr[], float buoyancy_arr[],
-                 const int N, Parcel* pcl) {
-    // Lift the parcel from the LPL to the LCL
-    float pres_lcl;
-    float tmpk_lcl;
-    drylift(pcl->pres, pcl->tmpk, pcl->dwpk, pres_lcl, tmpk_lcl);
-    // If we are lifting elevated parcel (i.e. EIL), we need to make
-    // sure out LCL isnt above the top of our data.
-    if (pres_lcl < pressure_arr[N - 1]) return;
-
-    pcl->lcl_pressure = pres_lcl;
-
-    const float qv_lcl = mixratio(pres_lcl, tmpk_lcl);
-    const float thetav_lcl = theta(
-        pres_lcl, virtual_temperature(tmpk_lcl, qv_lcl), THETA_REF_PRESSURE);
-
-    // Define the dry and saturated lift layers
-    PressureLayer dry_lyr = {pcl->pres, pcl->lcl_pressure};
-    PressureLayer sat_lyr = {pcl->lcl_pressure, pressure_arr[N - 1]};
-
-    // The LayerIndex excludes the top and bottom for interpolation reasons
-    const LayerIndex dry_idx = get_layer_index(dry_lyr, pressure_arr, N);
-    const LayerIndex sat_idx = get_layer_index(sat_lyr, pressure_arr, N);
-
-    // zero out any residual buoyancy from
-    // other parcels that may have been lifted
-    for (int k = 0; k < dry_idx.kbot; ++k) {
-        buoyancy_arr[k] = 0.0;
-    }
-
-    // Fill the array with dry parcel buoyancy.
-    // Virtual potential temperature (Theta-V)
-    // is conserved for a parcels dry ascent to the LCL
-    for (int k = dry_idx.kbot; k < dry_idx.ktop + 1; ++k) {
-        const float pcl_vtmp =
-            theta(THETA_REF_PRESSURE, thetav_lcl, pressure_arr[k]);
-        buoyancy_arr[k] = buoyancy(pcl_vtmp, virtual_temperature_arr[k]);
-    }
-
-    // fill the array with the moist parcel buoyancy
-    for (int k = sat_idx.kbot; k < N; ++k) {
-        // compute above-lcl buoyancy here
-        const float pcl_pres = pressure_arr[k];
-        const float pcl_vtmpk = liftpcl(pres_lcl, tmpk_lcl, pcl_pres);
-        const float env_vtmpk = virtual_temperature_arr[k];
-        buoyancy_arr[k] = buoyancy(pcl_vtmpk, env_vtmpk);
-    }
-}
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO

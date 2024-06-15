@@ -575,9 +575,9 @@ float saturated_adiabatic_lapse_rate_peters_et_al(float temperature,
                                         float qv_env,
                                         float entrainment_rate,
                                         float precip_rate,
-                                        float qt_entrainment = MISSING,
-                                        float warmest_mixed_phase_temp = 273.15,
-                                        float coldest_mixed_phase_temp = 253.15);
+                                        float qt_entrainment,
+                                        float warmest_mixed_phase_temp,
+                                        float coldest_mixed_phase_temp);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN

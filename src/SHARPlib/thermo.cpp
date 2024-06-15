@@ -384,59 +384,70 @@ float dry_adiabat_peters_et_al(float pressure, float temperature,
 }
 
 float ice_fraction(float temperature,
-                    float warmest_mixed_phase_temp = 273.15,
-                    float coldest_mixed_phase_temp = 253.15) {
-
+                    float warmest_mixed_phase_temp,
+                    float coldest_mixed_phase_temp) {
+    if(temperature >= warmest_mixed_phase_temp) {
+        return 0;
+    } else if (temperature <= coldest_mixed_phase_temp) {
+        return 1;
+    } else {
+        return (1 / (coldest_mixed_phase_temp - warmest_mixed_phase_temp)) * (temperature - warmest_mixed_phase_temp);
+    }
 }
 
 float deriv_ice_fraction(float temperature,
-                    float warmest_mixed_phase_temp = 273.15,
-                    float coldest_mixed_phase_temp = 253.15) {
-    
+                    float warmest_mixed_phase_temp,
+                    float coldest_mixed_phase_temp) {
+    if(temperature >= warmest_mixed_phase_temp) {
+        return 0;
+    } else if (temperature <= coldest_mixed_phase_temp) {
+        return 1;
+    } else {
+        return (1 / (coldest_mixed_phase_temp - warmest_mixed_phase_temp));
+    }
 }
 
 float saturation_mixing_ratio(float temperature,
                 float pressure,
                 int ice_flag,
-                float warmest_mixed_phase_temp = 273.15,
-                float coldest_mixed_phase_temp = 253.15) {
-    switch (ice_flag)
-    {
-    case 0:
-        float term_1 = (CP_VAPOR - CP_LIQUID) / RVGAS;
-        float term_2 = (EXP_LV - T_TRIP * (CP_VAPOR - CP_LIQUID)) / RVGAS;
+                float warmest_mixed_phase_temp,
+                float coldest_mixed_phase_temp) {
+
+    float term_1, term_2, r_sat;
+    
+    if(ice_flag == 0) {
+        term_1 = (CP_VAPOR - CP_LIQUID) / RVGAS;
+        term_2 = (EXP_LV - T_TRIP * (CP_VAPOR - CP_LIQUID)) / RVGAS;
 
         // Saturation vapor pressure with respect to liquid I think
 		float esl = std::exp((temperature - T_TRIP) * term_2 / (temperature * 
                 T_TRIP)) * VAPPRES_REF * std::pow(temperature / T_TRIP, term_1);
 
-        float r_sat = EPSILON * esl / (pressure - esl);
+        r_sat = EPSILON * esl / (pressure - esl);
 
         return r_sat;
-    
-    case 1:
+    } else if(ice_flag == 1) {
         float omega = ice_fraction(temperature, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
 
         float r_sat_liquid = saturation_mixing_ratio(temperature, pressure, 0, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
         float r_sat_ice = saturation_mixing_ratio(temperature, pressure, 2, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
 
-        float r_sat = (1 - omega) * r_sat_liquid + omega * r_sat_ice;
+        r_sat = (1 - omega) * r_sat_liquid + omega * r_sat_ice;
 
         return r_sat;
-
-    case 2:
-        float term_1 = (CP_VAPOR - CP_ICE) / RVGAS;
-        float term_2 = (EXP_LV - T_TRIP * (CP_VAPOR - CP_ICE)) / RVGAS;
+    } else if(ice_flag == 2) {
+        term_1 = (CP_VAPOR - CP_ICE) / RVGAS;
+        term_2 = (EXP_LV - T_TRIP * (CP_VAPOR - CP_ICE)) / RVGAS;
 
         // Saturation vapor pressure with respect to liquid I think
 		float esi = std::exp((temperature - T_TRIP) * term_2 / (temperature * 
                 T_TRIP)) * VAPPRES_REF * std::pow(temperature / T_TRIP, term_1);
 
-        float r_sat = EPSILON * esi / (pressure - esi);
+        r_sat = EPSILON * esi / (pressure - esi);
 
         return r_sat;
-    default:
-        saturation_mixing_ratio(temperature, pressure, 1, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+    } else {
+        return saturation_mixing_ratio(temperature, pressure, 1, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
     }
 }
 
@@ -447,9 +458,9 @@ float saturated_adiabatic_lapse_rate_peters_et_al(float temperature,
                                         float qv_env,
                                         float entrainment_rate,
                                         float precip_rate,
-                                        float qt_entrainment = MISSING,
-                                        float warmest_mixed_phase_temp = 273.15,
-                                        float coldest_mixed_phase_temp = 253.15) {
+                                        float qt_entrainment,
+                                        float warmest_mixed_phase_temp,
+                                        float coldest_mixed_phase_temp) {
     float omega = ice_fraction(temperature, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
     float d_omega = deriv_ice_fraction(temperature, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
 
@@ -513,7 +524,7 @@ float moist_adiabat_peters_et_al(float pressure, float temperature,
                                       const float pres_incr,
                                       const float entrainment_rate,
                                       const ascent_type ma_type) {
-
+    return MISSING;
 }
 
 void drylift(float pressure, float temperature, float dewpoint,
