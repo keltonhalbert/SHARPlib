@@ -121,70 +121,73 @@ namespace sharp {
     /**
      * \author Amelia Urquhart - OU-SoM
      *
-     * \brief Lifts a sharp::Parcel according to the lifting formulas from Peters et al. 2022
+     * \brief Lifts a sharp::Parcel according to the lifting formulas from 
+     * Peters et al. 2022
      */
     struct lifter_peters_et_al {
         /**
-         * \brief The type of moist adiabat to use, as defined by sharp::ascent_type
+         * \brief The type of moist ascent to use.
          */
         ascent_type ma_type = ascent_type::adiab_entr;
 
         /**
-         * \brief The entrainment rate used by the lifter
+         * \brief The entrainment rate used by the lifter.
+         * 
+         * Can be either automatically determined or manually set.
          */
         float entr_rate = MISSING;
 
         /**
-         * \brief The pressure increment (Pa) to use for the iterative solver
+         * \brief The pressure increment (Pa) to use for the iterative solver.
          */
         float pressure_incr = 500.0f;
 
         /**
-         * \brief The iterative convergence criteria
-         */
-        float converge = 0.001f;
-
-        /**
-         * \brief The warm limit of the mixed phase range of temperatures (Kelvin)
+         * \brief The warm limit of the mixed phase range of temperatures.
+         * 
+         * The recommended value is 273.15 K, but this is customizable.
          */
         float mixed_phase_warm = 273.15;
 
         /**
-         * \brief The cold limit of the mixed phase range of temperatures (Kelvin)
+         * \brief The cold limit of the mixed phase range of temperatures.
+         * 
+         * The recommended value is 253.15 K, but this is customizable
          */
         float mixed_phase_cold = 253.15; 
 
         /**
-         * \brief Internal temperature variable updated during parcel lifts [WIP]
+         * \brief Internal temperature updated during parcel lifts.
          * 
-         * Keeps track of the last temperature lifted to for efficiency's sake
+         * Keeps track of the last temperature lifted to.
          */
         float temperature = MISSING;
 
         /**
-         * \brief Internal pressure variable updated during parcel lifts [WIP]
+         * \brief Internal pressure updated during parcel lifts.
          * 
-         * Keeps track of the last temperature lifted to for efficiency's sake
+         * Keeps track of the last temperature lifted to.
          */
         float pressure = MISSING;
 
         /**
-         * \brief Water vapor mass fraction variable updated during parcel lifts [WIP]
+         * \brief Water vapor mass fraction updated during parcel lifts.
          */
         float qv = MISSING;
 
         /**
-         * \brief Total vapor (water vapor + cloud condensate) mass fraction variable updated during parcel lifts [WIP]
+         * \brief Total vapor (water vapor + cloud condensate) mass fraction 
+         * variable updated during parcel lifts.
          */
         float qt = MISSING;
 
         /**
-         * \brief Environmental profile used by the lifter
+         * \brief Environmental profile used by the lifter.
          */
         Profile* profile;
 
         /**
-         * \brief Overloads operator() to call sharp::moist_adiabat_peters_et_al
+         * \brief Overloads operator() to call moist_adiabat_peters_et_al()
          *
          * \param   pres        Parcel pressure (Pa)
          * \param   tmpk        Parcel temperature (degK)
@@ -197,17 +200,15 @@ namespace sharp {
 
             bool can_do_efficient_lift = true;
 
-            // Checks whether lifting can be continued from the last time operator 
-            // was called. Massively increases efficiency if profile is sorted in
-            // order of increasing height.
+            // Checks whether lifting can be continued from the last time 
+            // operator was called. Massively increases efficiency if profile 
+            // is sorted in order of increasing height.
             if(new_pres > pressure) {
                 can_do_efficient_lift = false;
             }
 
             float pcl_tmpk;
 
-            // TODO!!! Write actual moist adiabat solver code.
-            // THIS WILL BE PAINFUL.
             if(can_do_efficient_lift) {
                 pcl_tmpk = moist_adiabat_peters_et_al(pressure, temperature, new_pres, 
                     this->qv, this->qt, this->profile, this->pressure_incr, 
@@ -225,15 +226,15 @@ namespace sharp {
         }
 
         /**
-         * If using entrainment, this must be run to give the lifter an 
-         * environmental profile. If not using entrainment, this can be ignored.
+         * This must be run to give the lifter an environmental profile. If not using entrainment, this can be 
+         * ignored.
          */
         void set_profile(Profile* prof) {
             profile = prof;
         }
 
         /**
-         * If using entrainment, this must be run to determine the entrainment rate
+         * If using automatic entrainment, this must be run to determine the entrainment rate
          */
         void determine_entrainment_rate(Profile* prof, LPL lpl) {
         // Written at 4 AM, will definitely need to be double-checked
