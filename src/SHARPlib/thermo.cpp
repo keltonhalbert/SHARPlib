@@ -18,6 +18,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 namespace sharp {
 
@@ -437,10 +438,24 @@ float saturated_adiabatic_lapse_rate_peters_et_al(float temperature,
                                         float qt_entrainment,
                                         float warmest_mixed_phase_temp,
                                         float coldest_mixed_phase_temp) {
+    std::cout << "temperature " << temperature << std::endl;
+    std::cout << "qt " << qt << std::endl;
+    std::cout << "pressure " << pressure << std::endl;
+    std::cout << "temperature_env " << temperature_env << std::endl;
+    std::cout << "qv_env " << qv_env << std::endl;
+    std::cout << "entrainment_rate " << entrainment_rate << std::endl;
+    std::cout << "precip_rate " << precip_rate << std::endl;
+    std::cout << "qt_entrainment " << qt_entrainment << std::endl;
+    std::cout << "warmest_mixed_phase_temp " << warmest_mixed_phase_temp << std::endl;
+    std::cout << "coldest_mixed_phase_temp " << coldest_mixed_phase_temp << std::endl;
+
     float omega = ice_fraction(temperature, warmest_mixed_phase_temp, 
         coldest_mixed_phase_temp);
     float d_omega = deriv_ice_fraction(temperature, warmest_mixed_phase_temp, 
         coldest_mixed_phase_temp);
+
+    std::cout << "omega " << omega << std::endl;
+    std::cout << "d_omega " << d_omega << std::endl;
 
     float q_vsl = (1 - qt) * 
         saturation_mixing_ratio(temperature, pressure, 0, 
@@ -497,12 +512,21 @@ float saturated_adiabatic_lapse_rate_peters_et_al(float temperature,
     float term_1 = buoyancy;
     float term_2 = GRAVITY;
     float term_3 = ((L_s * Q_M) / (R_m_env * temperature_env)) * GRAVITY;
-    float term_4 = (cp_moist_air);
+    float term_4 = (cp_moist_air - L_i * (qt - qv) * d_omega) * temperature_entrainment;
     float term_5 = L_s * (qv_entrainment + qv) / (1 - qt) * qt_entrainment;
 
     float term_6 = cp_moist_air;
     float term_7 = (L_i * (qt - qv) - L_s * (q_vsi - q_vsl)) * d_omega;
     float term_8 = (L_s * L_M) / (RVGAS * temperature * temperature);
+
+    std::cout << "term_1 " << term_1 << std::endl;
+    std::cout << "term_2 " << term_2 << std::endl;
+    std::cout << "term_3 " << term_3 << std::endl;
+    std::cout << "term_4 " << term_4 << std::endl;
+    std::cout << "term_5 " << term_5 << std::endl;
+    std::cout << "term_6 " << term_6 << std::endl;
+    std::cout << "term_7 " << term_7 << std::endl;
+    std::cout << "term_8 " << term_8 << std::endl;
 
     float dT_dz = -(term_1 + term_2 + term_3 - term_4 - term_5) 
         / (term_6 - term_7 + term_8);
@@ -511,7 +535,7 @@ float saturated_adiabatic_lapse_rate_peters_et_al(float temperature,
 }
 
 float moist_adiabat_peters_et_al(float pressure, float temperature,
-                                      float& qv, float& qt, float new_pressure, 
+                                      float new_pressure, float& qv, float& qt,
 									  Profile* prof,
                                       const float pres_incr,
                                       float entrainment_rate,
@@ -592,6 +616,8 @@ float moist_adiabat_peters_et_al(float pressure, float temperature,
             parcel_qt = qt;
         }
 
+        std::cout << "profile_index_0 " << profile_index_0 << std::endl;
+
         // Environmental interpolation scheme used here is very simple, but
         // this can be changed later.
         int profile_index_1 = std::min(profile_index_0 + 1, prof->NZ - 1);
@@ -600,6 +626,11 @@ float moist_adiabat_peters_et_al(float pressure, float temperature,
         float qv_0 = specific_humidity(prof->mixr[profile_index_0]);
         float qv_1 = specific_humidity(prof->mixr[profile_index_1]);
         float env_qv = (qv_0 + qv_1)/2;
+
+        std::cout << "tmpk[profile_index_0]" << prof->tmpk[profile_index_0] << std::endl;
+        std::cout << "tmpk[profile_index_1]" << prof->tmpk[profile_index_1] << std::endl;
+        std::cout << "qv[profile_index_0]" << qv_0 << std::endl;
+        std::cout << "qv[profile_index_1]" << qv_1 << std::endl;
 
         float dz = RDGAS * sharp::virtual_temperature(env_temperature, env_qv) 
             / GRAVITY * std::log(pressure / target_pressure); // hypsometric
@@ -612,10 +643,15 @@ float moist_adiabat_peters_et_al(float pressure, float temperature,
             precip_rate = 0; // sets correct behavior for irrev-adiabatic
         }
 
+        std::cout << "parcel_temperature " << parcel_temperature << std::endl;
+        std::cout << "parcel_qt " << parcel_qt << std::endl;
+
         float dT_dz = saturated_adiabatic_lapse_rate_peters_et_al(
             parcel_temperature, parcel_qt, pressure, env_temperature,
             env_qv, entrainment_rate, precip_rate, dqt_dz,
             warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+
+        std::cout << "dt/dz " << dT_dz << std::endl;
 
         float new_temperature = parcel_temperature + dT_dz * dz;
 
@@ -637,7 +673,11 @@ float moist_adiabat_peters_et_al(float pressure, float temperature,
         parcel_temperature = new_temperature;
         parcel_qv = new_parcel_qv;
         parcel_qt = new_parcel_qt;
+
+        pressure = target_pressure;
     }
+
+    std::cout << "parcel temperature " << parcel_temperature << std::endl;
 
     // Updates qv and qt in the lifter before returning the new temperature
     qv = parcel_qv;

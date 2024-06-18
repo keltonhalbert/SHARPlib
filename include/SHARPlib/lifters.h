@@ -24,6 +24,7 @@
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
+#include <iostream>
 
 
 namespace sharp {
@@ -210,13 +211,15 @@ namespace sharp {
             float pcl_tmpk;
 
             if(can_do_efficient_lift) {
-                pcl_tmpk = moist_adiabat_peters_et_al(pressure, temperature, new_pres, 
-                    this->qv, this->qt, this->profile, this->pressure_incr, 
-                    this->entr_rate, this->ma_type);
+                pcl_tmpk = moist_adiabat_peters_et_al(pressure, temperature, 
+                    new_pres,  this->qv, this->qt, this->profile, 
+                    this->pressure_incr, this->entr_rate, this->ma_type, 
+                    this->mixed_phase_warm, this->mixed_phase_cold);
             } else {
                 pcl_tmpk = moist_adiabat_peters_et_al(pres, tmpk, new_pres, 
                     this->qv, this->qt, this->profile, this->pressure_incr, 
-                    this->entr_rate, this->ma_type);
+                    this->entr_rate, this->ma_type, this->mixed_phase_warm, 
+                    this->mixed_phase_cold);
             }
 
             pressure = new_pres;

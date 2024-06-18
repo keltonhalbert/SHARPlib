@@ -133,7 +133,13 @@ int main(int argc, char* argv[]) {
     sharp::Profile* prof = read_sounding(snd_file1);
 
     if (prof) {
-        static constexpr sharp::lifter_wobus lifter;
+        std::cout << "Using peters lifter" << std::endl;
+
+        static sharp::lifter_peters_et_al lifter;
+
+        lifter.set_profile(prof);
+        lifter.entr_rate = 0;
+
         sharp::Parcel sfc_pcl;
         sharp::Parcel mu_pcl;
         sharp::Parcel ml_pcl;

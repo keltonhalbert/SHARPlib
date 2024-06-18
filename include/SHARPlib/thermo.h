@@ -530,16 +530,19 @@ float saturated_adiabatic_lapse_rate_peters_et_al(float temperature,
  * \param   pres_incr        (Pa)
  * \param   entrainment_rate (1/m)
  * \param   ma_type          (sharp::ascent_type)
+ * \param   warmest_mixed_phase_temp (degK)
+ * \param   coldest_mixed_phase_temp (degK)
  *
  * \return  pcl_temperature (degK)
  */
-[[nodiscard]] float moist_adiabat_peters_et_al(float pressure, float temperature,
-                                      float new_pressure, float& qv,
-                                      float& qt,
-									  Profile* profile,
+float moist_adiabat_peters_et_al(float pressure, float temperature,
+                                      float new_pressure, float& qv, float& qt,
+									  Profile* prof,
                                       const float pres_incr,
-                                      const float entrainment_rate,
-                                      const ascent_type ma_type);
+                                      float entrainment_rate,
+                                      const ascent_type ma_type,
+                                      const float warmest_mixed_phase_temp,
+                                      const float coldest_mixed_phase_temp);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
