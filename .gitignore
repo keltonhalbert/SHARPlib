@@ -63,3 +63,6 @@ swig/nwsspc/sharp/calc/parcel.py
 swig/nwsspc/sharp/calc/profile.py
 swig/nwsspc/sharp/calc/thermo.py
 swig/nwsspc/sharp/calc/winds.py
+
+# Ignore VSCode folder
+.vscode
