@@ -1,0 +1,7 @@
+Success reading: ../../data/test_snds/20160524_2302_EF3_37.57_-100.13_108_613967.snd
+Number of vertical levels: 34
+Using peters lifter
+Lifting 3 parcels took: 87us
+SFC PCL	LFC PRES: 79200	EL PRES: 14500	CAPE: 3972.86	CINH: -3.94925
+MU PCL	LFC PRES: 79200	EL PRES: 14500	CAPE: 3972.86	CINH: -3.94925
+ML PCL	LFC PRES: 72000	EL PRES: 16900	CAPE: 3274.87	CINH: -18.3288

@@ -450,8 +450,8 @@ enum class ascent_type : int {
  *
  * \return  lapse_rate (K/m)
  */
-float saturation_mixing_ratio(float temperature,
-                float pressure,
+float saturation_mixing_ratio(float pressure,
+                float temperature,
                 int ice_flag,
                 float warmest_mixed_phase_temp,
                 float coldest_mixed_phase_temp);

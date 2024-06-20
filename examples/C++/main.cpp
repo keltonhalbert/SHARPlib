@@ -133,7 +133,11 @@ int main(int argc, char* argv[]) {
     sharp::Profile* prof = read_sounding(snd_file1);
 
     if (prof) {
-        std::cout << "Using peters lifter" << std::endl;
+        // TEST ENTRAINMENT BEFORE YOU SUBMIT A PULL REQUEST TO KELTON
+        // AMELIA I AM BEGGING YOU
+        // DO NOT FORGET
+
+        std::cout << "Using Peters lifter (irrev-adiabatic, no entrainment)" << std::endl;
 
         static sharp::lifter_peters_et_al lifter;
 
