@@ -180,7 +180,9 @@ WindComponents storm_motion_bunkers(const float pressure[],
 float entrainment_cape(const float pressure[], const float height[],
                        const float temperature[], const float mse_arr[],
                        const float u_wind[], const float v_wind[], const int N,
-                       Parcel *pcl) {
+                       Parcel *pcl, const float inflow_bottom = 0.0f, 
+                       const float inflow_top = 1000.0f,
+                       const bool left_mover = false) {
     // if cape is zero, we get a divide by zero issue later.
     // there can "technically" be LFC/EL without CAPE because of very,
     // very shallow buoyancy near zero when searching for LFC/EL.
@@ -220,13 +222,13 @@ float entrainment_cape(const float pressure[], const float height[],
     // Compute the Bunkers non-parcel based storm motion
     WindComponents strm_mtn =
         storm_motion_bunkers(pressure, height, u_wind, v_wind, N, {0.0, 6000.0},
-                             {0.0, 6000.0}, false, false);
+                             {0.0, 6000.0}, left_mover, false);
 
-    // get the mean 0-1km storm relative wind
-    HeightLayer layer = {hsfc + 0.0f, hsfc + 1000.0f};
+    // get the mean inflow layer storm relative wind (default: 0-1km AGL)
+    HeightLayer layer = {hsfc + inflow_bottom, hsfc + inflow_top};
     LayerIndex layer_idx = get_layer_index(layer, height, N);
 
-    // loop from the surface to the last level before 1km AGL.
+    // loop from the surface to the last level before top of inflow layer.
     float V_sr_mean = 0.0;
     int count = 0;
     for (int k = 0; k < layer_idx.ktop + 1; ++k) {
@@ -249,10 +251,14 @@ float entrainment_cape(const float pressure[], const float height[],
     constexpr float L = 120.0;
     const float H =
         interp_pressure(pcl->eql_pressure, pressure, height, N) - hsfc;
-    constexpr float sigma = 1.6;
+    constexpr float sigma = 1.1; // Amelia: John ended up changing this from 
+                                 // 1.6 to 1.1 between the preprint and the
+                                 // final paper
     constexpr float alpha = 0.8;
     const float pitchfork = (VKSQ * (alpha * alpha) * (PI * PI) * L) /
-                            (PRANDTL * (sigma * sigma) * H);
+                            (4 * PRANDTL * (sigma * sigma) * H);
+                            // Amelia: I emailed John about this and he said
+                            // there should be a four in the denominator
     const float V_sr_tilde = V_sr_mean / std::sqrt(2.0f * pcl->cape);
     const float V_sr_tilde_sq = V_sr_tilde * V_sr_tilde;
     const float N_tilde = NCAPE / pcl->cape;
@@ -282,7 +288,9 @@ float entrainment_cape(const float pressure[], const float height[],
 float entrainment_rate(const float pressure[], const float height[],
                        const float temperature[], const float mse_arr[],
                        const float u_wind[], const float v_wind[], const int N,
-                       Parcel *pcl) {
+                       Parcel *pcl, const float inflow_bottom = 0.0f, 
+                       const float inflow_top = 1000.0f,
+                       const bool left_mover = false) {
     // if cape is zero, we get a divide by zero issue later.
     // there can "technically" be LFC/EL without CAPE because of very,
     // very shallow buoyancy near zero when searching for LFC/EL.
@@ -322,10 +330,10 @@ float entrainment_rate(const float pressure[], const float height[],
     // Compute the Bunkers non-parcel based storm motion
     WindComponents strm_mtn =
         storm_motion_bunkers(pressure, height, u_wind, v_wind, N, {0.0, 6000.0},
-                             {0.0, 6000.0}, false, false);
+                             {0.0, 6000.0}, left_mover, false);
 
-    // get the mean 0-1km storm relative wind
-    HeightLayer layer = {hsfc + 0.0f, hsfc + 1000.0f};
+    // get the mean inflow layer storm relative wind (default: 0-1km AGL)
+    HeightLayer layer = {hsfc + inflow_bottom, hsfc + inflow_top};
     LayerIndex layer_idx = get_layer_index(layer, height, N);
 
     // loop from the surface to the last level before 1km AGL.
@@ -351,10 +359,14 @@ float entrainment_rate(const float pressure[], const float height[],
     constexpr float L = 120.0;
     const float H =
         interp_pressure(pcl->eql_pressure, pressure, height, N) - hsfc;
-    constexpr float sigma = 1.6;
+    constexpr float sigma = 1.1; // Amelia: John ended up changing this from 
+                                 // 1.6 to 1.1 between the preprint and the
+                                 // final paper
     constexpr float alpha = 0.8;
     const float pitchfork = (VKSQ * (alpha * alpha) * (PI * PI) * L) /
-                            (PRANDTL * (sigma * sigma) * H);
+                            (4 * PRANDTL * (sigma * sigma) * H);
+                            // Amelia: I emailed John about this and he said
+                            // there should be a four in the denominator
     const float V_sr_tilde = V_sr_mean / std::sqrt(2.0f * pcl->cape);
     const float V_sr_tilde_sq = V_sr_tilde * V_sr_tilde;
     const float N_tilde = NCAPE / pcl->cape;

@@ -141,6 +141,11 @@ namespace sharp {
  *
  * Computes Entrainment CAPE, or ECAPE, as described by Peters et al. 2023,
  * "An analytic formula for entraining CAPE in mid-latitude storm environments".
+ * 
+ * Notes on Amelia's alterations: configuration of inflow_bottom and
+ * inflow_top will allow for more representative inflows for elevated storms,
+ * among other benefits. The left_mover option accounts for the slight
+ * difference between left-moving and right-moving ECAPE.
  *
  * \param   pressure        (Pa)
  * \param   height          (meters)
@@ -153,12 +158,13 @@ namespace sharp {
  *
  * \return  ECAPE
  */
-[[nodiscard]] float entrainment_cape(const float pressure[],
-                                     const float height[],
-                                     const float temperature[],
-                                     const float mse_arr[],
-                                     const float u_wind[], const float v_wind[],
-                                     const int N, Parcel* pcl);
+[[nodiscard]] float entrainment_cape(const float pressure[], 
+                       const float height[], const float temperature[], 
+                       const float mse_arr[], const float u_wind[], 
+                       const float v_wind[], const int N, Parcel *pcl, 
+                       const float inflow_bottom = 0.0f, 
+                       const float inflow_top = 1000.0f,
+                       const bool left_mover = false);
 
 /**
  * \author Amelia Urquhart - OU-SoM
@@ -180,12 +186,13 @@ namespace sharp {
  *
  * \return  Entrainment Rate (m^-1)
  */
-[[nodiscard]] float entrainment_rate(const float pressure[],
-                                     const float height[],
-                                     const float temperature[],
-                                     const float mse_arr[],
-                                     const float u_wind[], const float v_wind[],
-                                     const int N, Parcel* pcl);
+[[nodiscard]] float entrainment_rate(const float pressure[], 
+                       const float height[], const float temperature[], 
+                       const float mse_arr[], const float u_wind[], 
+                       const float v_wind[], const int N, Parcel *pcl, 
+                       const float inflow_bottom = 0.0f, 
+                       const float inflow_top = 1000.0f,
+                       const bool left_mover = false);
 
 [[nodiscard]] float energy_helicity_index(float cape, float helicity);
 
