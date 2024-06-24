@@ -499,7 +499,7 @@ float saturated_adiabatic_lapse_rate_peters_et_al(float temperature,
     float term_2 = GRAVITY;
     float term_3 = ((L_s * Q_M) / (R_m_env * temperature_env)) * GRAVITY;
     float term_4 = (cp_moist_air - L_i * (qt - qv) * d_omega) * temperature_entrainment;
-    float term_5 = L_s * (qv_entrainment + qv) / (1 - qt) * qt_entrainment;
+    float term_5 = L_s * (qv_entrainment + qv / (1 - qt) * qt_entrainment);
 
     float term_6 = cp_moist_air;
     float term_7 = (L_i * (qt - qv) - L_s * (q_vsi - q_vsl)) * d_omega;

@@ -198,7 +198,7 @@ namespace sharp {
          */
         [[nodiscard]] inline float operator()(float pres, float tmpk,
                                             float new_pres) {
-
+                                                
             bool can_do_efficient_lift = true;
 
             // Checks whether lifting can be continued from the last time 
@@ -229,18 +229,39 @@ namespace sharp {
         }
 
         /**
-         * This must be run to give the lifter an environmental profile. If not using entrainment, this can be 
-         * ignored.
+         * This must be run to give the lifter an environmental profile.
+         * 
+         * This must be used whether entrainment is turned on or not, otherwise
+         * a segmentation fault will occur.
          */
         void set_profile(Profile* prof) {
             profile = prof;
         }
 
         /**
-         * If using automatic entrainment, this must be run to determine the entrainment rate
+         * \author Amelia Urquhart - OU-SoM
+         *
+         * \brief Automatically determines the appropriate entrainment rate.
+         *
+         * While defaults are given, this function allows for configuration of
+         * custom inflow layers and a left-mover option. This may allow for
+         * more appropriate entrainment rates for situations such as elevated
+         * convection.
+         * 
+         * It is highly recommended that the user runs this function for each 
+         * LPL used by the lifter to ensure that the entrainment rate is as 
+         * accurate as possible.
+         *
+         * \param   prof             (sharp::profile*)
+         * \param   lpl              (sharp::LPL)
+         * \param   inflow_bottom    (meters)
+         * \param   inflow_top       (meters)
+         * \param   left_mover       (bool)
          */
-        void determine_entrainment_rate(Profile* prof, LPL lpl) {
-        // Written at 4 AM, will definitely need to be double-checked
+        void determine_entrainment_rate(Profile* prof, LPL lpl,
+                            const float inflow_bottom = 0.0f, 
+                            const float inflow_top = 1000.0f,
+                            const bool left_mover = false) {
             Parcel pcl;
 
             define_parcel(prof->pres, prof->tmpk, prof->dwpk, prof->mixr,
@@ -248,26 +269,35 @@ namespace sharp {
                                 lpl);
 
             lifter_peters_et_al lifter;
+            lifter.profile = prof;
+            lifter.entr_rate = 0;
 
-            if(ma_type == ascent_type::adiab_entr || ma_type == ascent_type::adiab_nonentr) {
+            if(ma_type == ascent_type::adiab_entr 
+                    || ma_type == ascent_type::adiab_nonentr) {
                 lifter.ma_type = ascent_type::adiab_nonentr;
             }
 
-            if(ma_type == ascent_type::pseudo_entr || ma_type == ascent_type::pseudo_nonentr) {
+            if(ma_type == ascent_type::pseudo_entr 
+                    || ma_type == ascent_type::pseudo_nonentr) {
                 lifter.ma_type = ascent_type::pseudo_nonentr;
             }
 
             lift_parcel(lifter, prof->pres, prof->vtmp, prof->buoyancy,
                             prof->NZ, &pcl);
+            cape_cinh(prof->pres, prof->hght, prof->buoyancy, prof->NZ, &pcl);
 
-            entr_rate = entrainment_rate(prof->pres, prof->hght, prof->tmpk, prof->moist_static_energy, prof->uwin, prof->vwin, prof->NZ, &pcl);
+            entr_rate = compute_epsilon(prof->pres, prof->hght, prof->tmpk, 
+                prof->moist_static_energy, prof->uwin, prof->vwin, prof->NZ, 
+                &pcl, inflow_bottom, inflow_top, left_mover);
         }
 
-        // Has to be copied here outside of convective.h to avoid circular include
-        float entrainment_rate(const float pressure[], const float height[],
+        // same as sharp::entrainment_rate, has to be copied here outside of convective.h to avoid circular include
+        float compute_epsilon(const float pressure[], const float height[],
                             const float temperature[], const float mse_arr[],
                             const float u_wind[], const float v_wind[], const int N,
-                            Parcel *pcl) {
+                            Parcel *pcl, const float inflow_bottom = 0.0f, 
+                            const float inflow_top = 1000.0f,
+                            const bool left_mover = false) {
             // if cape is zero, we get a divide by zero issue later.
             // there can "technically" be LFC/EL without CAPE because of very,
             // very shallow buoyancy near zero when searching for LFC/EL.
@@ -307,10 +337,10 @@ namespace sharp {
             // Compute the Bunkers non-parcel based storm motion
             WindComponents strm_mtn =
                 storm_motion_bunkers(pressure, height, u_wind, v_wind, N, {0.0, 6000.0},
-                                    {0.0, 6000.0}, false, false);
+                                    {0.0, 6000.0}, left_mover, false);
 
-            // get the mean 0-1km storm relative wind
-            HeightLayer layer = {hsfc + 0.0f, hsfc + 1000.0f};
+            // get the mean inflow layer storm relative wind (default: 0-1km AGL)
+            HeightLayer layer = {hsfc + inflow_bottom, hsfc + inflow_top};
             LayerIndex layer_idx = get_layer_index(layer, height, N);
 
             // loop from the surface to the last level before 1km AGL.
@@ -336,10 +366,10 @@ namespace sharp {
             constexpr float L = 120.0;
             const float H =
                 interp_pressure(pcl->eql_pressure, pressure, height, N) - hsfc;
-            constexpr float sigma = 1.6;
+            constexpr float sigma = 1.1;
             constexpr float alpha = 0.8;
             const float pitchfork = (VKSQ * (alpha * alpha) * (PI * PI) * L) /
-                                    (PRANDTL * (sigma * sigma) * H);
+                                    (4 * PRANDTL * (sigma * sigma) * H);
             const float V_sr_tilde = V_sr_mean / std::sqrt(2.0f * pcl->cape);
             const float V_sr_tilde_sq = V_sr_tilde * V_sr_tilde;
             const float N_tilde = NCAPE / pcl->cape;
@@ -362,6 +392,12 @@ namespace sharp {
             delete[] mse_bar;
 
             float E_tilde_no_vsr = E_tilde - V_sr_tilde_sq;
+
+            std::cout << "CAPE: " << pcl->cape << std::endl;
+            std::cout << "ECAPE: " << E_tilde * pcl->cape << std::endl;
+            std::cout << "NCAPE: " << NCAPE << std::endl;
+            std::cout << "VSR: " << V_sr_mean << std::endl;
+            std::cout << "H: " << H << std::endl;
 
             float entrainment_rate = ((2 * (1 - E_tilde_no_vsr)) / (E_tilde_no_vsr + N_tilde)) / H;
 
