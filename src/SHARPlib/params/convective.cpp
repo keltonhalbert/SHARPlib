@@ -283,8 +283,6 @@ float entrainment_cape(const float pressure[], const float height[],
     return E_tilde * pcl->cape;
 }
 
-
-
 float entrainment_rate(const float pressure[], const float height[],
                        const float temperature[], const float mse_arr[],
                        const float u_wind[], const float v_wind[], const int N,

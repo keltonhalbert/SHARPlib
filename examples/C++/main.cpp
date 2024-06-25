@@ -129,40 +129,6 @@ sharp::Profile* read_sounding(std::string filename) {
     }
 }
 
-void print_parcel_density_temperature(sharp::Profile* prof) {
-    int N = prof->NZ;
-
-    std::cout << "Printing parcel density temperature:" << std::endl;
-
-    for(int i = 0; i < N; i++) {
-        float pres = prof->pres[i];
-        float vtmp = prof->vtmp[i];
-        float buoyancy = prof->buoyancy[i];
-
-        float parcel_dtmp = vtmp * (buoyancy/sharp::GRAVITY + 1);
-        
-        // std::cout << vtmp << std::endl;
-        // std::cout << buoyancy << std::endl;
-        // std::cout << sharp::GRAVITY << std::endl;
-        // std::cout << pres  << "\t" << parcel_dtmp << std::endl;
-        std::cout << pres << " Pa -> " << parcel_dtmp << " K" << std::endl;
-    }
-
-    for(int i = 0; i < N; i++) {
-        float pres = prof->pres[i];
-        float vtmp = prof->vtmp[i];
-        float buoyancy = prof->buoyancy[i];
-
-        float parcel_dtmp = vtmp * (buoyancy/sharp::GRAVITY + 1);
-        
-        // std::cout << vtmp << std::endl;
-        // std::cout << buoyancy << std::endl;
-        // std::cout << sharp::GRAVITY << std::endl;
-        // std::cout << pres  << "\t" << parcel_dtmp << std::endl;
-        std::cout << pres << " " << parcel_dtmp << std::endl;
-    }
-}
-
 int main(int argc, char* argv[]) {
     std::string snd_file1 =
         "../../data/test_snds/20160524_2302_EF3_37.57_-100.13_108_613967.snd";
@@ -170,8 +136,6 @@ int main(int argc, char* argv[]) {
     sharp::Profile* prof = read_sounding(snd_file1);
 
     if (prof) {
-        // REMOVE ALL <iostream> INCLUDES BEFORE PULL REQUEST
-
         std::cout << "Using Peters lifter (irrev-adiabatic, auto entrainment)" << std::endl;
 
         // static sharp::lifter_wobus lifter;
@@ -182,7 +146,7 @@ int main(int argc, char* argv[]) {
 
         lifter.ma_type = sharp::ascent_type::adiab_entr;
         lifter.set_profile(prof);
-        lifter.determine_entrainment_rate(prof, sharp::LPL::MU, 0, 3000);
+        lifter.determine_entrainment_rate(prof, sharp::LPL::MU);
 
         std::cout << "Using entrainment rate: " << 1000.0 * lifter.entr_rate << " km^-1" << std::endl;
 
@@ -242,13 +206,6 @@ int main(int argc, char* argv[]) {
         std::cout << "EL PRES: " << ml_pcl.eql_pressure << "\t";
         std::cout << "CAPE: " << ml_pcl.cape << "\t";
         std::cout << "CINH: " << ml_pcl.cinh << std::endl;
-
-        // why doesn't convective.h include work????
-        // sharp::supercell_composite_parameter(10000, 10000, 10000);
-
-        // std::cout << "MU-ECAPE:" << sharp::entrainment_cape(prof->pres, prof->hght, prof->tmpk, prof->moist_static_energy, prof->uwin, prof->vwin, prof->NZ, &mu_pcl);
-
-        print_parcel_density_temperature(prof);
     }
 
     delete prof;

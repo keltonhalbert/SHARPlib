@@ -24,7 +24,6 @@
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
-#include <iostream>
 
 
 namespace sharp {
@@ -392,12 +391,6 @@ namespace sharp {
             delete[] mse_bar;
 
             float E_tilde_no_vsr = E_tilde - V_sr_tilde_sq;
-
-            std::cout << "CAPE: " << pcl->cape << std::endl;
-            std::cout << "ECAPE: " << E_tilde * pcl->cape << std::endl;
-            std::cout << "NCAPE: " << NCAPE << std::endl;
-            std::cout << "VSR: " << V_sr_mean << std::endl;
-            std::cout << "H: " << H << std::endl;
 
             float entrainment_rate = ((2 * (1 - E_tilde_no_vsr)) / (E_tilde_no_vsr + N_tilde)) / H;
 
