@@ -1,10 +1,11 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <SHARPlib/constants.h>
+#include <SHARPlib/interp.h>
+
 #include <cmath>
 #include <limits>
 
 #include "doctest.h"
-#include <SHARPlib/interp.h>
-#include <SHARPlib/constants.h>
 
 TEST_CASE("Testing lerp (float)") {
     CHECK(sharp::lerp(10.0f, 20.0f, 0.f) == 10.0f);
@@ -30,11 +31,13 @@ TEST_CASE("Testing interp_height") {
     float data_arr[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     int arr_len = 10;
 
+#ifndef NO_QC
     // test out of bounds values
     CHECK(sharp::interp_height(0, height_arr, data_arr, arr_len) ==
           sharp::MISSING);
     CHECK(sharp::interp_height(1100, height_arr, data_arr, arr_len) ==
           sharp::MISSING);
+#endif
 
     // test exact values along the edges of the arrays
     CHECK(sharp::interp_height(100, height_arr, data_arr, arr_len) == 1);
@@ -50,6 +53,7 @@ TEST_CASE("Testing interp_height") {
     CHECK(sharp::interp_height(391, height_arr, data_arr, arr_len) ==
           doctest::Approx(3.91));
 
+#ifndef NO_QC
     // test missing values
     constexpr float inf = std::numeric_limits<float>::infinity();
     // constexpr float nan = std::numeric_limits<float>::quiet_NaN();
@@ -62,6 +66,7 @@ TEST_CASE("Testing interp_height") {
           sharp::MISSING);
     // CHECK(sharp::interp_height(nan, height_arr, data_arr, arr_len) ==
     // sharp::MISSING);
+#endif
 }
 
 TEST_CASE("Testing interp_pressure") {
@@ -69,11 +74,13 @@ TEST_CASE("Testing interp_pressure") {
     float data_arr[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     int arr_len = 10;
 
+#ifndef NO_QC
     // test out of bounds values
     CHECK(sharp::interp_pressure(0, pres_arr, data_arr, arr_len) ==
           sharp::MISSING);
     CHECK(sharp::interp_pressure(1100, pres_arr, data_arr, arr_len) ==
           sharp::MISSING);
+#endif
 
     // test exact values along the edges of the arrays
     CHECK(sharp::interp_pressure(1000, pres_arr, data_arr, arr_len) == 1);
@@ -91,6 +98,7 @@ TEST_CASE("Testing interp_pressure") {
     CHECK(sharp::interp_pressure(925, pres_arr, data_arr, arr_len) ==
           doctest::Approx(1.7399502648876880));
 
+#ifndef NO_QC
     // test missing values
     constexpr float inf = std::numeric_limits<float>::infinity();
     // constexpr float nan = std::numeric_limits<float>::quiet_NaN();
@@ -100,6 +108,7 @@ TEST_CASE("Testing interp_pressure") {
           sharp::MISSING);
     CHECK(sharp::interp_pressure(inf, pres_arr, data_arr, arr_len) ==
           sharp::MISSING);
+#endif
     // To-Do: NaN check doesn't work, so fix it
     // CHECK(sharp::interp_pressure(nan, pres_arr, data_arr, arr_len) ==
     // sharp::MISSING);
