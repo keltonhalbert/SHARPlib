@@ -278,13 +278,13 @@ void define_parcel(const float pressure[], const float temperature[],
 template <typename Lft>
 void lift_parcel(Lft liftpcl, const float pressure_arr[],
                  const float virtual_temperature_arr[], float buoyancy_arr[],
-                 const int N, Parcel* pcl) {
+                 const int N, Parcel* pcl, float pcl_vtmpk_arr[] = nullptr) {
     // Lift the parcel from the LPL to the LCL
     float pres_lcl;
     float tmpk_lcl;
     drylift(pcl->pres, pcl->tmpk, pcl->dwpk, pres_lcl, tmpk_lcl);
     // If we are lifting elevated parcel (i.e. EIL), we need to make
-    // sure out LCL isnt above the top of our data.
+    // sure our LCL isnt above the top of our data.
     if (pres_lcl < pressure_arr[N - 1]) return;
 
     pcl->lcl_pressure = pres_lcl;
@@ -304,7 +304,8 @@ void lift_parcel(Lft liftpcl, const float pressure_arr[],
     // zero out any residual buoyancy from
     // other parcels that may have been lifted
     for (int k = 0; k < dry_idx.kbot; ++k) {
-        buoyancy_arr[k] = 0.0;
+        buoyancy_arr[k] = 0.0f;
+        if (pcl_vtmpk_arr) pcl_vtmpk_arr[k] = 0.0f;
     }
 
     // Fill the array with dry parcel buoyancy.
@@ -314,6 +315,7 @@ void lift_parcel(Lft liftpcl, const float pressure_arr[],
         const float pcl_vtmp =
             theta(THETA_REF_PRESSURE, thetav_lcl, pressure_arr[k]);
         buoyancy_arr[k] = buoyancy(pcl_vtmp, virtual_temperature_arr[k]);
+        if (pcl_vtmpk_arr) pcl_vtmpk_arr[k] = pcl_vtmp;
     }
 
     // fill the array with the moist parcel buoyancy
@@ -323,6 +325,7 @@ void lift_parcel(Lft liftpcl, const float pressure_arr[],
         const float pcl_vtmpk = liftpcl(pres_lcl, tmpk_lcl, pcl_pres);
         const float env_vtmpk = virtual_temperature_arr[k];
         buoyancy_arr[k] = buoyancy(pcl_vtmpk, env_vtmpk);
+        if (pcl_vtmpk_arr) pcl_vtmpk_arr[k] = 0;
     }
 }
 
