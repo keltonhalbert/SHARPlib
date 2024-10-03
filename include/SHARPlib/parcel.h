@@ -325,7 +325,7 @@ void lift_parcel(Lft liftpcl, const float pressure_arr[],
         const float pcl_vtmpk = liftpcl(pres_lcl, tmpk_lcl, pcl_pres);
         const float env_vtmpk = virtual_temperature_arr[k];
         buoyancy_arr[k] = buoyancy(pcl_vtmpk, env_vtmpk);
-        if (pcl_vtmpk_arr) pcl_vtmpk_arr[k] = 0;
+        if (pcl_vtmpk_arr) pcl_vtmpk_arr[k] = pcl_vtmpk;
     }
 }
 
