@@ -1,6 +1,8 @@
 
 #include <SHARPlib/constants.h>
+#include <SHARPlib/params/convective.h>
 #include <SHARPlib/layer.h>
+#include <SHARPlib/lifters.h>
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/profile.h>
 #include <SHARPlib/thermo.h>
@@ -50,6 +52,8 @@ void build_profile(sharp::Profile* prof, std::vector<std::string>& row,
     prof->vtmp[idx] = sharp::virtual_temperature(tmpk, prof->mixr[idx]);
     prof->theta[idx] = sharp::theta(pres, tmpk, sharp::THETA_REF_PRESSURE);
     prof->theta_e[idx] = sharp::thetae(pres, tmpk, dwpk);
+    prof->moist_static_energy[idx] = sharp::moist_static_energy(hght - prof->hght[0], tmpk, 
+        sharp::specific_humidity(sharp::mixratio(pres, dwpk)));
 
     sharp::WindComponents uv = sharp::vector_to_components(wspd, wdir);
 
@@ -132,7 +136,20 @@ int main(int argc, char* argv[]) {
     sharp::Profile* prof = read_sounding(snd_file1);
 
     if (prof) {
-        static constexpr sharp::lifter_wobus lifter;
+        std::cout << "Using Peters lifter (irrev-adiabatic, auto entrainment)" << std::endl;
+
+        // static sharp::lifter_wobus lifter;
+
+        // static sharp::lifter_cm1 lifter;
+
+        static sharp::lifter_peters_et_al lifter;
+
+        lifter.ma_type = sharp::ascent_type::adiab_entr;
+        lifter.set_profile(prof);
+        lifter.determine_entrainment_rate(prof, sharp::LPL::MU);
+
+        std::cout << "Using entrainment rate: " << 1000.0 * lifter.entr_rate << " km^-1" << std::endl;
+
         sharp::Parcel sfc_pcl;
         sharp::Parcel mu_pcl;
         sharp::Parcel ml_pcl;
@@ -193,3 +210,5 @@ int main(int argc, char* argv[]) {
 
     delete prof;
 }
+
+
