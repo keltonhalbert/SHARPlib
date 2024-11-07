@@ -211,6 +211,21 @@ def test_thermo(snd):
     mse = thermo.moist_static_energy(snd["hght"] - snd["hght"][0], snd["tmpk"], spcf)
     print(mse)
 
+    print("Max Lapse Rate (Height AGL)")
+    lyr_search = layer.HeightLayer(2000.0, 6000.0, 250.0)
+    lyr_max = layer.HeightLayer(constants.MISSING, constants.MISSING)
+    depth = 2000.0
+    max_lr = thermo.lapse_rate_max(lyr_search, depth, snd["hght"], snd["tmpk"], lyr_max)
+    print(max_lr)
+    print(lyr_max.bottom, lyr_max.top)
+
+    print("Max Lapse Rate (Pres)")
+    lyr_search = layer.PressureLayer(80000.0, 50000.0, -500.0)
+    lyr_max = layer.PressureLayer(constants.MISSING, constants.MISSING)
+    depth = 20000.0
+    max_lr = thermo.lapse_rate_max(lyr_search, depth, snd["pres"], snd["hght"], snd["tmpk"], lyr_max)
+    print(max_lr)
+    print(lyr_max.bottom, lyr_max.top)
 
     print("====================")
 
