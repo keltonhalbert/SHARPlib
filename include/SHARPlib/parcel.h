@@ -18,6 +18,8 @@
 #include <SHARPlib/layer.h>
 #include <SHARPlib/thermo.h>
 
+#include <cstddef>
+
 namespace sharp {
 
 ////////////    FUNCTORS    ///////////
@@ -227,6 +229,13 @@ struct Parcel {
      * \brief The type of parcel this is
      */
     LPL source;
+
+    Parcel();
+    Parcel(float pressure, float temperature, float dewpoint) {
+        pres = pressure;
+        tmpk = temperature;
+        dwpk = dewpoint;
+    }
 };
 
 /**
@@ -368,6 +377,64 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
  */
 void cape_cinh(const float pres_arr[], const float hght_arr[],
                const float buoy_arr[], const int N, Parcel* pcl);
+
+inline Parcel surface_parcel(const float pressure[], const float temperature[],
+                             const float dewpoint[], const int N) noexcept {
+    return Parcel(pressure[0], temperature[0], dewpoint[0]);
+}
+
+template <typename L>
+inline Parcel mixed_layer_parcel(const float pressure[], const float height[],
+                                 const float potential_temperature[],
+                                 const float wv_mixratio[], const int N,
+                                 L mix_layer) noexcept {
+    float mean_mixr, mean_thta;
+    if constexpr (mix_layer.coord == LayerCoordinate::pressure) {
+        mean_mixr = layer_mean(mix_layer, pressure, wv_mixratio, N);
+        mean_thta = layer_mean(mix_layer, pressure, potential_temperature, N);
+
+    } else {
+        mean_mixr = layer_mean(mix_layer, height, pressure, wv_mixratio, N);
+        mean_thta =
+            layer_mean(mix_layer, height, pressure, potential_temperature, N);
+    }
+    const float pres = mix_layer.bottom;
+    const float tmpk = theta(THETA_REF_PRESSURE, mean_thta, pres);
+    const float dwpk = temperature_at_mixratio(mean_mixr, pres);
+
+    return Parcel(pres, tmpk, dwpk);
+}
+
+template <typename Layer, typename Lifter>
+inline Parcel most_unstable_parcel(const float pressure[], const float height[],
+                                   const float temperature[],
+                                   const float virtemp[],
+                                   const float dewpoint[], float buoyancy[],
+                                   const std::ptrdiff_t N, Layer search_layer,
+                                   Lifter lifter) {
+    LayerIndex lyr_idx;
+    if constexpr (search_layer.coord == LayerCoordinate::pressure) {
+        lyr_idx = get_layer_index(search_layer, pressure, N);
+
+    } else {
+        lyr_idx = get_layer_index(search_layer, height, N);
+    }
+
+    Parcel max_parcel;
+    for (std::ptrdiff_t idx = lyr_idx.kbot; idx <= lyr_idx.ktop; ++idx) {
+        const float pres = pressure[idx];
+        const float tmpk = temperature[idx];
+        const float dwpk = dewpoint[idx];
+        Parcel pcl(pres, tmpk, dwpk);
+
+        lift_parcel(lifter, pressure, virtemp, buoyancy, N, &pcl);
+        cape_cinh(pressure, height, buoyancy, N, &pcl);
+        if (pcl.cape > max_parcel.cape) max_parcel = pcl;
+    }
+
+    // stuff
+    return max_parcel;
+}
 
 }  // end namespace sharp
 

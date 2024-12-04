@@ -559,7 +559,7 @@ template <typename T, typename L>
  */
 [[nodiscard]] float layer_mean(HeightLayer layer, const float height[],
                                const float pressure[], const float data_arr[],
-                               const int N, const bool isAGL = false);
+                               const int N, const bool isAGL = true);
 
 }  // end namespace sharp
 
