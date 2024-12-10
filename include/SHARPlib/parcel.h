@@ -322,9 +322,8 @@ struct Parcel {
      * \param   buoy_arr    The profile buoyancy array (m/s^2)
      * \param   N           The length of the arrays
      */
-    static void find_lfc_el(const float pres_arr[], const float hght_arr[],
-                            const float buoy_arr[], const std::ptrdiff_t N,
-                            Parcel& pcl);
+    void find_lfc_el(const float pres_arr[], const float hght_arr[],
+                     const float buoy_arr[], const std::ptrdiff_t N);
 
     /**
      * \author Kelton Halbert - NWS Storm Prediction Center
@@ -343,9 +342,8 @@ struct Parcel {
      * \param   N           Length of arrays
      * \param   pcl         A sharp::Parcel corresponding to the buoyancy array.
      */
-    static void cape_cinh(const float pres_arr[], const float hght_arr[],
-                          const float buoy_arr[], const std::ptrdiff_t N,
-                          Parcel& pcl);
+    void cape_cinh(const float pres_arr[], const float hght_arr[],
+                   const float buoy_arr[], const std::ptrdiff_t N);
 
     /**
      * \author Kelton Halbert - NWS Storm Prediction Center
@@ -452,8 +450,8 @@ struct Parcel {
             const float dwpk = dewpoint[idx];
             Parcel pcl(pres, tmpk, dwpk, LPL::MU);
 
-            lift_parcel(lifter, pressure, virtemp, buoyancy, N, pcl);
-            cape_cinh(pressure, height, buoyancy, N, pcl);
+            pcl.lift_parcel(lifter, pressure, virtemp, buoyancy, N);
+            pcl.cape_cinh(pressure, height, buoyancy, N);
             if (pcl.cape > max_parcel.cape) max_parcel = pcl;
         }
 
