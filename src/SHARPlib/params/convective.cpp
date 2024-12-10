@@ -43,15 +43,13 @@ PressureLayer effective_inflow_layer(
             continue;
         }
 #endif
-        Parcel effpcl;
-        effpcl.pres = pressure[k];
-        effpcl.tmpk = temperature[k];
-        effpcl.dwpk = dewpoint[k];
+        Parcel effpcl =
+            sharp::Parcel(pressure[k], temperature[k], dewpoint[k], LPL::MU);
         // We don't want to lift every single profile...
         if (height[k] - sfc_hght > 4000.0) break;
 
-        lift_parcel(lifter, pressure, virtemp_arr, buoy_arr, N, &effpcl);
-        cape_cinh(pressure, height, buoy_arr, N, &effpcl);
+        effpcl.lift_parcel(lifter, pressure, virtemp_arr, buoy_arr, N);
+        effpcl.cape_cinh(pressure, height, buoy_arr, N);
 
         if (effpcl.cape > maxpcl.cape) maxpcl = effpcl;
         if ((effpcl.cape >= cape_thresh) && (effpcl.cinh >= cinh_thresh)) {
@@ -69,12 +67,9 @@ PressureLayer effective_inflow_layer(
             continue;
         }
 #endif
-        Parcel effpcl;
-        effpcl.pres = pressure[k];
-        effpcl.tmpk = temperature[k];
-        effpcl.dwpk = dewpoint[k];
-        lift_parcel(lifter, pressure, virtemp_arr, buoy_arr, N, &effpcl);
-        cape_cinh(pressure, height, buoy_arr, N, &effpcl);
+        Parcel effpcl(pressure[k], temperature[k], dewpoint[k], LPL::MU);
+        effpcl.lift_parcel(lifter, pressure, virtemp_arr, buoy_arr, N);
+        effpcl.cape_cinh(pressure, height, buoy_arr, N);
 
         if (effpcl.cape > maxpcl.cape) maxpcl = effpcl;
         if ((effpcl.cape < cape_thresh) || (effpcl.cinh < cinh_thresh)) {
