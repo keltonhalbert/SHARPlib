@@ -18,6 +18,16 @@
 
 namespace sharp {
 
+Parcel::Parcel() {}
+
+Parcel::Parcel(const float pressure, const float temperature,
+               const float dewpoint, const LPL lpl) {
+    this->pres = pressure;
+    this->tmpk = temperature;
+    this->dwpk = dewpoint;
+    this->source = lpl;
+}
+
 void Parcel::find_lfc_el(const float pres_arr[], const float hght_arr[],
                          const float buoy_arr[], const std::ptrdiff_t N) {
     PressureLayer sat_lyr = {this->lcl_pressure, pres_arr[N - 1]};
