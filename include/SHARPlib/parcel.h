@@ -250,19 +250,18 @@ struct Parcel {
      * \param   pcl_vtmpk_arr   Optional array to fill virtual temp (K)
      */
     template <typename Lft>
-    static void lift_parcel(Lft& liftpcl, const float pressure_arr[],
-                            const float virtemp_arr[], float buoyancy_arr[],
-                            const std::ptrdiff_t N, Parcel& pcl,
-                            float pcl_vtmpk_arr[] = nullptr) {
+    void lift_parcel(Lft& liftpcl, const float pressure_arr[],
+                     const float virtemp_arr[], float buoyancy_arr[],
+                     const std::ptrdiff_t N, float pcl_vtmpk_arr[] = nullptr) {
         // Lift the parcel from the LPL to the LCL
         float pres_lcl;
         float tmpk_lcl;
-        drylift(pcl.pres, pcl.tmpk, pcl.dwpk, pres_lcl, tmpk_lcl);
+        drylift(this->pres, this->tmpk, this->dwpk, pres_lcl, tmpk_lcl);
         // If we are lifting elevated parcel (i.e. EIL), we need to make
         // sure our LCL isnt above the top of our data.
         if (pres_lcl < pressure_arr[N - 1]) return;
 
-        pcl.lcl_pressure = pres_lcl;
+        this->lcl_pressure = pres_lcl;
 
         const float qv_lcl = mixratio(pres_lcl, tmpk_lcl);
         const float thetav_lcl =
@@ -270,8 +269,8 @@ struct Parcel {
                   THETA_REF_PRESSURE);
 
         // Define the dry and saturated lift layers
-        PressureLayer dry_lyr = {pcl.pres, pcl.lcl_pressure};
-        PressureLayer sat_lyr = {pcl.lcl_pressure, pressure_arr[N - 1]};
+        PressureLayer dry_lyr = {this->pres, this->lcl_pressure};
+        PressureLayer sat_lyr = {this->lcl_pressure, pressure_arr[N - 1]};
 
         // The LayerIndex excludes the top and bottom for interpolation reasons
         const LayerIndex dry_idx = get_layer_index(dry_lyr, pressure_arr, N);
