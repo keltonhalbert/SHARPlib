@@ -18,111 +18,9 @@
 
 namespace sharp {
 
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Sets the parcel initial values to the surface of the profile
- *
- * \param pressure      Array of pressure (Pa)
- * \param temperature   Array of temperature (degK)
- * \param dewpoint      Array of dewpoint (degK)
- * \param N             Length of arrays
- * \param pcl           sharp::Parcel to define
- */
-void _sfc(const float pressure[], const float temperature[],
-          const float dewpoint[], const int N, Parcel& pcl) {
-    pcl.pres = pressure[0];
-    pcl.tmpk = temperature[0];
-    pcl.dwpk = dewpoint[0];
-}
-
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Sets the parcel initial values to the most unstable parcel level
- *
- * \param pressure      Array of pressure (Pa)
- * \param temperature   Array of temperature (degK)
- * \param dewpoint      Array of dewpoint (degK)
- * \param thetae        Array of equiv. potential temperature (deg K)
- * \param N             Length of arrays
- * \param pcl           sharp::Parcel to define
- */
-void _mu(const float pressure[], const float temperature[],
-         const float dewpoint[], const float thetae[], const int N,
-         Parcel& pcl) {
-    // Search for the most unstable parcel in the bottom
-    // 400 hPa of the profile
-    static constexpr float mu_depth = 40000.0f;  // 400 hPa in Pa
-    PressureLayer mu_layer(pressure[0], pressure[0] - mu_depth);
-
-    // layer_max returns the max, and will set the pressure
-    // of the max via a pointer to a float.
-    layer_max(mu_layer, pressure, thetae, N, &(pcl.pres));
-    pcl.tmpk = interp_pressure(pcl.pres, pressure, temperature, N);
-    pcl.dwpk = interp_pressure(pcl.pres, pressure, dewpoint, N);
-}
-
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Sets the parcel initial values to the bottom 100mb mixed layer
- *
- * \param pressure      Array of pressure (Pa)
- * \param theta_arr     Array of potential temperature (deg K)
- * \param wv_mixratio   Array of water vapor mixing ratio (kg/kg)
- * \param N             Length of arrays
- * \param pcl           sharp::Parcel to define
- */
-void _ml(const float pressure[], const float theta_arr[],
-         const float wv_mixratio[], const int N, Parcel& pcl) {
-    static constexpr float ml_depth = 10000.0;  // 100 hPa in Pa
-    const float sfcpres = pressure[0];
-    PressureLayer mix_layer(sfcpres, sfcpres - ml_depth);
-
-    // get the mean attributes of the lowest 100 hPa
-    const float mean_mixr = layer_mean(mix_layer, pressure, wv_mixratio, N);
-    const float mean_thta = layer_mean(mix_layer, pressure, theta_arr, N);
-
-    // set the parcel attributes
-    pcl.pres = sfcpres;
-    pcl.tmpk = theta(THETA_REF_PRESSURE, mean_thta, sfcpres);
-    pcl.dwpk = temperature_at_mixratio(mean_mixr, sfcpres);
-}
-
-void define_parcel(const float pressure[], const float temperature[],
-                   const float dewpoint[], const float wv_mixratio[],
-                   const float theta_arr[], const float thetae[], const int N,
-                   Parcel& pcl, LPL source) {
-    pcl.source = source;
-
-    if (source == LPL::SFC) {
-        _sfc(pressure, temperature, dewpoint, N, pcl);
-        return;
-    } else if (source == LPL::FCST) {
-        // TO-DO: Write the forecast_surface routine
-        return;
-    } else if (source == LPL::MU) {
-        _mu(pressure, temperature, dewpoint, thetae, N, pcl);
-        return;
-    } else if (source == LPL::ML) {
-        _ml(pressure, theta_arr, wv_mixratio, N, pcl);
-        return;
-    } else if (source == LPL::EIL) {
-        // TO-DO: Write the EIL routine
-        return;
-    } else if (source == LPL::USR) {
-        // do nothing - its already been set!
-        return;
-    } else {
-        // TO-DO: probably should raise an error or something
-        return;
-    }
-}
-
-void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
-                 const float buoy_arr[], const int N) {
-    PressureLayer sat_lyr = {pcl->lcl_pressure, pres_arr[N - 1]};
+void Parcel::find_lfc_el(const float pres_arr[], const float hght_arr[],
+                         const float buoy_arr[], const std::ptrdiff_t N) {
+    PressureLayer sat_lyr = {this->lcl_pressure, pres_arr[N - 1]};
     LayerIndex lyr_idx = get_layer_index(sat_lyr, pres_arr, N);
 
     float lyr_bot = 0.0;
@@ -137,7 +35,7 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
     float lfc_pres_last = MISSING;
     float eql_pres_last = MISSING;
 
-    for (int k = lyr_idx.kbot; k < lyr_idx.ktop + 1; ++k) {
+    for (std::ptrdiff_t k = lyr_idx.kbot; k < lyr_idx.ktop + 1; ++k) {
 #ifndef NO_QC
         if (buoy_arr[k] == MISSING) continue;
 #endif
@@ -187,26 +85,26 @@ void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
         lyr_bot = lyr_top;
     }
     if (pos_buoy > 0.0f) {
-        pcl->lfc_pressure = lfc_pres;
-        pcl->eql_pressure = eql_pres;
+        this->lfc_pressure = lfc_pres;
+        this->eql_pressure = eql_pres;
     }
 }
 
-void cape_cinh(const float pres_arr[], const float hght_arr[],
-               const float buoy_arr[], const int N, Parcel* pcl) {
-    if (pcl->lcl_pressure == MISSING) return;
-    find_lfc_el(pcl, pres_arr, hght_arr, buoy_arr, N);
-    if ((pcl->lfc_pressure != MISSING) && (pcl->eql_pressure != MISSING)) {
-        PressureLayer lfc_el = {pcl->lfc_pressure, pcl->eql_pressure};
-        PressureLayer lpl_lfc = {pcl->pres, pcl->lfc_pressure};
+void Parcel::cape_cinh(const float pres_arr[], const float hght_arr[],
+                       const float buoy_arr[], const ptrdiff_t N) {
+    if (this->lcl_pressure == MISSING) return;
+    find_lfc_el(pres_arr, hght_arr, buoy_arr, N);
+    if ((this->lfc_pressure != MISSING) && (this->eql_pressure != MISSING)) {
+        PressureLayer lfc_el = {this->lfc_pressure, this->eql_pressure};
+        PressureLayer lpl_lfc = {this->pres, this->lfc_pressure};
         HeightLayer lfc_el_ht =
             pressure_layer_to_height(lfc_el, pres_arr, hght_arr, N);
         HeightLayer lpl_lfc_ht =
             pressure_layer_to_height(lpl_lfc, pres_arr, hght_arr, N);
 
-        pcl->cinh =
+        this->cinh =
             integrate_layer_trapz(lpl_lfc_ht, buoy_arr, hght_arr, N, -1);
-        pcl->cape = integrate_layer_trapz(lfc_el_ht, buoy_arr, hght_arr, N, 1);
+        this->cape = integrate_layer_trapz(lfc_el_ht, buoy_arr, hght_arr, N, 1);
     }
 }
 
