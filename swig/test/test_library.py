@@ -1,20 +1,22 @@
 import pandas as pd
 import numpy as np
 
-## fun little issue is that numpy and pandas
-## needs to be imported first, or bad things
-## happen
+# fun little issue is that numpy and pandas
+# needs to be imported first, or bad things
+# happen
 import nwsspc.sharp.calc.constants as constants
 import nwsspc.sharp.calc.interp as interp
 import nwsspc.sharp.calc.thermo as thermo
 import nwsspc.sharp.calc.parcel as parcel
-import nwsspc.sharp.calc.params as params
+# import nwsspc.sharp.calc.params as params
 import nwsspc.sharp.calc.winds as winds
 import nwsspc.sharp.calc.layer as layer
 
+
 def load_snd(filename):
     names = ["pres", "hght", "tmpk", "dwpk", "wdir", "wspd", "omeg"]
-    snd_df = pd.read_csv(filename, delimiter=",", comment="%", names=names, skiprows=7)
+    snd_df = pd.read_csv(filename, delimiter=",",
+                         comment="%", names=names, skiprows=7)
 
     pres = snd_df["pres"].to_numpy().astype('float32')*100.0
     hght = snd_df["hght"].to_numpy().astype('float32')
@@ -23,19 +25,19 @@ def load_snd(filename):
     wdir = snd_df["wdir"].to_numpy().astype('float32')
     wspd = snd_df["wspd"].to_numpy().astype('float32')
 
-    ## TO-DO - need a better interface to the API for doing this
+    # TO-DO - need a better interface to the API for doing this
     uwin = np.empty(wspd.shape, dtype="float32")
     vwin = np.empty(wspd.shape, dtype="float32")
 
     for idx in range(len(uwin)):
         comp = winds.vector_to_components(float(wspd[idx]), float(wdir[idx]))
         if (comp.u != constants.MISSING):
-            uwin[idx] = comp.u * 0.514444 ## convert to m/s
-            vwin[idx] = comp.v * 0.514444 ## convert to m/s
+            uwin[idx] = comp.u * 0.514444  # convert to m/s
+            vwin[idx] = comp.v * 0.514444  # convert to m/s
         else:
             uwin[idx] = comp.u
             vwin[idx] = comp.v
-    
+
     return {"pres": pres, "hght": hght, "tmpk": tmpk, "dwpk": dwpk, "wdir": wdir, "wspd": wspd, "uwin": uwin, "vwin": vwin}
 
 
@@ -54,13 +56,15 @@ def test_interp(snd):
     print("3 km Temperature: ", tmpk_3000m)
 
     hght_vals = np.arange(0, 3000.0, 100.0).astype('float32')
-    pres_vals = np.arange(snd["pres"][0], snd["pres"][0] - 100.0*100.0, -10.0*100.0).astype('float32')
+    pres_vals = np.arange(snd["pres"][0], snd["pres"]
+                          [0] - 100.0*100.0, -10.0*100.0).astype('float32')
 
     tmpk_vals = interp.interp_height(hght_vals, snd["hght"], snd["tmpk"])
     dwpk_vals = interp.interp_pressure(pres_vals, snd["pres"], snd["dwpk"])
     print(tmpk_vals)
     print(dwpk_vals)
     print("====================")
+
 
 def test_layer(snd):
 
@@ -78,8 +82,10 @@ def test_layer(snd):
     print("Height Layer: 1000.0 m to 3000.0 m")
     print("Height Layer kbot: ", idx2.kbot, "ktop: ", idx2.ktop)
 
-    hlayer_from_player = layer.pressure_layer_to_height(pres_layer, snd["pres"], snd["hght"])
-    player_from_hlayer = layer.height_layer_to_pressure(hght_layer, snd["pres"], snd["hght"])
+    hlayer_from_player = layer.pressure_layer_to_height(
+        pres_layer, snd["pres"], snd["hght"])
+    player_from_hlayer = layer.height_layer_to_pressure(
+        hght_layer, snd["pres"], snd["hght"])
 
     print(hlayer_from_player.bottom, hlayer_from_player.top)
     print(player_from_hlayer.bottom, player_from_hlayer.top)
@@ -94,12 +100,14 @@ def test_layer(snd):
     print(hlayer_max)
     print(player_max)
 
-    hlayer_mean = layer.layer_mean(hght_layer, snd["hght"], snd["pres"], snd["dwpk"])
+    hlayer_mean = layer.layer_mean(
+        hght_layer, snd["hght"], snd["pres"], snd["dwpk"])
     player_mean = layer.layer_mean(pres_layer, snd["pres"], snd["tmpk"])
     print(hlayer_mean)
     print(player_mean)
 
     print("====================")
+
 
 def test_winds(snd):
 
@@ -108,8 +116,10 @@ def test_winds(snd):
     pres_layer = layer.PressureLayer(100000.0, 50000.0)
     hght_layer = layer.HeightLayer(0.0, 3000.0)
 
-    comp1 = winds.mean_wind(pres_layer, snd["pres"], snd["uwin"], snd["vwin"], True)
-    comp2 = winds.mean_wind(pres_layer, snd["pres"], snd["uwin"], snd["vwin"], False)
+    comp1 = winds.mean_wind(
+        pres_layer, snd["pres"], snd["uwin"], snd["vwin"], True)
+    comp2 = winds.mean_wind(
+        pres_layer, snd["pres"], snd["uwin"], snd["vwin"], False)
     print("Pressure Weighted Mean Wind: u = ", comp1.u, "v = ", comp1.v)
     print("Non-Pressure Weighted Mean Wind: u = ", comp2.u, "v = ", comp2.v)
 
@@ -117,10 +127,13 @@ def test_winds(snd):
     print("1000 hPa - 500 hPa wind shear: u = ", shear.u, "v = ", shear.v)
 
     strm_motnv = winds.WindComponents()
-    strm_motnv.u = 0.0; strm_motnv.v = 0.0
-    helicity = winds.helicity(hght_layer, strm_motnv, snd["hght"], snd["uwin"], snd["vwin"])
+    strm_motnv.u = 0.0
+    strm_motnv.v = 0.0
+    helicity = winds.helicity(hght_layer, strm_motnv,
+                              snd["hght"], snd["uwin"], snd["vwin"])
     print("0-3 km AGL Storm Relative Helicity: ", helicity)
     print("====================")
+
 
 def test_thermo(snd):
     print("====================")
@@ -208,14 +221,16 @@ def test_thermo(snd):
 
     print("Moist Static Energy")
     print(thermo.moist_static_energy(0.0, 300.0, 0.010))
-    mse = thermo.moist_static_energy(snd["hght"] - snd["hght"][0], snd["tmpk"], spcf)
+    mse = thermo.moist_static_energy(
+        snd["hght"] - snd["hght"][0], snd["tmpk"], spcf)
     print(mse)
 
     print("Max Lapse Rate (Height AGL)")
     lyr_search = layer.HeightLayer(2000.0, 6000.0, 250.0)
     lyr_max = layer.HeightLayer(constants.MISSING, constants.MISSING)
     depth = 2000.0
-    max_lr = thermo.lapse_rate_max(lyr_search, depth, snd["hght"], snd["tmpk"], lyr_max)
+    max_lr = thermo.lapse_rate_max(
+        lyr_search, depth, snd["hght"], snd["tmpk"], lyr_max)
     print(max_lr)
     print(lyr_max.bottom, lyr_max.top)
 
@@ -223,47 +238,57 @@ def test_thermo(snd):
     lyr_search = layer.PressureLayer(80000.0, 50000.0, -500.0)
     lyr_max = layer.PressureLayer(constants.MISSING, constants.MISSING)
     depth = 20000.0
-    max_lr = thermo.lapse_rate_max(lyr_search, depth, snd["pres"], snd["hght"], snd["tmpk"], lyr_max)
+    max_lr = thermo.lapse_rate_max(
+        lyr_search, depth, snd["pres"], snd["hght"], snd["tmpk"], lyr_max)
     print(max_lr)
     print(lyr_max.bottom, lyr_max.top)
 
     print("====================")
 
+
 def test_parcel(snd):
     print("====================")
     print("Testing parcel bindings...")
 
-    vtmp = np.zeros(snd["pres"].shape, dtype='float32') 
+    vtmp = np.zeros(snd["pres"].shape, dtype='float32')
     mixr = np.zeros(snd["pres"].shape, dtype='float32')
-    qi = np.zeros(snd["pres"].shape, dtype='float32')
-    ql = np.zeros(snd["pres"].shape, dtype='float32')
-
     mixr = thermo.mixratio(snd["pres"], snd["dwpk"])
+    theta = thermo.theta(snd["pres"], snd["tmpk"])
 
     idx = 0
     for p, t, m in zip(snd["pres"], snd["tmpk"], mixr):
         vtmp[idx] = thermo.virtual_temperature(float(t), float(m))
-        idx = idx + 1 
+        idx = idx + 1
 
-    mupcl = parcel.Parcel()
-    eil = params.effective_inflow_layer(snd["pres"], snd["hght"], 
-                                        snd["tmpk"], snd["dwpk"], 
-                                        vtmp, mupcl)
-    print(eil.bottom, eil.top)
-    print(mupcl.pres, mupcl.lcl_pressure, mupcl.lfc_pressure, mupcl.eql_pressure, mupcl.cape, mupcl.cinh)
+    mix_lyr = layer.PressureLayer(
+        float(snd["pres"][0]), float(snd["pres"][0] - 10000.0))
+    print(dir(parcel))
+    ml_pcl = parcel.Parcel.mixed_layer_parcel(
+        snd["pres"], theta, mixr, mix_lyr)
+    print(ml_pcl)
 
-    mw_lyr = layer.HeightLayer(0, 6000.0)
-    shr_lyr = layer.HeightLayer(0, 6000.0)
-    strm_right_np = params.storm_motion_bunkers(snd["pres"], snd["hght"], 
-                                                snd["uwin"], snd["vwin"],
-                                                mw_lyr, shr_lyr)
-    strm_right_eff = params.storm_motion_bunkers(snd["pres"], snd["hght"],
-                                                 snd["uwin"], snd["vwin"],
-                                                 eil, mupcl)
-
-    print("Bunkers Right (non-parcel): u = {0}\tv = {1}".format(strm_right_np.u, strm_right_np.v))
-    print("Bunkers Right (parcel): u = {0}\tv = {1}".format(strm_right_eff.u, strm_right_eff.v))
-
+    # mupcl = parcel.Parcel()
+    # eil = params.effective_inflow_layer(snd["pres"], snd["hght"],
+    #                                     snd["tmpk"], snd["dwpk"],
+    #                                     vtmp, mupcl)
+    # print(eil.bottom, eil.top)
+    # print(mupcl.pres, mupcl.lcl_pressure, mupcl.lfc_pressure,
+    #       mupcl.eql_pressure, mupcl.cape, mupcl.cinh)
+    #
+    # mw_lyr = layer.HeightLayer(0, 6000.0)
+    # shr_lyr = layer.HeightLayer(0, 6000.0)
+    # strm_right_np = params.storm_motion_bunkers(snd["pres"], snd["hght"],
+    #                                             snd["uwin"], snd["vwin"],
+    #                                             mw_lyr, shr_lyr)
+    # strm_right_eff = params.storm_motion_bunkers(snd["pres"], snd["hght"],
+    #                                              snd["uwin"], snd["vwin"],
+    #                                              eil, mupcl)
+    #
+    # print(
+    #     "Bunkers Right (non-parcel): u = {0}\tv = {1}".format(strm_right_np.u, strm_right_np.v))
+    # print("Bunkers Right (parcel): u = {0}\tv = {1}".format(
+    #     strm_right_eff.u, strm_right_eff.v))
+    #
     print("====================")
 
 
@@ -274,6 +299,7 @@ def main():
     test_parcel(snd)
     test_thermo(snd)
     test_winds(snd)
+
 
 if __name__ == "__main__":
     main()
