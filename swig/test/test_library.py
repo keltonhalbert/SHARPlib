@@ -255,6 +255,9 @@ def test_parcel(snd):
     mixr = thermo.mixratio(snd["pres"], snd["dwpk"])
     theta = thermo.theta(snd["pres"], snd["tmpk"])
 
+    wobf = parcel.lifter_wobus()
+    cm1 = parcel.lifter_cm1()
+
     idx = 0
     for p, t, m in zip(snd["pres"], snd["tmpk"], mixr):
         vtmp[idx] = thermo.virtual_temperature(float(t), float(m))
@@ -266,14 +269,15 @@ def test_parcel(snd):
     # Create a surface based parcel
     sfc_pcl = parcel.Parcel.surface_parcel(
         float(snd["pres"][0]), float(snd["tmpk"][0]), float(snd["dwpk"][0]))
-    print(sfc_pcl.pres, sfc_pcl.tmpk, sfc_pcl.dwpk, sfc_pcl.source)
-    # mix_lyr = layer.PressureLayer(
-    #     float(snd["pres"][0]), float(snd["pres"][0] - 10000.0))
+    print(sfc_pcl.pres, sfc_pcl.tmpk, sfc_pcl.dwpk)
+
+    mix_lyr = layer.PressureLayer(
+        float(snd["pres"][0]), float(snd["pres"][0] - 10000.0))
     # print(dir(parcel))
     # print(parcel)
-    # ml_pcl = parcel.Parcel.mixed_layer_parcel(
-    #     snd["pres"], theta, mixr, mix_lyr)
-    # print(ml_pcl)
+    ml_pcl = parcel.Parcel.mixed_layer_parcel(
+        snd["pres"], snd["hght"], theta, mixr, mix_lyr)
+    print(ml_pcl.pres, ml_pcl.tmpk, ml_pcl.dwpk)
 
     # mupcl = parcel.Parcel()
     # eil = params.effective_inflow_layer(snd["pres"], snd["hght"],
