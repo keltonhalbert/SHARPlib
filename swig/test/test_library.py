@@ -13,6 +13,46 @@ import nwsspc.sharp.calc.winds as winds
 import nwsspc.sharp.calc.layer as layer
 
 
+def load_snd1(filename):
+    names = ["pres", "hght", "tmpk", "dwpk", "wdir", "wspd", "omeg"]
+    # snd_df = pd.read_csv(filename, delimiter=",", comment="%", names=names, skiprows=7)
+    snd_df = pd.read_parquet(filename)
+    snd_df = snd_df[snd_df["vwin"].notna()]
+    snd_df = snd_df[snd_df["tmpc"].notna()]
+    snd_df = snd_df[snd_df["relh"].notna()]
+    snd_df = snd_df[snd_df["pres"] >= 50.0]
+    print(snd_df.columns)
+
+    pres = snd_df["pres"].to_numpy().astype('float32')*100.0
+    hght = snd_df["hght"].to_numpy().astype('float32')
+    tmpk = snd_df["tmpc"].to_numpy().astype('float32')+273.15
+    dwpk = snd_df["dwpc"].to_numpy().astype('float32')+273.15
+    wdir = snd_df["wdir"].to_numpy().astype('float32')
+    wspd = snd_df["wspd"].to_numpy().astype('float32')
+    uwin = snd_df["uwin"].to_numpy().astype('float32')
+    vwin = snd_df["vwin"].to_numpy().astype('float32')
+
+    # turn into height above ground level
+    hght -= hght[0]
+
+    # TO-DO - need a better interface to the API for doing this
+    # uwin = np.empty(wspd.shape, dtype="float32")
+    # vwin = np.empty(wspd.shape, dtype="float32")
+    mixr = thermo.mixratio(pres, dwpk)
+    vtmp = thermo.virtual_temperature(tmpk, mixr)
+
+    # for idx in range(len(uwin)):
+    #     comp = winds.vector_to_components(float(wspd[idx]), float(wdir[idx]))
+    #     if (comp.u != constants.MISSING):
+    #         uwin[idx] = comp.u * 0.514444 ## convert to m/s
+    #         vwin[idx] = comp.v * 0.514444 ## convert to m/s
+    #     else:
+    #         uwin[idx] = comp.u
+    #         vwin[idx] = comp.v
+
+    return {"pres": pres, "hght": hght, "tmpk": tmpk, "mixr": mixr, "vtmp": vtmp, "dwpk": dwpk, "uwin": uwin, "vwin": vwin}
+
+
 def load_snd(filename):
     names = ["pres", "hght", "tmpk", "dwpk", "wdir", "wspd", "omeg"]
     snd_df = pd.read_csv(filename, delimiter=",",
@@ -257,6 +297,8 @@ def test_parcel(snd):
 
     wobf = parcel.lifter_wobus()
     cm1 = parcel.lifter_cm1()
+    cm1.pressure_incr = 1000.0
+    cm1.converge = 0.01
 
     idx = 0
     for p, t, m in zip(snd["pres"], snd["tmpk"], mixr):
@@ -266,23 +308,93 @@ def test_parcel(snd):
     print(dir(parcel))
     print(dir(parcel.Parcel()))
 
-    # Create a surface based parcel
-    sfc_pcl = parcel.Parcel.surface_parcel(
-        float(snd["pres"][0]), float(snd["tmpk"][0]), float(snd["dwpk"][0]))
-    print(sfc_pcl.pres, sfc_pcl.tmpk, sfc_pcl.dwpk)
-
     mix_lyr_pr = layer.PressureLayer(
         float(snd["pres"][0]), float(snd["pres"][0] - 10000.0))
     mix_lyr_ht = layer.pressure_layer_to_height(
         mix_lyr_pr, snd["pres"], snd["hght"])
-    # print(dir(parcel))
-    # print(parcel)
+
+    # Create a surface-based parcel
+    sfc_pcl = parcel.Parcel.surface_parcel(
+        float(snd["pres"][0]), float(snd["tmpk"][0]), float(snd["dwpk"][0]))
+    print(sfc_pcl.pres, sfc_pcl.tmpk, sfc_pcl.dwpk)
+
+    # create a mixed-layer parcel
     ml_pcl1 = parcel.Parcel.mixed_layer_parcel(
         snd["pres"], snd["hght"], theta, mixr, mix_lyr_pr)
     print(ml_pcl1.pres, ml_pcl1.tmpk, ml_pcl1.dwpk)
+
+    # test that the HeightLayer function works too
     ml_pcl2 = parcel.Parcel.mixed_layer_parcel(
         snd["pres"], snd["hght"], theta, mixr, mix_lyr_ht)
     print(ml_pcl2.pres, ml_pcl2.tmpk, ml_pcl2.dwpk)
+
+    # Compute buoyancy from a surface-based parcel
+    sfc_buoy1 = sfc_pcl.lift_parcel(wobf, snd["pres"], vtmp)
+    print(sfc_buoy1, sfc_buoy1.min(), sfc_buoy1.max())
+    sfc_buoy2 = sfc_pcl.lift_parcel(cm1, snd["pres"], vtmp)
+    print(sfc_buoy2, sfc_buoy2.min(), sfc_buoy2.max())
+
+    # Compute buoyancy from a mixed-layer parcel
+    ml_buoy1 = ml_pcl1.lift_parcel(wobf, snd["pres"], vtmp)
+    print(ml_buoy1, ml_buoy1.min(), ml_buoy1.max())
+    ml_buoy2 = ml_pcl1.lift_parcel(cm1, snd["pres"], vtmp)
+    print(ml_buoy2, ml_buoy2.min(), ml_buoy2.max())
+
+    # Find the LFC and EL for a surface-based parcel
+    sfc_lfc1, sfc_el1 = sfc_pcl.find_lfc_el(
+        snd["pres"], snd["hght"], sfc_buoy1)
+    print(sfc_lfc1, sfc_el1, sfc_pcl.lfc_pressure, sfc_pcl.eql_pressure)
+    sfc_lfc2, sfc_el2 = sfc_pcl.find_lfc_el(
+        snd["pres"], snd["hght"], sfc_buoy2)
+    print(sfc_lfc2, sfc_el2, sfc_pcl.lfc_pressure, sfc_pcl.eql_pressure)
+
+    # Find the LFC and EL for a mixed-layer parcel
+    ml_lfc1, ml_el1 = ml_pcl1.find_lfc_el(snd["pres"], snd["hght"], ml_buoy1)
+    print(ml_lfc1, ml_el1, ml_pcl1.lfc_pressure, ml_pcl1.eql_pressure)
+    ml_lfc2, ml_el2 = ml_pcl1.find_lfc_el(snd["pres"], snd["hght"], ml_buoy2)
+    print(ml_lfc2, ml_el2, ml_pcl1.lfc_pressure, ml_pcl1.eql_pressure)
+
+    # Compute CAPE and CINH from a surface-based parcel
+    sfc_cape1, sfc_cinh1 = sfc_pcl.cape_cinh(
+        snd["pres"], snd["hght"], sfc_buoy1)
+    print(sfc_cape1, sfc_cinh1, sfc_pcl.cape, sfc_pcl.cinh)
+    sfc_cape2, sfc_cinh2 = sfc_pcl.cape_cinh(
+        snd["pres"], snd["hght"], sfc_buoy2)
+    print(sfc_cape2, sfc_cinh2, sfc_pcl.cape, sfc_pcl.cinh)
+
+    # Compute CAPE and CINH from a mixed-layer parcel
+    ml_cape1, ml_cinh1 = ml_pcl1.cape_cinh(snd["pres"], snd["hght"], ml_buoy1)
+    print(ml_cape1, ml_cinh1, ml_pcl1.cape, ml_pcl1.cinh)
+    ml_cape2, ml_cinh2 = ml_pcl1.cape_cinh(snd["pres"], snd["hght"], ml_buoy2)
+    print(ml_cape2, ml_cinh2, ml_pcl1.cape, ml_pcl1.cinh)
+
+    # find and compute the most-unstable parcel
+    search_lyr = layer.PressureLayer(float(snd["pres"][0]), float(70000.0))
+    mu_pcl1 = parcel.Parcel.most_unstable_parcel(
+        wobf,
+        search_lyr,
+        snd["pres"],
+        snd["hght"],
+        snd["tmpk"],
+        vtmp,
+        snd["dwpk"]
+    )
+    print(mu_pcl1.pres, mu_pcl1.tmpk, mu_pcl1.dwpk)
+    print(mu_pcl1.lfc_pressure, mu_pcl1.eql_pressure)
+    print(mu_pcl1.cape, mu_pcl1.cinh)
+
+    mu_pcl2 = parcel.Parcel.most_unstable_parcel(
+        cm1,
+        search_lyr,
+        snd["pres"],
+        snd["hght"],
+        snd["tmpk"],
+        vtmp,
+        snd["dwpk"]
+    )
+    print(mu_pcl2.pres, mu_pcl2.tmpk, mu_pcl2.dwpk)
+    print(mu_pcl2.lfc_pressure, mu_pcl2.eql_pressure)
+    print(mu_pcl2.cape, mu_pcl2.cinh)
 
     # mupcl = parcel.Parcel()
     # eil = params.effective_inflow_layer(snd["pres"], snd["hght"],
@@ -310,7 +422,8 @@ def test_parcel(snd):
 
 
 def main():
-    snd = load_snd("./hires-SPC.txt")
+    # snd = load_snd("./hires-SPC.txt")
+    snd = load_snd1("./ddc.parquet")
     test_interp(snd)
     test_layer(snd)
     test_parcel(snd)

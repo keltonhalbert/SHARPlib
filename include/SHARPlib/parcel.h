@@ -241,7 +241,6 @@ struct Parcel {
      * \param   virtemp_arr     Array of env virtual temperature (K)
      * \param   buoyancy_arr    The array to fill with Buoyancy (m/s^2)
      * \param   N               The length of the arrays
-     * \param   pcl             The sharp::Parcel to lift
      * \param   pcl_vtmpk_arr   Optional array to fill virtual temp (K)
      */
     template <typename Lft>
@@ -310,7 +309,6 @@ struct Parcel {
      * are found, the values are set in sharp::Parcel.lfc_pres and
      * sharp::Parcel.eql_pres.
      *
-     * \param   pcl         an instantiated sharp::Parcel
      * \param   pres_arr    The pressure coordinate array (Pa)
      * \param   hght_arr    The height coordinate array (meters)
      * \param   buoy_arr    The profile buoyancy array (m/s^2)
@@ -334,7 +332,6 @@ struct Parcel {
      * \param   hght_arr    Array of height (meters)
      * \param   buoy_arr    Array of buoyancy (m/s^2)
      * \param   N           Length of arrays
-     * \param   pcl         A sharp::Parcel corresponding to the buoyancy array.
      */
     void cape_cinh(const float pres_arr[], const float hght_arr[],
                    const float buoy_arr[], const std::ptrdiff_t N);
