@@ -23,7 +23,7 @@
 import_array();
 %}
 
-%import "../include/SHARPlib/layer.h"
+%import "../../include/SHARPlib/layer.h"
 
 %apply float &OUTPUT { float& pressure_at_lcl };
 %apply float &OUTPUT { float& temperature_at_lcl };
@@ -785,4 +785,4 @@ void _buoyancy_dilution_potential(const float temperature[], const int N1,
 
 %}
 
-%include "../include/SHARPlib/thermo.h"
+%include "../../include/SHARPlib/thermo.h"

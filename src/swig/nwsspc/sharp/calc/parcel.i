@@ -61,9 +61,9 @@ import_array();
 %rename("%s") find_lfc_el;
 %rename("%s") cape_cinh;
 
-%import "../include/SHARPlib/layer.h"
-%import "../include/SHARPlib/thermo.h"
-%include "../include/SHARPlib/parcel.h"
+%import "../../include/SHARPlib/layer.h"
+%import "../../include/SHARPlib/thermo.h"
+%include "../../include/SHARPlib/parcel.h"
 
 %extend sharp::Parcel {
 
