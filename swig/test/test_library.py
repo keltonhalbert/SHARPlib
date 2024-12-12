@@ -305,9 +305,7 @@ def test_parcel(snd):
         vtmp[idx] = thermo.virtual_temperature(float(t), float(m))
         idx = idx + 1
 
-    print(dir(parcel))
-    print(dir(parcel.Parcel()))
-
+    # define a mix layer
     mix_lyr_pr = layer.PressureLayer(
         float(snd["pres"][0]), float(snd["pres"][0] - 10000.0))
     mix_lyr_ht = layer.pressure_layer_to_height(
@@ -316,56 +314,71 @@ def test_parcel(snd):
     # Create a surface-based parcel
     sfc_pcl = parcel.Parcel.surface_parcel(
         float(snd["pres"][0]), float(snd["tmpk"][0]), float(snd["dwpk"][0]))
+    print("Surface-based parcel attributes")
     print(sfc_pcl.pres, sfc_pcl.tmpk, sfc_pcl.dwpk)
 
     # create a mixed-layer parcel
     ml_pcl1 = parcel.Parcel.mixed_layer_parcel(
         snd["pres"], snd["hght"], theta, mixr, mix_lyr_pr)
+    print("Mixed-layer parcel attributes (PressureLayer)")
     print(ml_pcl1.pres, ml_pcl1.tmpk, ml_pcl1.dwpk)
 
     # test that the HeightLayer function works too
     ml_pcl2 = parcel.Parcel.mixed_layer_parcel(
         snd["pres"], snd["hght"], theta, mixr, mix_lyr_ht)
+    print("Mixed-layer parcel attributes (HeightLayer)")
     print(ml_pcl2.pres, ml_pcl2.tmpk, ml_pcl2.dwpk)
 
     # Compute buoyancy from a surface-based parcel
     sfc_buoy1 = sfc_pcl.lift_parcel(wobf, snd["pres"], vtmp)
+    print("Surface-based parcel buoyancy (wobus)")
     print(sfc_buoy1, sfc_buoy1.min(), sfc_buoy1.max())
     sfc_buoy2 = sfc_pcl.lift_parcel(cm1, snd["pres"], vtmp)
+    print("Surface-based parcel buoyancy (CM1)")
     print(sfc_buoy2, sfc_buoy2.min(), sfc_buoy2.max())
 
     # Compute buoyancy from a mixed-layer parcel
     ml_buoy1 = ml_pcl1.lift_parcel(wobf, snd["pres"], vtmp)
+    print("Mixed-layer parcel buoyancy (wobus)")
     print(ml_buoy1, ml_buoy1.min(), ml_buoy1.max())
     ml_buoy2 = ml_pcl1.lift_parcel(cm1, snd["pres"], vtmp)
+    print("Mixed-layer parcel buoyancy (CM1)")
     print(ml_buoy2, ml_buoy2.min(), ml_buoy2.max())
 
     # Find the LFC and EL for a surface-based parcel
     sfc_lfc1, sfc_el1 = sfc_pcl.find_lfc_el(
         snd["pres"], snd["hght"], sfc_buoy1)
+    print("Surface-based parcel LFC and EL pressure (Wobus)")
     print(sfc_lfc1, sfc_el1, sfc_pcl.lfc_pressure, sfc_pcl.eql_pressure)
     sfc_lfc2, sfc_el2 = sfc_pcl.find_lfc_el(
         snd["pres"], snd["hght"], sfc_buoy2)
+    print("Surface-based parcel LFC and EL pressure (CM1)")
     print(sfc_lfc2, sfc_el2, sfc_pcl.lfc_pressure, sfc_pcl.eql_pressure)
 
     # Find the LFC and EL for a mixed-layer parcel
     ml_lfc1, ml_el1 = ml_pcl1.find_lfc_el(snd["pres"], snd["hght"], ml_buoy1)
+    print("Mixed-layer parcel LFC and EL pressure (Wobus)")
     print(ml_lfc1, ml_el1, ml_pcl1.lfc_pressure, ml_pcl1.eql_pressure)
     ml_lfc2, ml_el2 = ml_pcl1.find_lfc_el(snd["pres"], snd["hght"], ml_buoy2)
+    print("Mixed-layer parcel LFC and EL pressure (CM1)")
     print(ml_lfc2, ml_el2, ml_pcl1.lfc_pressure, ml_pcl1.eql_pressure)
 
     # Compute CAPE and CINH from a surface-based parcel
     sfc_cape1, sfc_cinh1 = sfc_pcl.cape_cinh(
         snd["pres"], snd["hght"], sfc_buoy1)
+    print("Surface-based parcel CAPE and CINH (Wobus)")
     print(sfc_cape1, sfc_cinh1, sfc_pcl.cape, sfc_pcl.cinh)
     sfc_cape2, sfc_cinh2 = sfc_pcl.cape_cinh(
         snd["pres"], snd["hght"], sfc_buoy2)
+    print("Surface-based parcel CAPE and CINH (CM1)")
     print(sfc_cape2, sfc_cinh2, sfc_pcl.cape, sfc_pcl.cinh)
 
     # Compute CAPE and CINH from a mixed-layer parcel
     ml_cape1, ml_cinh1 = ml_pcl1.cape_cinh(snd["pres"], snd["hght"], ml_buoy1)
+    print("Mixed-layer parcel CAPE and CINH (Wobus)")
     print(ml_cape1, ml_cinh1, ml_pcl1.cape, ml_pcl1.cinh)
     ml_cape2, ml_cinh2 = ml_pcl1.cape_cinh(snd["pres"], snd["hght"], ml_buoy2)
+    print("Mixed-layer parcel CAPE and CINH (CM1)")
     print(ml_cape2, ml_cinh2, ml_pcl1.cape, ml_pcl1.cinh)
 
     # find and compute the most-unstable parcel
@@ -379,9 +392,10 @@ def test_parcel(snd):
         vtmp,
         snd["dwpk"]
     )
-    print(mu_pcl1.pres, mu_pcl1.tmpk, mu_pcl1.dwpk)
-    print(mu_pcl1.lfc_pressure, mu_pcl1.eql_pressure)
-    print(mu_pcl1.cape, mu_pcl1.cinh)
+    print("Most-unstable parcel attributes (Wobus)")
+    print("PCL PRES, TMPK, DWPK: ", mu_pcl1.pres, mu_pcl1.tmpk, mu_pcl1.dwpk)
+    print("LFC, EL: ", mu_pcl1.lfc_pressure, mu_pcl1.eql_pressure)
+    print("CAPE, CINH: ", mu_pcl1.cape, mu_pcl1.cinh)
 
     mu_pcl2 = parcel.Parcel.most_unstable_parcel(
         cm1,
@@ -392,9 +406,10 @@ def test_parcel(snd):
         vtmp,
         snd["dwpk"]
     )
-    print(mu_pcl2.pres, mu_pcl2.tmpk, mu_pcl2.dwpk)
-    print(mu_pcl2.lfc_pressure, mu_pcl2.eql_pressure)
-    print(mu_pcl2.cape, mu_pcl2.cinh)
+    print("Most-unstable parcel attributes (CM1)")
+    print("PCL PRES, TMPK, DWPK: ", mu_pcl2.pres, mu_pcl2.tmpk, mu_pcl2.dwpk)
+    print("LFC, EL: ", mu_pcl2.lfc_pressure, mu_pcl2.eql_pressure)
+    print("CAPE, CINH: ", mu_pcl2.cape, mu_pcl2.cinh)
 
     # mupcl = parcel.Parcel()
     # eil = params.effective_inflow_layer(snd["pres"], snd["hght"],
