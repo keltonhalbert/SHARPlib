@@ -44,6 +44,7 @@ namespace sharp {
  * array that can be used to hold buoyancy values during parcel lifting and
  * integration.
  *
+ * \param   lifter          (parcel lifting functor)
  * \param   pressure        (Pa)
  * \param   height          (meters)
  * \param   temperature     (degK)
@@ -57,12 +58,6 @@ namespace sharp {
  *
  * \return  {bottom, top}
  */
-[[nodiscard]] PressureLayer effective_inflow_layer(
-    const float pressure[], const float height[], const float temperature[],
-    const float dewpoint[], const float virtemp_arr[], float buoy_arr[],
-    const int N, const float cape_thresh = 100.0,
-    const float cinh_thresh = -250.0, Parcel* mupcl = nullptr);
-
 template <typename Lifter>
 [[nodiscard]] PressureLayer effective_inflow_layer(
     Lifter lifter, const float pressure[], const float height[],
@@ -118,7 +113,7 @@ template <typename Lifter>
     }
 
     if (eff_ptop == MISSING) return {MISSING, MISSING};
-    *mupcl = maxpcl;
+    if (mupcl) *mupcl = maxpcl;
     return {eff_pbot, eff_ptop};
 }
 

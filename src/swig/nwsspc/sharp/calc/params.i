@@ -57,6 +57,7 @@ import_array();
 %inline %{
 
 sharp::PressureLayer _effective_inflow_layer(
+                        sharp::lifter_wobus& lifter,
                         const float pressure[], const int N1,
                         const float height[], const int N2,
                         const float temperature[], const int N3,
@@ -84,7 +85,43 @@ sharp::PressureLayer _effective_inflow_layer(
         return {sharp::MISSING, sharp::MISSING};
     }
 
-    sharp::PressureLayer eil = sharp::effective_inflow_layer(
+    sharp::PressureLayer eil = sharp::effective_inflow_layer(lifter, 
+        pressure, height, temperature, dewpoint, virtemp_arr, buoy, N1,
+        cape_thresh, cinh_thresh, mupcl);
+    free(buoy);
+    return eil;
+}
+
+sharp::PressureLayer _effective_inflow_layer(
+                        sharp::lifter_cm1& lifter,
+                        const float pressure[], const int N1,
+                        const float height[], const int N2,
+                        const float temperature[], const int N3,
+                        const float dewpoint[], const int N4,
+                        const float virtemp_arr[], const int N5,
+                        sharp::Parcel* mupcl = NULL,
+                        const float cape_thresh = 100.0,
+                        const float cinh_thresh = -250.0) {
+	if ( (N1 != N2) || (N1 != N3) || (N1 != N4) || (N1 != N5) ) {
+        PyErr_Format(PyExc_ValueError, 
+            "Arrays must be same lenght, insead got (%d, %d, %d, %d, %d)",
+            N1, N2, N3, N4, N5
+        );
+        return {sharp::MISSING, sharp::MISSING};
+	}
+
+    /*Allocate temporary array for holding Buoyancy*/
+    float* buoy = (float *)malloc(N1*sizeof(float));
+    if (buoy == NULL) {
+        PyErr_Format(
+            PyExc_MemoryError, 
+            "Could not allocate memory for temporary array of size %d.", 
+            N1
+        );
+        return {sharp::MISSING, sharp::MISSING};
+    }
+
+    sharp::PressureLayer eil = sharp::effective_inflow_layer(lifter, 
         pressure, height, temperature, dewpoint, virtemp_arr, buoy, N1,
         cape_thresh, cinh_thresh, mupcl);
     free(buoy);
