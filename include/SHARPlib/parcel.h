@@ -376,12 +376,11 @@ struct Parcel {
      * \return sharp::Parcel with mixed-layer values
      */
     template <typename Lyr>
-    static Parcel mixed_layer_parcel(const float pressure[],
+    static Parcel mixed_layer_parcel(Lyr& mix_layer, const float pressure[],
                                      const float height[],
                                      const float pot_temperature[],
                                      const float wv_mixratio[],
-                                     const std::ptrdiff_t N,
-                                     Lyr& mix_layer) noexcept {
+                                     const std::ptrdiff_t N) noexcept {
         float mean_mixr, mean_thta, pcl_pres;
         if constexpr (mix_layer.coord == LayerCoordinate::pressure) {
             mean_mixr = layer_mean(mix_layer, pressure, wv_mixratio, N);
@@ -424,10 +423,13 @@ struct Parcel {
      * \return The most unstable sharp::Parcel within the search layer
      */
     template <typename Lyr, typename Lft>
-    static Parcel most_unstable_parcel(
-        const float pressure[], const float height[], const float temperature[],
-        const float virtemp[], const float dewpoint[], float buoyancy[],
-        const std::ptrdiff_t N, Lyr& search_layer, Lft& lifter) noexcept {
+    static Parcel most_unstable_parcel(Lyr& search_layer, Lft& lifter,
+                                       const float pressure[],
+                                       const float height[],
+                                       const float temperature[],
+                                       const float virtemp[],
+                                       const float dewpoint[], float buoyancy[],
+                                       const std::ptrdiff_t N) noexcept {
         LayerIndex lyr_idx;
         if constexpr (search_layer.coord == LayerCoordinate::pressure) {
             lyr_idx = get_layer_index(search_layer, pressure, N);

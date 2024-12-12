@@ -68,11 +68,11 @@ import_array();
 %extend sharp::Parcel {
 
     static sharp::Parcel mixed_layer_parcel(
+        sharp::PressureLayer& mix_layer,
         const float pressure[], const int N1,
         const float height[], const int N2, 
         const float pot_temperature[], const int N3, 
-        const float wv_mixratio[], const int N4,
-        sharp::PressureLayer& mix_layer
+        const float wv_mixratio[], const int N4
     ) {
         if (N1 != N2) {
             PyErr_Format(
@@ -84,21 +84,21 @@ import_array();
         }
 
         return sharp::Parcel::mixed_layer_parcel(
+            mix_layer,
             pressure, 
             height, 
             pot_temperature, 
             wv_mixratio, 
-            N1, 
-            mix_layer
+            N1
         );
     }
 
     static sharp::Parcel mixed_layer_parcel(
+        sharp::HeightLayer& mix_layer,
         const float pressure[], const int N1,
         const float height[], const int N2, 
         const float pot_temperature[], const int N3, 
-        const float wv_mixratio[], const int N4,
-        sharp::HeightLayer& mix_layer
+        const float wv_mixratio[], const int N4
     ) {
         if (N1 != N2) {
             PyErr_Format(
@@ -110,12 +110,12 @@ import_array();
         }
 
         return sharp::Parcel::mixed_layer_parcel(
+            mix_layer,
             pressure, 
             height, 
             pot_temperature, 
             wv_mixratio, 
-            N1, 
-            mix_layer
+            N1
         );
     }
 
@@ -148,15 +148,15 @@ import_array();
 
         const sharp::Parcel mu_pcl = 
         sharp::Parcel::most_unstable_parcel(
+            search_layer,
+            lifter,
             pressure, 
             height, 
             temperature, 
             virtemp, 
             dewpoint, 
             buoy_arr, 
-            N1, 
-            search_layer,
-            lifter
+            N1
         );
         delete[] buoy_arr;
 
@@ -192,15 +192,15 @@ import_array();
 
         const sharp::Parcel mu_pcl = 
         sharp::Parcel::most_unstable_parcel(
+            search_layer,
+            lifter,
             pressure, 
             height, 
             temperature, 
             virtemp, 
             dewpoint, 
             buoy_arr, 
-            N1, 
-            search_layer,
-            lifter
+            N1
         );
         delete[] buoy_arr;
 
@@ -236,15 +236,15 @@ import_array();
 
         const sharp::Parcel mu_pcl = 
         sharp::Parcel::most_unstable_parcel(
+            search_layer,
+            lifter,
             pressure, 
             height, 
             temperature, 
             virtemp, 
             dewpoint, 
             buoy_arr, 
-            N1, 
-            search_layer,
-            lifter
+            N1
         );
         delete[] buoy_arr;
 
@@ -280,15 +280,15 @@ import_array();
 
         const sharp::Parcel mu_pcl = 
         sharp::Parcel::most_unstable_parcel(
+            search_layer,
+            lifter,
             pressure, 
             height, 
             temperature, 
             virtemp, 
             dewpoint, 
             buoy_arr, 
-            N1, 
-            search_layer,
-            lifter
+            N1
         );
         delete[] buoy_arr;
 
