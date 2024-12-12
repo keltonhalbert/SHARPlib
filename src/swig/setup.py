@@ -12,7 +12,7 @@ class build_py(_build_py):
         return super().run()
 
 
-compile_args = ['-std=c++17', '-O3', '-fPIC']  # , '-DNO_QC']
+compile_args = ['-std=c++17']  # , '-DNO_QC']
 swig_args = ['-c++', '-builtin', '-doxygen', '-small', '-O', ]
 
 constants_module = Extension('nwsspc.sharp.calc._constants',
@@ -28,14 +28,17 @@ interp_module = Extension('nwsspc.sharp.calc._interp',
                           extra_compile_args=compile_args
                           )
 
-# params_module = Extension('nwsspc.sharp.calc._params',
-#         sources = ['nwsspc/sharp/calc/params.i', '../src/SHARPlib/parcel.cpp',
-#                    '../src/SHARPlib/layer.cpp', '../src/SHARPlib/interp.cpp',
-#                    '../src/SHARPlib/winds.cpp', '../src/SHARPlib/thermo.cpp',
-#                    '../src/SHARPlib/params/convective.cpp'],
-#         swig_opts = swig_args,
-#         extra_compile_args = compile_args
-#     )
+params_module = Extension('nwsspc.sharp.calc._params',
+                          sources=['nwsspc/sharp/calc/params.i',
+                                   '../SHARPlib/parcel.cpp',
+                                   '../SHARPlib/layer.cpp',
+                                   '../SHARPlib/interp.cpp',
+                                   '../SHARPlib/winds.cpp',
+                                   '../SHARPlib/thermo.cpp',
+                                   '../SHARPlib/params/convective.cpp'],
+                          swig_opts=swig_args,
+                          extra_compile_args=compile_args
+                          )
 
 parcel_module = Extension('nwsspc.sharp.calc._parcel',
                           sources=['nwsspc/sharp/calc/parcel.i',
@@ -99,7 +102,7 @@ setup(
     ext_modules=[
         constants_module,
         interp_module,
-        # params_module,
+        params_module,
         parcel_module,
         profile_module,
         thermo_module,
@@ -107,8 +110,7 @@ setup(
         layer_module
     ],
     py_modules=["nwsspc.sharp.calc.constants", "nwsspc.sharp.calc.interp",
-                # "nwsspc.sharp.calc.params", "nwsspc.sharp.calc.parcel",
-                "nwsspc.sharp.calc.parcel",
+                "nwsspc.sharp.calc.params", "nwsspc.sharp.calc.parcel",
                 "nwsspc.sharp.calc.profile", "nwsspc.sharp.calc.thermo",
                 "nwsspc.sharp.calc.winds", "nwsspc.sharp.calc.layer"],
 )

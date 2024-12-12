@@ -8,7 +8,7 @@ import nwsspc.sharp.calc.constants as constants
 import nwsspc.sharp.calc.interp as interp
 import nwsspc.sharp.calc.thermo as thermo
 import nwsspc.sharp.calc.parcel as parcel
-# import nwsspc.sharp.calc.params as params
+import nwsspc.sharp.calc.params as params
 import nwsspc.sharp.calc.winds as winds
 import nwsspc.sharp.calc.layer as layer
 
@@ -331,7 +331,7 @@ def test_parcel(snd):
 
     # Compute buoyancy from a surface-based parcel
     sfc_buoy1 = sfc_pcl.lift_parcel(wobf, snd["pres"], vtmp)
-    print("Surface-based parcel buoyancy (wobus)")
+    print("Surface-based parcel buoyancy (Wobus)")
     print(sfc_buoy1, sfc_buoy1.min(), sfc_buoy1.max())
     sfc_buoy2 = sfc_pcl.lift_parcel(cm1, snd["pres"], vtmp)
     print("Surface-based parcel buoyancy (CM1)")
@@ -339,7 +339,7 @@ def test_parcel(snd):
 
     # Compute buoyancy from a mixed-layer parcel
     ml_buoy1 = ml_pcl1.lift_parcel(wobf, snd["pres"], vtmp)
-    print("Mixed-layer parcel buoyancy (wobus)")
+    print("Mixed-layer parcel buoyancy (Wobus)")
     print(ml_buoy1, ml_buoy1.min(), ml_buoy1.max())
     ml_buoy2 = ml_pcl1.lift_parcel(cm1, snd["pres"], vtmp)
     print("Mixed-layer parcel buoyancy (CM1)")
@@ -411,28 +411,42 @@ def test_parcel(snd):
     print("LFC, EL: ", mu_pcl2.lfc_pressure, mu_pcl2.eql_pressure)
     print("CAPE, CINH: ", mu_pcl2.cape, mu_pcl2.cinh)
 
-    # mupcl = parcel.Parcel()
-    # eil = params.effective_inflow_layer(snd["pres"], snd["hght"],
-    #                                     snd["tmpk"], snd["dwpk"],
-    #                                     vtmp, mupcl)
-    # print(eil.bottom, eil.top)
-    # print(mupcl.pres, mupcl.lcl_pressure, mupcl.lfc_pressure,
-    #       mupcl.eql_pressure, mupcl.cape, mupcl.cinh)
-    #
-    # mw_lyr = layer.HeightLayer(0, 6000.0)
-    # shr_lyr = layer.HeightLayer(0, 6000.0)
-    # strm_right_np = params.storm_motion_bunkers(snd["pres"], snd["hght"],
-    #                                             snd["uwin"], snd["vwin"],
-    #                                             mw_lyr, shr_lyr)
-    # strm_right_eff = params.storm_motion_bunkers(snd["pres"], snd["hght"],
-    #                                              snd["uwin"], snd["vwin"],
-    #                                              eil, mupcl)
-    #
-    # print(
-    #     "Bunkers Right (non-parcel): u = {0}\tv = {1}".format(strm_right_np.u, strm_right_np.v))
-    # print("Bunkers Right (parcel): u = {0}\tv = {1}".format(
-    #     strm_right_eff.u, strm_right_eff.v))
-    #
+    mu_pcl3 = parcel.Parcel()
+    eil = params.effective_inflow_layer(wobf, snd["pres"], snd["hght"],
+                                        snd["tmpk"], snd["dwpk"],
+                                        vtmp, mu_pcl3)
+    print("Effective Inflow Layer calculations and parcels (Wobus)")
+    print("EIL bottom, top: ", eil.bottom, eil.top)
+    print("PCL PRES, TMPK, DWPK: ", mu_pcl3.pres, mu_pcl3.tmpk, mu_pcl3.dwpk)
+    print("LFC, EL: ", mu_pcl3.lfc_pressure, mu_pcl3.eql_pressure)
+    print("CAPE, CINH: ", mu_pcl3.cape, mu_pcl3.cinh)
+
+    mu_pcl4 = parcel.Parcel()
+    eil = params.effective_inflow_layer(cm1, snd["pres"], snd["hght"],
+                                        snd["tmpk"], snd["dwpk"],
+                                        vtmp, mu_pcl4)
+    print("Effective Inflow Layer calculations and parcels (CM1)")
+    print("EIL bottom, top: ", eil.bottom, eil.top)
+    print("PCL PRES, TMPK, DWPK: ", mu_pcl4.pres, mu_pcl4.tmpk, mu_pcl4.dwpk)
+    print("LFC, EL: ", mu_pcl4.lfc_pressure, mu_pcl4.eql_pressure)
+    print("CAPE, CINH: ", mu_pcl4.cape, mu_pcl4.cinh)
+
+    mw_lyr = layer.HeightLayer(0, 6000.0)
+    shr_lyr = layer.HeightLayer(0, 6000.0)
+    strm_right_np = params.storm_motion_bunkers(snd["pres"], snd["hght"],
+                                                snd["uwin"], snd["vwin"],
+                                                mw_lyr, shr_lyr)
+    strm_right_eff = params.storm_motion_bunkers(snd["pres"], snd["hght"],
+                                                 snd["uwin"], snd["vwin"],
+                                                 eil, mu_pcl1)
+    print(
+        "Bunkers Right (non-parcel): u = {0}\tv = {1}"
+        .format(strm_right_np.u, strm_right_np.v)
+    )
+    print("Bunkers Right (parcel): u = {0}\tv = {1}".format(
+        strm_right_eff.u, strm_right_eff.v)
+    )
+
     print("====================")
 
 
