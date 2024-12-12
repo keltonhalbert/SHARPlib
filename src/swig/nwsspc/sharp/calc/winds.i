@@ -17,7 +17,7 @@
     }
 }
 
-%import "../include/SHARPlib/layer.h"
+%import "../../include/SHARPlib/layer.h"
 
 /* Import Numpy Array Functionality */
 %include "numpy.i"
@@ -288,4 +288,4 @@ float _helicity(sharp::PressureLayer layer,
 %}
 
 
-%include "../include/SHARPlib/winds.h"
+%include "../../include/SHARPlib/winds.h"

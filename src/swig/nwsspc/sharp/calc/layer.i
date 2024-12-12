@@ -213,4 +213,4 @@ float _integrate_layer_trapz(sharp::HeightLayer layer,
 
 %} /*end inline*/
 
-%include "../include/SHARPlib/layer.h"
+%include "../../include/SHARPlib/layer.h"

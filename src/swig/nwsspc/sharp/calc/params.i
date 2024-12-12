@@ -152,7 +152,7 @@ float _entrainment_cape(const float pressure[], const int N1,
 
 %} /* end inline */
 
-%import "../include/SHARPlib/layer.h"
-%import "../include/SHARPlib/winds.h"
-%import "../include/SHARPlib/parcel.h"
-%include "../include/SHARPlib/params/convective.h"
+%import "../../include/SHARPlib/layer.h"
+%import "../../include/SHARPlib/winds.h"
+%import "../../include/SHARPlib/parcel.h"
+%include "../../include/SHARPlib/params/convective.h"
