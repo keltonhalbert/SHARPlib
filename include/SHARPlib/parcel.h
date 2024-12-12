@@ -385,21 +385,23 @@ struct Parcel {
                                      const float wv_mixratio[],
                                      const std::ptrdiff_t N,
                                      Lyr& mix_layer) noexcept {
-        float mean_mixr, mean_thta;
+        float mean_mixr, mean_thta, pcl_pres;
         if constexpr (mix_layer.coord == LayerCoordinate::pressure) {
             mean_mixr = layer_mean(mix_layer, pressure, wv_mixratio, N);
             mean_thta = layer_mean(mix_layer, pressure, pot_temperature, N);
+            pcl_pres = mix_layer.bottom;
 
         } else {
             mean_mixr = layer_mean(mix_layer, height, pressure, wv_mixratio, N);
             mean_thta =
                 layer_mean(mix_layer, height, pressure, pot_temperature, N);
+            pcl_pres =
+                sharp::interp_height(mix_layer.bottom, height, pressure, N);
         }
-        const float pres = mix_layer.bottom;
-        const float tmpk = theta(THETA_REF_PRESSURE, mean_thta, pres);
-        const float dwpk = temperature_at_mixratio(mean_mixr, pres);
+        const float tmpk = theta(THETA_REF_PRESSURE, mean_thta, pcl_pres);
+        const float dwpk = temperature_at_mixratio(mean_mixr, pcl_pres);
 
-        return Parcel(pres, tmpk, dwpk, LPL::ML);
+        return Parcel(pcl_pres, tmpk, dwpk, LPL::ML);
     }
 
     /**
