@@ -30,33 +30,34 @@ Parcel::Parcel(const float pressure, const float temperature,
 
 // Explicit template instatiations of template header functions.
 template Parcel Parcel::most_unstable_parcel<PressureLayer, lifter_wobus>(
-    const float pressure[], const float height[], const float temperature[],
-    const float virtemp[], const float dewpoint[], float buoyancy[],
-    const std::ptrdiff_t N, PressureLayer& search_layer, lifter_wobus& lifter);
+    PressureLayer& search_layer, lifter_wobus& lifter, const float pressure[],
+    const float height[], const float temperature[], const float virtemp[],
+    const float dewpoint[], float buoyancy[], const std::ptrdiff_t N);
 
 template Parcel Parcel::most_unstable_parcel<HeightLayer, lifter_wobus>(
-    const float pressure[], const float height[], const float temperature[],
-    const float virtemp[], const float dewpoint[], float buoyancy[],
-    const std::ptrdiff_t N, HeightLayer& search_layer, lifter_wobus& lifter);
+    HeightLayer& search_layer, lifter_wobus& lifter, const float pressure[],
+    const float height[], const float temperature[], const float virtemp[],
+    const float dewpoint[], float buoyancy[], const std::ptrdiff_t N);
 
 template Parcel Parcel::most_unstable_parcel<PressureLayer, lifter_cm1>(
-    const float pressure[], const float height[], const float temperature[],
-    const float virtemp[], const float dewpoint[], float buoyancy[],
-    const std::ptrdiff_t N, PressureLayer& search_layer, lifter_cm1& lifter);
+    PressureLayer& search_layer, lifter_cm1& lifter, const float pressure[],
+    const float height[], const float temperature[], const float virtemp[],
+    const float dewpoint[], float buoyancy[], const std::ptrdiff_t N);
 
 template Parcel Parcel::most_unstable_parcel<HeightLayer, lifter_cm1>(
-    const float pressure[], const float height[], const float temperature[],
-    const float virtemp[], const float dewpoint[], float buoyancy[],
-    const std::ptrdiff_t N, HeightLayer& search_layer, lifter_cm1& lifter);
+    HeightLayer& search_layer, lifter_cm1& lifter, const float pressure[],
+    const float height[], const float temperature[], const float virtemp[],
+    const float dewpoint[], float buoyancy[], const std::ptrdiff_t N);
 
 template Parcel Parcel::mixed_layer_parcel<PressureLayer>(
-    const float pressure[], const float height[], const float pot_temperature[],
-    const float wv_mixratio[], const std::ptrdiff_t N,
-    PressureLayer& mix_layer);
+    PressureLayer& mix_layer, const float pressure[], const float height[],
+    const float pot_temperature[], const float wv_mixratio[],
+    const std::ptrdiff_t N);
 
 template Parcel Parcel::mixed_layer_parcel<HeightLayer>(
-    const float pressure[], const float height[], const float pot_temperature[],
-    const float wv_mixratio[], const std::ptrdiff_t N, HeightLayer& mix_layer);
+    HeightLayer& mix_layer, const float pressure[], const float height[],
+    const float pot_temperature[], const float wv_mixratio[],
+    const std::ptrdiff_t N);
 
 template void Parcel::lift_parcel<lifter_wobus>(lifter_wobus& liftpcl,
                                                 const float pressure_arr[],

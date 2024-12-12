@@ -319,13 +319,13 @@ def test_parcel(snd):
 
     # create a mixed-layer parcel
     ml_pcl1 = parcel.Parcel.mixed_layer_parcel(
-        snd["pres"], snd["hght"], theta, mixr, mix_lyr_pr)
+        mix_lyr_pr, snd["pres"], snd["hght"], theta, mixr)
     print("Mixed-layer parcel attributes (PressureLayer)")
     print(ml_pcl1.pres, ml_pcl1.tmpk, ml_pcl1.dwpk)
 
     # test that the HeightLayer function works too
     ml_pcl2 = parcel.Parcel.mixed_layer_parcel(
-        snd["pres"], snd["hght"], theta, mixr, mix_lyr_ht)
+        mix_lyr_ht, snd["pres"], snd["hght"], theta, mixr)
     print("Mixed-layer parcel attributes (HeightLayer)")
     print(ml_pcl2.pres, ml_pcl2.tmpk, ml_pcl2.dwpk)
 
