@@ -271,13 +271,18 @@ def test_parcel(snd):
         float(snd["pres"][0]), float(snd["tmpk"][0]), float(snd["dwpk"][0]))
     print(sfc_pcl.pres, sfc_pcl.tmpk, sfc_pcl.dwpk)
 
-    mix_lyr = layer.PressureLayer(
+    mix_lyr_pr = layer.PressureLayer(
         float(snd["pres"][0]), float(snd["pres"][0] - 10000.0))
+    mix_lyr_ht = layer.pressure_layer_to_height(
+        mix_lyr_pr, snd["pres"], snd["hght"])
     # print(dir(parcel))
     # print(parcel)
-    ml_pcl = parcel.Parcel.mixed_layer_parcel(
-        snd["pres"], snd["hght"], theta, mixr, mix_lyr)
-    print(ml_pcl.pres, ml_pcl.tmpk, ml_pcl.dwpk)
+    ml_pcl1 = parcel.Parcel.mixed_layer_parcel(
+        snd["pres"], snd["hght"], theta, mixr, mix_lyr_pr)
+    print(ml_pcl1.pres, ml_pcl1.tmpk, ml_pcl1.dwpk)
+    ml_pcl2 = parcel.Parcel.mixed_layer_parcel(
+        snd["pres"], snd["hght"], theta, mixr, mix_lyr_ht)
+    print(ml_pcl2.pres, ml_pcl2.tmpk, ml_pcl2.dwpk)
 
     # mupcl = parcel.Parcel()
     # eil = params.effective_inflow_layer(snd["pres"], snd["hght"],
