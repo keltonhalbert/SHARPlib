@@ -44,6 +44,7 @@ namespace sharp {
  * array that can be used to hold buoyancy values during parcel lifting and
  * integration.
  *
+ * \param   lifter          (parcel lifting functor)
  * \param   pressure        (Pa)
  * \param   height          (meters)
  * \param   temperature     (degK)
@@ -57,11 +58,64 @@ namespace sharp {
  *
  * \return  {bottom, top}
  */
+template <typename Lifter>
 [[nodiscard]] PressureLayer effective_inflow_layer(
-    const float pressure[], const float height[], const float temperature[],
-    const float dewpoint[], const float virtemp_arr[], float buoy_arr[],
-    const int N, const float cape_thresh = 100.0,
-    const float cinh_thresh = -250.0, Parcel* mupcl = nullptr);
+    Lifter lifter, const float pressure[], const float height[],
+    const float temperature[], const float dewpoint[],
+    const float virtemp_arr[], float buoy_arr[], const int N,
+    const float cape_thresh = 100.0, const float cinh_thresh = -250.0,
+    Parcel* mupcl = nullptr) {
+    int eff_kbot = 0;
+    float eff_pbot = MISSING;
+    float eff_ptop = MISSING;
+    float sfc_hght = height[0];
+    Parcel maxpcl;
+
+    // search for the effective inflow bottom
+    for (int k = 0; k < N; ++k) {
+#ifndef NO_QC
+        if ((temperature[k] == MISSING) || (dewpoint[k] == MISSING)) {
+            continue;
+        }
+#endif
+        Parcel effpcl(pressure[k], temperature[k], dewpoint[k], LPL::MU);
+        // We don't want to lift every single profile...
+        if (height[k] - sfc_hght > 4000.0) break;
+
+        effpcl.lift_parcel(lifter, pressure, virtemp_arr, buoy_arr, N);
+        effpcl.cape_cinh(pressure, height, buoy_arr, N);
+
+        if (effpcl.cape > maxpcl.cape) maxpcl = effpcl;
+        if ((effpcl.cape >= cape_thresh) && (effpcl.cinh >= cinh_thresh)) {
+            eff_pbot = effpcl.pres;
+            eff_kbot = k;
+            break;
+        }
+    }
+
+    if (eff_pbot == MISSING) return {MISSING, MISSING};
+
+    for (int k = eff_kbot + 1; k < N; ++k) {
+#ifndef NO_QC
+        if ((temperature[k] == MISSING) || (dewpoint[k] == MISSING)) {
+            continue;
+        }
+#endif
+        Parcel effpcl(pressure[k], temperature[k], dewpoint[k], LPL::MU);
+        effpcl.lift_parcel(lifter, pressure, virtemp_arr, buoy_arr, N);
+        effpcl.cape_cinh(pressure, height, buoy_arr, N);
+
+        if (effpcl.cape > maxpcl.cape) maxpcl = effpcl;
+        if ((effpcl.cape < cape_thresh) || (effpcl.cinh < cinh_thresh)) {
+            eff_ptop = effpcl.pres;
+            break;
+        }
+    }
+
+    if (eff_ptop == MISSING) return {MISSING, MISSING};
+    if (mupcl) *mupcl = maxpcl;
+    return {eff_pbot, eff_ptop};
+}
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO

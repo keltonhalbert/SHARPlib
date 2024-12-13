@@ -495,6 +495,44 @@ float lapse_rate(PressureLayer layer, const float pressure[],
     return lapse_rate(h_layer, height, temperature, N);
 }
 
+float lapse_rate_max(HeightLayer layer_agl, const float depth,
+                     const float height[], const float temperature[],
+                     const int N, HeightLayer* max_lyr) {
+    float max_lr = MISSING;
+    for (float z = layer_agl.bottom; z <= (layer_agl.top - depth);
+         z += layer_agl.delta) {
+        HeightLayer lyr = {z, z + depth};
+        float lr = lapse_rate(lyr, height, temperature, N);
+        if (lr > max_lr) {
+            max_lr = lr;
+            if (max_lyr) {
+                max_lyr->bottom = lyr.bottom;
+                max_lyr->top = lyr.top;
+            }
+        }
+    }
+    return max_lr;
+}
+
+float lapse_rate_max(PressureLayer layer, const float depth,
+                     const float pressure[], const float height[],
+                     const float temperature[], const int N,
+                     PressureLayer* max_lyr) {
+    float max_lr = MISSING;
+    for (float p = layer.bottom; p >= (layer.top + depth); p += layer.delta) {
+        PressureLayer lyr = {p, p - depth};
+        float lr = lapse_rate(lyr, pressure, height, temperature, N);
+        if (lr > max_lr) {
+            max_lr = lr;
+            if (max_lyr) {
+                max_lyr->bottom = lyr.bottom;
+                max_lyr->top = lyr.top;
+            }
+        }
+    }
+    return max_lr;
+}
+
 float buoyancy(float pcl_temperature, float env_temperature) {
     return GRAVITY * (pcl_temperature - env_temperature) / (env_temperature);
 }

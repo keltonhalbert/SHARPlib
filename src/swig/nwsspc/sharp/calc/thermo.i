@@ -23,7 +23,7 @@
 import_array();
 %}
 
-%import "../include/SHARPlib/layer.h"
+%import "../../include/SHARPlib/layer.h"
 
 %apply float &OUTPUT { float& pressure_at_lcl };
 %apply float &OUTPUT { float& temperature_at_lcl };
@@ -106,6 +106,7 @@ import_array();
 %rename (specific_humidity) _specific_humidity;
 %rename (lcl_temperature) _lcl_temperature;
 %rename (vapor_pressure) _vapor_pressure;
+%rename (lapse_rate_max) _lapse_rate_max;
 %rename (theta_wetbulb) _theta_wetbulb;
 %rename (mixratio_ice) _mixratio_ice;
 %rename (theta_level) _theta_level;
@@ -124,6 +125,7 @@ import_array();
 %ignore specific_humidity;
 %ignore lcl_temperature;
 %ignore vapor_pressure;
+%ignore lapse_rate_max;
 %ignore theta_wetbulb;
 %ignore mixratio_ice;
 %ignore theta_level;
@@ -642,6 +644,37 @@ float _lapse_rate(sharp::PressureLayer layer,
     return sharp::lapse_rate(layer, pres_array, hght_array, tmpc_array, N1);
 }
 
+float _lapse_rate_max(sharp::HeightLayer layer_agl, const float depth, 
+                      const float hght_array[], const int N1, 
+                      const float tmpc_array[], const int N2,
+                      sharp::HeightLayer* max_lyr=nullptr) {
+    if ((N1 != N2)) {
+        PyErr_Format(
+            PyExc_ValueError, "Arrays must be same length, got (%d, %d)",
+            N1, N2
+        );
+        return sharp::MISSING;
+    }
+
+    return sharp::lapse_rate_max(layer_agl, depth, hght_array, tmpc_array, N1, max_lyr);
+}
+
+float _lapse_rate_max(sharp::PressureLayer layer, const float depth,
+                      const float pres_array[], const int N1,
+                      const float hght_array[], const int N2, 
+                      const float tmpc_array[], const int N3,
+                      sharp::PressureLayer* max_lyr=nullptr) {
+    if ((N1 != N2) || (N1 != N3)) {
+        PyErr_Format(
+            PyExc_ValueError, "Arrays must be same length, got (%d, %d, %d)",
+            N1, N2, N3
+        );
+        return sharp::MISSING;
+    }
+
+    return sharp::lapse_rate_max(layer, depth, pres_array, hght_array, tmpc_array, N1, max_lyr);
+}
+
 float _buoyancy(float pcl_temperature, float env_temperature) {
     return sharp::buoyancy(pcl_temperature, env_temperature);
 }
@@ -752,4 +785,4 @@ void _buoyancy_dilution_potential(const float temperature[], const int N1,
 
 %}
 
-%include "../include/SHARPlib/thermo.h"
+%include "../../include/SHARPlib/thermo.h"

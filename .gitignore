@@ -52,14 +52,14 @@ _deps
 build
 
 # SWIG python files and wrappers
-swig/build
-swig/*.egg-info
-swig/nwsspc/sharp/calc/*_wrap.cpp
-swig/nwsspc/sharp/calc/constants.py
-swig/nwsspc/sharp/calc/interp.py
-swig/nwsspc/sharp/calc/layer.py
-swig/nwsspc/sharp/calc/params.py
-swig/nwsspc/sharp/calc/parcel.py
-swig/nwsspc/sharp/calc/profile.py
-swig/nwsspc/sharp/calc/thermo.py
-swig/nwsspc/sharp/calc/winds.py
+src/swig/build
+src/swig/*.egg-info
+src/swig/nwsspc/sharp/calc/*_wrap.cpp
+src/swig/nwsspc/sharp/calc/constants.py
+src/swig/nwsspc/sharp/calc/interp.py
+src/swig/nwsspc/sharp/calc/layer.py
+src/swig/nwsspc/sharp/calc/params.py
+src/swig/nwsspc/sharp/calc/parcel.py
+src/swig/nwsspc/sharp/calc/profile.py
+src/swig/nwsspc/sharp/calc/thermo.py
+src/swig/nwsspc/sharp/calc/winds.py

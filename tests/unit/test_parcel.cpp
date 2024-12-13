@@ -137,15 +137,6 @@ auto vtmpk_snd = [](const float tmpk[], const float mixr[],
     return vtmpk_arr;
 };
 
-//auto theta_snd = [](const float pres[], const float tmpk[],
-//                    const std::ptrdiff_t size) {
-//    auto theta_arr = std::make_unique<float[]>(size);
-//    for (std::ptrdiff_t k = 0; k < size; ++k) {
-//        theta_arr[k] = sharp::theta(pres[k], tmpk[k]);
-//    }
-//    return theta_arr;
-//};
-
 TEST_CASE("testing new parcel definitions") {
     const std::ptrdiff_t n = 5000;
     const float pres_sfc = 100000.0f;
@@ -175,10 +166,8 @@ TEST_CASE("testing new parcel definitions") {
 
     printf("%f\n", hght[1] - hght[0]);
 
-    sharp::Parcel sfc_pcl;
-    sfc_pcl.pres = pres[0];
-    sfc_pcl.tmpk = tmpk[0];
-    sfc_pcl.dwpk = dwpk[0];
+    sharp::Parcel sfc_pcl =
+        sharp::Parcel::surface_parcel(pres[0], tmpk[0], dwpk[0]);
 
     static constexpr sharp::lifter_wobus lifter;
     sharp::lifter_cm1 cm1_pi;
@@ -191,9 +180,8 @@ TEST_CASE("testing new parcel definitions") {
     cm1_al.ma_type = sharp::adiabat::adiab_liq;
 
     // lift and integrate the surface parcel
-    sharp::lift_parcel(lifter, pres.get(), vtmpk.get(), buoy.get(), n,
-                       &sfc_pcl);
-    sharp::cape_cinh(pres.get(), hght.get(), buoy.get(), n, &sfc_pcl);
+    sfc_pcl.lift_parcel(lifter, pres.get(), vtmpk.get(), buoy.get(), n);
+    sfc_pcl.cape_cinh(pres.get(), hght.get(), buoy.get(), n);
 
     std::cout << "wobus lifter" << std::endl;
     std::cout << "sfc pcl\t";
@@ -202,9 +190,8 @@ TEST_CASE("testing new parcel definitions") {
     std::cout << "cape: " << sfc_pcl.cape << "\t";
     std::cout << "cinh: " << sfc_pcl.cinh << std::endl;
 
-    sharp::lift_parcel(cm1_pi, pres.get(), vtmpk.get(), buoy.get(), n,
-                       &sfc_pcl);
-    sharp::cape_cinh(pres.get(), hght.get(), buoy.get(), n, &sfc_pcl);
+    sfc_pcl.lift_parcel(cm1_pi, pres.get(), vtmpk.get(), buoy.get(), n);
+    sfc_pcl.cape_cinh(pres.get(), hght.get(), buoy.get(), n);
 
     std::cout << "cm1 lifter (psuedo adiabatic with ice)" << std::endl;
     std::cout << "sfc pcl\t";
@@ -213,9 +200,8 @@ TEST_CASE("testing new parcel definitions") {
     std::cout << "cape: " << sfc_pcl.cape << "\t";
     std::cout << "cinh: " << sfc_pcl.cinh << std::endl;
 
-    sharp::lift_parcel(cm1_pl, pres.get(), vtmpk.get(), buoy.get(), n,
-                       &sfc_pcl);
-    sharp::cape_cinh(pres.get(), hght.get(), buoy.get(), n, &sfc_pcl);
+    sfc_pcl.lift_parcel(cm1_pl, pres.get(), vtmpk.get(), buoy.get(), n);
+    sfc_pcl.cape_cinh(pres.get(), hght.get(), buoy.get(), n);
 
     std::cout << "cm1 lifter (psuedo adiabatic with no ice)" << std::endl;
     std::cout << "sfc pcl\t";
@@ -224,9 +210,8 @@ TEST_CASE("testing new parcel definitions") {
     std::cout << "cape: " << sfc_pcl.cape << "\t";
     std::cout << "cinh: " << sfc_pcl.cinh << std::endl;
 
-    sharp::lift_parcel(cm1_ai, pres.get(), vtmpk.get(), buoy.get(), n,
-                       &sfc_pcl);
-    sharp::cape_cinh(pres.get(), hght.get(), buoy.get(), n, &sfc_pcl);
+    sfc_pcl.lift_parcel(cm1_ai, pres.get(), vtmpk.get(), buoy.get(), n);
+    sfc_pcl.cape_cinh(pres.get(), hght.get(), buoy.get(), n);
 
     std::cout << "cm1 lifter (adiabatic with ice)" << std::endl;
     std::cout << "sfc pcl\t";
@@ -235,9 +220,8 @@ TEST_CASE("testing new parcel definitions") {
     std::cout << "cape: " << sfc_pcl.cape << "\t";
     std::cout << "cinh: " << sfc_pcl.cinh << std::endl;
 
-    sharp::lift_parcel(cm1_al, pres.get(), vtmpk.get(), buoy.get(), n,
-                       &sfc_pcl);
-    sharp::cape_cinh(pres.get(), hght.get(), buoy.get(), n, &sfc_pcl);
+    sfc_pcl.lift_parcel(cm1_al, pres.get(), vtmpk.get(), buoy.get(), n);
+    sfc_pcl.cape_cinh(pres.get(), hght.get(), buoy.get(), n);
 
     std::cout << "cm1 lifter (adiabatic with no ice)" << std::endl;
     std::cout << "sfc pcl\t";
