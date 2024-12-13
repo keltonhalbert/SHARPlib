@@ -17,6 +17,7 @@
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
 #include <SHARPlib/thermo.h>
+#include <iostream>
 
 namespace sharp {
 
@@ -42,22 +43,36 @@ namespace sharp {
  * the parcel lifting algorithm to their specifications.
  */
 struct lifter_wobus {
+    static constexpr bool lift_from_lcl = true;
+
     /**
      * \brief Overloads operator() to call sharp::wetlift.
      * \param   pres        Parcel pressure (Pa)
      * \param   tmpk        Parcel temperature (degK)
      * \param   new_pres    Final level of parcel after lift (Pa)
      *
-     * \return  The virtual temperature of the lifted parcel
+     * \return  The temperature of the lifted parcel
      */
     [[nodiscard]] inline float operator()(float pres, float tmpk,
                                           float new_pres) const {
-        float pcl_tmpk = wetlift(pres, tmpk, new_pres);
-        return virtual_temperature(pcl_tmpk, mixratio(new_pres, pcl_tmpk));
+        return wetlift(pres, tmpk, new_pres);
+    }
+
+    /**
+     * \brief Computes the virtual temperature of the parcel
+     * \param   pres        Parcel pressure (Pa)
+     * \param   tmpk        Parcel temperature (degK)
+     *
+     * \return  The virtual temperature of the parcel
+     */
+    [[nodiscard]] inline float parcel_virtual_temperature(float pres, float tmpk) {
+        return virtual_temperature(tmpk, mixratio(pres, tmpk));
     }
 };
 
 struct lifter_cm1 {
+    static constexpr bool lift_from_lcl = false;
+
     /**
      * \brief The type of moist adiabat to use, as defined by sharp::adiabat
      */
@@ -104,10 +119,20 @@ struct lifter_cm1 {
      */
     [[nodiscard]] inline float operator()(float pres, float tmpk,
                                           float new_pres) {
-        float pcl_tmpk = moist_adiabat_cm1(
+        return moist_adiabat_cm1(
             pres, tmpk, new_pres, this->rv_total, this->rv, this->rl, this->ri,
             this->pressure_incr, this->converge, this->ma_type);
-        return virtual_temperature(pcl_tmpk, this->rv, this->rl, this->ri);
+    }
+
+    /**
+     * \brief Computes the virtual temperature of the parcel
+     * \param   pres        Parcel pressure (Pa)
+     * \param   tmpk        Parcel temperature (degK)
+     *
+     * \return  The virtual temperature of the parcel
+     */
+    [[nodiscard]] inline float parcel_virtual_temperature([[maybe_unused]] float pres, float tmpk) {
+        return virtual_temperature(tmpk, this->rv, this->rl, this->ri);
     }
 };
 
@@ -316,11 +341,21 @@ void lift_parcel(Lft liftpcl, const float pressure_arr[],
         buoyancy_arr[k] = buoyancy(pcl_vtmp, virtual_temperature_arr[k]);
     }
 
+    float pres_bot = pres_lcl;
+    float tmpk_bot = tmpk_lcl;
+
     // fill the array with the moist parcel buoyancy
     for (int k = sat_idx.kbot; k < N; ++k) {
         // compute above-lcl buoyancy here
         const float pcl_pres = pressure_arr[k];
-        const float pcl_vtmpk = liftpcl(pres_lcl, tmpk_lcl, pcl_pres);
+        const float pcl_tmpk = liftpcl(pres_bot, tmpk_bot, pcl_pres);
+
+        if constexpr (!Lft::lift_from_lcl) {
+            pres_bot = pcl_pres;
+            tmpk_bot = pcl_tmpk;
+        }
+
+        const float pcl_vtmpk = liftpcl.parcel_virtual_temperature(pcl_pres, pcl_tmpk);
         const float env_vtmpk = virtual_temperature_arr[k];
         buoyancy_arr[k] = buoyancy(pcl_vtmpk, env_vtmpk);
     }
