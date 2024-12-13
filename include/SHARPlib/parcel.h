@@ -382,7 +382,7 @@ struct Parcel {
                                      const float wv_mixratio[],
                                      const std::ptrdiff_t N) noexcept {
         float mean_mixr, mean_thta, pcl_pres;
-        if constexpr (mix_layer.coord == LayerCoordinate::pressure) {
+        if constexpr (Lyr::coord == LayerCoordinate::pressure) {
             mean_mixr = layer_mean(mix_layer, pressure, wv_mixratio, N);
             mean_thta = layer_mean(mix_layer, pressure, pot_temperature, N);
             pcl_pres = mix_layer.bottom;
@@ -431,7 +431,7 @@ struct Parcel {
                                        const float dewpoint[], float buoyancy[],
                                        const std::ptrdiff_t N) noexcept {
         LayerIndex lyr_idx;
-        if constexpr (search_layer.coord == LayerCoordinate::pressure) {
+        if constexpr (Lyr::coord == LayerCoordinate::pressure) {
             lyr_idx = get_layer_index(search_layer, pressure, N);
 
         } else {
