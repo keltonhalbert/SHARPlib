@@ -49,4 +49,4 @@ sharp::Profile* _create_profile(float *pres, int NZ1, float *hght, int NZ2,
 
 %}
 
-%include "../include/SHARPlib/profile.h"
+%include "../../include/SHARPlib/profile.h"

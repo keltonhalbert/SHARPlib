@@ -554,8 +554,8 @@ void drylift(float pressure, float temperature, float dewpoint,
  * handles converting the pressure layer into a height layer, and
  * then calles the sharp::HeightLayer implementation of this routine.
  *
- * \param   layer                   (meters AGL)
- * \param   pressure                (hPa)
+ * \param   layer                   (Pa)
+ * \param   pressure                (Pa)
  * \param   height                  (meters MSL)
  * \param   temperature             (degK)
  * \param   N		                (length of arrays)
@@ -565,6 +565,55 @@ void drylift(float pressure, float temperature, float dewpoint,
 [[nodiscard]] float lapse_rate(PressureLayer layer, const float pressure[],
                                const float height[], const float temperature[],
                                const int N);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Find the maximum lapse rate within a specified layer/depth (AGL).
+ *
+ * Given a layer of the atmosphere (e.g. 2 - 6 km), find the maximum lapse rate
+ * over the provided depth (e.g. 2 km) within that given layer. Returns the
+ * maximum lapse rate, with the optional ability to return the layer that lapse
+ * rate exists within.
+ *
+ * \param   layer_agl       (meters AGL)
+ * \param   depth           (meters)
+ * \param   height          (meters MSL)
+ * \param   temperature     (degK)
+ * \param   N               (length of arrays)
+ * \param   max_lyr         (The sharp::HeightLayer of the max lapse rate)
+ *
+ * \return  Maximum Temperature Lapse Rate  (degK/km)
+ */
+[[nodiscard]] float lapse_rate_max(HeightLayer layer_agl, const float depth,
+                                   const float height[],
+                                   const float temperature[], const int N,
+                                   HeightLayer* max_lyr = nullptr);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Find the maximum lapse rate within a specified layer/depth (Pres)
+ *
+ * Given a mayer of the atmisphere (e.g. 800 hPa - 500 hPa), find the maximum
+ * lapse rate over the provided depth (e.g. 100 hPa) within that given layer.
+ * Returns the maximum lapse rate, with the optional ability to return the layer
+ * that lapse rate exists within.
+ *
+ * \param   layer           (Pa)
+ * \param   depth           (Pa)
+ * \param   pressure        (Pa)
+ * \param   height          (meters MSL)
+ * \param   temperature     (degK)
+ * \param   N		        (length of arrays)
+ * \param   max_lyr         (The sharp::PressureLayer of the max lapse rate)
+ *
+ * \return  Maximum Temperature Lapse Rate  (degK/km)
+ */
+[[nodiscard]] float lapse_rate_max(PressureLayer layer, const float depth,
+                                   const float pressure[], const float height[],
+                                   const float temperature[], const int N,
+                                   PressureLayer* max_lyr = nullptr);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO

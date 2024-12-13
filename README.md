@@ -59,7 +59,7 @@ To build the python bindings, simply nagivate to the swig directory and install 
 
 **WARNING**: You will need SWIG >= 4.1 for the library to compile. This is available through the conda-forge channel: ```conda install -c conda-forge swig==4.1```.
 ```
-cd swig
+cd src/swig
 CC=/path/to/compilers/g++ pip install .
 ```
 

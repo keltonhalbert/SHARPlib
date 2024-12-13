@@ -21,72 +21,16 @@
 namespace sharp {
 
 PressureLayer effective_inflow_layer(
-    const float pressure[], const float height[], const float temperature[],
-    const float dewpoint[], const float virtemp_arr[], float buoy_arr[],
-    const int N, const float cape_thresh, const float cinh_thresh,
-    Parcel *mupcl) {
-    // TO-DO: At some point, this will need to be
-    // templated or generalized to take other parcel
-    // lifters once things progress to that level...
-    static constexpr lifter_wobus lifter;
+    sharp::lifter_wobus &lifter, const float pressure[], const float height[],
+    const float temperature[], const float dewpoint[],
+    const float virtemp_arr[], float buoy_arr[], const int N,
+    const float cape_thresh, const float cinh_thresh, Parcel *mupcl);
 
-    int eff_kbot = 0;
-    float eff_pbot = MISSING;
-    float eff_ptop = MISSING;
-    float sfc_hght = height[0];
-    Parcel maxpcl;
-
-    // search for the effective inflow bottom
-    for (int k = 0; k < N; ++k) {
-#ifndef NO_QC
-        if ((temperature[k] == MISSING) || (dewpoint[k] == MISSING)) {
-            continue;
-        }
-#endif
-        Parcel effpcl;
-        effpcl.pres = pressure[k];
-        effpcl.tmpk = temperature[k];
-        effpcl.dwpk = dewpoint[k];
-        // We don't want to lift every single profile...
-        if (height[k] - sfc_hght > 4000.0) break;
-
-        lift_parcel(lifter, pressure, virtemp_arr, buoy_arr, N, &effpcl);
-        cape_cinh(pressure, height, buoy_arr, N, &effpcl);
-
-        if (effpcl.cape > maxpcl.cape) maxpcl = effpcl;
-        if ((effpcl.cape >= cape_thresh) && (effpcl.cinh >= cinh_thresh)) {
-            eff_pbot = effpcl.pres;
-            eff_kbot = k;
-            break;
-        }
-    }
-
-    if (eff_pbot == MISSING) return {MISSING, MISSING};
-
-    for (int k = eff_kbot + 1; k < N; ++k) {
-#ifndef NO_QC
-        if ((temperature[k] == MISSING) || (dewpoint[k] == MISSING)) {
-            continue;
-        }
-#endif
-        Parcel effpcl;
-        effpcl.pres = pressure[k];
-        effpcl.tmpk = temperature[k];
-        effpcl.dwpk = dewpoint[k];
-        lift_parcel(lifter, pressure, virtemp_arr, buoy_arr, N, &effpcl);
-        cape_cinh(pressure, height, buoy_arr, N, &effpcl);
-
-        if (effpcl.cape > maxpcl.cape) maxpcl = effpcl;
-        if ((effpcl.cape < cape_thresh) || (effpcl.cinh < cinh_thresh)) {
-            eff_ptop = effpcl.pres;
-            break;
-        }
-    }
-
-    if (eff_ptop == MISSING) return {MISSING, MISSING};
-    *mupcl = maxpcl;
-    return {eff_pbot, eff_ptop};
-}
+PressureLayer effective_inflow_layer(
+    sharp::lifter_cm1 &lifter, const float pressure[], const float height[],
+    const float temperature[], const float dewpoint[],
+    const float virtemp_arr[], float buoy_arr[], const int N,
+    const float cape_thresh, const float cinh_thresh, Parcel *mupcl);
 
 WindComponents storm_motion_bunkers(const float pressure[],
                                     const float height[], const float u_wind[],
