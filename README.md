@@ -1,4 +1,4 @@
-# SHARP-calc
+# SHARPlib
 [![C++ CI](https://github.com/keltonhalbert/SHARP-calc/actions/workflows/cmake.yml/badge.svg)](https://github.com/keltonhalbert/SHARP-calc/actions/workflows/cmake.yml)
 
 
