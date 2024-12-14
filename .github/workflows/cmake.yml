@@ -19,13 +19,15 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Install SSH Keys
-        uses: webfactory/ssh-agent@v0.7.0
+        uses: actions/checkout@v4
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          submodules: 'true'
 
+      - name: Change submodule URLs to HTTPS
+        run: |
+          git submodule foreach '
+            git config submodule.$name.url https://github.com/$urlPath
+          '
       - name: Submodules and Dependencies
         run: |
           git config --global --add safe.directory /github/workspace
