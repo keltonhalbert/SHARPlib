@@ -25,10 +25,11 @@ jobs:
       #   uses: webfactory/ssh-agent@v0.9.0
       #   with:
       #     ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      - name: Force HTTPS for submodules
+      - name: Change submodule URLs to HTTPS
         run: |
-          git submodule foreach 'git config submodule.$name.url $(git submodule status --recursive --cached | awk "{print \$2}" | sed "s/git@github.com:/https:\/\/github.com\//")'
-
+          git submodule foreach '
+            git config submodule.$name.url https://github.com/$urlPath
+          '
       - name: Submodules and Dependencies
         run: |
           git config --global --add safe.directory /github/workspace
