@@ -21,10 +21,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install SSH Keys
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      # - name: Install SSH Keys
+      #   uses: webfactory/ssh-agent@v0.9.0
+      #   with:
+      #     ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Force HTTPS for submodules
+        run: |
+          git submodule foreach 'git config submodule.$name.url $(git submodule status --recursive --cached | awk "{print \$2}" | sed "s/git@github.com:/https:\/\/github.com\//")'
 
       - name: Submodules and Dependencies
         run: |
