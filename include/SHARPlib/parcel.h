@@ -223,7 +223,8 @@ struct Parcel {
     LPL source;
 
     Parcel();
-    Parcel(float pressure, float temperature, float dewpoint, LPL lpl);
+    Parcel(const float pressure, const float temperature, const float dewpoint,
+           const LPL lpl);
 
     /**
      * \author Kelton Halbert - NWS Storm Prediction Center
