@@ -60,7 +60,7 @@ namespace sharp {
  */
 template <typename Lifter>
 [[nodiscard]] PressureLayer effective_inflow_layer(
-    Lifter lifter, const float pressure[], const float height[],
+    Lifter& lifter, const float pressure[], const float height[],
     const float temperature[], const float dewpoint[],
     const float virtemp_arr[], float buoy_arr[], const int N,
     const float cape_thresh = 100.0, const float cinh_thresh = -250.0,
