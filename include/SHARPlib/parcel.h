@@ -6,6 +6,11 @@
  *   Email: kelton.halbert@noaa.gov  \n
  * \date   2022-11-09
  *
+ * \contributor
+ *   Amelia Urquhart                 \n
+ *   Email: amelia.r.h.urquhart-1@ou.edu\n
+ * \date   2022-11-09
+ *
  * Written for the NWS Storm Predidiction Center \n
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
@@ -17,102 +22,9 @@
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
 #include <SHARPlib/thermo.h>
+#include <SHARPlib/winds.h>
 
 namespace sharp {
-
-////////////    FUNCTORS    ///////////
-//
-
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief A functor that calls the Wobus Wetlift funtion
- *
- * This functor is used to wrap the Wobus Wetlift function for parcel
- * lifting routines. These functions are wrapped by functors - classes
- * with their operator() overloaded - so that functions can be
- * passed to templates in a way that the compiler can still
- * optimize, rather than using function pointers or lambdas.
- *
- * Specifically, this functor is designed to be passed as a template
- * argument to sharp::lift_parcel, so that the method of computing
- * moist adiabats can be changed without changing the overall parcel
- * lifting code. The reason this is awesome is that the compiler
- * can still optimize and inline this code, while the user can configure
- * the parcel lifting algorithm to their specifications.
- */
-struct lifter_wobus {
-    /**
-     * \brief Overloads operator() to call sharp::wetlift.
-     * \param   pres        Parcel pressure (Pa)
-     * \param   tmpk        Parcel temperature (degK)
-     * \param   new_pres    Final level of parcel after lift (Pa)
-     *
-     * \return  The virtual temperature of the lifted parcel
-     */
-    [[nodiscard]] inline float operator()(float pres, float tmpk,
-                                          float new_pres) const {
-        float pcl_tmpk = wetlift(pres, tmpk, new_pres);
-        return virtual_temperature(pcl_tmpk, mixratio(new_pres, pcl_tmpk));
-    }
-};
-
-struct lifter_cm1 {
-    /**
-     * \brief The type of moist adiabat to use, as defined by sharp::adiabat
-     */
-    adiabat ma_type = adiabat::pseudo_liq;
-
-    /**
-     * \brief The pressure increment (Pa) to use for the iterative solver
-     */
-    float pressure_incr = 500.0f;
-
-    /**
-     * \brief The iterative convergence criteria
-     */
-    float converge = 0.001f;
-
-    /**
-     * \brief Used to keep track of mixing ratio for conserved/adiabatic lifting
-     */
-    float rv_total = MISSING;
-
-    /**
-     * \brief Water vapor mixing ratio variable updated during parcel lifts
-     */
-    float rv = 0.0;
-
-    /**
-     * \brief Liquid water mixing ratio variable updated during parcel lifts
-     */
-    float rl = 0.0;
-
-    /**
-     * \brief Ice water mixing ratio variable updated during parcel lifts
-     */
-    float ri = 0.0;
-
-    /**
-     * \brief Overloads operator() to call sharp::moist_adiabat_cm1
-     *
-     * \param   pres        Parcel pressure (Pa)
-     * \param   tmpk        Parcel temperature (degK)
-     * \param   new_pres    Final level of parcel after lift (Pa)
-     *
-     * \return  The virtual temperature of the lifted parcel
-     */
-    [[nodiscard]] inline float operator()(float pres, float tmpk,
-                                          float new_pres) {
-        float pcl_tmpk = moist_adiabat_cm1(
-            pres, tmpk, new_pres, this->rv_total, this->rv, this->rl, this->ri,
-            this->pressure_incr, this->converge, this->ma_type);
-        return virtual_temperature(pcl_tmpk, this->rv, this->rl, this->ri);
-    }
-};
-
-//
-////////////  END FUNCTORS   ///////////
 
 /**
  * \brief Enum that defines the lifted parcel level (LPL) of origin.

@@ -18,6 +18,7 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
+#include <SHARPlib/lifters.h>
 #include <SHARPlib/params/convective.h>
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/profile.h>
