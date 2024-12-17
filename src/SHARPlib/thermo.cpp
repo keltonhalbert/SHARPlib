@@ -286,9 +286,6 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
                         float& rv_total, float& rv, float& rl, float& ri,
                         const float pres_incr, const float converge,
                         const adiabat ma_type) {
-    // This is the total water vapor mixing ratio at the beginning
-    // of parcel ascent, which is most likely the LCL or LPL value
-    rv_total = mixratio(pressure, temperature);
 
     // set up solver variables
     const bool ice = (ma_type >= adiabat::pseudo_ice) ? true : false;
@@ -301,9 +298,9 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
     float pcl_pres_hi = pressure;
     float pcl_pi_hi = std::pow(pressure / THETA_REF_PRESSURE, ROCP);
     float pcl_t_hi = pcl_theta_hi * pcl_pi_hi;
-    float pcl_rv_hi = mixratio(pcl_pres_hi, pcl_t_hi);
-    float pcl_rl_hi = 0.0f;
-    float pcl_ri_hi = 0.0f;
+    float pcl_rv_hi = rv;
+    float pcl_rl_hi = rl;
+    float pcl_ri_hi = ri;
 
     // Iterate the required number of times to reach the new pressure
     // level from the old one in increments of dp
