@@ -47,6 +47,9 @@ namespace sharp {
 struct lifter_wobus {
     static constexpr bool lift_from_lcl = true;
 
+    inline void start_lift([[maybe_unused]] const float lcl_pres, [[maybe_unused]] const float lcl_tmpk) const {}
+    inline void end_lift() const {}
+
     /**
      * \brief Overloads operator() to call sharp::wetlift.
      * \param   pres        Parcel pressure (Pa)
@@ -98,17 +101,31 @@ struct lifter_cm1 {
     /**
      * \brief Water vapor mixing ratio variable updated during parcel lifts
      */
-    float rv = 0.0;
+    float rv = MISSING;
 
     /**
      * \brief Liquid water mixing ratio variable updated during parcel lifts
      */
-    float rl = 0.0;
+    float rl = MISSING;
 
     /**
      * \brief Ice water mixing ratio variable updated during parcel lifts
      */
-    float ri = 0.0;
+    float ri = MISSING;
+
+    inline void start_lift(const float lcl_pres, const float lcl_tmpk) {
+        this->rv_total = mixratio(lcl_pres, lcl_tmpk);
+        this->rv = 0.0f;
+        this->rl = 0.0f;
+        this->ri = 0.0f;
+    }
+
+    inline void end_lift() {
+        this->rv_total = MISSING;
+        this->rv = MISSING;
+        this->rl = MISSING;
+        this->ri = MISSING;
+    }
 
     /**
      * \brief Overloads operator() to call sharp::moist_adiabat_cm1
@@ -314,6 +331,7 @@ struct Parcel {
 
         float pres_bot = pres_lcl;
         float tmpk_bot = tmpk_lcl;
+        liftpcl.start_lift(pres_lcl, tmpk_lcl);
 
         // fill the array with the moist parcel buoyancy
         for (std::ptrdiff_t k = sat_idx.kbot; k < N; ++k) {
@@ -331,6 +349,8 @@ struct Parcel {
             buoyancy_arr[k] = buoyancy(pcl_vtmpk, env_vtmpk);
             if (pcl_vtmpk_arr) pcl_vtmpk_arr[k] = pcl_vtmpk;
         }
+
+        liftpcl.end_lift();
     }
 
     /**
