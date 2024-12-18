@@ -17,11 +17,16 @@
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
 #include <SHARPlib/thermo.h>
-#include <iostream>
 
 #include <cstddef>
 
 namespace sharp {
+
+// To-Do: Refactor lifter_wobus and lifter_cm1 to leverage
+// a base class, through static polymorphism and the
+// Curiously Recurring Template Pattern, so that there is a
+// common interface defined for all Parcel lifters that they
+// must adhere to.
 
 ////////////    FUNCTORS    ///////////
 //
@@ -47,8 +52,16 @@ namespace sharp {
 struct lifter_wobus {
     static constexpr bool lift_from_lcl = true;
 
-    inline void start_lift([[maybe_unused]] const float lcl_pres, [[maybe_unused]] const float lcl_tmpk) const {}
-    inline void end_lift() const {}
+    /**
+     * \brief Perform the setup step for the parcel lifter.
+     *
+     * Some parcel lifters require setup in order to handle
+     * adiabatic ascent and tracking of vapor, liquid, and
+     * ice mixing ratios. The Wobus lifter does not require
+     * this, however, so this function does nothing.
+     */
+    inline void setup([[maybe_unused]] const float lcl_pres,
+                      [[maybe_unused]] const float lcl_tmpk) const {}
 
     /**
      * \brief Overloads operator() to call sharp::wetlift.
@@ -66,33 +79,18 @@ struct lifter_wobus {
     /**
      * \brief Computes the virtual temperature of the parcel
      * \param   pres        Parcel pressure (Pa)
-     * \param   tmpk        Parcel temperature (degK)
+     * \param   tmpk        Parcel temperature (K)
      *
      * \return  The virtual temperature of the parcel
      */
-    [[nodiscard]] inline float parcel_virtual_temperature(const float pres, const float tmpk) const {
+    [[nodiscard]] inline float parcel_virtual_temperature(
+        const float pres, const float tmpk) const {
         return virtual_temperature(tmpk, mixratio(pres, tmpk));
     }
 };
 
 struct lifter_cm1 {
-    static constexpr bool lift_from_lcl = false;
-
-    /**
-     * \brief The type of moist adiabat to use, as defined by sharp::adiabat
-     */
-    adiabat ma_type = adiabat::pseudo_liq;
-
-    /**
-     * \brief The pressure increment (Pa) to use for the iterative solver
-     */
-    float pressure_incr = 500.0f;
-
-    /**
-     * \brief The iterative convergence criteria (K)
-     */
-    float converge = 0.001f;
-
+   private:
     /**
      * \brief Used to keep track of mixing ratio for conserved/adiabatic lifting
      */
@@ -113,18 +111,37 @@ struct lifter_cm1 {
      */
     float ri = MISSING;
 
-    inline void start_lift(const float lcl_pres, const float lcl_tmpk) {
+   public:
+    static constexpr bool lift_from_lcl = false;
+
+    /**
+     * \brief The type of moist adiabat to use, as defined by sharp::adiabat
+     */
+    adiabat ma_type = adiabat::pseudo_liq;
+
+    /**
+     * \brief The pressure increment (Pa) to use for the iterative solver
+     */
+    float pressure_incr = 500.0f;
+
+    /**
+     * \brief The iterative convergence criteria (K)
+     */
+    float converge = 0.001f;
+
+    /**
+     * \brief perform the necessary setup for parcel ascent.
+     *
+     * This function sets the total water mixing ratio for
+     * adiabatic parcel ascent, and zeroes out the vapor,
+     * liquid, and ice mixing ratios from previous parcel
+     * ascents.
+     */
+    inline void setup(const float lcl_pres, const float lcl_tmpk) {
         this->rv_total = mixratio(lcl_pres, lcl_tmpk);
         this->rv = 0.0f;
         this->rl = 0.0f;
         this->ri = 0.0f;
-    }
-
-    inline void end_lift() {
-        this->rv_total = MISSING;
-        this->rv = MISSING;
-        this->rl = MISSING;
-        this->ri = MISSING;
     }
 
     /**
@@ -138,19 +155,20 @@ struct lifter_cm1 {
      */
     [[nodiscard]] inline float operator()(const float pres, const float tmpk,
                                           const float new_pres) {
-        return moist_adiabat_cm1(
-            pres, tmpk, new_pres, this->rv_total, this->rv, this->rl, this->ri,
-            this->pressure_incr, this->converge, this->ma_type);
+        return moist_adiabat_cm1(pres, tmpk, new_pres, this->rv_total, this->rv,
+                                 this->rl, this->ri, this->pressure_incr,
+                                 this->converge, this->ma_type);
     }
 
     /**
      * \brief Computes the virtual temperature of the parcel
      * \param   pres        Parcel pressure (Pa)
-     * \param   tmpk        Parcel temperature (degK)
+     * \param   tmpk        Parcel temperature (K)
      *
      * \return  The virtual temperature of the parcel
      */
-    [[nodiscard]] inline float parcel_virtual_temperature([[maybe_unused]] const float pres, const float tmpk) const {
+    [[nodiscard]] inline float parcel_virtual_temperature(
+        [[maybe_unused]] const float pres, const float tmpk) const {
         return virtual_temperature(tmpk, this->rv, this->rl, this->ri);
     }
 };
@@ -331,7 +349,7 @@ struct Parcel {
 
         float pres_bot = pres_lcl;
         float tmpk_bot = tmpk_lcl;
-        liftpcl.start_lift(pres_lcl, tmpk_lcl);
+        liftpcl.setup(pres_lcl, tmpk_lcl);
 
         // fill the array with the moist parcel buoyancy
         for (std::ptrdiff_t k = sat_idx.kbot; k < N; ++k) {
@@ -344,13 +362,12 @@ struct Parcel {
                 tmpk_bot = pcl_tmpk;
             }
 
-            const float pcl_vtmpk = liftpcl.parcel_virtual_temperature(pcl_pres, pcl_tmpk);
+            const float pcl_vtmpk =
+                liftpcl.parcel_virtual_temperature(pcl_pres, pcl_tmpk);
             const float env_vtmpk = virtemp_arr[k];
             buoyancy_arr[k] = buoyancy(pcl_vtmpk, env_vtmpk);
             if (pcl_vtmpk_arr) pcl_vtmpk_arr[k] = pcl_vtmpk;
         }
-
-        liftpcl.end_lift();
     }
 
     /**
