@@ -23,7 +23,7 @@
 namespace sharp {
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Computes the Effective Inflow Layer for a given atmospheric sounding.
  *
@@ -121,7 +121,7 @@ template <typename Lifter>
 }
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Estimates supercell storm motion using the Bunkers et al. 2000 method.
  *
@@ -152,7 +152,7 @@ template <typename Lifter>
     const bool leftMover = false, const bool pressureWeighted = false);
 
 /**
- *  \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *  \author Kelton Halbert - NWS Storm Prediction Center
  *
  *  \brief Estimates supercell storm motion by using the<!--
  *  --> Bunkers et al. 2014 method.
@@ -192,7 +192,7 @@ template <typename Lifter>
     const Parcel* mupcl, const bool leftMover = false);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Computes Entrainment CAPE using a previously lifted parcel.
  *

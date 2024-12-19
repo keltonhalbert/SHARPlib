@@ -85,7 +85,7 @@ enum class adiabat : int {
 [[nodiscard]] float wobf(float temperature);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compute the vapor pressure over liquid water
  *
@@ -106,7 +106,7 @@ enum class adiabat : int {
 [[nodiscard]] float vapor_pressure(float pressure, float temperature);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compute the vapor pressure over ice
  *
@@ -127,7 +127,7 @@ enum class adiabat : int {
 [[nodiscard]] float vapor_pressure_ice(float pressure, float temperature);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compute the temperature of the LCL.
  *
@@ -146,7 +146,7 @@ enum class adiabat : int {
 [[nodiscard]] float lcl_temperature(float temperature, float dewpoint);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compute the temperature at a given water vapor mixing ratio<!--
  * --> and pressure level.
@@ -202,7 +202,7 @@ enum class adiabat : int {
                           float ref_pressure = THETA_REF_PRESSURE);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compute the water vapor mixing ratio from specific humidity.
  *
@@ -216,7 +216,7 @@ enum class adiabat : int {
 [[nodiscard]] float mixratio(float q);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compute the water vapor mixing ratio.
  *
@@ -235,7 +235,7 @@ enum class adiabat : int {
 [[nodiscard]] float mixratio(float pressure, float temperature);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compute the ice water mixing ratio.
  *
@@ -254,7 +254,7 @@ enum class adiabat : int {
 [[nodiscard]] float mixratio_ice(float pressure, float temperature);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compute specific humidity from a mixing ratio
  *
@@ -267,7 +267,7 @@ enum class adiabat : int {
 [[nodiscard]] float specific_humidity(float rv);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compute the full virtual temperature.
  *
@@ -341,7 +341,7 @@ enum class adiabat : int {
                             float lifted_pressure);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compute the temperature of a parcel lifted moist <!--
  * -->adiabatically to a new level.
@@ -527,7 +527,7 @@ void drylift(float pressure, float temperature, float dewpoint,
 [[nodiscard]] float thetae(float pressure, float temperature, float dewpoint);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief compute the lapse rate over the given sharp::HeightLayer (AGL)
  *
@@ -547,7 +547,7 @@ void drylift(float pressure, float temperature, float dewpoint,
                                const std::ptrdiff_t N);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief compute the lapse rate over the given sharp::PressureLayer
  *
@@ -619,7 +619,7 @@ void drylift(float pressure, float temperature, float dewpoint,
                                    PressureLayer* max_lyr = nullptr);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief compute buoyancy given parcel and environment temperatures
  *
@@ -645,7 +645,7 @@ void buoyancy(const float pcl_temperature[], const float env_temperature[],
               float buoy_arr[], std::ptrdiff_t N);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compute moist static energy.
  *

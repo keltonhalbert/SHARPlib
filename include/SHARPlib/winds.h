@@ -21,7 +21,7 @@
 namespace sharp {
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief A simple structure of two named floats that represent a wind vector.
  */
@@ -38,7 +38,7 @@ struct WindVector {
 };
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief A simple structure of two names floats that represent<!--
  * --> the components of a wind vector.
@@ -141,7 +141,7 @@ struct WindComponents {
 
 /**
  *
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Conveniance function to compute wind speed and direction<!--
  * --> from components
@@ -159,7 +159,7 @@ struct WindComponents {
 
 /**
  *
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Conveniance function to compute wind speed and direction<!--
  * --> from components
@@ -176,7 +176,7 @@ struct WindComponents {
 
 /**
  *
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Conveniance function to compute the U and V components<!--
  * --> of a wind vector.
@@ -194,7 +194,7 @@ struct WindComponents {
 
 /**
  *
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Conveniance function to compute the U and V components<!--
  * --> of a wind vector.
@@ -210,7 +210,7 @@ struct WindComponents {
 
 /**
  *
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compute the mean wind over the given sharp::PressureLayer
  *
@@ -235,7 +235,7 @@ struct WindComponents {
 
 /**
  *
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compue the wind shear for a given layer
  *
@@ -307,7 +307,7 @@ template <typename L>
 }
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Computes the Storm Relative Helicity (SRH) over a given layer
  *

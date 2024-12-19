@@ -25,7 +25,7 @@
 namespace sharp {
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Enum defining the coordinate system of a layer
  */
@@ -47,7 +47,7 @@ enum class LayerCoordinate {
 };
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief A simple structure of named floats that represent a height layer.
  */
@@ -84,7 +84,7 @@ struct HeightLayer {
 };
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief A simple structure of two named floats that represent a <!--
  * --> pressure layer.
@@ -122,7 +122,7 @@ struct PressureLayer {
 };
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief A simple structure of two named integer indices for the top <!--
  * -->and bottom of a layer
@@ -140,7 +140,7 @@ struct LayerIndex {
 };
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Returns the array indices corresponding to the given layer.
  *
@@ -197,7 +197,7 @@ template <typename L, typename Cb, typename Ct>
 }
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Finds the array indices corresponding to the <!--
  * -->given sharp::PressureLayer.
@@ -223,7 +223,7 @@ template <typename L, typename Cb, typename Ct>
                                          const std::ptrdiff_t N);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Finds the array indices corresponding to the <!--
  * -->given sharp::HeightLayer.
@@ -250,7 +250,7 @@ template <typename L, typename Cb, typename Ct>
                                          const std::ptrdiff_t N);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Converts a sharp::HeightLayer to a sharp::PressureLayer
  *
@@ -276,7 +276,7 @@ template <typename L, typename Cb, typename Ct>
                                                      const bool isAGL = false);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Converts a sharp::PressureLayer to a sharp::HeightLayer
  *
@@ -302,7 +302,7 @@ template <typename L, typename Cb, typename Ct>
                                                    const bool toAGL = false);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Template for min/max value over sharp::PressureLayer <!--
  * -->or sharp::HeightLayer
@@ -369,7 +369,7 @@ template <typename L, typename C>
 }
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Returns the minimum value in the given layer.
  *
@@ -400,7 +400,7 @@ constexpr float layer_min(L layer, const float coord_arr[],
 }
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Returns the maximim value in the given layer.
  *
@@ -430,7 +430,7 @@ constexpr float layer_max(L layer, const float coord_arr[],
 }
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Returns a trapezoidal integration of the given layer.
  *
@@ -522,7 +522,7 @@ template <typename T, typename L>
 }
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Computes the mass-weighted mean value of a field over <!--
  * -->a given pressure layer.
@@ -541,7 +541,7 @@ template <typename T, typename L>
                                const float data_arr[], const std::ptrdiff_t N);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Computes the mass-weighted mean value of a field over <!--
  * -->a given height layer.
