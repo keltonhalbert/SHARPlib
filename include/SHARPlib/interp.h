@@ -93,7 +93,7 @@ template <typename _Fp>
 }
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Linearly interpolate a data field to a requested height level.
  *
@@ -119,7 +119,7 @@ template <typename _Fp>
                                   const std::ptrdiff_t N);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Linearly interpolate a data field to a requested pressure level.
  *

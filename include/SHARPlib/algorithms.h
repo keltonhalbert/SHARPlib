@@ -19,7 +19,7 @@
 namespace sharp {
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Finds the index of the lower bound that does not <!--
  * --> satisfy element < value
@@ -61,7 +61,7 @@ template <typename T, typename C = std::less<>>
 }
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Finds the first index that satisfies value < element
  *
@@ -102,7 +102,7 @@ template <typename T, typename C = std::less<>>
 }
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief A kernel that computes the area under a curve using <!--
  * --> the trapezoidal rule.
