@@ -87,7 +87,8 @@ template <typename T, typename C = std::less<>>
  * \return  Index of the upper bound
  */
 template <typename T, typename C = std::less<>>
-[[nodiscard]] constexpr std::ptrdiff_t upper_bound(const T array[], const int N,
+[[nodiscard]] constexpr std::ptrdiff_t upper_bound(const T array[],
+                                                   const std::ptrdiff_t N,
                                                    const T value,
                                                    const C cmp = C{}) {
     std::ptrdiff_t len = N;
