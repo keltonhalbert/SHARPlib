@@ -543,7 +543,8 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \return  Temperature Lapse Rate  (K/km)
  */
 [[nodiscard]] float lapse_rate(HeightLayer layer_agl, const float height[],
-                               const float temperature[], const int N);
+                               const float temperature[],
+                               const std::ptrdiff_t N);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -564,7 +565,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  */
 [[nodiscard]] float lapse_rate(PressureLayer layer, const float pressure[],
                                const float height[], const float temperature[],
-                               const int N);
+                               const std::ptrdiff_t N);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -587,7 +588,8 @@ void drylift(float pressure, float temperature, float dewpoint,
  */
 [[nodiscard]] float lapse_rate_max(HeightLayer layer_agl, const float depth,
                                    const float height[],
-                                   const float temperature[], const int N,
+                                   const float temperature[],
+                                   const std::ptrdiff_t N,
                                    HeightLayer* max_lyr = nullptr);
 
 /**
@@ -612,7 +614,8 @@ void drylift(float pressure, float temperature, float dewpoint,
  */
 [[nodiscard]] float lapse_rate_max(PressureLayer layer, const float depth,
                                    const float pressure[], const float height[],
-                                   const float temperature[], const int N,
+                                   const float temperature[],
+                                   const std::ptrdiff_t N,
                                    PressureLayer* max_lyr = nullptr);
 
 /**
