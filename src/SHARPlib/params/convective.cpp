@@ -23,14 +23,16 @@ namespace sharp {
 PressureLayer effective_inflow_layer(
     sharp::lifter_wobus &lifter, const float pressure[], const float height[],
     const float temperature[], const float dewpoint[],
-    const float virtemp_arr[], float buoy_arr[], const std::ptrdiff_t N,
-    const float cape_thresh, const float cinh_thresh, Parcel *mupcl);
+    const float virtemp_arr[], float pcl_vtmpk_arr[], float buoy_arr[],
+    const std::ptrdiff_t N, const float cape_thresh, const float cinh_thresh,
+    Parcel *mupcl);
 
 PressureLayer effective_inflow_layer(
     sharp::lifter_cm1 &lifter, const float pressure[], const float height[],
     const float temperature[], const float dewpoint[],
-    const float virtemp_arr[], float buoy_arr[], const std::ptrdiff_t N,
-    const float cape_thresh, const float cinh_thresh, Parcel *mupcl);
+    const float virtemp_arr[], float pcl_vtmpk_arr[], float buoy_arr[],
+    const std::ptrdiff_t N, const float cape_thresh, const float cinh_thresh,
+    Parcel *mupcl);
 
 WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],

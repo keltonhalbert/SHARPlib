@@ -47,9 +47,10 @@ namespace sharp {
  * \param   lifter          (parcel lifting functor)
  * \param   pressure        (Pa)
  * \param   height          (meters)
- * \param   temperature     (degK)
- * \param   dewpoint        (degK)
- * \param   virtemp_arr     (degK)
+ * \param   temperature     (K)
+ * \param   dewpoint        (K)
+ * \param   virtemp_arr     (K)
+ * \param   pcl_vtmpk_arr   (K)
  * \param   buoy_arr        (m/s^2)
  * \param   N               (length of arrays)
  * \param   cape_thresh     (J/kg; default=100.0)
@@ -62,9 +63,9 @@ template <typename Lifter>
 [[nodiscard]] PressureLayer effective_inflow_layer(
     Lifter& lifter, const float pressure[], const float height[],
     const float temperature[], const float dewpoint[],
-    const float virtemp_arr[], float buoy_arr[], const std::ptrdiff_t N,
-    const float cape_thresh = 100.0, const float cinh_thresh = -250.0,
-    Parcel* mupcl = nullptr) {
+    const float virtemp_arr[], float pcl_vtmpk_arr, float buoy_arr[],
+    const std::ptrdiff_t N, const float cape_thresh = 100.0,
+    const float cinh_thresh = -250.0, Parcel* mupcl = nullptr) {
     int eff_kbot = 0;
     float eff_pbot = MISSING;
     float eff_ptop = MISSING;
@@ -82,7 +83,8 @@ template <typename Lifter>
         // We don't want to lift every single profile...
         if (height[k] - sfc_hght > 4000.0) break;
 
-        effpcl.lift_parcel(lifter, pressure, virtemp_arr, buoy_arr, N);
+        effpcl.lift_parcel(lifter, pressure, pcl_vtmpk_arr, N);
+        buoyancy(pcl_vtmpk_arr, virtemp_arr, buoy_arr, N);
         effpcl.cape_cinh(pressure, height, buoy_arr, N);
 
         if (effpcl.cape > maxpcl.cape) maxpcl = effpcl;
@@ -102,7 +104,8 @@ template <typename Lifter>
         }
 #endif
         Parcel effpcl(pressure[k], temperature[k], dewpoint[k], LPL::MU);
-        effpcl.lift_parcel(lifter, pressure, virtemp_arr, buoy_arr, N);
+        effpcl.lift_parcel(lifter, pressure, pcl_vtmpk_arr, N);
+        buoyancy(pcl_vtmpk_arr, virtemp_arr, buoy_arr, N);
         effpcl.cape_cinh(pressure, height, buoy_arr, N);
 
         if (effpcl.cape > maxpcl.cape) maxpcl = effpcl;
