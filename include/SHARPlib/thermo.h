@@ -625,7 +625,21 @@ void drylift(float pressure, float temperature, float dewpoint,
  *
  * \return  buoyancy            (m/s^2)
  */
-[[nodiscard]] float buoyancy(float pcl_temperature, float env_temperature);
+[[nodiscard]] float buoyancy(const float pcl_temperature,
+                             const float env_temperature);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Compute buoyancy given arrays of parcel & environment temperatures
+ *
+ * \param pcl_temperature   (K)
+ * \param env_temperature   (K)
+ * \param buoy_arr          Output array to fill with buoyancy
+ * \param N                 Length of arrays
+ */
+void buoyancy(const float pcl_temperature[], const float env_temperature[],
+              float buoy_arr[], std::ptrdiff_t N);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO

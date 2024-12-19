@@ -283,7 +283,7 @@ struct Parcel {
     /**
      * \author Kelton Halbert - NWS Storm Prediction Center
      *
-     * \brief Lifts a sharp::Parcel to compute buoyancy
+     * \brief Lifts a sharp::Parcel to compute its virtual temperature
      *
      * Lifts a sharp::Parcel dry adiabatically from its sharp::LPL to its
      * LCL dry adiabatically, and then moist adiabatically from the
@@ -293,15 +293,13 @@ struct Parcel {
      *
      * \param   liftpcl         Parcel lifting function/functor
      * \param   pressure_arr    Array of env pressure (Pa)
-     * \param   virtemp_arr     Array of env virtual temperature (K)
-     * \param   buoyancy_arr    The array to fill with Buoyancy (m/s^2)
+     * \param   env_vtmpk_arr   Array of env virtual temperature (K)
+     * \param   pcl_vtmpk_arr   The array to fill with virtual temp (K)
      * \param   N               The length of the arrays
-     * \param   pcl_vtmpk_arr   Optional array to fill virtual temp (K)
      */
     template <typename Lft>
     void lift_parcel(Lft& liftpcl, const float pressure_arr[],
-                     const float virtemp_arr[], float buoyancy_arr[],
-                     const std::ptrdiff_t N, float pcl_vtmpk_arr[] = nullptr) {
+                     float pcl_vtmpk_arr[], const std::ptrdiff_t N) {
         // Lift the parcel from the LPL to the LCL
         float pres_lcl;
         float tmpk_lcl;
@@ -328,18 +326,15 @@ struct Parcel {
         // zero out any residual buoyancy from
         // other parcels that may have been lifted
         for (std::ptrdiff_t k = 0; k < dry_idx.kbot; ++k) {
-            buoyancy_arr[k] = 0.0f;
-            if (pcl_vtmpk_arr) pcl_vtmpk_arr[k] = 0.0f;
+            pcl_vtmpk_arr[k] = 0.0f;
         }
 
-        // Fill the array with dry parcel buoyancy.
         // Virtual potential temperature (Theta-V)
         // is conserved for a parcels dry ascent to the LCL
         for (std::ptrdiff_t k = dry_idx.kbot; k < dry_idx.ktop + 1; ++k) {
             const float pcl_vtmp =
                 theta(THETA_REF_PRESSURE, thetav_lcl, pressure_arr[k]);
-            buoyancy_arr[k] = buoyancy(pcl_vtmp, virtemp_arr[k]);
-            if (pcl_vtmpk_arr) pcl_vtmpk_arr[k] = pcl_vtmp;
+            pcl_vtmpk_arr[k] = pcl_vtmp;
         }
 
         float pres_bot = pres_lcl;
@@ -359,9 +354,7 @@ struct Parcel {
 
             const float pcl_vtmpk =
                 liftpcl.parcel_virtual_temperature(pcl_pres, pcl_tmpk);
-            const float env_vtmpk = virtemp_arr[k];
-            buoyancy_arr[k] = buoyancy(pcl_vtmpk, env_vtmpk);
-            if (pcl_vtmpk_arr) pcl_vtmpk_arr[k] = pcl_vtmpk;
+            pcl_vtmpk_arr[k] = pcl_vtmpk;
         }
     }
 
@@ -483,20 +476,19 @@ struct Parcel {
      * \param   temperature         Array of temperature (K)
      * \param   virtemp             Array of virtual temperature (K)
      * \param   dewpoint            Array of dewpoint temperature (K)
-     * \param   buoyancy            Writeable array for buoyancy calcs (m/s^2)
+     * \param   pcl_virtemp         Writeable array for parcel lifting calcs (K)
+     * \param   buoy_arr            Writeable array for buoyancy calcs (m/s^2)
      * \param   N                   Length of arrays
      * \param   search_layer        sharp::PressureLayer or sharp::HeightLay
      * \param   lifter              The parcel moist adiabatic ascent function
      * \return The most unstable sharp::Parcel within the search layer
      */
     template <typename Lyr, typename Lft>
-    static Parcel most_unstable_parcel(Lyr& search_layer, Lft& lifter,
-                                       const float pressure[],
-                                       const float height[],
-                                       const float temperature[],
-                                       const float virtemp[],
-                                       const float dewpoint[], float buoyancy[],
-                                       const std::ptrdiff_t N) noexcept {
+    static Parcel most_unstable_parcel(
+        Lyr& search_layer, Lft& lifter, const float pressure[],
+        const float height[], const float temperature[], const float virtemp[],
+        const float dewpoint[], float pcl_virtemp[], float buoy_arr[],
+        const std::ptrdiff_t N) noexcept {
         LayerIndex lyr_idx;
         if constexpr (Lyr::coord == LayerCoordinate::pressure) {
             lyr_idx = get_layer_index(search_layer, pressure, N);
@@ -512,8 +504,9 @@ struct Parcel {
             const float dwpk = dewpoint[idx];
             Parcel pcl(pres, tmpk, dwpk, LPL::MU);
 
-            pcl.lift_parcel(lifter, pressure, virtemp, buoyancy, N);
-            pcl.cape_cinh(pressure, height, buoyancy, N);
+            pcl.lift_parcel(lifter, pressure, pcl_virtemp, N);
+            buoyancy(pcl_virtemp, virtemp, buoy_arr, N);
+            pcl.cape_cinh(pressure, height, buoy_arr, N);
             if (pcl.cape > max_parcel.cape) max_parcel = pcl;
         }
 

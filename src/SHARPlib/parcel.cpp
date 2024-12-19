@@ -32,22 +32,26 @@ Parcel::Parcel(const float pressure, const float temperature,
 template Parcel Parcel::most_unstable_parcel<PressureLayer, lifter_wobus>(
     PressureLayer& search_layer, lifter_wobus& lifter, const float pressure[],
     const float height[], const float temperature[], const float virtemp[],
-    const float dewpoint[], float buoyancy[], const std::ptrdiff_t N);
+    const float dewpoint[], float pcl_virtemp[], float buoy_arr[],
+    const std::ptrdiff_t N);
 
 template Parcel Parcel::most_unstable_parcel<HeightLayer, lifter_wobus>(
     HeightLayer& search_layer, lifter_wobus& lifter, const float pressure[],
     const float height[], const float temperature[], const float virtemp[],
-    const float dewpoint[], float buoyancy[], const std::ptrdiff_t N);
+    const float dewpoint[], float pcl_virtemp[], float buoy_arr[],
+    const std::ptrdiff_t N);
 
 template Parcel Parcel::most_unstable_parcel<PressureLayer, lifter_cm1>(
     PressureLayer& search_layer, lifter_cm1& lifter, const float pressure[],
     const float height[], const float temperature[], const float virtemp[],
-    const float dewpoint[], float buoyancy[], const std::ptrdiff_t N);
+    const float dewpoint[], float pcl_virtemp[], float buoy_arr[],
+    const std::ptrdiff_t N);
 
 template Parcel Parcel::most_unstable_parcel<HeightLayer, lifter_cm1>(
     HeightLayer& search_layer, lifter_cm1& lifter, const float pressure[],
     const float height[], const float temperature[], const float virtemp[],
-    const float dewpoint[], float buoyancy[], const std::ptrdiff_t N);
+    const float dewpoint[], float pcl_virtemp[], float buoy_arr[],
+    const std::ptrdiff_t N);
 
 template Parcel Parcel::mixed_layer_parcel<PressureLayer>(
     PressureLayer& mix_layer, const float pressure[], const float height[],
@@ -61,14 +65,13 @@ template Parcel Parcel::mixed_layer_parcel<HeightLayer>(
 
 template void Parcel::lift_parcel<lifter_wobus>(lifter_wobus& liftpcl,
                                                 const float pressure_arr[],
-                                                const float virtemp_arr[],
-                                                float buoyancy_arr[],
-                                                const std::ptrdiff_t N,
-                                                float pcl_vtmpk_arr[]);
+                                                float pcl_vtmpk_arr[],
+                                                const std::ptrdiff_t N);
 
-template void Parcel::lift_parcel<lifter_cm1>(
-    lifter_cm1& liftpcl, const float pressure_arr[], const float virtemp_arr[],
-    float buoyancy_arr[], const std::ptrdiff_t N, float pcl_vtmpk_arr[]);
+template void Parcel::lift_parcel<lifter_cm1>(lifter_cm1& liftpcl,
+                                              const float pressure_arr[],
+                                              float pcl_vtmpk_arr[],
+                                              const std::ptrdiff_t N);
 
 void Parcel::find_lfc_el(const float pres_arr[], const float hght_arr[],
                          const float buoy_arr[], const std::ptrdiff_t N) {
