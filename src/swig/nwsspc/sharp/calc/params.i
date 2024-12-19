@@ -25,26 +25,26 @@ import_array();
 %}
 
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float pressure[], const int N1),
-    (const float height[], const int N2),
-    (const float temperature[], const int N3),
-    (const float dewpoint[], const int N4),
-    (const float virtemp_arr[], const int N5)
+    (const float pressure[], const std::ptrdiff_t N1),
+    (const float height[], const std::ptrdiff_t N2),
+    (const float temperature[], const std::ptrdiff_t N3),
+    (const float dewpoint[], const std::ptrdiff_t N4),
+    (const float virtemp_arr[], const std::ptrdiff_t N5)
 }
 
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float pressure[], const int N1),
-    (const float height[], const int N2),
-    (const float u_wind[], const int N3),
-    (const float v_wind[], const int N4)
+    (const float pressure[], const std::ptrdiff_t N1),
+    (const float height[], const std::ptrdiff_t N2),
+    (const float u_wind[], const std::ptrdiff_t N3),
+    (const float v_wind[], const std::ptrdiff_t N4)
 }
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float pressure[], const int N1),
-    (const float height[], const int N2),
-    (const float temperature[], const int N3),
-    (const float mse_arr[], const int N4),
-    (const float u_wind[], const int N5),
-    (const float v_wind[], const int N6)
+    (const float pressure[], const std::ptrdiff_t N1),
+    (const float height[], const std::ptrdiff_t N2),
+    (const float temperature[], const std::ptrdiff_t N3),
+    (const float mse_arr[], const std::ptrdiff_t N4),
+    (const float u_wind[], const std::ptrdiff_t N5),
+    (const float v_wind[], const std::ptrdiff_t N6)
 }
 
 %rename (effective_inflow_layer) _effective_inflow_layer;
@@ -58,11 +58,11 @@ import_array();
 
 sharp::PressureLayer _effective_inflow_layer(
                         sharp::lifter_wobus& lifter,
-                        const float pressure[], const int N1,
-                        const float height[], const int N2,
-                        const float temperature[], const int N3,
-                        const float dewpoint[], const int N4,
-                        const float virtemp_arr[], const int N5,
+                        const float pressure[], const std::ptrdiff_t N1,
+                        const float height[], const std::ptrdiff_t N2,
+                        const float temperature[], const std::ptrdiff_t N3,
+                        const float dewpoint[], const std::ptrdiff_t N4,
+                        const float virtemp_arr[], const std::ptrdiff_t N5,
                         sharp::Parcel* mupcl = NULL,
                         const float cape_thresh = 100.0,
                         const float cinh_thresh = -250.0) {
@@ -76,7 +76,8 @@ sharp::PressureLayer _effective_inflow_layer(
 
     /*Allocate temporary array for holding Buoyancy*/
     float* buoy = (float *)malloc(N1*sizeof(float));
-    if (buoy == NULL) {
+    float* pcl_vtmp_arr = (float *)malloc(N1*sizeof(float));
+    if ((buoy == NULL) || (pcl_vtmp_arr == NULL)) {
         PyErr_Format(
             PyExc_MemoryError, 
             "Could not allocate memory for temporary array of size %d.", 
@@ -86,19 +87,20 @@ sharp::PressureLayer _effective_inflow_layer(
     }
 
     sharp::PressureLayer eil = sharp::effective_inflow_layer(lifter, 
-        pressure, height, temperature, dewpoint, virtemp_arr, buoy, N1,
-        cape_thresh, cinh_thresh, mupcl);
+        pressure, height, temperature, dewpoint, virtemp_arr, 
+        pcl_vtmp_arr, buoy, N1, cape_thresh, cinh_thresh, mupcl);
     free(buoy);
+    free(pcl_vtmp_arr);
     return eil;
 }
 
 sharp::PressureLayer _effective_inflow_layer(
                         sharp::lifter_cm1& lifter,
-                        const float pressure[], const int N1,
-                        const float height[], const int N2,
-                        const float temperature[], const int N3,
-                        const float dewpoint[], const int N4,
-                        const float virtemp_arr[], const int N5,
+                        const float pressure[], const std::ptrdiff_t N1,
+                        const float height[], const std::ptrdiff_t N2,
+                        const float temperature[], const std::ptrdiff_t N3,
+                        const float dewpoint[], const std::ptrdiff_t N4,
+                        const float virtemp_arr[], const std::ptrdiff_t N5,
                         sharp::Parcel* mupcl = NULL,
                         const float cape_thresh = 100.0,
                         const float cinh_thresh = -250.0) {
@@ -112,7 +114,8 @@ sharp::PressureLayer _effective_inflow_layer(
 
     /*Allocate temporary array for holding Buoyancy*/
     float* buoy = (float *)malloc(N1*sizeof(float));
-    if (buoy == NULL) {
+    float* pcl_vtmp_arr = (float *)malloc(N1*sizeof(float));
+    if ((buoy == NULL) || (pcl_vtmp_arr == NULL)) {
         PyErr_Format(
             PyExc_MemoryError, 
             "Could not allocate memory for temporary array of size %d.", 
@@ -122,17 +125,17 @@ sharp::PressureLayer _effective_inflow_layer(
     }
 
     sharp::PressureLayer eil = sharp::effective_inflow_layer(lifter, 
-        pressure, height, temperature, dewpoint, virtemp_arr, buoy, N1,
-        cape_thresh, cinh_thresh, mupcl);
+        pressure, height, temperature, dewpoint, virtemp_arr, 
+        pcl_vtmp_arr, buoy, N1, cape_thresh, cinh_thresh, mupcl);
     free(buoy);
     return eil;
 }
 
 sharp::WindComponents _storm_motion_bunkers(
-                            const float pressure[], const int N1,
-                            const float height[], const int N2,
-                            const float u_wind[], const int N3,
-                            const float v_wind[], const int N4,
+                            const float pressure[], const std::ptrdiff_t N1,
+                            const float height[], const std::ptrdiff_t N2,
+                            const float u_wind[], const std::ptrdiff_t N3,
+                            const float v_wind[], const std::ptrdiff_t N4,
                             sharp::HeightLayer mean_wind_layer_agl,
                             sharp::HeightLayer wind_shear_layer_agl,
                             const bool leftMover = false,
@@ -151,10 +154,10 @@ sharp::WindComponents _storm_motion_bunkers(
 }
 
 sharp::WindComponents _storm_motion_bunkers(
-                            const float pressure[], const int N1,
-                            const float height[], const int N2,
-                            const float u_wind[], const int N3,
-                            const float v_wind[], const int N4,
+                            const float pressure[], const std::ptrdiff_t N1,
+                            const float height[], const std::ptrdiff_t N2,
+                            const float u_wind[], const std::ptrdiff_t N3,
+                            const float v_wind[], const std::ptrdiff_t N4,
                             sharp::PressureLayer eff_lyr, 
                             sharp::Parcel* mupcl, 
                             const bool leftMover=false) {
@@ -169,12 +172,12 @@ sharp::WindComponents _storm_motion_bunkers(
                                        eff_lyr, mupcl, leftMover);
 }
 
-float _entrainment_cape(const float pressure[], const int N1,
-                        const float height[], const int N2,
-                        const float temperature[], const int N3,
-                        const float mse_arr[], const int N4,
-                        const float u_wind[], const int N5,
-                        const float v_wind[], const int N6,
+float _entrainment_cape(const float pressure[], const std::ptrdiff_t N1,
+                        const float height[], const std::ptrdiff_t N2,
+                        const float temperature[], const std::ptrdiff_t N3,
+                        const float mse_arr[], const std::ptrdiff_t N4,
+                        const float u_wind[], const std::ptrdiff_t N5,
+                        const float v_wind[], const std::ptrdiff_t N6,
                         sharp::Parcel* pcl) {
 	if ( (N1 != N2) || (N1 != N3) || (N1 != N4) || (N1 != N5) || (N1 != N6) ) {
         PyErr_Format(PyExc_ValueError, 

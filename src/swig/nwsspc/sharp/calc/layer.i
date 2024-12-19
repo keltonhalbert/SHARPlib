@@ -24,33 +24,33 @@ import_array();
 %}
 
 /* Set up an argument typemap for our arrays */
-%apply (float* IN_ARRAY1, int DIM1) { (const float pressure[], const int N) };
-%apply (float* IN_ARRAY1, int DIM1) { (const float height[], const int N) };
+%apply (float* IN_ARRAY1, int DIM1) { (const float pressure[], const std::ptrdiff_t N) };
+%apply (float* IN_ARRAY1, int DIM1) { (const float height[], const std::ptrdiff_t N) };
 
 %apply (float* IN_ARRAY1, int DIM1) {
-        (const float pressure[], const int N1),
-        (const float height[], const int N2)
+        (const float pressure[], const std::ptrdiff_t N1),
+        (const float height[], const std::ptrdiff_t N2)
 };
 
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float coord_arr[], const int N1),
-    (const float data_arr[], const int N2)
+    (const float coord_arr[], const std::ptrdiff_t N1),
+    (const float data_arr[], const std::ptrdiff_t N2)
 }
 
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float pressure[], const int N1),
-    (const float data_arr[], const int N2)
+    (const float pressure[], const std::ptrdiff_t N1),
+    (const float data_arr[], const std::ptrdiff_t N2)
 }
 
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float height[], const int N1),
-    (const float pressure[], const int N2),
-    (const float data_arr[], const int N3)
+    (const float height[], const std::ptrdiff_t N1),
+    (const float pressure[], const std::ptrdiff_t N2),
+    (const float data_arr[], const std::ptrdiff_t N3)
 }
 
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float var_array[], const int N1),
-    (const float coord_array[], const int N2)
+    (const float var_array[], const std::ptrdiff_t N1),
+    (const float coord_array[], const std::ptrdiff_t N2)
 }
 
 %apply float* OUTPUT { float* lvl_of_min } 
@@ -74,8 +74,8 @@ import_array();
 %inline %{
 
 sharp::HeightLayer _pres_lyr_to_hght(sharp::PressureLayer layer,
-                            const float pressure[], const int N1,
-                            const float height[], const int N2,
+                            const float pressure[], const std::ptrdiff_t N1,
+                            const float height[], const std::ptrdiff_t N2,
                             bool toAGL = false) {
     if ((N1 != N2)) {
         PyErr_Format(
@@ -89,8 +89,8 @@ sharp::HeightLayer _pres_lyr_to_hght(sharp::PressureLayer layer,
 }
 
 sharp::PressureLayer _hght_lyr_to_pres(sharp::HeightLayer layer,
-                            const float pressure[], const int N1,
-                            const float height[], const int N2,
+                            const float pressure[], const std::ptrdiff_t N1,
+                            const float height[], const std::ptrdiff_t N2,
                             bool isAGL = false) {
     if ((N1 != N2)) {
         PyErr_Format(
@@ -104,8 +104,8 @@ sharp::PressureLayer _hght_lyr_to_pres(sharp::HeightLayer layer,
 }
 
 float _layer_min(sharp::HeightLayer layer, 
-                 const float coord_arr[], const int N1,
-                 const float data_arr[], const int N2,
+                 const float coord_arr[], const std::ptrdiff_t N1,
+                 const float data_arr[], const std::ptrdiff_t N2,
                  float* lvl_of_min) {
     if (N1 != N2) {
         PyErr_Format(
@@ -119,8 +119,8 @@ float _layer_min(sharp::HeightLayer layer,
 }
 
 float _layer_min(sharp::PressureLayer layer, 
-                 const float coord_arr[], const int N1,
-                 const float data_arr[], const int N2,
+                 const float coord_arr[], const std::ptrdiff_t N1,
+                 const float data_arr[], const std::ptrdiff_t N2,
                  float* lvl_of_min) {
     if (N1 != N2) {
         PyErr_Format(
@@ -134,8 +134,8 @@ float _layer_min(sharp::PressureLayer layer,
 }
 
 float _layer_max(sharp::HeightLayer layer, 
-                 const float coord_arr[], const int N1,
-                 const float data_arr[], const int N2,
+                 const float coord_arr[], const std::ptrdiff_t N1,
+                 const float data_arr[], const std::ptrdiff_t N2,
                  float* lvl_of_max) {
     if (N1 != N2) {
         PyErr_Format(
@@ -149,8 +149,8 @@ float _layer_max(sharp::HeightLayer layer,
 }
 
 float _layer_max(sharp::PressureLayer layer, 
-                 const float coord_arr[], const int N1,
-                 const float data_arr[], const int N2,
+                 const float coord_arr[], const std::ptrdiff_t N1,
+                 const float data_arr[], const std::ptrdiff_t N2,
                  float* lvl_of_max) {
     if (N1 != N2) {
         PyErr_Format(
@@ -164,9 +164,9 @@ float _layer_max(sharp::PressureLayer layer,
 }
 
 float _layer_mean(sharp::HeightLayer layer, 
-                  const float height[], const int N1,
-                  const float pressure[], const int N2,
-                  const float data_arr[], const int N3,
+                  const float height[], const std::ptrdiff_t N1,
+                  const float pressure[], const std::ptrdiff_t N2,
+                  const float data_arr[], const std::ptrdiff_t N3,
                   const bool isAGL = false) {
     if ((N1 != N2) || (N1 != N3)) {
         PyErr_Format(
@@ -180,8 +180,8 @@ float _layer_mean(sharp::HeightLayer layer,
 }
 
 float _layer_mean(sharp::PressureLayer layer, 
-                  const float pressure[], const int N1,
-                  const float data_arr[], const int N2) {
+                  const float pressure[], const std::ptrdiff_t N1,
+                  const float data_arr[], const std::ptrdiff_t N2) {
     if (N1 != N2) {
         PyErr_Format(
             PyExc_ValueError, "Arrays must be same length, got (%d, %d)",
@@ -195,8 +195,8 @@ float _layer_mean(sharp::PressureLayer layer,
 
 
 float _integrate_layer_trapz(sharp::HeightLayer layer, 
-                            const float var_array[], const int N1,
-                            const float coord_array[], const int N2,
+                            const float var_array[], const std::ptrdiff_t N1,
+                            const float coord_array[], const std::ptrdiff_t N2,
                             const int integ_sign = 0,
                             const bool weighted = false) {
     if (N1 != N2) {

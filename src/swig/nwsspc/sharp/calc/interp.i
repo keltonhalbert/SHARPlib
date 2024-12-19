@@ -25,21 +25,21 @@ import_array();
 
 /* Set up an argument typemap for our arrays */
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float vert_array[], const int N1),
-    (const float data_array[], const int N2)
+    (const float vert_array[], const std::ptrdiff_t N1),
+    (const float data_array[], const std::ptrdiff_t N2)
 }
 
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float vert_array[], const int N2),
-    (const float data_array[], const int N3)
+    (const float vert_array[], const std::ptrdiff_t N2),
+    (const float data_array[], const std::ptrdiff_t N3)
 }
 
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float height_vals[], const int N1)
+    (const float height_vals[], const std::ptrdiff_t N1)
 }
 
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float pressure_vals[], const int N1)
+    (const float pressure_vals[], const std::ptrdiff_t N1)
 }
 
 %apply (float** ARGOUTVIEWM_ARRAY1, int* DIM1) {
@@ -51,9 +51,9 @@ import_array();
 
 %inline %{
 
-void _interp_height(const float height_vals[], const int N1,
-                    const float vert_array[], const int N2,
-                    const float data_array[], const int N3,
+void _interp_height(const float height_vals[], const std::ptrdiff_t N1,
+                    const float vert_array[], const std::ptrdiff_t N2,
+                    const float data_array[], const std::ptrdiff_t N3,
                     float** interp_vals, int* N4) {
 
     if (N2 != N3) {
@@ -84,8 +84,8 @@ void _interp_height(const float height_vals[], const int N1,
 }
 
 float _interp_height(float height_val, 
-                     const float vert_array[], const int N1, 
-                     const float data_array[], const int N2) {
+                     const float vert_array[], const std::ptrdiff_t N1, 
+                     const float data_array[], const std::ptrdiff_t N2) {
     if (N1 != N2) {
         PyErr_Format(
             PyExc_ValueError, "Arrays must be same length, got (%d, %d)",
@@ -105,9 +105,9 @@ float _interp_height(float height_val,
 
 %inline %{
 
-void _interp_pressure(const float pressure_vals[], const int N1,
-                      const float vert_array[], const int N2,
-                      const float data_array[], const int N3,
+void _interp_pressure(const float pressure_vals[], const std::ptrdiff_t N1,
+                      const float vert_array[], const std::ptrdiff_t N2,
+                      const float data_array[], const std::ptrdiff_t N3,
                       float** interp_vals, int* N4) {
 
     if (N2 != N3) {
@@ -138,8 +138,8 @@ void _interp_pressure(const float pressure_vals[], const int N1,
 }
 
 float _interp_pressure(float pres_val, 
-                       const float vert_array[], const int N1, 
-                       const float data_array[], const int N2) {
+                       const float vert_array[], const std::ptrdiff_t N1, 
+                       const float data_array[], const std::ptrdiff_t N2) {
     if (N1 != N2) {
         PyErr_Format(
             PyExc_ValueError, "Arrays must be same length, got (%d, %d)",

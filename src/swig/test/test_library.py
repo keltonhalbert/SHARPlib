@@ -330,21 +330,21 @@ def test_parcel(snd):
     print(ml_pcl2.pres, ml_pcl2.tmpk, ml_pcl2.dwpk)
 
     # Compute buoyancy from a surface-based parcel
-    sfc_vtmp1 = sfc_pcl.lift_parcel(wobf, snd["pres"], vtmp)
+    sfc_vtmp1 = sfc_pcl.lift_parcel(wobf, snd["pres"])
     sfc_buoy1 = thermo.buoyancy(sfc_vtmp1, vtmp)
     print("Surface-based parcel buoyancy (Wobus)")
     print(sfc_buoy1, sfc_buoy1.min(), sfc_buoy1.max())
-    sfc_vtmp2 = sfc_pcl.lift_parcel(cm1, snd["pres"], vtmp)
+    sfc_vtmp2 = sfc_pcl.lift_parcel(cm1, snd["pres"])
     sfc_buoy2 = thermo.buoyancy(sfc_vtmp2, vtmp)
     print("Surface-based parcel buoyancy (CM1)")
     print(sfc_buoy2, sfc_buoy2.min(), sfc_buoy2.max())
 
     # Compute buoyancy from a mixed-layer parcel
-    ml_vtmp1 = ml_pcl1.lift_parcel(wobf, snd["pres"], vtmp)
+    ml_vtmp1 = ml_pcl1.lift_parcel(wobf, snd["pres"])
     ml_buoy1 = thermo.buoyancy(ml_vtmp1, vtmp)
     print("Mixed-layer parcel buoyancy (Wobus)")
     print(ml_buoy1, ml_buoy1.min(), ml_buoy1.max())
-    ml_vtmp2 = ml_pcl1.lift_parcel(cm1, snd["pres"], vtmp)
+    ml_vtmp2 = ml_pcl1.lift_parcel(cm1, snd["pres"])
     ml_buoy2 = thermo.buoyancy(ml_vtmp2, vtmp)
     print("Mixed-layer parcel buoyancy (CM1)")
     print(ml_buoy2, ml_buoy2.min(), ml_buoy2.max())
