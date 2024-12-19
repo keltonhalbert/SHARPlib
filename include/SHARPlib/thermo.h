@@ -76,11 +76,11 @@ enum class adiabat : int {
  *
  * It was shown by Robert Davies-Jones (2007) that the Wobus function has
  * a slight dependence on pressure, which results in errors of up to 1.2
- * degrees Kelvin in the temperature of a lifted parcel.
+ * Kelvin in the temperature of a lifted parcel.
  *
- * \param   temperature     (degK)
+ * \param   temperature     (K)
  *
- * \return  wobf            (degK)
+ * \return  wobf            (K)
  */
 [[nodiscard]] float wobf(float temperature);
 
@@ -91,7 +91,7 @@ enum class adiabat : int {
  *
  * Computes the vapor pressure (or saturation vapor pressure) in
  * Pascals (Pa) over liquid water given the temperature in
- * degrees Kelvin (or dewpoint temperature in degrees Kelvin).
+ * Kelvin (or dewpoint temperature in Kelvin).
  * The air pressure is used as a minimum floor for extremely
  * cold temperatures and low pressures.
  *
@@ -99,7 +99,7 @@ enum class adiabat : int {
  * accurate to 0.3% for the temperature range of -35C <= T <= 35 C
  *
  * \param   pressure       (Pa)
- * \param   temperature    (degK)
+ * \param   temperature    (K)
  *
  * \return  vapor_pressure (Pa)
  */
@@ -112,7 +112,7 @@ enum class adiabat : int {
  *
  * Computes the vapor pressure (or saturation vapor pressure) in
  * Pascals (Pa) over ice given the temperature in
- * degrees Kelvin (or dewpoint temperature in degrees Kelvin).
+ * Kelvin (or dewpoint temperature in Kelvin).
  * The air pressure is used as a minimum floor for extremely
  * cold temperatures and low pressures.
  *
@@ -120,7 +120,7 @@ enum class adiabat : int {
  * accurate to 0.3% for the temperature range of -35C <= T <= 35C
  *
  * \param   pressure       (Pa)
- * \param   temperature    (degK)
+ * \param   temperature    (K)
  *
  * \return  vapor_pressure (Pa)
  */
@@ -133,15 +133,15 @@ enum class adiabat : int {
  *
  * Computes the temperature of a parcels LCL in
  * degres Kelvin given the parcel temperature and
- * dewpoint in degrees Kelvin.
+ * dewpoint in Kelvin.
  *
  * This is implemented as in Bolton (1980) eq 15, and is considered
  * to be within a 10th of a degree of the more exact iterative formula.
  *
- * \param    temperature     (degK)
- * \param    dewpoint        (degK)
+ * \param    temperature     (K)
+ * \param    dewpoint        (K)
  *
- * \return   lcl_temperature (degK)
+ * \return   lcl_temperature (K)
  */
 [[nodiscard]] float lcl_temperature(float temperature, float dewpoint);
 
@@ -151,17 +151,17 @@ enum class adiabat : int {
  * \brief Compute the temperature at a given water vapor mixing ratio<!--
  * --> and pressure level.
  *
- * Computes the temperature in degrees Kelvin of air at the
+ * Computes the temperature in Kelvin of air at the
  * given water vapor mixing ratio in kg/kg and the
  * air pressure in Pa.
  *
  * The is implemented as in Bolton (1980) eq 11, and is considered
  * to be accurate to 0.03 for -35C <= T <= 35C
  *
- * \param    wv_mixratio    (g/kg)
- * \param    pressure       (mb)
+ * \param    wv_mixratio    (kg/kg)
+ * \param    pressure       (Pa)
  *
- * \return   temperature    (degC)
+ * \return   temperature    (K)
  */
 [[nodiscard]] float temperature_at_mixratio(float wv_mixratio, float pressure);
 
@@ -171,11 +171,11 @@ enum class adiabat : int {
  * \brief Comute the pressure level given potential temperature and temperature.
  *
  * Returns the pressure level in Pascals (Pa) of a parcel
- * given the potential temperature in degrees Kelvin and the
- * temperature of the parcel in degrees Kelvin.
+ * given the potential temperature in Kelvin and the
+ * temperature of the parcel in Kelvin.
  *
- * \param    potential_temperature (degK)
- * \param    temperature           (degK)
+ * \param    potential_temperature (K)
+ * \param    temperature           (K)
  *
  * \return   pressure              (Pa)
  */
@@ -186,17 +186,17 @@ enum class adiabat : int {
  *
  * \brief Compute the potential temperature.
  *
- * Returns the potential temperature in degrees Kelvin of
+ * Returns the potential temperature in Kelvin of
  * a parcel given its pressure in Pascals and temperature
- * in degrees Kelvin. The final argument is the reference
+ * in Kelvin. The final argument is the reference
  * level, which is usually 100000.0 Pa, conveniently also
  * called sharp::THETA_REF_PRESSURE.
  *
  * \param    pressure              (Pa)
- * \param    temperature           (degK)
+ * \param    temperature           (K)
  * \param    ref_pressure          (Pa)
  *
- * \return   potential_temperature (degK)
+ * \return   potential_temperature (K)
  */
 [[nodiscard]] float theta(float pressure, float temperature,
                           float ref_pressure = THETA_REF_PRESSURE);
@@ -209,9 +209,9 @@ enum class adiabat : int {
  * Returns the water vapor mixing ratio in kg/kg given the specific
  * humidity in kg/kg.
  *
- * \param	 q                     (kg/kg)
+ * \param	 q            (kg/kg)
  *
- * \return   mixratio              (kg/kg)
+ * \return   mixratio   (kg/kg)
  */
 [[nodiscard]] float mixratio(float q);
 
@@ -222,13 +222,13 @@ enum class adiabat : int {
  *
  * Returns the water vapor mixing ratio in kg/kg given
  * the environmental pressure in Pascals (Pa) and a
- * temperature (dry-bulb or dewpoint) in degrees Kelvin.
+ * temperature (dry-bulb or dewpoint) in Kelvin.
  *
  * This is computed by calling sharp::vapor_pressure, which uses
  * the Bolton (1980) equations.
  *
  * \param    pressure              (Pa)
- * \param    temperature           (degK)
+ * \param    temperature           (K)
  *
  * \return   mixratio              (kg/kg)
  */
@@ -241,13 +241,13 @@ enum class adiabat : int {
  *
  * Returns the ice water mixing ratio in kg/kg given
  * the environmental pressure in Pascals (Pa) and a
- * temperature (dry-bulb or dewpoint) in degrees Kelvin.
+ * temperature (dry-bulb or dewpoint) in Kelvin.
  *
  * This is computed by calling sharp::vapor_pressure_ice, which uses
  * the Bolton (1980) equations.
  *
  * \param    pressure              (Pa)
- * \param    temperature           (degK)
+ * \param    temperature           (K)
  *
  * \return   mixratio              (kg/kg)
  */
@@ -271,8 +271,8 @@ enum class adiabat : int {
  *
  * \brief Compute the full virtual temperature.
  *
- * Returns the virtual temperature in degrees Kelvin given the dry-bulb
- * temperature in degrees Kelvin, the specific humidity of water vapor (qv) in
+ * Returns the virtual temperature in Kelvin given the dry-bulb
+ * temperature in Kelvin, the specific humidity of water vapor (qv) in
  * kg/kg, the specific humidity of liquid water (ql) in kg/kg, and the specific
  * himidity of ice water kg/kg.
  *
@@ -281,12 +281,12 @@ enum class adiabat : int {
  * If you are okay with lower accuracy, you may pass mixing ratios intead
  * of specific humidities.
  *
- * \param   temperature             (degK)
+ * \param   temperature             (K)
  * \param   qv                      (kg/kg)
  * \param   ql                      (kg/kg)
  * \param   qi                      (kg/kg)
  *
- * \return  virtual_temperature     (degK)
+ * \return  virtual_temperature     (K)
  */
 [[nodiscard]] float virtual_temperature(float temperature, float qv,
                                         float ql = 0.0f, float qi = 0.0f);
@@ -299,19 +299,19 @@ enum class adiabat : int {
  *
  * Compute the temperature at which the moist adiabat intersects a line
  * of constant pressure on a Skew-T log-P diagram. The wet-bulb potential
- * temperature, given by theta_sat, defines a moist adiabat in degrees Kelvin,
+ * temperature, given by theta_sat, defines a moist adiabat in Kelvin,
  * and the temperature at the given pressure level in Pascals (Pa) is returned.
  *
  * This function relies on the Wobus Function ( sharp::wobf ), and it was shown
  * by Robert Davies-Jones (2007) that the Wobus function has a slight
- * dependence on pressure, which results in errors of up to 1.2 degrees Kelvin
+ * dependence on pressure, which results in errors of up to 1.2 Kelvin
  * in the temperature of a lifted parcel.
  *
  * \param   pressure            (Pa)
- * \param   theta_sat           (degK)
+ * \param   theta_sat           (K)
  * \param   converge            (convergence criteria; default = 0.001f)
  *
- * \return  lifted_temperature  (degK)
+ * \return  lifted_temperature  (K)
  */
 [[nodiscard]] float saturated_lift(float pressure, float theta_sat,
                                    const float converge = 0.001f);
@@ -323,19 +323,19 @@ enum class adiabat : int {
  * -->adiabatically to a new level.
  *
  * With a given parcel defined by a pressure and temperature (in Pascals and
- * degrees Kelvin), lift it moist adiabatically to a new pressure level
+ * Kelvin), lift it moist adiabatically to a new pressure level
  * (in Pascals) and return the temperture of the parcel at that level.
  *
  * This function relies on the Wobus Function ( sharp::wobf ), and it was shown
  * by Robert Davies-Jones (2007) that the Wobus function has a slight
- * dependence on pressure, which results in errors of up to 1.2 degrees Kelvin
+ * dependence on pressure, which results in errors of up to 1.2 Kelvin
  * in the temperature of a lifted parcel.
  *
  * \param    pressure              (Pa)
- * \param    temperature           (degK)
+ * \param    temperature           (K)
  * \param    lifted_pressure       (Pa)
  *
- * \return   lifted_temperature    (degK)
+ * \return   lifted_temperature    (K)
  */
 [[nodiscard]] float wetlift(float pressure, float temperature,
                             float lifted_pressure);
@@ -347,7 +347,7 @@ enum class adiabat : int {
  * -->adiabatically to a new level.
  *
  *  With a given parcel defined by a pressure and temperature (in Pascals and
- *  degrees Kelvin), lift it moist adiabatically to a new pressure level
+ *  Kelvin), lift it moist adiabatically to a new pressure level
  *  (in Pascals) and return the temperature of the parcel at that level.
  *
  *  This function is based on/ripped from George Byran's (NCAR) routine in CM1.
@@ -363,7 +363,7 @@ enum class adiabat : int {
  *  before condensation.
  *
  * \param   pressure        (Pa)
- * \param   temperature     (degK)
+ * \param   temperature     (K)
  * \param   new_pressure    (Pa)
  * \param   qv_total        (kg/kg)
  * \param   qv              (kg/kg)
@@ -373,7 +373,7 @@ enum class adiabat : int {
  * \param   converge        (precision)
  * \param   ma_type         (sharp::adiabat)
  *
- * \return  pcl_temperature (degK)
+ * \return  pcl_temperature (K)
  */
 [[nodiscard]] float moist_adiabat_cm1(float pressure, float temperature,
                                       float new_pressure, float& qv_total,
@@ -388,10 +388,10 @@ enum class adiabat : int {
  * \brief Lift a parcel dry adiabatically to its Lifted Condensation Level
  * (LCL).
  *
- * Given a parcel's initial pressure (Pa), temperature (degK), and
- * dewpoint temperature (degK), lift the parcel dry adiabatically to its
+ * Given a parcel's initial pressure (Pa), temperature (K), and
+ * dewpoint temperature (K), lift the parcel dry adiabatically to its
  * Lifted Condensation Level and store the resulting LCL pressure (Pa)
- * and LCL temperature (degK) in the variables passed by reference to the
+ * and LCL temperature (K) in the variables passed by reference to the
  * routine.
  *
  *
@@ -399,11 +399,11 @@ enum class adiabat : int {
  * sharp::lcl_temperature documentation for more information.
  *
  * \param    pressure              (Pa)
- * \param    temperature           (degK)
- * \param    dewpoint              (degK)
+ * \param    temperature           (K)
+ * \param    dewpoint              (K)
  * \param    pressure_at_lcl       (Pa)
  *
- * \param    temperature_at_lcl    (degK)
+ * \param    temperature_at_lcl    (K)
  */
 void drylift(float pressure, float temperature, float dewpoint,
              float& pressure_at_lcl, float& temperature_at_lcl);
@@ -416,7 +416,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  *
  * This routine computes the temperature required to derive the Lifted Index
  * for a particulat pressure level. Given a parcel's initial pressure
- * (Pa), temperature (degK), and dewpoint (degK), it first lifts a
+ * (Pa), temperature (K), and dewpoint (K), it first lifts a
  * parcel to its LCL, and then continues to lift it moist adiabatically to the
  * given lifted pressure level (Pa).
  *
@@ -427,11 +427,11 @@ void drylift(float pressure, float temperature, float dewpoint,
  * estimation errors, so see documentation to learn more.
  *
  * \param   pressure                    (Pa)
- * \param   temperature                 (degK)
- * \param   dewpoint                    (degK)
+ * \param   temperature                 (K)
+ * \param   dewpoint                    (K)
  * \param   lifted_pressure             (Pa)
  *
- * \return  lifted_index_temperature    (degK)
+ * \return  lifted_index_temperature    (K)
  */
 [[nodiscard]] float lifted(float pressure, float temperature, float dewpoint,
                            float lifted_pressure);
@@ -441,8 +441,8 @@ void drylift(float pressure, float temperature, float dewpoint,
  *
  * \brief Compute the wetbulb temperature.
  *
- * Compute the wet bulb temperature (degK) given the pressure
- * (Pa), temperature (degK), and dewpoint (degK).
+ * Compute the wet bulb temperature (K) given the pressure
+ * (Pa), temperature (K), and dewpoint (K).
  *
  * First, it lifts a parcel with the given pressure, temperature, and
  * dewpoint temperature to its Lifted Condensation Level (LCL). To
@@ -457,10 +457,10 @@ void drylift(float pressure, float temperature, float dewpoint,
  * sharp::wetlift documentation for more information.
  *
  * \param   pressure                (Pa)
- * \param   temperature             (degK)
- * \param   dewpoint                (degK)
+ * \param   temperature             (K)
+ * \param   dewpoint                (K)
  *
- * \return  wetbulb_temperature     (degK)
+ * \return  wetbulb_temperature     (K)
  */
 [[nodiscard]] float wetbulb(float pressure, float temperature, float dewpoint);
 
@@ -469,9 +469,9 @@ void drylift(float pressure, float temperature, float dewpoint,
  *
  * \brief Compute the wetbulb potential temperature.
  *
- * Compute the wet bulb potential temperature (degK) given
- * the pressure (Pa), temperature (degK), and dewpoint
- * (degK).
+ * Compute the wet bulb potential temperature (K) given
+ * the pressure (Pa), temperature (K), and dewpoint
+ * (K).
  *
  * First, it lifts a parcel with the given pressure, temperature, and
  * dewpoint temperature to its Lifted Condensation Level (LCL). To
@@ -487,10 +487,10 @@ void drylift(float pressure, float temperature, float dewpoint,
  * information.
  *
  * \param   pressure                        (Pa)
- * \param   temperature                     (degK)
- * \param   dewpoint                        (degK)
+ * \param   temperature                     (K)
+ * \param   dewpoint                        (K)
  *
- * \return  wetbulb_potential_temperature   (degK)
+ * \return  wetbulb_potential_temperature   (K)
  */
 [[nodiscard]] float theta_wetbulb(float pressure, float temperature,
                                   float dewpoint);
@@ -500,9 +500,9 @@ void drylift(float pressure, float temperature, float dewpoint,
  *
  * \brief Compute the equivalent potential temperature.
  *
- * Compute the equivalent potential temperature (degK) given
- * the pressure (Pa), temperature (degK), and dewpoint
- * (degK).
+ * Compute the equivalent potential temperature (K) given
+ * the pressure (Pa), temperature (K), and dewpoint
+ * (K).
  *
  * First, it lifts a parcel with the given pressure, temperature, and
  * dewpoint temperature to its Lifted Condensation Level (LCL). To
@@ -519,10 +519,10 @@ void drylift(float pressure, float temperature, float dewpoint,
  * more information.
  *
  * \param    pressure                           (Pa)
- * \param    temperature                        (degK)
- * \param    dewpoint                           (degK)
+ * \param    temperature                        (K)
+ * \param    dewpoint                           (K)
  *
- * \return   equivalent_potential_temperature   (degK)
+ * \return   equivalent_potential_temperature   (K)
  */
 [[nodiscard]] float thetae(float pressure, float temperature, float dewpoint);
 
@@ -537,10 +537,10 @@ void drylift(float pressure, float temperature, float dewpoint,
  *
  * \param   layer_agl               (meters AGL)
  * \param   height                  (meters MSL)
- * \param   temperature             (degK)
+ * \param   temperature             (K)
  * \param   N                       (length of arrays)
  *
- * \return  Temperature Lapse Rate  (degK/km)
+ * \return  Temperature Lapse Rate  (K/km)
  */
 [[nodiscard]] float lapse_rate(HeightLayer layer_agl, const float height[],
                                const float temperature[], const int N);
@@ -557,10 +557,10 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \param   layer                   (Pa)
  * \param   pressure                (Pa)
  * \param   height                  (meters MSL)
- * \param   temperature             (degK)
- * \param   N		                (length of arrays)
+ * \param   temperature             (K)
+ * \param   N		                    (length of arrays)
  *
- * \return  Temperature Lapse Rate  (degK/km)
+ * \return  Temperature Lapse Rate  (K/km)
  */
 [[nodiscard]] float lapse_rate(PressureLayer layer, const float pressure[],
                                const float height[], const float temperature[],
@@ -579,11 +579,11 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \param   layer_agl       (meters AGL)
  * \param   depth           (meters)
  * \param   height          (meters MSL)
- * \param   temperature     (degK)
+ * \param   temperature     (K)
  * \param   N               (length of arrays)
  * \param   max_lyr         (The sharp::HeightLayer of the max lapse rate)
  *
- * \return  Maximum Temperature Lapse Rate  (degK/km)
+ * \return  Maximum Temperature Lapse Rate  (K/km)
  */
 [[nodiscard]] float lapse_rate_max(HeightLayer layer_agl, const float depth,
                                    const float height[],
@@ -604,11 +604,11 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \param   depth           (Pa)
  * \param   pressure        (Pa)
  * \param   height          (meters MSL)
- * \param   temperature     (degK)
- * \param   N		        (length of arrays)
+ * \param   temperature     (K)
+ * \param   N		            (length of arrays)
  * \param   max_lyr         (The sharp::PressureLayer of the max lapse rate)
  *
- * \return  Maximum Temperature Lapse Rate  (degK/km)
+ * \return  Maximum Temperature Lapse Rate  (K/km)
  */
 [[nodiscard]] float lapse_rate_max(PressureLayer layer, const float depth,
                                    const float pressure[], const float height[],
@@ -620,8 +620,8 @@ void drylift(float pressure, float temperature, float dewpoint,
  *
  * \brief compute buoyancy given parcel and environment temperatures
  *
- * \param   pcl_temperature     (degK)
- * \param   env_temperature	    (degK)
+ * \param   pcl_temperature     (K)
+ * \param   env_temperature	    (K)
  *
  * \return  buoyancy            (m/s^2)
  */
@@ -633,7 +633,7 @@ void drylift(float pressure, float temperature, float dewpoint,
  * \brief Compute moist static energy.
  *
  * \param   height_agl          (meters)
- * \param   temperature         (degK)
+ * \param   temperature         (K)
  * \param   specific_humidity   (kg/kg)
  *
  * \return  moist static energy ()

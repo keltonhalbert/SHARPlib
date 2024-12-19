@@ -286,7 +286,6 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
                         float& rv_total, float& rv, float& rl, float& ri,
                         const float pres_incr, const float converge,
                         const adiabat ma_type) {
-
     // set up solver variables
     const bool ice = (ma_type >= adiabat::pseudo_ice) ? true : false;
     float dp = std::abs(pressure - new_pressure);
@@ -436,7 +435,7 @@ float thetae(float pressure, float temperature, float dewpoint) {
 }
 
 float lapse_rate(HeightLayer layer_agl, const float height[],
-                 const float temperature[], const int N) {
+                 const float temperature[], const std::ptrdiff_t N) {
 #ifndef NO_QC
     if ((layer_agl.bottom == MISSING) || (layer_agl.top == MISSING)) {
         return MISSING;
@@ -471,7 +470,8 @@ float lapse_rate(HeightLayer layer_agl, const float height[],
 }
 
 float lapse_rate(PressureLayer layer, const float pressure[],
-                 const float height[], const float temperature[], const int N) {
+                 const float height[], const float temperature[],
+                 const std::ptrdiff_t N) {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING)) {
         return MISSING;
@@ -494,7 +494,7 @@ float lapse_rate(PressureLayer layer, const float pressure[],
 
 float lapse_rate_max(HeightLayer layer_agl, const float depth,
                      const float height[], const float temperature[],
-                     const int N, HeightLayer* max_lyr) {
+                     const std::ptrdiff_t N, HeightLayer* max_lyr) {
     float max_lr = MISSING;
     for (float z = layer_agl.bottom; z <= (layer_agl.top - depth);
          z += layer_agl.delta) {
@@ -513,7 +513,7 @@ float lapse_rate_max(HeightLayer layer_agl, const float depth,
 
 float lapse_rate_max(PressureLayer layer, const float depth,
                      const float pressure[], const float height[],
-                     const float temperature[], const int N,
+                     const float temperature[], const std::ptrdiff_t N,
                      PressureLayer* max_lyr) {
     float max_lr = MISSING;
     for (float p = layer.bottom; p >= (layer.top + depth); p += layer.delta) {

@@ -62,7 +62,7 @@ template <typename Lifter>
 [[nodiscard]] PressureLayer effective_inflow_layer(
     Lifter& lifter, const float pressure[], const float height[],
     const float temperature[], const float dewpoint[],
-    const float virtemp_arr[], float buoy_arr[], const int N,
+    const float virtemp_arr[], float buoy_arr[], const std::ptrdiff_t N,
     const float cape_thresh = 100.0, const float cinh_thresh = -250.0,
     Parcel* mupcl = nullptr) {
     int eff_kbot = 0;
@@ -72,7 +72,7 @@ template <typename Lifter>
     Parcel maxpcl;
 
     // search for the effective inflow bottom
-    for (int k = 0; k < N; ++k) {
+    for (std::ptrdiff_t k = 0; k < N; ++k) {
 #ifndef NO_QC
         if ((temperature[k] == MISSING) || (dewpoint[k] == MISSING)) {
             continue;
@@ -95,7 +95,7 @@ template <typename Lifter>
 
     if (eff_pbot == MISSING) return {MISSING, MISSING};
 
-    for (int k = eff_kbot + 1; k < N; ++k) {
+    for (std::ptrdiff_t k = eff_kbot + 1; k < N; ++k) {
 #ifndef NO_QC
         if ((temperature[k] == MISSING) || (dewpoint[k] == MISSING)) {
             continue;
@@ -144,9 +144,9 @@ template <typename Lifter>
  */
 [[nodiscard]] WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
-    const float v_wind[], const int N, HeightLayer mean_wind_layer_agl,
-    HeightLayer wind_shear_layer_agl, const bool leftMover = false,
-    const bool pressureWeighted = false);
+    const float v_wind[], const std::ptrdiff_t N,
+    HeightLayer mean_wind_layer_agl, HeightLayer wind_shear_layer_agl,
+    const bool leftMover = false, const bool pressureWeighted = false);
 
 /**
  *  \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -185,7 +185,7 @@ template <typename Lifter>
  */
 [[nodiscard]] WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
-    const float v_wind[], const int N, PressureLayer eff_infl_lyr,
+    const float v_wind[], const std::ptrdiff_t N, PressureLayer eff_infl_lyr,
     const Parcel* mupcl, const bool leftMover = false);
 
 /**
@@ -212,7 +212,7 @@ template <typename Lifter>
                                      const float temperature[],
                                      const float mse_arr[],
                                      const float u_wind[], const float v_wind[],
-                                     const int N, Parcel* pcl);
+                                     const std::ptrdiff_t N, Parcel* pcl);
 
 [[nodiscard]] float energy_helicity_index(float cape, float helicity);
 

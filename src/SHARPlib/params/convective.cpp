@@ -23,22 +23,20 @@ namespace sharp {
 PressureLayer effective_inflow_layer(
     sharp::lifter_wobus &lifter, const float pressure[], const float height[],
     const float temperature[], const float dewpoint[],
-    const float virtemp_arr[], float buoy_arr[], const int N,
+    const float virtemp_arr[], float buoy_arr[], const std::ptrdiff_t N,
     const float cape_thresh, const float cinh_thresh, Parcel *mupcl);
 
 PressureLayer effective_inflow_layer(
     sharp::lifter_cm1 &lifter, const float pressure[], const float height[],
     const float temperature[], const float dewpoint[],
-    const float virtemp_arr[], float buoy_arr[], const int N,
+    const float virtemp_arr[], float buoy_arr[], const std::ptrdiff_t N,
     const float cape_thresh, const float cinh_thresh, Parcel *mupcl);
 
-WindComponents storm_motion_bunkers(const float pressure[],
-                                    const float height[], const float u_wind[],
-                                    const float v_wind[], const int N,
-                                    HeightLayer mean_wind_layer_agl,
-                                    HeightLayer wind_shear_layer_agl,
-                                    const bool leftMover = false,
-                                    const bool pressureWeighted = false) {
+WindComponents storm_motion_bunkers(
+    const float pressure[], const float height[], const float u_wind[],
+    const float v_wind[], const std::ptrdiff_t N,
+    HeightLayer mean_wind_layer_agl, HeightLayer wind_shear_layer_agl,
+    const bool leftMover = false, const bool pressureWeighted = false) {
     constexpr float deviation = 7.5;  // deviation from mean wind in m/s
 
     PressureLayer mw_lyr = height_layer_to_pressure(mean_wind_layer_agl,
@@ -86,7 +84,7 @@ WindComponents storm_motion_bunkers(const float pressure[],
 
 [[nodiscard]] WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
-    const float v_wind[], const int N, PressureLayer eff_infl_lyr,
+    const float v_wind[], const std::ptrdiff_t N, PressureLayer eff_infl_lyr,
     const Parcel *mupcl, const bool leftMover = false) {
     HeightLayer shr_layer = {0, 6000.0};
     HeightLayer dflt_mw_lyr = {0.0, 6000.0};
@@ -122,8 +120,8 @@ WindComponents storm_motion_bunkers(const float pressure[],
 
 float entrainment_cape(const float pressure[], const float height[],
                        const float temperature[], const float mse_arr[],
-                       const float u_wind[], const float v_wind[], const int N,
-                       Parcel *pcl) {
+                       const float u_wind[], const float v_wind[],
+                       const std::ptrdiff_t N, Parcel *pcl) {
     // if cape is zero, we get a divide by zero issue later.
     // there can "technically" be LFC/EL without CAPE because of very,
     // very shallow buoyancy near zero when searching for LFC/EL.
@@ -139,14 +137,14 @@ float entrainment_cape(const float pressure[], const float height[],
     // compute MSE_bar
     mse_bar[0] = mse_arr[0];
     const float psfc = pressure[0];
-    for (int k = 1; k < N; ++k) {
+    for (std::ptrdiff_t k = 1; k < N; ++k) {
         PressureLayer mn_lyr = {psfc, pressure[k]};
         mse_bar[k] = layer_mean(mn_lyr, pressure, mse_arr, N);
     }
 
     // compute MSE_star
     const float hsfc = height[0];
-    for (int k = 0; k < N; ++k) {
+    for (std::ptrdiff_t k = 0; k < N; ++k) {
         const float tmpk = temperature[k];
         const float rsat = mixratio(pressure[k], tmpk);
         const float qsat = specific_humidity(rsat);
@@ -172,7 +170,7 @@ float entrainment_cape(const float pressure[], const float height[],
     // loop from the surface to the last level before 1km AGL.
     float V_sr_mean = 0.0;
     int count = 0;
-    for (int k = 0; k < layer_idx.ktop + 1; ++k) {
+    for (std::ptrdiff_t k = 0; k < layer_idx.ktop + 1; ++k) {
 #ifndef NO_QC
         if ((u_wind[k] == MISSING) || (v_wind[k] == MISSING)) {
             continue;

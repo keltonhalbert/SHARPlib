@@ -46,12 +46,14 @@ namespace sharp {
  * \return  Index of lower bound
  */
 template <typename T, typename C = std::less<>>
-[[nodiscard]] constexpr int lower_bound(const T array[], const int N,
-                                        const T& value, const C cmp = C{}) {
-    int len = N;
-    int idx = 0;
+[[nodiscard]] constexpr std::ptrdiff_t lower_bound(const T array[],
+                                                   const std::ptrdiff_t N,
+                                                   const T value,
+                                                   const C cmp = C{}) {
+    std::ptrdiff_t len = N;
+    std::ptrdiff_t idx = 0;
     while (len > 1) {
-        int half = len / 2;
+        std::ptrdiff_t half = len / 2;
         idx += cmp(array[idx + half - 1], value) * half;
         len -= half;  // = ceil(len / 2)
     }
@@ -85,12 +87,13 @@ template <typename T, typename C = std::less<>>
  * \return  Index of the upper bound
  */
 template <typename T, typename C = std::less<>>
-[[nodiscard]] constexpr int upper_bound(const T array[], const int N,
-                                        const T& value, const C cmp = C{}) {
-    int len = N;
-    int idx = 0;
+[[nodiscard]] constexpr std::ptrdiff_t upper_bound(const T array[], const int N,
+                                                   const T value,
+                                                   const C cmp = C{}) {
+    std::ptrdiff_t len = N;
+    std::ptrdiff_t idx = 0;
     while (len > 1) {
-        int half = len / 2;
+        std::ptrdiff_t half = len / 2;
         idx += !cmp(value, array[idx + half - 1]) * half;
         len -= half;  // = ceil(len / 2)
     }

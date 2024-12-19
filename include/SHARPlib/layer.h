@@ -131,12 +131,12 @@ struct LayerIndex {
     /**
      * \brief The array index of the bottom of the layer
      */
-    int kbot;
+    std::ptrdiff_t kbot;
 
     /**
      * \brief The array index of the top of the layer
      */
-    int ktop;
+    std::ptrdiff_t ktop;
 };
 
 /**
@@ -172,7 +172,7 @@ struct LayerIndex {
 template <typename L, typename Cb, typename Ct>
 [[nodiscard]] constexpr LayerIndex get_layer_index(L& layer,
                                                    const float coord[],
-                                                   const int N,
+                                                   const std::ptrdiff_t N,
                                                    const Cb bottom_comp,
                                                    const Ct top_comp) {
     // bounds check out search!
@@ -186,8 +186,8 @@ template <typename L, typename Cb, typename Ct>
     // whether pressure or height coordiantes, the bottom
     // comparitor passed to the function will determine
     // how to search
-    int lower_idx = lower_bound(coord, N, layer.bottom, bottom_comp);
-    int upper_idx = upper_bound(coord, N, layer.top, bottom_comp);
+    std::ptrdiff_t lower_idx = lower_bound(coord, N, layer.bottom, bottom_comp);
+    std::ptrdiff_t upper_idx = upper_bound(coord, N, layer.top, bottom_comp);
 
     // If the layer top is in between two levels, this check ensures
     // that our index is below the top for interpolation reasons
@@ -219,7 +219,8 @@ template <typename L, typename Cb, typename Ct>
  * \return  {kbot, ktop}
  */
 [[nodiscard]] LayerIndex get_layer_index(PressureLayer& layer,
-                                         const float pressure[], const int N);
+                                         const float pressure[],
+                                         const std::ptrdiff_t N);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -245,7 +246,8 @@ template <typename L, typename Cb, typename Ct>
  * \return  {kbot, ktop}
  */
 [[nodiscard]] LayerIndex get_layer_index(HeightLayer& layer,
-                                         const float height[], const int N);
+                                         const float height[],
+                                         const std::ptrdiff_t N);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -270,7 +272,7 @@ template <typename L, typename Cb, typename Ct>
 [[nodiscard]] PressureLayer height_layer_to_pressure(HeightLayer layer,
                                                      const float pressure[],
                                                      const float height[],
-                                                     const int N,
+                                                     const std::ptrdiff_t N,
                                                      const bool isAGL = false);
 
 /**
@@ -296,7 +298,7 @@ template <typename L, typename Cb, typename Ct>
 [[nodiscard]] HeightLayer pressure_layer_to_height(PressureLayer layer,
                                                    const float pressure[],
                                                    const float height[],
-                                                   const int N,
+                                                   const std::ptrdiff_t N,
                                                    const bool toAGL = false);
 
 /**
@@ -326,7 +328,8 @@ template <typename L, typename Cb, typename Ct>
  */
 template <typename L, typename C>
 [[nodiscard]] constexpr float layer_minmax(L layer, const float coord_arr[],
-                                           const float data_arr[], const int N,
+                                           const float data_arr[],
+                                           const std::ptrdiff_t N,
                                            float* lvl_min_or_max,
                                            const C comp) {
 #ifndef NO_QC
@@ -348,7 +351,7 @@ template <typename L, typename C>
     }
 
     float coord_lvl = layer.bottom;
-    for (int k = layer_idx.kbot; k < layer_idx.ktop + 1; ++k) {
+    for (std::ptrdiff_t k = layer_idx.kbot; k < layer_idx.ktop + 1; ++k) {
         const float val = data_arr[k];
         if (comp(val, min_or_max)) {
             min_or_max = val;
@@ -390,7 +393,7 @@ template <typename L, typename C>
  */
 template <typename L>
 constexpr float layer_min(L layer, const float coord_arr[],
-                          const float data_arr[], const int N,
+                          const float data_arr[], const std::ptrdiff_t N,
                           float* lvl_of_min = nullptr) {
     constexpr auto comp = std::less<float>();
     return layer_minmax(layer, coord_arr, data_arr, N, lvl_of_min, comp);
@@ -420,7 +423,7 @@ constexpr float layer_min(L layer, const float coord_arr[],
  */
 template <typename L>
 constexpr float layer_max(L layer, const float coord_arr[],
-                          const float data_arr[], const int N,
+                          const float data_arr[], const std::ptrdiff_t N,
                           float* lvl_of_max = nullptr) {
     constexpr auto comp = std::greater<float>();
     return layer_minmax(layer, coord_arr, data_arr, N, lvl_of_max, comp);
@@ -450,7 +453,7 @@ constexpr float layer_max(L layer, const float coord_arr[],
 template <typename T, typename L>
 [[nodiscard]] constexpr T integrate_layer_trapz(L layer, const T var_array[],
                                                 const T coord_array[],
-                                                const int N,
+                                                const std::ptrdiff_t N,
                                                 const int integ_sign = 0,
                                                 const bool weighted = false) {
     T var_lyr_bottom;
@@ -476,7 +479,7 @@ template <typename T, typename L>
         var_lyr_top = interp_pressure(layer.top, coord_array, var_array, N);
     }
 
-    for (int k = idx.kbot; k < idx.ktop; ++k) {
+    for (std::ptrdiff_t k = idx.kbot; k < idx.ktop; ++k) {
 #ifndef NO_QC
         if (var_array[k] == MISSING) {
             continue;
@@ -535,7 +538,7 @@ template <typename T, typename L>
  * \return  layer_mean
  */
 [[nodiscard]] float layer_mean(PressureLayer layer, const float pressure[],
-                               const float data_arr[], const int N);
+                               const float data_arr[], const std::ptrdiff_t N);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -559,7 +562,7 @@ template <typename T, typename L>
  */
 [[nodiscard]] float layer_mean(HeightLayer layer, const float height[],
                                const float pressure[], const float data_arr[],
-                               const int N, const bool isAGL = true);
+                               const std::ptrdiff_t N, const bool isAGL = true);
 
 }  // end namespace sharp
 
