@@ -534,6 +534,13 @@ float buoyancy(float pcl_temperature, float env_temperature) {
     return GRAVITY * (pcl_temperature - env_temperature) / (env_temperature);
 }
 
+void buoyancy(const float pcl_temperature[], const float env_temperature[],
+              float buoy_arr[], std::ptrdiff_t N) {
+    for (std::ptrdiff_t k = 0; k < N; ++k) {
+        buoy_arr[k] = buoyancy(pcl_temperature[k], env_temperature[k]);
+    }
+}
+
 float moist_static_energy(float height_agl, float temperature,
                           float specific_humidity) {
 #ifndef NO_QC

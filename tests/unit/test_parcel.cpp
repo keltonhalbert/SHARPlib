@@ -1,3 +1,4 @@
+#include "SHARPlib/thermo.h"
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include <SHARPlib/constants.h>
@@ -163,6 +164,7 @@ TEST_CASE("testing new parcel definitions") {
 
     // allocate an array for our buoyancy data
     auto buoy = std::make_unique<float[]>(n);
+    auto pcl_vtmpk = std::make_unique<float[]>(n);
 
     printf("%f\n", hght[1] - hght[0]);
 
@@ -180,7 +182,8 @@ TEST_CASE("testing new parcel definitions") {
     cm1_al.ma_type = sharp::adiabat::adiab_liq;
 
     // lift and integrate the surface parcel
-    sfc_pcl.lift_parcel(lifter, pres.get(), vtmpk.get(), buoy.get(), n);
+    sfc_pcl.lift_parcel(lifter, pres.get(), pcl_vtmpk.get(), n);
+    sharp::buoyancy(pcl_vtmpk.get(), vtmpk.get(), buoy.get(), n);
     sfc_pcl.cape_cinh(pres.get(), hght.get(), buoy.get(), n);
 
     std::cout << "wobus lifter" << std::endl;
@@ -190,7 +193,8 @@ TEST_CASE("testing new parcel definitions") {
     std::cout << "cape: " << sfc_pcl.cape << "\t";
     std::cout << "cinh: " << sfc_pcl.cinh << std::endl;
 
-    sfc_pcl.lift_parcel(cm1_pi, pres.get(), vtmpk.get(), buoy.get(), n);
+    sfc_pcl.lift_parcel(cm1_pi, pres.get(), pcl_vtmpk.get(), n);
+    sharp::buoyancy(pcl_vtmpk.get(), vtmpk.get(), buoy.get(), n);
     sfc_pcl.cape_cinh(pres.get(), hght.get(), buoy.get(), n);
 
     std::cout << "cm1 lifter (psuedo adiabatic with ice)" << std::endl;
@@ -200,7 +204,8 @@ TEST_CASE("testing new parcel definitions") {
     std::cout << "cape: " << sfc_pcl.cape << "\t";
     std::cout << "cinh: " << sfc_pcl.cinh << std::endl;
 
-    sfc_pcl.lift_parcel(cm1_pl, pres.get(), vtmpk.get(), buoy.get(), n);
+    sfc_pcl.lift_parcel(cm1_pl, pres.get(), pcl_vtmpk.get(), n);
+    sharp::buoyancy(pcl_vtmpk.get(), vtmpk.get(), buoy.get(), n);
     sfc_pcl.cape_cinh(pres.get(), hght.get(), buoy.get(), n);
 
     std::cout << "cm1 lifter (psuedo adiabatic with no ice)" << std::endl;
@@ -210,7 +215,8 @@ TEST_CASE("testing new parcel definitions") {
     std::cout << "cape: " << sfc_pcl.cape << "\t";
     std::cout << "cinh: " << sfc_pcl.cinh << std::endl;
 
-    sfc_pcl.lift_parcel(cm1_ai, pres.get(), vtmpk.get(), buoy.get(), n);
+    sfc_pcl.lift_parcel(cm1_ai, pres.get(), pcl_vtmpk.get(), n);
+    sharp::buoyancy(pcl_vtmpk.get(), vtmpk.get(), buoy.get(), n);
     sfc_pcl.cape_cinh(pres.get(), hght.get(), buoy.get(), n);
 
     std::cout << "cm1 lifter (adiabatic with ice)" << std::endl;
@@ -220,7 +226,8 @@ TEST_CASE("testing new parcel definitions") {
     std::cout << "cape: " << sfc_pcl.cape << "\t";
     std::cout << "cinh: " << sfc_pcl.cinh << std::endl;
 
-    sfc_pcl.lift_parcel(cm1_al, pres.get(), vtmpk.get(), buoy.get(), n);
+    sfc_pcl.lift_parcel(cm1_al, pres.get(), pcl_vtmpk.get(), n);
+    sharp::buoyancy(pcl_vtmpk.get(), vtmpk.get(), buoy.get(), n);
     sfc_pcl.cape_cinh(pres.get(), hght.get(), buoy.get(), n);
 
     std::cout << "cm1 lifter (adiabatic with no ice)" << std::endl;
