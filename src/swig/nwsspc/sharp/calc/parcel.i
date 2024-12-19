@@ -41,8 +41,7 @@ import_array();
 
 // lift_parcel typemape
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float pressure[], const int N1),
-    (const float virtemp[], const int N2)
+    (const float pressure[], const int N1)
 };
 
 // find_lfc_el and cape_cinh typemap
@@ -137,7 +136,8 @@ import_array();
         }
 
         float* buoy_arr = (float *)malloc(N1*sizeof(float));
-        if (buoy_arr == NULL) {
+        float* pcl_vtmpk_arr = (float *)malloc(N1*sizeof(float));
+        if ((buoy_arr == NULL) || (pcl_vtmpk_arr == NULL)) {
             PyErr_Format(
                 PyExc_MemoryError,
                 "Could not allocate memory for output array of size %d.",
@@ -155,10 +155,12 @@ import_array();
             temperature, 
             virtemp, 
             dewpoint, 
+            pcl_vtmpk_arr,
             buoy_arr, 
             N1
         );
         delete[] buoy_arr;
+        delete[] pcl_vtmpk_arr;
 
         return mu_pcl;
     }
@@ -181,7 +183,8 @@ import_array();
         }
 
         float* buoy_arr = (float *)malloc(N1*sizeof(float));
-        if (buoy_arr == NULL) {
+        float* pcl_vtmpk_arr = (float *)malloc(N1*sizeof(float));
+        if ((buoy_arr == NULL) || (pcl_vtmpk_arr == NULL)) {
             PyErr_Format(
                 PyExc_MemoryError,
                 "Could not allocate memory for output array of size %d.",
@@ -199,10 +202,12 @@ import_array();
             temperature, 
             virtemp, 
             dewpoint, 
+            pcl_vtmpk_arr,
             buoy_arr, 
             N1
         );
         delete[] buoy_arr;
+        delte[] pcl_vtmpk_arr;
 
         return mu_pcl;
     }
@@ -225,7 +230,8 @@ import_array();
         }
 
         float* buoy_arr = (float *)malloc(N1*sizeof(float));
-        if (buoy_arr == NULL) {
+        float* pcl_vtmpk_arr = (float *)malloc(N1*sizeof(float));
+        if ((buoy_arr == NULL) || (pcl_vtmpk_arr == NULL)) {
             PyErr_Format(
                 PyExc_MemoryError,
                 "Could not allocate memory for output array of size %d.",
@@ -243,10 +249,12 @@ import_array();
             temperature, 
             virtemp, 
             dewpoint, 
+            pcl_vtmpk_arr,
             buoy_arr, 
             N1
         );
         delete[] buoy_arr;
+        delete[] pcl_vtmpk_arr;
 
         return mu_pcl;
     }
@@ -269,7 +277,8 @@ import_array();
         }
 
         float* buoy_arr = (float *)malloc(N1*sizeof(float));
-        if (buoy_arr == NULL) {
+        float* pcl_vtmpk_arr = (float *)malloc(N1*sizeof(float));
+        if ((buoy_arr == NULL) || (pcl_vtmpk_arr == NULL)) {
             PyErr_Format(
                 PyExc_MemoryError,
                 "Could not allocate memory for output array of size %d.",
@@ -287,26 +296,19 @@ import_array();
             temperature, 
             virtemp, 
             dewpoint, 
+            pcl_vtmpk_arr,
             buoy_arr, 
             N1
         );
         delete[] buoy_arr;
+        delete[] pcl_vtmpk_arr;
 
         return mu_pcl;
     }
 
     void lift_parcel(sharp::lifter_wobus& liftpcl, 
                     const float pressure[], const int N1,
-                    const float virtemp[], const int N2,
                     float** out_arr, int* NOUT) {
-        if (N1 != N2) {
-            PyErr_Format(
-                PyExc_ValueError, 
-                "Arrays must be same lenght, insead got (%d, %d)",
-                  N1, N2
-            );
-            return;
-        }
 
         float* temp = (float *)malloc(N1*sizeof(float));
         if (temp == NULL) {
@@ -321,21 +323,12 @@ import_array();
         *out_arr = temp;
         *NOUT = N1;
 
-        $self->lift_parcel(liftpcl, pressure, virtemp, *out_arr, N1);
+        $self->lift_parcel(liftpcl, pressure, *out_arr, N1);
     }
 
     void lift_parcel(sharp::lifter_cm1& liftpcl, 
                     const float pressure[], const int N1,
-                    const float virtemp[], const int N2,
                     float** out_arr, int* NOUT) {
-        if (N1 != N2) {
-            PyErr_Format(
-                PyExc_ValueError, 
-                "Arrays must be same lenght, insead got (%d, %d)",
-                  N1, N2
-            );
-            return;
-        }
 
         float* temp = (float *)malloc(N1*sizeof(float));
         if (temp == NULL) {
@@ -350,7 +343,7 @@ import_array();
         *out_arr = temp;
         *NOUT = N1;
 
-        $self->lift_parcel(liftpcl, pressure, virtemp, *out_arr, N1);
+        $self->lift_parcel(liftpcl, pressure, *out_arr, N1);
     }
 
     void find_lfc_el(const float pressure[], const int N1, 
