@@ -21,7 +21,7 @@
 namespace sharp {
 
 float interp_height(float height_val, const float height_arr[],
-                    const float data_arr[], const int N) {
+                    const float data_arr[], const std::ptrdiff_t N) {
 #ifndef NO_QC
     if (height_val == MISSING) return MISSING;
     // If the height value is beyond the top of the profile,
@@ -31,8 +31,8 @@ float interp_height(float height_val, const float height_arr[],
 #endif
 
     static constexpr auto comp = std::less<float>();
-    int idx_top = upper_bound(height_arr, N, height_val, comp);
-    int idx_bot = idx_top - 1;
+    std::ptrdiff_t idx_top = upper_bound(height_arr, N, height_val, comp);
+    std::ptrdiff_t idx_bot = idx_top - 1;
 
 #ifndef NO_QC
     for (; idx_bot > 0; --idx_bot) {
@@ -63,7 +63,7 @@ float interp_height(float height_val, const float height_arr[],
 }
 
 float interp_pressure(float pressure_val, const float pressure_arr[],
-                      const float data_arr[], const int N) {
+                      const float data_arr[], const std::ptrdiff_t N) {
 #ifndef NO_QC
     if (pressure_val == MISSING) return MISSING;
     // If the pressure value is beyond the top of the profile,
@@ -75,8 +75,8 @@ float interp_pressure(float pressure_val, const float pressure_arr[],
 #endif
 
     static constexpr auto comp = std::greater<float>();
-    int idx_top = upper_bound(pressure_arr, N, pressure_val, comp);
-    int idx_bot = idx_top - 1;
+    std::ptrdiff_t idx_top = upper_bound(pressure_arr, N, pressure_val, comp);
+    std::ptrdiff_t idx_bot = idx_top - 1;
 
 #ifndef NO_QC
     for (; idx_bot > 0; --idx_bot) {

@@ -22,12 +22,6 @@
 
 namespace sharp {
 
-// To-Do: Refactor lifter_wobus and lifter_cm1 to leverage
-// a base class, through static polymorphism and the
-// Curiously Recurring Template Pattern, so that there is a
-// common interface defined for all Parcel lifters that they
-// must adhere to.
-
 ////////////    FUNCTORS    ///////////
 //
 

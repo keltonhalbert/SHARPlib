@@ -42,7 +42,8 @@ float vector_angle(float u_comp, float v_comp) {
 #endif
     if ((u_comp == 0) && (v_comp == 0)) return 0;
 
-    float wind_direction = std::atan2(-1.0 * u_comp, -1.0 * v_comp) * (180.0 / PI);
+    float wind_direction =
+        std::atan2(-1.0 * u_comp, -1.0 * v_comp) * (180.0 / PI);
     if (wind_direction < 0) wind_direction += 360.0;
     if (wind_direction < TOL) wind_direction = 0;
     return wind_direction;
@@ -102,7 +103,7 @@ WindComponents vector_to_components(WindVector vect) {
 
 WindComponents mean_wind(PressureLayer layer, const float pressure[],
                          const float u_wind[], const float v_wind[],
-                         const int N, const bool weighted) {
+                         const std::ptrdiff_t N, const bool weighted) {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING))
         return {MISSING, MISSING};

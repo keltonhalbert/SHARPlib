@@ -115,7 +115,8 @@ template <typename _Fp>
  * \return  The value of data_arr at the requested height_val.
  */
 [[nodiscard]] float interp_height(float height_val, const float height_arr[],
-                                  const float data_arr[], const int N);
+                                  const float data_arr[],
+                                  const std::ptrdiff_t N);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
@@ -140,7 +141,8 @@ template <typename _Fp>
  */
 [[nodiscard]] float interp_pressure(float pressure_val,
                                     const float pressure_arr[],
-                                    const float data_arr[], const int N);
+                                    const float data_arr[],
+                                    const std::ptrdiff_t N);
 
 }  // end namespace sharp
 

@@ -229,7 +229,8 @@ struct WindComponents {
  */
 [[nodiscard]] WindComponents mean_wind(PressureLayer layer, const float pres[],
                                        const float u_wind[],
-                                       const float v_wind[], const int N,
+                                       const float v_wind[],
+                                       const std::ptrdiff_t N,
                                        const bool weighted);
 
 /**
@@ -259,7 +260,7 @@ template <typename L>
 [[nodiscard]] constexpr WindComponents wind_shear(L layer, const float coord[],
                                                   const float u_wind[],
                                                   const float v_wind[],
-                                                  const int N) {
+                                                  const std::ptrdiff_t N) {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING))
         return {MISSING, MISSING};
@@ -338,7 +339,7 @@ template <typename L>
 template <typename L>
 [[nodiscard]] float helicity(L layer, WindComponents storm_motion,
                              const float coord[], const float u_wind[],
-                             const float v_wind[], const int N) {
+                             const float v_wind[], const std::ptrdiff_t N) {
 #ifndef NO_QC
     if ((storm_motion.u == MISSING) || (storm_motion.v == MISSING)) {
         return MISSING;
@@ -377,7 +378,7 @@ template <typename L>
     float sru_top;
     float srv_top;
     float layer_helicity = 0.0;
-    for (int k = layer_idx.kbot; k <= layer_idx.ktop; ++k) {
+    for (std::ptrdiff_t k = layer_idx.kbot; k <= layer_idx.ktop; ++k) {
 #ifndef NO_QC
         if ((u_wind[k] == MISSING) || (v_wind[k] == MISSING)) {
             continue;
