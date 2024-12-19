@@ -32,25 +32,25 @@ import_array();
 }
 
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float pres[], const int N1),
-    (const float u_wind[], const int N2),
-    (const float v_wind[], const int N3)
+    (const float pres[], const std::ptrdiff_t N1),
+    (const float u_wind[], const std::ptrdiff_t N2),
+    (const float v_wind[], const std::ptrdiff_t N3)
 }
 
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float height[], const int N1),
-    (const float u_wind[], const int N2),
-    (const float v_wind[], const int N3)
+    (const float height[], const std::ptrdiff_t N1),
+    (const float u_wind[], const std::ptrdiff_t N2),
+    (const float v_wind[], const std::ptrdiff_t N3)
 }
 
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float wind_speed[], const int N1),
-    (const float wind_direction[], const int N2)
+    (const float wind_speed[], const std::ptrdiff_t N1),
+    (const float wind_direction[], const std::ptrdiff_t N2)
 }
 
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float u_comp[], const int N1),
-    (const float v_comp[], const int N2)
+    (const float u_comp[], const std::ptrdiff_t N1),
+    (const float v_comp[], const std::ptrdiff_t N2)
 }
 
 %rename (vector_magnitude) _vector_magnitude;
@@ -75,8 +75,8 @@ float _u_component(float wind_speed, float wind_direction) {
     return sharp::u_component(wind_speed, wind_direction);
 }
 
-void _u_component(const float wind_speed[], const int N1,
-                  const float wind_direction[], const int N2,
+void _u_component(const float wind_speed[], const std::ptrdiff_t N1,
+                  const float wind_direction[], const std::ptrdiff_t N2,
                   float** out_arr, int* NOUT) {
     if (N1 != N2) {
         PyErr_Format(
@@ -109,8 +109,8 @@ float _v_component(float wind_speed, float wind_direction) {
     return sharp::v_component(wind_speed, wind_direction);
 }
 
-void _v_component(const float wind_speed[], const int N1,
-                  const float wind_direction[], const int N2,
+void _v_component(const float wind_speed[], const std::ptrdiff_t N1,
+                  const float wind_direction[], const std::ptrdiff_t N2,
                   float** out_arr, int* NOUT) {
     if (N1 != N2) {
         PyErr_Format(
@@ -143,8 +143,8 @@ float _vector_angle(float u_comp, float v_comp) {
     return sharp::vector_angle(u_comp, v_comp);
 }
 
-void _vector_angle(const float u_comp[], const int N1,
-                   const float v_comp[], const int N2,
+void _vector_angle(const float u_comp[], const std::ptrdiff_t N1,
+                   const float v_comp[], const std::ptrdiff_t N2,
                    float** out_arr, int* NOUT) {
     if (N1 != N2) {
         PyErr_Format(
@@ -177,8 +177,8 @@ float _vector_magnitude(float u_comp, float v_comp) {
     return sharp::vector_magnitude(u_comp, v_comp);
 }
 
-void _vector_magnitude(const float u_comp[], const int N1,
-                       const float v_comp[], const int N2,
+void _vector_magnitude(const float u_comp[], const std::ptrdiff_t N1,
+                       const float v_comp[], const std::ptrdiff_t N2,
                        float** out_arr, int* NOUT) {
     if (N1 != N2) {
         PyErr_Format(
@@ -209,9 +209,9 @@ void _vector_magnitude(const float u_comp[], const int N1,
 
 
 sharp::WindComponents _mean_wind(sharp::PressureLayer layer, 
-                 const float pres[], const int N1,
-                 const float u_wind[], const int N2,
-                 const float v_wind[], const int N3,
+                 const float pres[], const std::ptrdiff_t N1,
+                 const float u_wind[], const std::ptrdiff_t N2,
+                 const float v_wind[], const std::ptrdiff_t N3,
                  bool weighted) {
     if ((N1 != N2) || (N1 != N3)) {
         PyErr_Format(
@@ -225,9 +225,9 @@ sharp::WindComponents _mean_wind(sharp::PressureLayer layer,
 }
 
 sharp::WindComponents _wind_shear(sharp::PressureLayer layer, 
-                 const float pres[], const int N1,
-                 const float u_wind[], const int N2,
-                 const float v_wind[], const int N3) {
+                 const float pres[], const std::ptrdiff_t N1,
+                 const float u_wind[], const std::ptrdiff_t N2,
+                 const float v_wind[], const std::ptrdiff_t N3) {
     if ((N1 != N2) || (N1 != N3)) {
         PyErr_Format(
             PyExc_ValueError, "Arrays must be same length, got (%d, %d, %d)",
@@ -240,9 +240,9 @@ sharp::WindComponents _wind_shear(sharp::PressureLayer layer,
 }
 
 sharp::WindComponents _wind_shear(sharp::HeightLayer layer, 
-                 const float height[], const int N1,
-                 const float u_wind[], const int N2,
-                 const float v_wind[], const int N3) {
+                 const float height[], const std::ptrdiff_t N1,
+                 const float u_wind[], const std::ptrdiff_t N2,
+                 const float v_wind[], const std::ptrdiff_t N3) {
     if ((N1 != N2) || (N1 != N3)) {
         PyErr_Format(
             PyExc_ValueError, "Arrays must be same length, got (%d, %d, %d)",
@@ -255,9 +255,9 @@ sharp::WindComponents _wind_shear(sharp::HeightLayer layer,
 }
 
 float _helicity(sharp::HeightLayer layer_agl, sharp::WindComponents storm_motion,
-               const float height[], const int N1,
-               const float u_wind[], const int N2,
-               const float v_wind[], const int N3) {
+               const float height[], const std::ptrdiff_t N1,
+               const float u_wind[], const std::ptrdiff_t N2,
+               const float v_wind[], const std::ptrdiff_t N3) {
     if ((N1 != N2) || (N1 != N3)) {
         PyErr_Format(
             PyExc_ValueError, "Arrays must be same length, got (%d, %d, %d)",
@@ -271,9 +271,9 @@ float _helicity(sharp::HeightLayer layer_agl, sharp::WindComponents storm_motion
 
 float _helicity(sharp::PressureLayer layer, 
                 sharp::WindComponents storm_motion,
-                const float pres[],   const int N1,
-                const float u_wind[], const int N2,
-                const float v_wind[], const int N3) {
+                const float pres[],   const std::ptrdiff_t N1,
+                const float u_wind[], const std::ptrdiff_t N2,
+                const float v_wind[], const std::ptrdiff_t N3) {
     if ((N1 != N2) || (N1 != N3)) {
         PyErr_Format(
             PyExc_ValueError, "Arrays must be same length, got (%d, %d, %d)",

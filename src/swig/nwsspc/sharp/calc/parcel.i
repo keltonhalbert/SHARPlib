@@ -24,31 +24,31 @@ import_array();
 
 // mixed_layer_parcel typemap
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float pressure[], const int N1),
-    (const float height[], const int N2),
-    (const float pot_temperature[], const int N3),
-    (const float wv_mixratio[], const int N4)
+    (const float pressure[], const std::ptrdiff_t N1),
+    (const float height[], const std::ptrdiff_t N2),
+    (const float pot_temperature[], const std::ptrdiff_t N3),
+    (const float wv_mixratio[], const std::ptrdiff_t N4)
 };
 
 // most_unstable_parcel typemap
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float pressure[], const int N1),
-    (const float height[], const int N2),
-    (const float temperature[], const int N3),
-    (const float virtemp[], const int N4),
-    (const float dewpoint[], const int N5)
+    (const float pressure[], const std::ptrdiff_t N1),
+    (const float height[], const std::ptrdiff_t N2),
+    (const float temperature[], const std::ptrdiff_t N3),
+    (const float virtemp[], const std::ptrdiff_t N4),
+    (const float dewpoint[], const std::ptrdiff_t N5)
 }
 
 // lift_parcel typemape
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float pressure[], const int N1)
+    (const float pressure[], const std::ptrdiff_t N1)
 };
 
 // find_lfc_el and cape_cinh typemap
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float pressure[], const int N1),
-    (const float height[], const int N2),
-    (const float buoyancy[], const int N3)
+    (const float pressure[], const std::ptrdiff_t N1),
+    (const float height[], const std::ptrdiff_t N2),
+    (const float buoyancy[], const std::ptrdiff_t N3)
 }
 
 // don't wrap the current C++ version -- 
@@ -68,10 +68,10 @@ import_array();
 
     static sharp::Parcel mixed_layer_parcel(
         sharp::PressureLayer& mix_layer,
-        const float pressure[], const int N1,
-        const float height[], const int N2, 
-        const float pot_temperature[], const int N3, 
-        const float wv_mixratio[], const int N4
+        const float pressure[], const std::ptrdiff_t N1,
+        const float height[], const std::ptrdiff_t N2, 
+        const float pot_temperature[], const std::ptrdiff_t N3, 
+        const float wv_mixratio[], const std::ptrdiff_t N4
     ) {
         if (N1 != N2) {
             PyErr_Format(
@@ -94,10 +94,10 @@ import_array();
 
     static sharp::Parcel mixed_layer_parcel(
         sharp::HeightLayer& mix_layer,
-        const float pressure[], const int N1,
-        const float height[], const int N2, 
-        const float pot_temperature[], const int N3, 
-        const float wv_mixratio[], const int N4
+        const float pressure[], const std::ptrdiff_t N1,
+        const float height[], const std::ptrdiff_t N2, 
+        const float pot_temperature[], const std::ptrdiff_t N3, 
+        const float wv_mixratio[], const std::ptrdiff_t N4
     ) {
         if (N1 != N2) {
             PyErr_Format(
@@ -121,11 +121,11 @@ import_array();
     static sharp::Parcel most_unstable_parcel(
         sharp::lifter_wobus& lifter,
         sharp::PressureLayer& search_layer,
-        const float pressure[], const int N1, 
-        const float height[], const int N2,
-        const float temperature[], const int N3, 
-        const float virtemp[], const int N4, 
-        const float dewpoint[], const int N5) {
+        const float pressure[], const std::ptrdiff_t N1, 
+        const float height[], const std::ptrdiff_t N2,
+        const float temperature[], const std::ptrdiff_t N3, 
+        const float virtemp[], const std::ptrdiff_t N4, 
+        const float dewpoint[], const std::ptrdiff_t N5) {
         if ((N1 != N2) || (N1 != N3) || (N1 != N4) || (N1 != N5)) {
             PyErr_Format(
                 PyExc_ValueError, 
@@ -168,11 +168,11 @@ import_array();
     static sharp::Parcel most_unstable_parcel(
         sharp::lifter_wobus& lifter,
         sharp::HeightLayer& search_layer,
-        const float pressure[], const int N1, 
-        const float height[], const int N2,
-        const float temperature[], const int N3, 
-        const float virtemp[], const int N4, 
-        const float dewpoint[], const int N5) {
+        const float pressure[], const std::ptrdiff_t N1, 
+        const float height[], const std::ptrdiff_t N2,
+        const float temperature[], const std::ptrdiff_t N3, 
+        const float virtemp[], const std::ptrdiff_t N4, 
+        const float dewpoint[], const std::ptrdiff_t N5) {
         if ((N1 != N2) || (N1 != N3) || (N1 != N4) || (N1 != N5)) {
             PyErr_Format(
                 PyExc_ValueError, 
@@ -207,7 +207,7 @@ import_array();
             N1
         );
         delete[] buoy_arr;
-        delte[] pcl_vtmpk_arr;
+        delete[] pcl_vtmpk_arr;
 
         return mu_pcl;
     }
@@ -215,11 +215,11 @@ import_array();
     static sharp::Parcel most_unstable_parcel(
         sharp::lifter_cm1& lifter,
         sharp::PressureLayer& search_layer,
-        const float pressure[], const int N1, 
-        const float height[], const int N2,
-        const float temperature[], const int N3, 
-        const float virtemp[], const int N4, 
-        const float dewpoint[], const int N5) {
+        const float pressure[], const std::ptrdiff_t N1, 
+        const float height[], const std::ptrdiff_t N2,
+        const float temperature[], const std::ptrdiff_t N3, 
+        const float virtemp[], const std::ptrdiff_t N4, 
+        const float dewpoint[], const std::ptrdiff_t N5) {
         if ((N1 != N2) || (N1 != N3) || (N1 != N4) || (N1 != N5)) {
             PyErr_Format(
                 PyExc_ValueError, 
@@ -262,11 +262,11 @@ import_array();
     static sharp::Parcel most_unstable_parcel(
         sharp::lifter_cm1& lifter,
         sharp::HeightLayer& search_layer,
-        const float pressure[], const int N1, 
-        const float height[], const int N2,
-        const float temperature[], const int N3, 
-        const float virtemp[], const int N4, 
-        const float dewpoint[], const int N5) {
+        const float pressure[], const std::ptrdiff_t N1, 
+        const float height[], const std::ptrdiff_t N2,
+        const float temperature[], const std::ptrdiff_t N3, 
+        const float virtemp[], const std::ptrdiff_t N4, 
+        const float dewpoint[], const std::ptrdiff_t N5) {
         if ((N1 != N2) || (N1 != N3) || (N1 != N4) || (N1 != N5)) {
             PyErr_Format(
                 PyExc_ValueError, 
@@ -307,7 +307,7 @@ import_array();
     }
 
     void lift_parcel(sharp::lifter_wobus& liftpcl, 
-                    const float pressure[], const int N1,
+                    const float pressure[], const std::ptrdiff_t N1,
                     float** out_arr, int* NOUT) {
 
         float* temp = (float *)malloc(N1*sizeof(float));
@@ -327,7 +327,7 @@ import_array();
     }
 
     void lift_parcel(sharp::lifter_cm1& liftpcl, 
-                    const float pressure[], const int N1,
+                    const float pressure[], const std::ptrdiff_t N1,
                     float** out_arr, int* NOUT) {
 
         float* temp = (float *)malloc(N1*sizeof(float));
@@ -346,9 +346,9 @@ import_array();
         $self->lift_parcel(liftpcl, pressure, *out_arr, N1);
     }
 
-    void find_lfc_el(const float pressure[], const int N1, 
-                     const float height[], const int N2, 
-                     const float buoyancy[], const int N3,
+    void find_lfc_el(const float pressure[], const std::ptrdiff_t N1, 
+                     const float height[], const std::ptrdiff_t N2, 
+                     const float buoyancy[], const std::ptrdiff_t N3,
                      float& lfc_pres, float& el_pres) {
         if ((N1 != N2) || (N1 != N3)) {
             PyErr_Format(
@@ -364,9 +364,9 @@ import_array();
         el_pres = $self->eql_pressure;
     }
 
-    void cape_cinh(const float pressure[], const int N1,
-                   const float height[], const int N2,
-                   const float buoyancy[], const int N3,
+    void cape_cinh(const float pressure[], const std::ptrdiff_t N1,
+                   const float height[], const std::ptrdiff_t N2,
+                   const float buoyancy[], const std::ptrdiff_t N3,
                    float& cape, float& cinh) {
         if ((N1 != N2) || (N1 != N3)) {
             PyErr_Format(

@@ -30,14 +30,14 @@ import_array();
 
 /* Set up an argument typemap for our arrays */
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float hght_array[], const int N1),
-    (const float tmpc_array[], const int N2)
+    (const float hght_array[], const std::ptrdiff_t N1),
+    (const float tmpc_array[], const std::ptrdiff_t N2)
 }
 
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float pres_array[], const int N1),
-    (const float hght_array[], const int N2),
-    (const float tmpc_array[], const int N3)
+    (const float pres_array[], const std::ptrdiff_t N1),
+    (const float hght_array[], const std::ptrdiff_t N2),
+    (const float tmpc_array[], const std::ptrdiff_t N3)
 }
 
 %apply (float** ARGOUTVIEWM_ARRAY1, int* DIM1) {
@@ -45,52 +45,52 @@ import_array();
 }
 
 %apply (float* IN_ARRAY1, int DIM1) {
-	(const float pressure[], const int N1),
-	(const float temperature[], const int N2)
+	(const float pressure[], const std::ptrdiff_t N1),
+	(const float temperature[], const std::ptrdiff_t N2)
 }
 %apply (float* IN_ARRAY1, int DIM1) {
-	(const float temperature[], const int N1),
-	(const float dewpoint[], const int N2)
+	(const float temperature[], const std::ptrdiff_t N1),
+	(const float dewpoint[], const std::ptrdiff_t N2)
 }
 %apply (float* IN_ARRAY1, int DIM1) {
-	(const float wv_mixratio[], const int N1),
-	(const float pressure[], const int N2)
+	(const float wv_mixratio[], const std::ptrdiff_t N1),
+	(const float pressure[], const std::ptrdiff_t N2)
 }
 %apply (float* IN_ARRAY1, int DIM1) {
-	(const float potential_temperature[], const int N1),
-	(const float temperature[], const int N2)
+	(const float potential_temperature[], const std::ptrdiff_t N1),
+	(const float temperature[], const std::ptrdiff_t N2)
 }
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float qv[], const int N1)
+    (const float qv[], const std::ptrdiff_t N1)
 }
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float temperature[], const int N1),
-    (const float qv[], const int N2)
+    (const float temperature[], const std::ptrdiff_t N1),
+    (const float qv[], const std::ptrdiff_t N2)
 }
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float temperature[], const int N1),
-    (const float qv[], const int N2),
-    (const float ql[], const int N3),
-    (const float qi[], const int N4)
+    (const float temperature[], const std::ptrdiff_t N1),
+    (const float qv[], const std::ptrdiff_t N2),
+    (const float ql[], const std::ptrdiff_t N3),
+    (const float qi[], const std::ptrdiff_t N4)
 }
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float pressure[], const int N1),
-    (const float temperature[], const int N2),
-    (const float dewpoint[], const int N3)
+    (const float pressure[], const std::ptrdiff_t N1),
+    (const float temperature[], const std::ptrdiff_t N2),
+    (const float dewpoint[], const std::ptrdiff_t N3)
 }
 %apply (float* IN_ARRAY1, int DIM1) {
-	(const float pcl_temperature[], const int N1),
-	(const float env_temperature[], const int N2)
+	(const float pcl_temperature[], const std::ptrdiff_t N1),
+	(const float env_temperature[], const std::ptrdiff_t N2)
 }
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float height_agl[], const int N1),
-    (const float temperature[], const int N2),
-    (const float spec_hum[], const int N3)
+    (const float height_agl[], const std::ptrdiff_t N1),
+    (const float temperature[], const std::ptrdiff_t N2),
+    (const float spec_hum[], const std::ptrdiff_t N3)
 }
 %apply (float* IN_ARRAY1, int DIM1) {
-    (const float temperature[], const int N1),
-    (const float mse_bar[], const int N2),
-    (const float sat_mse[], const int N3)
+    (const float temperature[], const std::ptrdiff_t N1),
+    (const float mse_bar[], const std::ptrdiff_t N2),
+    (const float sat_mse[], const std::ptrdiff_t N3)
 }
 
 /**
@@ -142,8 +142,8 @@ float _vapor_pressure(float pressure, float temperature) {
     return sharp::vapor_pressure(pressure, temperature);
 }
 
-void _vapor_pressure(const float pressure[], const int N1,
-                     const float temperature[], const int N2,
+void _vapor_pressure(const float pressure[], const std::ptrdiff_t N1,
+                     const float temperature[], const std::ptrdiff_t N2,
                      float** out_arr, int* NOUT ) {
     if (N1 != N2) {
         PyErr_Format(
@@ -176,8 +176,8 @@ inline float _vapor_pressure_ice(float pressure, float temperature) {
     return sharp::vapor_pressure_ice(pressure, temperature);
 }
 
-void _vapor_pressure_ice(const float pressure[], const int N1,
-                         const float temperature[], const int N2,
+void _vapor_pressure_ice(const float pressure[], const std::ptrdiff_t N1,
+                         const float temperature[], const std::ptrdiff_t N2,
                          float** out_arr, int* NOUT ) {
     if (N1 != N2) {
         PyErr_Format(
@@ -210,8 +210,8 @@ float _lcl_temperature(float temperature, float dewpoint) {
     return sharp::lcl_temperature(temperature, dewpoint);
 }
 
-void _lcl_temperature(const float temperature[], const int N1,
-                      const float dewpoint[], const int N2,
+void _lcl_temperature(const float temperature[], const std::ptrdiff_t N1,
+                      const float dewpoint[], const std::ptrdiff_t N2,
                       float** out_arr, int* NOUT ) {
     if (N1 != N2) {
         PyErr_Format(
@@ -244,8 +244,8 @@ float _temperature_at_mixratio(float wv_mixratio, float pressure) {
     return sharp::temperature_at_mixratio(wv_mixratio, pressure);
 }
 
-void _temperature_at_mixratio(const float wv_mixratio[], const int N1,
-                              const float pressure[], const int N2,
+void _temperature_at_mixratio(const float wv_mixratio[], const std::ptrdiff_t N1,
+                              const float pressure[], const std::ptrdiff_t N2,
                               float** out_arr, int* NOUT ) {
     if (N1 != N2) {
         PyErr_Format(
@@ -278,8 +278,8 @@ float _theta_level(float potential_temperature, float temperature) {
     return sharp::theta_level(potential_temperature, temperature);
 }
 
-void _theta_level(const float potential_temperature[], const int N1,
-                              const float temperature[], const int N2,
+void _theta_level(const float potential_temperature[], const std::ptrdiff_t N1,
+                              const float temperature[], const std::ptrdiff_t N2,
                               float** out_arr, int* NOUT ) {
     if (N1 != N2) {
         PyErr_Format(
@@ -313,8 +313,8 @@ float _theta(float pressure, float temperature,
     return sharp::theta(pressure, temperature, ref_pressure);
 }
 
-void _theta(const float pressure[], const int N1,
-            const float temperature[], const int N2,
+void _theta(const float pressure[], const std::ptrdiff_t N1,
+            const float temperature[], const std::ptrdiff_t N2,
             float** out_arr, int* NOUT,
             const float ref_pressure=sharp::THETA_REF_PRESSURE) {
     if (N1 != N2) {
@@ -348,8 +348,8 @@ float _mixratio(float pressure, float temperature) {
 	return sharp::mixratio(pressure, temperature);
 }
 
-void _mixratio(const float pressure[], const int N1, 
-               const float temperature[], const int N2, 
+void _mixratio(const float pressure[], const std::ptrdiff_t N1, 
+               const float temperature[], const std::ptrdiff_t N2, 
                float** out_arr, int* NOUT) {
     if (N1 != N2) {
         PyErr_Format(
@@ -383,8 +383,8 @@ float _mixratio_ice(float pressure, float temperature) {
 	return sharp::mixratio_ice(pressure, temperature);
 }
 
-void _mixratio_ice(const float pressure[], const int N1, 
-                   const float temperature[], const int N2, 
+void _mixratio_ice(const float pressure[], const std::ptrdiff_t N1, 
+                   const float temperature[], const std::ptrdiff_t N2, 
                    float** out_arr, int* NOUT) {
     if (N1 != N2) {
         PyErr_Format(
@@ -417,7 +417,7 @@ float _specific_humidity(float qv) {
     return sharp::specific_humidity(qv);
 }
 
-void _specific_humidity(const float qv[], const int N1, 
+void _specific_humidity(const float qv[], const std::ptrdiff_t N1, 
                         float** out_arr, int* NOUT) {
 
     float* temp = (float *)malloc(N1*sizeof(float));
@@ -444,8 +444,8 @@ float _virtual_temperature(float temperature, float qv, float ql = 0.0f,
     return sharp::virtual_temperature(temperature, qv, ql, qi);
 }
 
-void _virtual_temperature(const float temperature[], const int N1, 
-                          const float qv[], const int N2, 
+void _virtual_temperature(const float temperature[], const std::ptrdiff_t N1, 
+                          const float qv[], const std::ptrdiff_t N2, 
                           float** out_arr, int* NOUT) {
     if (N1 != N2) {
         PyErr_Format(
@@ -474,10 +474,10 @@ void _virtual_temperature(const float temperature[], const int N1,
     return;
 }
 
-void _virtual_temperature(const float temperature[], const int N1, 
-                          const float qv[], const int N2, 
-                          const float ql[], const int N3,
-                          const float qi[], const int N4,
+void _virtual_temperature(const float temperature[], const std::ptrdiff_t N1, 
+                          const float qv[], const std::ptrdiff_t N2, 
+                          const float ql[], const std::ptrdiff_t N3,
+                          const float qi[], const std::ptrdiff_t N4,
                           float** out_arr, int* NOUT) {
     if ((N1 != N2) || (N1 != N3) || (N1 != N4)) {
         PyErr_Format(
@@ -511,9 +511,9 @@ float _wetbulb(float pressure, float temperature, float dewpoint) {
     return sharp::wetbulb(pressure, temperature, dewpoint);
 }
 
-void _wetbulb(const float pressure[], const int N1,
-              const float temperature[], const int N2,
-              const float dewpoint[], const int N3,
+void _wetbulb(const float pressure[], const std::ptrdiff_t N1,
+              const float temperature[], const std::ptrdiff_t N2,
+              const float dewpoint[], const std::ptrdiff_t N3,
               float** out_arr, int* NOUT) {
     if ((N1 != N2) || (N1 != N3)) {
         PyErr_Format(
@@ -547,9 +547,9 @@ float _theta_wetbulb(float pressure, float temperature, float dewpoint) {
     return sharp::theta_wetbulb(pressure, temperature, dewpoint);
 }
 
-void _theta_wetbulb(const float pressure[], const int N1,
-              const float temperature[], const int N2,
-              const float dewpoint[], const int N3,
+void _theta_wetbulb(const float pressure[], const std::ptrdiff_t N1,
+              const float temperature[], const std::ptrdiff_t N2,
+              const float dewpoint[], const std::ptrdiff_t N3,
               float** out_arr, int* NOUT) {
     if ((N1 != N2) || (N1 != N3)) {
         PyErr_Format(
@@ -583,9 +583,9 @@ float _thetae(float pressure, float temperature, float dewpoint) {
     return sharp::thetae(pressure, temperature, dewpoint);
 }
 
-void _thetae(const float pressure[], const int N1,
-             const float temperature[], const int N2,
-             const float dewpoint[], const int N3,
+void _thetae(const float pressure[], const std::ptrdiff_t N1,
+             const float temperature[], const std::ptrdiff_t N2,
+             const float dewpoint[], const std::ptrdiff_t N3,
              float** out_arr, int* NOUT) {
     if ((N1 != N2) || (N1 != N3)) {
         PyErr_Format(
@@ -616,8 +616,8 @@ void _thetae(const float pressure[], const int N1,
 }
 
 float _lapse_rate(sharp::HeightLayer layer, 
-                  const float hght_array[], const int N1, 
-                  const float tmpc_array[], const int N2) {
+                  const float hght_array[], const std::ptrdiff_t N1, 
+                  const float tmpc_array[], const std::ptrdiff_t N2) {
     if (N1 != N2) {
         PyErr_Format(
             PyExc_ValueError, "Arrays must be same length, got (%d, %d)",
@@ -630,9 +630,9 @@ float _lapse_rate(sharp::HeightLayer layer,
 }
 
 float _lapse_rate(sharp::PressureLayer layer, 
-                  const float pres_array[], const int N1, 
-                  const float hght_array[], const int N2,
-                  const float tmpc_array[], const int N3) {
+                  const float pres_array[], const std::ptrdiff_t N1, 
+                  const float hght_array[], const std::ptrdiff_t N2,
+                  const float tmpc_array[], const std::ptrdiff_t N3) {
     if ((N1 != N2) || (N1 != N3)) {
         PyErr_Format(
             PyExc_ValueError, "Arrays must be same length, got (%d, %d, %d)",
@@ -645,8 +645,8 @@ float _lapse_rate(sharp::PressureLayer layer,
 }
 
 float _lapse_rate_max(sharp::HeightLayer layer_agl, const float depth, 
-                      const float hght_array[], const int N1, 
-                      const float tmpc_array[], const int N2,
+                      const float hght_array[], const std::ptrdiff_t N1, 
+                      const float tmpc_array[], const std::ptrdiff_t N2,
                       sharp::HeightLayer* max_lyr=nullptr) {
     if ((N1 != N2)) {
         PyErr_Format(
@@ -660,9 +660,9 @@ float _lapse_rate_max(sharp::HeightLayer layer_agl, const float depth,
 }
 
 float _lapse_rate_max(sharp::PressureLayer layer, const float depth,
-                      const float pres_array[], const int N1,
-                      const float hght_array[], const int N2, 
-                      const float tmpc_array[], const int N3,
+                      const float pres_array[], const std::ptrdiff_t N1,
+                      const float hght_array[], const std::ptrdiff_t N2, 
+                      const float tmpc_array[], const std::ptrdiff_t N3,
                       sharp::PressureLayer* max_lyr=nullptr) {
     if ((N1 != N2) || (N1 != N3)) {
         PyErr_Format(
@@ -679,8 +679,8 @@ float _buoyancy(float pcl_temperature, float env_temperature) {
     return sharp::buoyancy(pcl_temperature, env_temperature);
 }
 
-void _buoyancy(const float pcl_temperature[], const int N1,
-               const float env_temperature[], const int N2,
+void _buoyancy(const float pcl_temperature[], const std::ptrdiff_t N1,
+               const float env_temperature[], const std::ptrdiff_t N2,
                float** out_arr, int* NOUT) {
     if (N1 != N2) {
         PyErr_Format(
@@ -714,9 +714,9 @@ float _moist_static_energy(float height_agl, float temperature, float spec_hum) 
     return sharp::moist_static_energy(height_agl, temperature, spec_hum);
 }
 
-void _moist_static_energy(const float height_agl[], const int N1,
-                          const float temperature[], const int N2,
-                          const float spec_hum[], const int N3,
+void _moist_static_energy(const float height_agl[], const std::ptrdiff_t N1,
+                          const float temperature[], const std::ptrdiff_t N2,
+                          const float spec_hum[], const std::ptrdiff_t N3,
                           float** out_arr, int* NOUT) {
     if ((N1 != N2) || (N1 != N3)) {
         PyErr_Format(
@@ -751,9 +751,9 @@ float _buoyancy_dilution_potential(float temperature, float mse_bar,
     return sharp::buoyancy_dilution_potential(temperature, mse_bar, sat_mse);
 }
 
-void _buoyancy_dilution_potential(const float temperature[], const int N1,
-                                  const float mse_bar[], const int N2,
-                                  const float sat_mse[], const int N3,
+void _buoyancy_dilution_potential(const float temperature[], const std::ptrdiff_t N1,
+                                  const float mse_bar[], const std::ptrdiff_t N2,
+                                  const float sat_mse[], const std::ptrdiff_t N3,
                                   float** out_arr, int* NOUT) {
     if ((N1 != N2) || (N1 != N3)) {
         PyErr_Format(
