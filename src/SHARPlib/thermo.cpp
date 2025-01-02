@@ -76,9 +76,9 @@ float lcl_temperature(float temperature, float dewpoint) {
     static constexpr float c1 = 56.0f;
     static constexpr float c2 = 800.0f;
 
-    const float term_1 = 1.0f / (dewpoint - c1);
+    const float term_1 = 1.0 / (dewpoint - c1);
     const float term_2 = std::log(temperature / dewpoint) / c2;
-    return (1.0f / (term_1 + term_2)) + c1;
+    return (1.0 / (term_1 + term_2)) + c1;
 }
 
 float temperature_at_mixratio(float wv_mixratio, float pressure) {
@@ -88,7 +88,7 @@ float temperature_at_mixratio(float wv_mixratio, float pressure) {
     }
 #endif
     float es = (wv_mixratio / EPSILON) * pressure / 100.0f /
-               (1.0f + (wv_mixratio / EPSILON));
+               (1.0 + (wv_mixratio / EPSILON));
     // for extremely cold temperatures
     es = std::min(es, pressure * 0.5f);
     const float el = std::log(es);
@@ -101,7 +101,7 @@ float theta_level(float potential_temperature, float temperature) {
         return MISSING;
     }
 #endif
-    static constexpr float CPOR = 1.0f / ROCP;
+    static constexpr float CPOR = 1.0 / ROCP;
     return THETA_REF_PRESSURE /
            std::pow((potential_temperature / temperature), CPOR);
 }
@@ -120,7 +120,7 @@ float mixratio(float q) {
 #ifndef NO_QC
     if (q == MISSING) return MISSING;
 #endif
-    return q / (1.0f - q);
+    return q / (1.0 - q);
 }
 
 float mixratio(float pressure, float temperature) {
@@ -148,7 +148,7 @@ float specific_humidity(float rv) {
 #ifndef NO_QC
     if (rv == MISSING) return MISSING;
 #endif
-    return rv / (1.0f + rv);
+    return rv / (1.0 + rv);
 }
 
 float virtual_temperature(float temperature, float qv, float ql, float qi) {
@@ -162,7 +162,7 @@ float virtual_temperature(float temperature, float qv, float ql, float qi) {
         qi = 0.0f;
     }
 #endif
-    return (temperature * ((1.0f + (qv / EPSILON)) / (1.0f + qv + ql + qi)));
+    return (temperature * ((1.0 + (qv / EPSILON)) / (1.0 + qv + ql + qi)));
 }
 
 float saturated_lift(float pressure, float theta_sat, const float converge) {
@@ -421,17 +421,20 @@ float thetae(float pressure, float temperature, float dewpoint) {
 
     float pressure_at_lcl = MISSING;
     float temperature_at_lcl = MISSING;
-    static constexpr float lift_top = 10000.0f;  // 100 hPa but its Pa
+    const float mixr = mixratio(pressure, dewpoint);
+    const float vappres = vapor_pressure(pressure, temperature);
 
     // pressure_at_lcl and temperature_at_lcl are passed by reference,
     // so the values are changed by the drylift routine
     drylift(pressure, temperature, dewpoint, pressure_at_lcl,
             temperature_at_lcl);
-    // Lift a saturated parcel to 100 mb
-    const float lifted_temperature =
-        wetlift(pressure_at_lcl, temperature_at_lcl, lift_top);
-    // Return the potential temperature of the 100 hPa value
-    return theta(lift_top, lifted_temperature, THETA_REF_PRESSURE);
+    const float theta_lcl_dry =
+        theta(pressure - vappres, temperature) *
+        std::pow((temperature / temperature_at_lcl), (0.28f * mixr));
+    const float thetae =
+        theta_lcl_dry * std::exp(mixr * (1.0 + 0.448 * mixr) *
+                                 (3036.0 / temperature_at_lcl - 1.78));
+    return thetae;
 }
 
 float lapse_rate(HeightLayer layer_agl, const float height[],

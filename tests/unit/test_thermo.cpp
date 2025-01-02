@@ -5,10 +5,10 @@
 #include "doctest.h"
 
 TEST_CASE("Testing theta") {
-    constexpr float tmpk = 10.0 + sharp::ZEROCNK;
-    constexpr float pres = 900.0 * sharp::HPA_TO_PA;
-    CHECK(sharp::theta(pres, tmpk, sharp::THETA_REF_PRESSURE) ==
-          doctest::Approx(291.794));
+    static constexpr float tmpk = 298.0f;
+    static constexpr float pres = 10000.0f;
+    static constexpr float exptexted_theta = 575.348;
+    CHECK(sharp::theta(pres, tmpk) == doctest::Approx(exptexted_theta));
 
 #ifndef NO_QC
     CHECK(sharp::theta(sharp::MISSING, tmpk, sharp::THETA_REF_PRESSURE) ==
@@ -48,13 +48,25 @@ TEST_CASE("Testing temperature_at_mixratio") {
 #endif
 }
 
-TEST_CASE("Testing lcl_temperature") {
+TEST_CASE("Testing lcl temperature and pressure") {
 #ifndef NO_QC
     CHECK(sharp::lcl_temperature(sharp::MISSING, 10.0) == sharp::MISSING);
     CHECK(sharp::lcl_temperature(10.0, sharp::MISSING) == sharp::MISSING);
     CHECK(sharp::lcl_temperature(sharp::MISSING, sharp::MISSING) ==
           sharp::MISSING);
 #endif
+
+    static constexpr float pres = 101716.0f;
+    static constexpr float tmpk = 273.09723f;
+    static constexpr float dwpk = 264.5351f;
+    static constexpr float expected_lcl_tmpk = 262.818f;
+    static constexpr float expected_lcl_pres = 88934.5f;
+
+    float lcl_temperature, lcl_pressure;
+    sharp::drylift(pres, tmpk, dwpk, lcl_pressure, lcl_temperature);
+
+    CHECK(lcl_temperature == doctest::Approx(expected_lcl_tmpk));
+    CHECK(lcl_pressure == doctest::Approx(expected_lcl_pres));
 }
 
 TEST_CASE("Testing vapor_pressure") {
@@ -63,10 +75,27 @@ TEST_CASE("Testing vapor_pressure") {
     CHECK(sharp::vapor_pressure(sharp::MISSING, sharp::ZEROCNK) ==
           sharp::MISSING);
 #endif
+
+    static constexpr float pres = 100000.0f;
+    static constexpr float dwpk = 25.0f + sharp::ZEROCNK;
+    static constexpr float expected_es = 3167.0f;
+    static constexpr float percent_tol = 0.0005f;
+    CHECK(sharp::vapor_pressure(pres, dwpk) ==
+          doctest::Approx(expected_es).epsilon(percent_tol));
 }
 
 TEST_CASE("Testing wobf") {
 #ifndef NO_QC
     CHECK(sharp::wobf(sharp::MISSING) == sharp::MISSING);
 #endif
+}
+
+TEST_CASE("Testing Equivalent Potential Temperature") {
+    static constexpr float pres = 100000.0f;
+    static constexpr float tmpk = 293.0f;
+    static constexpr float dwpk = 280.0f;
+    static constexpr float expected_thetae = 312.385;
+
+    const float theta_e = sharp::thetae(pres, tmpk, dwpk);
+    CHECK(theta_e == doctest::Approx(expected_thetae));
 }

@@ -502,21 +502,13 @@ void drylift(float pressure, float temperature, float dewpoint,
  *
  * Compute the equivalent potential temperature (K) given
  * the pressure (Pa), temperature (K), and dewpoint
- * (K).
+ * (K). The equivalent potential temperature is computed as in
+ * Bolton 1980. It was found in Davies-Jones 2009 that this is
+ * the most accurate non-iterative formulation of ThetaE.
  *
- * First, it lifts a parcel with the given pressure, temperature, and
- * dewpoint temperature to its Lifted Condensation Level (LCL). To
- * compute the temperature and pressure of the LCL, an approximation
- * is used. See the sharp::lcl_temperature documentation for more
- * information.
- *
- * After the parcel has reached the LCL, the sharp::wetlift routine
- * lifts the parcel to 100 hPa along a moist adiabat. Finally, the
- * parcel is then lowered dry adiabatically to the standard reference
- * pressure level of 1000.0 hPa. The sharp::wetlift routine relies on
- * the Wobus Function ( sharp::wobf ), which is an approximation with
- * some inherent errors. See the sharp::wetlift documentation for
- * more information.
+ * Bolton 1980:
+ * https://doi.org/10.1175/1520-0493(1980)108%3C1046:TCOEPT%3E2.0.CO;2
+ * Davies-Jones 2009: https://doi.org/10.1175/2009MWR2774.1
  *
  * \param    pressure                           (Pa)
  * \param    temperature                        (K)
