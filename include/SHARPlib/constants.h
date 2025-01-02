@@ -17,6 +17,14 @@
 
 namespace sharp {
 
+// Molar gas constant (J / mol / K)
+static constexpr float RGAS = 8.314462618;
+// Dry air molecular weight kg / mol
+static constexpr float MDRY = 28.96546e-3;
+// Water molecular weight kg / mol
+static constexpr float MWATER = 18.015268e-3;
+static constexpr float DRYAIR_SPEC_HEAT_RATIO = 1.4;  // unitless
+
 // conversion between celsius and kelvin
 static constexpr float ZEROCNK = 273.15f;
 // hPa to Pa conversion
@@ -33,12 +41,16 @@ static constexpr float TOL = 1e-10;
 // You know... Pi... radians...
 static constexpr float PI = 3.14159265;
 // Dry air gas constant, J/(kg*K)
-static constexpr float RDGAS = 287.052874;
+/*static constexpr float RDGAS = 287.052874;*/
+static constexpr float RDGAS = RGAS / MDRY;
 // Water vapor gas constant, J/(kg*K)
-static constexpr float RVGAS = 461.52f;
+/*static constexpr float RVGAS = 461.52f;*/
+static constexpr float RVGAS = RGAS / MWATER;
 static constexpr float EPSILON = RDGAS / RVGAS;
 // specific heat capacity of dry air (J/kg)
-static constexpr float CP_DRYAIR = 1005.7f;
+/*static constexpr float CP_DRYAIR = 1005.7f;*/
+static constexpr float CP_DRYAIR =
+    DRYAIR_SPEC_HEAT_RATIO * RDGAS / (DRYAIR_SPEC_HEAT_RATIO - 1);
 // specific heat capacity of water vapor (J/kg) at const pressure
 static constexpr float CP_VAPOR = 1875.0f;
 // specific heat capacity of water (J/kg)
