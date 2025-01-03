@@ -50,6 +50,7 @@ _deps
 
 # Ignore the build directory
 build
+.cache
 
 # SWIG python files and wrappers
 src/swig/build
