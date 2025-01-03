@@ -371,49 +371,15 @@ void drylift(float pressure, float temperature, float dewpoint,
     return;
 }
 
-float wetbulb(float pressure, float temperature, float dewpoint) {
-#ifndef NO_QC
-    if ((pressure == MISSING) || (temperature == MISSING) ||
-        (dewpoint == MISSING)) {
-        return MISSING;
-    }
-#endif
-
-    float pressure_at_lcl = MISSING;
-    float temperature_at_lcl = MISSING;
-
-    // pressure_at_lcl and temperature_at_lcl are passed by reference,
-    // so the values are changed by the drylift routine
-    drylift(pressure, temperature, dewpoint, pressure_at_lcl,
-            temperature_at_lcl);
-    return wetlift(pressure_at_lcl, temperature_at_lcl, pressure);
-}
-
 float wetbulb(lifter_wobus lifter, float pressure, float temperature,
               float dewpoint);
+
 float wetbulb(lifter_cm1 lifter, float pressure, float temperature,
               float dewpoint);
 
-float theta_wetbulb(float pressure, float temperature, float dewpoint) {
-#ifndef NO_QC
-    if ((pressure == MISSING) || (temperature == MISSING) ||
-        (dewpoint == MISSING)) {
-        return MISSING;
-    }
-#endif
-
-    float pressure_at_lcl = MISSING;
-    float temperature_at_lcl = MISSING;
-
-    // pressure_at_lcl and temperature_at_lcl are passed by reference,
-    // so the values are changed by the drylift routine
-    drylift(pressure, temperature, dewpoint, pressure_at_lcl,
-            temperature_at_lcl);
-    return wetlift(pressure_at_lcl, temperature_at_lcl, THETA_REF_PRESSURE);
-}
-
 float theta_wetbulb(lifter_wobus lifter, float pressure, float temperature,
                     float dewpoint);
+
 float theta_wetbulb(lifter_cm1 lifter, float pressure, float temperature,
                     float dewpoint);
 

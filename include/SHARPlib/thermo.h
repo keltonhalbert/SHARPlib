@@ -356,7 +356,7 @@ enum class adiabat : int {
  *  and the float references to qv, ql, and qi are used to keep budgets of the
  *  moisture variables.
  *
- *  NOTE: qv_total should most likely be the water vapor mixing ratio either
+ *  NOTE: rv_total should most likely be the water vapor mixing ratio either
  *  at the parcel's sharp::LPL, or the water vapor mixing ratio at the LCL
  *  (these are going to be the same value). Essentially, the total water vapor
  *  before condensation.
@@ -364,10 +364,10 @@ enum class adiabat : int {
  * \param   pressure        (Pa)
  * \param   temperature     (K)
  * \param   new_pressure    (Pa)
- * \param   qv_total        (kg/kg)
- * \param   qv              (kg/kg)
- * \param   ql              (kg/kg)
- * \param   qi              (kg/kg)
+ * \param   rv_total        (kg/kg)
+ * \param   rv              (kg/kg)
+ * \param   rl              (kg/kg)
+ * \param   ri              (kg/kg)
  * \param   pres_incr       (Pa)
  * \param   converge        (precision)
  * \param   ma_type         (sharp::adiabat)
@@ -375,8 +375,8 @@ enum class adiabat : int {
  * \return  pcl_temperature (K)
  */
 [[nodiscard]] float moist_adiabat_cm1(float pressure, float temperature,
-                                      float new_pressure, float& qv_total,
-                                      float& qv, float& ql, float& qi,
+                                      float new_pressure, float& rv_total,
+                                      float& rv, float& rl, float& ri,
                                       const float pres_incr,
                                       const float converge,
                                       const adiabat ma_type);
@@ -421,20 +421,16 @@ void drylift(float pressure, float temperature, float dewpoint,
  * is used. See the sharp::lcl_temperature documentation for more
  * information.
  *
- * After the parcel has reached the LCL, the sharp::wetlift routine
+ * After the parcel has reached the LCL, the lifter passed in
  * lowers the parcel to its initial pressure level along a moist adiabat.
- * The sharp::wetlift routine relies on the Wobus Function ( sharp::wobf ),
- * which is an approximation with some inherent errors. See the
- * sharp::wetlift documentation for more information.
  *
+ * \param   lifter                  (cm1, wobf)
  * \param   pressure                (Pa)
  * \param   temperature             (K)
  * \param   dewpoint                (K)
  *
  * \return  wetbulb_temperature     (K)
  */
-[[nodiscard]] float wetbulb(float pressure, float temperature, float dewpoint);
-
 template <typename Lft>
 [[nodiscard]] float wetbulb(Lft lifter, float pressure, float temperature,
                             float dewpoint) {
@@ -471,21 +467,17 @@ template <typename Lft>
  * is used. See the sharp::lcl_temperature documentation for more
  * information.
  *
- * After the parcel has reached the LCL, the sharp::wetlift routine
+ * After the parcel has reached the LCL, the lifter passed in
  * lowers the parcel to the standard reference pressure level
- * (1000.0 hPa) along a moist adiabat. The sharp::wetlift routine relies
- * on the Wobus Function ( sharp::wobf ), which is an approximation with
- * some inherent errors. See the sharp::wetlift documentation for more
- * information.
+ * (1000.0 hPa) along a moist adiabat.
  *
+ * \param   lifter                          (wobf, cm1)
  * \param   pressure                        (Pa)
  * \param   temperature                     (K)
  * \param   dewpoint                        (K)
  *
  * \return  wetbulb_potential_temperature   (K)
  */
-[[nodiscard]] float theta_wetbulb(float pressure, float temperature,
-                                  float dewpoint);
 template <typename Lft>
 [[nodiscard]] float theta_wetbulb(Lft lifter, float pressure, float temperature,
                                   float dewpoint) {
