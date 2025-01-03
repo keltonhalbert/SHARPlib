@@ -486,6 +486,26 @@ template <typename Lft>
  */
 [[nodiscard]] float theta_wetbulb(float pressure, float temperature,
                                   float dewpoint);
+template <typename Lft>
+[[nodiscard]] float theta_wetbulb(Lft lifter, float pressure, float temperature,
+                                  float dewpoint) {
+#ifndef NO_QC
+    if ((pressure == MISSING) || (temperature == MISSING) ||
+        (dewpoint == MISSING)) {
+        return MISSING;
+    }
+#endif
+
+    float pres_lcl = MISSING;
+    float tmpk_lcl = MISSING;
+
+    // pressure_at_lcl and temperature_at_lcl are passed by reference,
+    // so the values are changed by the drylift routine
+    drylift(pressure, temperature, dewpoint, pres_lcl, tmpk_lcl);
+    lifter.setup(pres_lcl, tmpk_lcl);
+
+    return lifter(pres_lcl, tmpk_lcl, THETA_REF_PRESSURE);
+}
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN

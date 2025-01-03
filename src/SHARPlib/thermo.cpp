@@ -412,6 +412,11 @@ float theta_wetbulb(float pressure, float temperature, float dewpoint) {
     return wetlift(pressure_at_lcl, temperature_at_lcl, THETA_REF_PRESSURE);
 }
 
+float theta_wetbulb(lifter_wobus lifter, float pressure, float temperature,
+                    float dewpoint);
+float theta_wetbulb(lifter_cm1 lifter, float pressure, float temperature,
+                    float dewpoint);
+
 float thetae(float pressure, float temperature, float dewpoint) {
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING) ||
