@@ -259,9 +259,9 @@ float _solve_cm1(float& pcl_pres_next, float& pcl_pi_next, float& pcl_t_next,
             pcl_ri_next = std::max(fice * (rv_total - pcl_rv_next), 0.0f);
             pcl_rl_next = std::max(rv_total - pcl_rv_next - pcl_ri_next, 0.0f);
         } else {
-            pcl_rv_next = rv_term * fliq;
-            pcl_ri_next = rv_term * fice;
-            pcl_rl_next = rv_total - pcl_rv_next - pcl_ri_next;
+            pcl_rv_next = rv_term;
+            pcl_rl_next = fliq * (rv_total - pcl_rv_next);
+            pcl_ri_next = fice * (rv_total - pcl_rv_next);
         }
 
         const float tbar = 0.5f * (pcl_t_prev + pcl_t_next);
