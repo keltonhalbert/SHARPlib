@@ -18,7 +18,6 @@
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
 
-#include <algorithm>
 #include <cmath>
 
 namespace sharp {
@@ -407,34 +406,6 @@ enum class adiabat : int {
  */
 void drylift(float pressure, float temperature, float dewpoint,
              float& pressure_at_lcl, float& temperature_at_lcl);
-
-/**
- * \author John Hart - NSSFC KCMO / NWSSPC OUN
- *
- * \brief Compute the temperature of an unsaturated parcel lifted to <!--
- * -->a given pressure level.
- *
- * This routine computes the temperature required to derive the Lifted Index
- * for a particulat pressure level. Given a parcel's initial pressure
- * (Pa), temperature (K), and dewpoint (K), it first lifts a
- * parcel to its LCL, and then continues to lift it moist adiabatically to the
- * given lifted pressure level (Pa).
- *
- * The LCL temperature is computed using an approximation. See the
- * sharp::lcl_temperature documentation for more information.
- * The moist adiabatic ascent is done by calling sharp::wetlift, which
- * relies on the Wobus Function ( sharp::wobf ). There are inherent
- * estimation errors, so see documentation to learn more.
- *
- * \param   pressure                    (Pa)
- * \param   temperature                 (K)
- * \param   dewpoint                    (K)
- * \param   lifted_pressure             (Pa)
- *
- * \return  lifted_index_temperature    (K)
- */
-[[nodiscard]] float lifted(float pressure, float temperature, float dewpoint,
-                           float lifted_pressure);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
