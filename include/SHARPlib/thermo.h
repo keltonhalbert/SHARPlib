@@ -435,6 +435,27 @@ void drylift(float pressure, float temperature, float dewpoint,
  */
 [[nodiscard]] float wetbulb(float pressure, float temperature, float dewpoint);
 
+template <typename Lft>
+[[nodiscard]] float wetbulb(Lft lifter, float pressure, float temperature,
+                            float dewpoint) {
+#ifndef NO_QC
+    if ((pressure == MISSING) || (temperature == MISSING) ||
+        (dewpoint == MISSING)) {
+        return MISSING;
+    }
+#endif
+
+    float pres_lcl = MISSING;
+    float tmpk_lcl = MISSING;
+
+    // pressure_at_lcl and temperature_at_lcl are passed by reference,
+    // so the values are changed by the drylift routine
+    drylift(pressure, temperature, dewpoint, pres_lcl, tmpk_lcl);
+    lifter.setup(pres_lcl, tmpk_lcl);
+
+    return lifter(pres_lcl, tmpk_lcl, pressure);
+}
+
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
  *

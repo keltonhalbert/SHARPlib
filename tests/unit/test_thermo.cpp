@@ -1,5 +1,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <SHARPlib/constants.h>
+#include <SHARPlib/parcel.h>
 #include <SHARPlib/thermo.h>
 
 #include "doctest.h"
@@ -98,4 +99,21 @@ TEST_CASE("Testing Equivalent Potential Temperature") {
 
     const float theta_e = sharp::thetae(pres, tmpk, dwpk);
     CHECK(theta_e == doctest::Approx(expected_thetae));
+}
+
+TEST_CASE("Testing Wetbulb Temperature") {
+    static constexpr sharp::lifter_wobus wobf;
+    static sharp::lifter_cm1 cm1;
+
+    cm1.ma_type = sharp::adiabat::adiab_liq;
+
+    static constexpr float pres = 90000.0f;
+    static constexpr float tmpk = 20.0f + sharp::ZEROCNK;
+    static constexpr float dwpk = 10.0f + sharp::ZEROCNK;
+
+    float wblbk = sharp::wetbulb(wobf, pres, tmpk, dwpk);
+    printf("TD: %f\tTW: %f\tTA: %f\n", dwpk, wblbk, tmpk);
+
+    wblbk = sharp::wetbulb(cm1, pres, tmpk, dwpk);
+    printf("TD: %f\tTW: %f\tTA: %f\n", dwpk, wblbk, tmpk);
 }
