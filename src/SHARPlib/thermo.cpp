@@ -101,7 +101,7 @@ float theta_level(float potential_temperature, float temperature) {
         return MISSING;
     }
 #endif
-    static constexpr float CPOR = 1.0 / ROCP;
+    static constexpr float CPOR = CP_DRYAIR / RDGAS;
     return THETA_REF_PRESSURE /
            std::pow((potential_temperature / temperature), CPOR);
 }
