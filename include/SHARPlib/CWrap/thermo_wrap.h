@@ -11,8 +11,8 @@
  * Rich Thompson.
  */
 
-#ifndef __SHARP_THERMO_WRAP_H__
-#define __SHARP_THERMO_WRAP_H__
+#ifndef SHARP_THERMO_WRAP_H
+#define SHARP_THERMO_WRAP_H
 
 #ifdef __cplusplus
 extern "C" {

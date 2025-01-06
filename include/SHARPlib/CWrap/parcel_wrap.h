@@ -11,8 +11,8 @@
  * Rich Thompson.
  */
 
-#ifndef __SHARP_PARCEL_WRAP_H__
-#define __SHARP_PARCEL_WRAP_H__
+#ifndef SHARP_PARCEL_WRAP_H
+#define SHARP_PARCEL_WRAP_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -61,4 +61,4 @@ void sharp_cape_cinh(const float* pressure, const float* height,
 }
 #endif
 
-#endif  // __SHARP_PARCEL_WRAP_H__
+#endif  // SHARP_PARCEL_WRAP_H

@@ -11,8 +11,8 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
-#ifndef __SHARP_WINDS_H__
-#define __SHARP_WINDS_H__
+#ifndef SHARP_WINDS_H
+#define SHARP_WINDS_H
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
@@ -416,4 +416,4 @@ template <typename L>
 
 }  // end namespace sharp
 
-#endif  // __SHARP_WINDS_H__
+#endif  // SHARP_WINDS_H

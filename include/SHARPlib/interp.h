@@ -11,8 +11,8 @@
  * John Hart and Rich Thompson at SPC.
  */
 
-#ifndef __SHARP_INTERP_H__
-#define __SHARP_INTERP_H__
+#ifndef SHARP_INTERP_H
+#define SHARP_INTERP_H
 
 #include <SHARPlib/constants.h>
 
@@ -146,4 +146,4 @@ template <typename _Fp>
 
 }  // end namespace sharp
 
-#endif  // __SHARP_INTERP_H__
+#endif  // SHARP_INTERP_H

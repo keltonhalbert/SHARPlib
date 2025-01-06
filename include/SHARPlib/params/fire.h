@@ -11,9 +11,9 @@
  * John Hart and Rich Thompson at SPC.
  */
 
-#ifndef __SHARP_PARAMS_FIRE_H__
-#define __SHARP_PARAMS_FIRE_H__
+#ifndef SHARP_PARAMS_FIRE_H
+#define SHARP_PARAMS_FIRE_H
 
 namespace sharp {}  // namespace sharp
 
-#endif  // __SHARP_PARAMS_FIRE_H__
+#endif  // SHARP_PARAMS_FIRE_H

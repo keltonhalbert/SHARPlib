@@ -11,8 +11,8 @@
  * John Hart and Rich Thompson at SPC.
  */
 
-#ifndef __SHARP_ALGORITHMS_H__
-#define __SHARP_ALGORITHMS_H__
+#ifndef SHARP_ALGORITHMS_H
+#define SHARP_ALGORITHMS_H
 
 #include <functional>
 
@@ -131,4 +131,4 @@ template <typename _T>
 
 }  // end namespace sharp
 
-#endif  // __SHARP_ALGORITHMS_H__
+#endif  // SHARP_ALGORITHMS_H

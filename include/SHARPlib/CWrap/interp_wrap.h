@@ -11,8 +11,8 @@
  * Rich Thompson.
  */
 
-#ifndef __SHARP_INTERP_WRAP_H__
-#define __SHARP_INTERP_WRAP_H__
+#ifndef SHARP_INTERP_WRAP_H
+#define SHARP_INTERP_WRAP_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,4 +28,4 @@ float sharp_interp_pressure(float pressure_val, const float* pressure_arr,
 }  // extern "C"
 #endif
 
-#endif  // __SHARP_INTERP_WRAP_H__
+#endif  // SHARP_INTERP_WRAP_H

@@ -11,8 +11,8 @@
  * Rich Thompson.
  */
 
-#ifndef __SHARP_LAYER_WRAP_H__
-#define __SHARP_LAYER_WRAP_H__
+#ifndef SHARP_LAYER_WRAP_H
+#define SHARP_LAYER_WRAP_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -102,7 +102,7 @@ float sharp_HeightLayer_integrate(sharp_HeightLayer_t* hlyr, const float* data,
                                   const float* height, const int N,
                                   const int integ_sign, const int weighted);
 
-#ifdef __cplusplus
+#ifdef cplusplus
 }
 #endif
 

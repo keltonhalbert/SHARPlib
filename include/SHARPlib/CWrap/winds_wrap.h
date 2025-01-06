@@ -11,8 +11,8 @@
  * Rich Thompson.
  */
 
-#ifndef __SHARP_WINDS_WRAP_H__
-#define __SHARP_WINDS_WRAP_H__
+#ifndef SHARP_WINDS_WRAP_H
+#define SHARP_WINDS_WRAP_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -81,4 +81,4 @@ float sharp_PressureLayer_helicity(sharp_PressureLayer_t* plyr,
 }
 #endif
 
-#endif  // __SHARP_WINDS_WRAP_H__
+#endif  // SHARP_WINDS_WRAP_H

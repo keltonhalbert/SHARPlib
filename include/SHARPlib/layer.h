@@ -12,8 +12,8 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
-#ifndef __SHARP_LAYERS_H__
-#define __SHARP_LAYERS_H__
+#ifndef SHARP_LAYERS_H
+#define SHARP_LAYERS_H
 
 #include <SHARPlib/algorithms.h>
 #include <SHARPlib/constants.h>
@@ -567,4 +567,4 @@ template <typename T, typename L>
 
 }  // end namespace sharp
 
-#endif  // __SHARP_LAYERS_H__
+#endif  // SHARP_LAYERS_H

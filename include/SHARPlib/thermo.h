@@ -11,8 +11,8 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
-#ifndef __SHARP_THERMO_H__
-#define __SHARP_THERMO_H__
+#ifndef SHARP_THERMO_H
+#define SHARP_THERMO_H
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
@@ -660,4 +660,4 @@ void buoyancy(const float pcl_temperature[], const float env_temperature[],
 
 }  // end namespace sharp
 
-#endif  // __SHARP_THERMP_H__
+#endif  // SHARP_THERMP_H

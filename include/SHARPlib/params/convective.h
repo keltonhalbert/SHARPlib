@@ -11,8 +11,8 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
-#ifndef __SHARP_PARAMS_H__
-#define __SHARP_PARAMS_H__
+#ifndef SHARP_PARAMS_H
+#define SHARP_PARAMS_H
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/layer.h>
@@ -229,4 +229,4 @@ template <typename Lifter>
 
 }  // end namespace sharp
 
-#endif  // __SHARP_PARAMS_H__
+#endif  // SHARP_PARAMS_H

@@ -12,8 +12,8 @@
  * John Hart and Rich Thompson at SPC.
  */
 
-#ifndef __SHARP_CONSTANTS_H__
-#define __SHARP_CONSTANTS_H__
+#ifndef SHARP_CONSTANTS_H
+#define SHARP_CONSTANTS_H
 
 namespace sharp {
 
@@ -85,4 +85,4 @@ static constexpr float VAPPRES_REF = 611.65;
 
 }  // end namespace sharp
 
-#endif  // __SHARP_CONSTANTS_H__
+#endif  // SHARP_CONSTANTS_H

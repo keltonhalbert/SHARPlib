@@ -11,8 +11,8 @@
  * Rich Thompson.
  */
 
-#ifndef __SHARP_PARAMS_WRAP_H__
-#define __SHARP_PARAMS_WRAP_H__
+#ifndef SHARP_PARAMS_WRAP_H
+#define SHARP_PARAMS_WRAP_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,4 +62,4 @@ float sharp_significant_tornado_parameter(sharp_Parcel_t* pcl,
 }  // extern "C"
 #endif
 
-#endif  // __SHARP_PARAMS_WRAP_H__
+#endif  // SHARP_PARAMS_WRAP_H

@@ -10,8 +10,8 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
-#ifndef __SHARP_PARCEL_H__
-#define __SHARP_PARCEL_H__
+#ifndef SHARP_PARCEL_H
+#define SHARP_PARCEL_H
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
@@ -516,4 +516,4 @@ struct Parcel {
 
 }  // end namespace sharp
 
-#endif  // __SHARP_PARCEL_H__
+#endif  // SHARP_PARCEL_H
