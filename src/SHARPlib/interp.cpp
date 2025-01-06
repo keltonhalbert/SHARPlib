@@ -24,6 +24,7 @@ float interp_height(float height_val, const float height_arr[],
                     const float data_arr[], const std::ptrdiff_t N) {
 #ifndef NO_QC
     if (height_val == MISSING) return MISSING;
+    if (std::isnan(height_val)) return MISSING;
     // If the height value is beyond the top of the profile,
     // or below the surface, we can't reasonably extrapolate
     if ((height_val > height_arr[N - 1]) || (height_val < height_arr[0]))
@@ -66,6 +67,7 @@ float interp_pressure(float pressure_val, const float pressure_arr[],
                       const float data_arr[], const std::ptrdiff_t N) {
 #ifndef NO_QC
     if (pressure_val == MISSING) return MISSING;
+    if (std::isnan(pressure_val)) return MISSING;
     // If the pressure value is beyond the top of the profile,
     // or below the surface, we can't reasonably extrapolate
     if ((pressure_val < pressure_arr[N - 1]) ||
