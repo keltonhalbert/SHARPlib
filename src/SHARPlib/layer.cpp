@@ -157,7 +157,7 @@ float layer_mean(HeightLayer layer, const float height[],
     }
 #endif
 
-    if (!isAGL) {
+    if (isAGL) {
         layer.bottom += height[0];
         layer.top += height[0];
     }
