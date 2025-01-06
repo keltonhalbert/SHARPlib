@@ -18,7 +18,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 
 namespace sharp {
 
