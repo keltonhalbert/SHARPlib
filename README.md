@@ -1,5 +1,5 @@
 # SHARPlib
-[![C++ CI](https://github.com/keltonhalbert/SHARP-calc/actions/workflows/cmake.yml/badge.svg)](https://github.com/keltonhalbert/SHARP-calc/actions/workflows/cmake.yml)
+[![C++ CI](https://github.com/keltonhalbert/SHARPlib/actions/workflows/cmake.yml/badge.svg)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/cmake.yml)
 
 
 **Sounding and Hodograph Analysis and Research Program (SHARP)** C++ library for conducting analysis of atmospheric sounding profiles. Based on the NSHARP routines written by John Hart and Rich Thompson at the NWS Storm Prediction Center in Norman, Oklahoma. 
@@ -14,13 +14,13 @@ Another note to the Style Guide is that, where possible/appropriate, full or ver
 
 ### BEFORE YOU BUILD
 SHARPlib has some light-weight dependencies for testing, benchmarking, documentation building, and string formatting. These can easily be downloaded for building by runing the following command to download the dependencies from GitHub over SSH:
-```
+```bash
 git submodule update --init --recursive 
 ```
 
 ### Unit Testing Framework
 For unit tests, we make use of the [doctest singe header source library](https://github.com/doctest/doctest) found in the `tests` directory. In order to build and run the tests, execute the following commands from the project root directory:
-```
+```bash
 mkdir build; cd build
 cmake ..
 make SHARPlib_tests
@@ -30,7 +30,7 @@ NOTE: Right now, on Apple CLang, (and potentially CLang as a whole) some of the 
 
 ### Building the Static Library
 To build the static library, simply run the following commands from the project root directory:
-```
+```bash
 mkdir build; cd build
 cmake .. 
 make
@@ -39,18 +39,18 @@ make install
 It will install the static library to PROJECT_ROOT/lib.
 
 The library will be built in release mode by default, which sets the `-O3` optimization flag. To build in debug mode, clean out the build directory (CMake will cache certain things) and run the following command and proceed to build normally:
-```
+```bash
 cmake -DCMAKE_BUILD_TYPE=Debug ..
 ```
 
 If you are planning on using the library with gridded data, you can turn off quality control checks traditionally only needed for observed sounding profile data. This can be disabled by running CMake with the following build flag:
-```
+```bash
 cmake -DCMAKE_CXX_FLAGS="-DNO_QC" ..
 ```
 This will also disable missing value checks in the tests directory.
 
 If you would like a verbose compile process, run the make command in the following manner:
-```
+```bash
 make VERBOSE=1
 ```
 
@@ -58,7 +58,7 @@ make VERBOSE=1
 To build the python bindings, simply nagivate to the swig directory and install via pip. The python bindings require having SWIG installed, as well as a C++17 compatible compiler. The bindings will be installed in the following namespace tree: ```nwsspc.sharp.calc```.
 
 **WARNING**: You will need SWIG >= 4.1 for the library to compile. This is available through the conda-forge channel: ```conda install -c conda-forge swig==4.1```.
-```
+```bash
 cd src/swig
 CC=/path/to/compilers/g++ pip install .
 ```
@@ -67,7 +67,7 @@ CC=/path/to/compilers/g++ pip install .
 ### Building the Docs
 To build the HTML documentation pages, simply navigate your terminal to the `docs` directory and run:
 
-```
+```bash
 cd docs
 git submodule update --init --recursive ## download the CSS for the documentation
 doxygen Doxyfile
