@@ -4,7 +4,6 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/layer.h>
 #include <SHARPlib/parcel.h>
-#include <SHARPlib/profile.h>
 #include <SHARPlib/winds.h>
 
 #include <iostream>
