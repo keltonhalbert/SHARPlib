@@ -6,9 +6,9 @@
 #include "doctest.h"
 
 TEST_CASE("Testing theta") {
-    static constexpr float tmpk = 298.0f;
-    static constexpr float pres = 10000.0f;
-    static constexpr float exptexted_theta = 575.348;
+    constexpr float tmpk = 298.0f;
+    constexpr float pres = 10000.0f;
+    constexpr float exptexted_theta = 575.348;
     CHECK(sharp::theta(pres, tmpk) == doctest::Approx(exptexted_theta));
 
 #ifndef NO_QC

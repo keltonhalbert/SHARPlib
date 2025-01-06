@@ -138,17 +138,17 @@ auto vtmpk_snd = [](const float tmpk[], const float mixr[],
 };
 
 TEST_CASE("testing new parcel definitions") {
-    const std::ptrdiff_t n = 5000;
-    const float pres_sfc = 100000.0f;
-    const float tmpk_sfc = 301.5f;
-    const float mixr_sfc = 0.0157f;
-    const float relh_troposphere = 0.85f;
-    const float hght_sfc = 0.0f;
-    const float hght_top = 15000.0f;
-    const float hght_tropopause = 12000.0f;
-    const float delta_tmpk_cap = 1.0f;
-    const float delta_tmpk_trop = 0.00725f;
-    const float hght_pbl_top = 850.0f;
+    constexpr std::ptrdiff_t n = 5000;
+    constexpr float pres_sfc = 100000.0f;
+    constexpr float tmpk_sfc = 301.5f;
+    constexpr float mixr_sfc = 0.0157f;
+    constexpr float relh_troposphere = 0.85f;
+    constexpr float hght_sfc = 0.0f;
+    constexpr float hght_top = 15000.0f;
+    constexpr float hght_tropopause = 12000.0f;
+    constexpr float delta_tmpk_cap = 1.0f;
+    constexpr float delta_tmpk_trop = 0.00725f;
+    constexpr float hght_pbl_top = 850.0f;
 
     // initialize the analytical sounding using
     // our input parameters
@@ -170,7 +170,7 @@ TEST_CASE("testing new parcel definitions") {
     sharp::Parcel sfc_pcl =
         sharp::Parcel::surface_parcel(pres[0], tmpk[0], dwpk[0]);
 
-    static constexpr sharp::lifter_wobus lifter;
+    constexpr sharp::lifter_wobus lifter;
     sharp::lifter_cm1 cm1_pi;
     sharp::lifter_cm1 cm1_pl;
     sharp::lifter_cm1 cm1_ai;
