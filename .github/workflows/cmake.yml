@@ -89,11 +89,11 @@ jobs:
       - name: Build
         # Build your program with the given configuration
         run: | 
-          cmake --build ${{ steps.strings.output.build-output-dir }} --config ${{ matrix.build_type }}
+          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
           cd ${{ steps.strings.output.build-output-dir }}; make SHARPlib_tests 
 
       - name: Test
-        working-directory: ${{ steps.strings.output.build-output-dir }}
+        working-directory: ${{ steps.strings.outputs.build-output-dir }}
         # Execute tests defined by the CMake configuration.  
         # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
         run: ctest -C ${{ matrix.build_type }}
