@@ -54,48 +54,48 @@ jobs:
 
           
 
-      steps:
-        - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-        - name: Set reusable strings
-          id: strings 
-          shell: bash 
-          run: |
-            echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+      - name: Set reusable strings
+        id: strings 
+        shell: bash 
+        run: |
+          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-        - name: Checkout 
-          with:
-            submodules: 'true'
+      - name: Checkout 
+        with:
+          submodules: 'true'
 
-        - name: Change submodule URLs to HTTPS 
-          run: |
-            git submodule foreach '
-              git config submodule.$name.url https://github.com/$urlPath
-            '
-        - name: Submodules and Dependencies
-          run: |
-            git config --global --add safe.directory ${{ github.workspace }} 
-            git submodule update --init --recursive
+      - name: Change submodule URLs to HTTPS 
+        run: |
+          git submodule foreach '
+            git config submodule.$name.url https://github.com/$urlPath
+          '
+      - name: Submodules and Dependencies
+        run: |
+          git config --global --add safe.directory ${{ github.workspace }} 
+          git submodule update --init --recursive
 
-        - name: Configure CMake
-          # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-          # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-          run: 
-            cmake -B ${{ steps.strings.outputs.build-output-dir }}
-            -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-            -S ${{ github.workspace }}
+      - name: Configure CMake
+        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+        run: 
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -S ${{ github.workspace }}
 
 
-        - name: Build
-          # Build your program with the given configuration
-          run: | 
-            cmake --build ${{ steps.strings.output.build-output-dir }} --config ${{ matrix.build_type }}
-            cd ${{ steps.strings.output.build-output-dir }}; make SHARPlib_tests 
+      - name: Build
+        # Build your program with the given configuration
+        run: | 
+          cmake --build ${{ steps.strings.output.build-output-dir }} --config ${{ matrix.build_type }}
+          cd ${{ steps.strings.output.build-output-dir }}; make SHARPlib_tests 
 
-        - name: Test
-          working-directory: ${{ steps.strings.output.build-output-dir }}
-          # Execute tests defined by the CMake configuration.  
-          # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-          run: ctest -C ${{ matrix.build_type }}
+      - name: Test
+        working-directory: ${{ steps.strings.output.build-output-dir }}
+        # Execute tests defined by the CMake configuration.  
+        # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+        run: ctest -C ${{ matrix.build_type }}
       
