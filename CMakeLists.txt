@@ -31,7 +31,24 @@ add_library(SHARPlib STATIC ${SOURCES})
 ## We are telling the build process that the SHARP library
 ## should use the C++ linker, and setting compile options
 set_target_properties(SHARPlib PROPERTIES LINKER_LANGUAGE CXX)
-add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+
+## Compiler-specific options
+if (MSVC) # For MSVC (cl) compiler
+    # Warning level 4 and treat warnings as errors
+    target_compile_options(SHARPlib PRIVATE /W4 /WX)
+
+    # Debug and Release flags
+    set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od /MDd")
+    set(CMAKE_CXX_FLAGS_RELEASE "/O2 /MD /DNDEBUG")
+else() # For GCC/Clang
+    target_compile_options(SHARPlib PRIVATE -Wall -Wextra -Wpedantic -Werror)
+
+    # Debug and Release flags
+    set(CMAKE_CXX_FLAGS_DEBUG "-g -O3 -ftree-vectorize -funroll-loops")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -ftree-vectorize -funroll-loops")
+endif()
+
+# add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 
 ## Check if the build type is set and default to
 ## release, and then set the compiler flags
@@ -40,8 +57,9 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O3 -ftree-vectorize -funroll-loops")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -ftree-vectorize -funroll-loops")
+
+# set(CMAKE_CXX_FLAGS_DEBUG "-g -O3 -ftree-vectorize -funroll-loops")
+# set(CMAKE_CXX_FLAGS_RELEASE "-O3 -ftree-vectorize -funroll-loops")
 
 ## used for passing custom build options
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
