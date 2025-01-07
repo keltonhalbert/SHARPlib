@@ -2,9 +2,9 @@ name: C++ CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "develop" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "develop" ]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -15,39 +15,121 @@ jobs:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: 'true'
+    strategy:
+      # Ensures all matrix combinations runs if one fails
+      fail-fast: false
 
-      - name: Change submodule URLs to HTTPS
-        run: |
-          git submodule foreach '
-            git config submodule.$name.url https://github.com/$urlPath
-          '
-      - name: Submodules and Dependencies
-        run: |
-          git config --global --add safe.directory /github/workspace
-          git submodule update --init --recursive
+      # Set up our build-matrix 
+      # 1) Linux GCC
+      # 2) Linux Clang
+      # 3) MaxOS Clang 
+      # 4) Windows MSVC
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        build_type: [Release]
+        cpp_compiler: [gcc, clang, cl]
+        include:
+          - os: ubuntu-latest 
+            cpp_compiler: g++
+          - os: ubuntu-latest
+            cpp_compiler: clang++
+          - os: macos-latest
+            cpp_compiler: g++
+          - os: macos-latest
+            cpp_compiler: clang++
+          - os: windows-latest
+            cpp_compiler: cl
+        exclude:
+          - os: ubuntu-latest
+            cpp_compiler: cl 
+          - os: macos-latest
+            cpp_compiler: cl
+          - os: windows-latest
+            cpp_compiler: g++
+          - os: windows-latest
+            cpp_compiler: clang++
 
-      - name: Configure CMake
-        # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-        # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-        run: 
-          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+          
 
-      - name: Build
-        # Build your program with the given configuration
-        run: | 
-          cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-          cd ${{github.workspace}}/build; make SHARPlib_tests 
+      steps:
+        - uses: actions/checkout@v4
 
-      - name: Test
-        working-directory: ${{github.workspace}}/build
-        # Execute tests defined by the CMake configuration.  
-        # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-        run: ctest -C ${{env.BUILD_TYPE}}
+        - name: Set reusable strings
+          id: strings 
+          shell: bash 
+          run: |
+            echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+        - name: Checkout 
+          with:
+            submodules: 'true'
+
+        - name: Change submodule URLs to HTTPS 
+          run: |
+            git submodule foreach '
+              git config submodule.$name.url https://github.com/$urlPath
+            '
+        - name: Submodules and Dependencies
+          run: |
+            git config --global --add safe.directory ${{ github.workspace }} 
+            git submodule update --init --recursive
+
+        - name: Configure CMake
+          # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+          # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+          run: 
+            cmake -B ${{ steps.strings.outputs.build-output-dir }}
+            -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+            -S ${{ github.workspace }}
+
+
+        - name: Build
+          # Build your program with the given configuration
+          run: | 
+            cmake --build ${{ steps.strings.output.build-output-dir }} --config ${{ matrix.build_type }}
+            cd ${{ steps.strings.output.build-output-dir }}; make SHARPlib_tests 
+
+        - name: Test
+          working-directory: ${{ steps.strings.output.build-output-dir }}
+          # Execute tests defined by the CMake configuration.  
+          # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+          run: ctest -C ${{ matrix.build_type }}
+
+    # steps:
+    #   - name: Checkout
+    #     uses: actions/checkout@v4
+    #     with:
+    #       submodules: 'true'
+    #
+    #   - name: Change submodule URLs to HTTPS
+    #     run: |
+    #       git submodule foreach '
+    #         git config submodule.$name.url https://github.com/$urlPath
+    #       '
+    #   - name: Submodules and Dependencies
+    #     run: |
+    #       git config --global --add safe.directory /github/workspace
+    #       git submodule update --init --recursive
+    #
+    #   - name: Configure CMake
+    #     # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+    #     # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+    #     run: 
+    #       cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+    #
+    #   - name: Build
+    #     # Build your program with the given configuration
+    #     run: | 
+    #       cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+    #       cd ${{github.workspace}}/build; make SHARPlib_tests 
+    #
+    #   - name: Test
+    #     working-directory: ${{github.workspace}}/build
+    #     # Execute tests defined by the CMake configuration.  
+    #     # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+    #     run: ctest -C ${{env.BUILD_TYPE}}
       
