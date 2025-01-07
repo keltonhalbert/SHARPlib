@@ -36,7 +36,7 @@ set_target_properties(SHARPlib PROPERTIES LINKER_LANGUAGE CXX)
 if (MSVC) # For MSVC (cl) compiler
     # Warning level 4 and treat warnings as errors
     # target_compile_options(SHARPlib PRIVATE /W4 /WX /utf-8)
-    target_compile_options(SHARPlib PRIVATE /utf-8)
+    target_compile_options(SHARPlib PRIVATE /utf-8 /wd4244 /wd4305 )
 
     # Debug and Release flags
     set(CMAKE_CXX_FLAGS_DEBUG "/Zi /Od /MDd")
