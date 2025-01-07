@@ -90,7 +90,7 @@ jobs:
         # Build your program with the given configuration
         run: | 
           cmake --build ${{ steps.strings.outputs.build-output-dir }}
-          cd ${{ steps.strings.outputs.build-output-dir }}; make SHARPlib_tests 
+          cmake --build ${{ steps.strings.outputs.build-output-dir }} --target SHARPlib_tests
 
       - name: Test
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
