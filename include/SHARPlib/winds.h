@@ -18,6 +18,8 @@
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
 
+#include <cstddef>
+
 namespace sharp {
 
 /**

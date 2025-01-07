@@ -19,6 +19,7 @@
 #include <SHARPlib/layer.h>
 
 #include <cmath>
+#include <cstddef>
 
 namespace sharp {
 

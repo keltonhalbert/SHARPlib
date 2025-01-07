@@ -14,6 +14,7 @@
 #ifndef SHARP_ALGORITHMS_H
 #define SHARP_ALGORITHMS_H
 
+#include <cstddef>
 #include <functional>
 
 namespace sharp {

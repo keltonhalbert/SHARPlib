@@ -20,6 +20,7 @@
 #include <SHARPlib/interp.h>
 
 #include <cmath>
+#include <cstddef>
 #include <functional>
 
 namespace sharp {
