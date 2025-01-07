@@ -279,7 +279,6 @@ float _solve_cm1(float& pcl_pres_next, float& pcl_pi_next, float& pcl_t_next,
             (RM / CPM - ROCP) * std::log(pcl_pres_next / pcl_pres_prev);
 
         pcl_theta_next = pcl_theta_prev * std::exp(term);
-        counter += 1;
 
         if (std::abs(pcl_theta_next - pcl_theta_last) > converge) {
             pcl_theta_last =
