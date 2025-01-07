@@ -237,7 +237,6 @@ float _solve_cm1(float& pcl_pres_next, float& pcl_pi_next, float& pcl_t_next,
     float pcl_theta_last = pcl_theta_prev;
     float pcl_theta_next = pcl_theta_prev;
     bool not_converged = true;
-    int counter = 0;
 
     while (not_converged) {
         pcl_t_next = pcl_theta_last * pcl_pi_next;
