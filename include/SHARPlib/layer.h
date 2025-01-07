@@ -451,20 +451,20 @@ constexpr float layer_max(L layer, const float coord_arr[],
  *
  * \return  integrated_value
  */
-template <typename T, typename L>
-[[nodiscard]] constexpr T integrate_layer_trapz(L layer, const T var_array[],
-                                                const T coord_array[],
-                                                const std::ptrdiff_t N,
-                                                const int integ_sign = 0,
-                                                const bool weighted = false) {
-    T var_lyr_bottom;
-    T coord_lyr_bottom = layer.bottom;
+template <typename L>
+[[nodiscard]] float integrate_layer_trapz(L layer, const float var_array[],
+                                          const float coord_array[],
+                                          const std::ptrdiff_t N,
+                                          const int integ_sign = 0,
+                                          const bool weighted = false) {
+    float var_lyr_bottom;
+    float coord_lyr_bottom = layer.bottom;
 
-    T var_lyr_top;
-    T coord_lyr_top = layer.top;
+    float var_lyr_top;
+    float coord_lyr_top = layer.top;
 
-    T integrated = 0.0;
-    T weights = 0.0;
+    float integrated = 0.0;
+    float weights = 0.0;
 
     const bool isign = std::signbit(integ_sign);
 
@@ -487,24 +487,25 @@ template <typename T, typename L>
         }
 #endif
 
-        T coord_bottom = coord_array[k];
-        T var_bottom = var_array[k];
+        float coord_bottom = coord_array[k];
+        float var_bottom = var_array[k];
 
-        T coord_top = coord_array[k + 1];
-        T var_top = var_array[k + 1];
+        float coord_top = coord_array[k + 1];
+        float var_top = var_array[k + 1];
 
-        T layer_avg = _integ_trapz(var_top, var_bottom, coord_top, coord_bottom,
-                                   weights, weighted);
+        float layer_avg = _integ_trapz(var_top, var_bottom, coord_top,
+                                       coord_bottom, weights, weighted);
 
-        T cond = ((!integ_sign) | (isign == std::signbit(layer_avg)));
+        float cond =
+            (float)((!integ_sign) | (isign == std::signbit(layer_avg)));
         integrated += cond * layer_avg;
     }
 
     // interpolated bottom of layer
-    T layer_avg =
+    float layer_avg =
         _integ_trapz(var_array[idx.kbot], var_lyr_bottom, coord_array[idx.kbot],
                      coord_lyr_bottom, weights, weighted);
-    T cond = ((!integ_sign) | (isign == std::signbit(layer_avg)));
+    float cond = ((!integ_sign) | (isign == std::signbit(layer_avg)));
     integrated += cond * layer_avg;
 
     // interpolated top of layer
