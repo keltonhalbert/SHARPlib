@@ -64,6 +64,7 @@ jobs:
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
       - name: Checkout 
+        uses: actions/checkout@v4
         with:
           submodules: 'true'
 
