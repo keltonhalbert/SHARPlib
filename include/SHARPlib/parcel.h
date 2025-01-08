@@ -436,7 +436,7 @@ struct Parcel {
      */
     template <typename Lyr>
     static Parcel mixed_layer_parcel(Lyr& mix_layer, const float pressure[],
-                                     const float height[],
+                                     [[maybe_unused]] const float height[],
                                      const float pot_temperature[],
                                      const float wv_mixratio[],
                                      const std::ptrdiff_t N) noexcept {
