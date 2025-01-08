@@ -1,0 +1,4 @@
+<map id="sharp::entrainment_cape" name="sharp::entrainment_cape">
+<area shape="rect" id="node1" title="Computes Entrainment CAPE using a previously lifted parcel." alt="" coords="236,5,420,31"/>
+<area shape="rect" id="node2" href="$convective__wrap_8cpp.html#ab0bfb728bbbf3a731c330b61a5c415ad" title=" " alt="" coords="5,5,188,31"/>
+</map>

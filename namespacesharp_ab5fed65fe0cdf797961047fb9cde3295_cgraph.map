@@ -1,0 +1,4 @@
+<map id="sharp::moist_static_energy" name="sharp::moist_static_energy">
+<area shape="rect" id="node1" title="Compute moist static energy." alt="" coords="5,5,152,45"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#a792a4a2a9f9243a82fb44cb77c2ee561" title="Compute specific humidity from a mixing ratio." alt="" coords="200,13,380,38"/>
+</map>

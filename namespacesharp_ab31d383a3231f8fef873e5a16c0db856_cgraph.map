@@ -1,0 +1,13 @@
+<map id="sharp::storm_motion_bunkers" name="sharp::storm_motion_bunkers">
+<area shape="rect" id="node1" title="Estimates supercell storm motion by using the Bunkers et al. 2014 method." alt="" coords="5,163,163,203"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#a7ed0899941867073e5062af04fdbd3e7" title="Linearly interpolate a data field to a requested pressure level." alt="" coords="653,145,820,170"/>
+<area shape="rect" id="node6" href="$namespacesharp.html#a31da980f398c9f6a5960ddf868101a94" title="Converts a sharp::PressureLayer to a sharp::HeightLayer." alt="" coords="211,220,373,260"/>
+<area shape="rect" id="node7" href="$namespacesharp.html#a74a735636c932467b4d2ced544e0cb51" title="Estimates supercell storm motion using the Bunkers et al. 2000 method." alt="" coords="213,84,371,124"/>
+<area shape="rect" id="node3" href="$namespacesharp.html#a8aa123fbe3b59a7023446b0fe2186c49" title="Linearly interpolates between a and b with distance t." alt="" coords="898,95,989,121"/>
+<area shape="rect" id="node5" href="$namespacesharp.html#a772686549a5111c1152b778731119aa6" title="Finds the first index that satisfies value &lt; element." alt="" coords="868,145,1019,170"/>
+<area shape="rect" id="node4" href="$namespacesharp.html#a8848423b96dfe09b90322efd2cc5bd43" title="Linearly interpolates between a and b with distance t." alt="" coords="1067,95,1172,121"/>
+<area shape="rect" id="node8" href="$namespacesharp.html#ab77e344c7462c9615b0ddac228bc2193" title="Converts a sharp::HeightLayer to a sharp::PressureLayer." alt="" coords="440,5,587,45"/>
+<area shape="rect" id="node10" href="$namespacesharp.html#a3c8b9022103d067f30281d68fa81cbda" title="Compute the mean wind over the given sharp::PressureLayer." alt="" coords="443,119,584,145"/>
+<area shape="rect" id="node11" href="$namespacesharp.html#af887f27accb1a1d656a35abec65cab5f" title="Computes the magnitude of a vector given its components." alt="" coords="421,70,605,95"/>
+<area shape="rect" id="node9" href="$namespacesharp.html#af8484e9fe21c025b64ecffde614feb11" title="Linearly interpolate a data field to a requested height level." alt="" coords="661,95,813,121"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="sharp_HeightLayer_integrate" name="sharp_HeightLayer_integrate">
+<area shape="rect" id="node1" title=" " alt="" coords="5,80,216,105"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d" title="Returns a trapezoidal integration of the given layer." alt="" coords="264,73,429,113"/>
+<area shape="rect" id="node3" href="$namespacesharp.html#a3558a68454edd4679ef97335e3a9f1fb" title="A kernel that computes the area under a curve using the trapezoidal rule." alt="" coords="489,5,636,31"/>
+<area shape="rect" id="node4" href="$namespacesharp.html#ac93f477dfa774c966b5da7521bd43ee6" title="Returns the array indices corresponding to the given layer." alt="" coords="477,55,648,80"/>
+<area shape="rect" id="node7" href="$namespacesharp.html#af8484e9fe21c025b64ecffde614feb11" title="Linearly interpolate a data field to a requested height level." alt="" coords="487,104,639,129"/>
+<area shape="rect" id="node10" href="$namespacesharp.html#a7ed0899941867073e5062af04fdbd3e7" title="Linearly interpolate a data field to a requested pressure level." alt="" coords="479,153,646,179"/>
+<area shape="rect" id="node5" href="$namespacesharp.html#a1edcf8bff9a13429bcbff7c1129024b3" title="Finds the index of the lower bound that does not satisfy element &lt; value." alt="" coords="697,55,846,80"/>
+<area shape="rect" id="node6" href="$namespacesharp.html#a772686549a5111c1152b778731119aa6" title="Finds the first index that satisfies value &lt; element." alt="" coords="696,104,847,129"/>
+<area shape="rect" id="node8" href="$namespacesharp.html#a8aa123fbe3b59a7023446b0fe2186c49" title="Linearly interpolates between a and b with distance t." alt="" coords="726,153,817,179"/>
+<area shape="rect" id="node9" href="$namespacesharp.html#a8848423b96dfe09b90322efd2cc5bd43" title="Linearly interpolates between a and b with distance t." alt="" coords="895,153,1000,179"/>
+</map>

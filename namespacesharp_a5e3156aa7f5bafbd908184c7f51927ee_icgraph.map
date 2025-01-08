@@ -1,0 +1,4 @@
+<map id="sharp::theta_wetbulb" name="sharp::theta_wetbulb">
+<area shape="rect" id="node1" title="Compute the wetbulb potential temperature." alt="" coords="212,5,371,31"/>
+<area shape="rect" id="node2" href="$thermo__wrap_8cpp.html#adfde578d6548e8bbf3d24159d2e6f0bc" title=" " alt="" coords="5,5,164,31"/>
+</map>

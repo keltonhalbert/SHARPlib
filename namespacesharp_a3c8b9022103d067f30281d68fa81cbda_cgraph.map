@@ -1,0 +1,7 @@
+<map id="sharp::mean_wind" name="sharp::mean_wind">
+<area shape="rect" id="node1" title="Compute the mean wind over the given sharp::PressureLayer." alt="" coords="5,31,147,56"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#a7ed0899941867073e5062af04fdbd3e7" title="Linearly interpolate a data field to a requested pressure level." alt="" coords="195,31,361,56"/>
+<area shape="rect" id="node3" href="$namespacesharp.html#a8aa123fbe3b59a7023446b0fe2186c49" title="Linearly interpolates between a and b with distance t." alt="" coords="439,5,530,31"/>
+<area shape="rect" id="node5" href="$namespacesharp.html#a772686549a5111c1152b778731119aa6" title="Finds the first index that satisfies value &lt; element." alt="" coords="409,55,560,80"/>
+<area shape="rect" id="node4" href="$namespacesharp.html#a8848423b96dfe09b90322efd2cc5bd43" title="Linearly interpolates between a and b with distance t." alt="" coords="608,5,713,31"/>
+</map>

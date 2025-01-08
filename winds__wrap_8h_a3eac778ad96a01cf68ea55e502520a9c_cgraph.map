@@ -1,0 +1,9 @@
+<map id="sharp_PressureLayer_wind_shear" name="sharp_PressureLayer_wind_shear">
+<area shape="rect" id="node1" title=" " alt="" coords="5,23,163,63"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#a099a4575acc27d6e10f9dfb69bc315a1" title="Compue the wind shear for a given layer." alt="" coords="211,31,351,56"/>
+<area shape="rect" id="node3" href="$namespacesharp.html#af8484e9fe21c025b64ecffde614feb11" title="Linearly interpolate a data field to a requested height level." alt="" coords="406,5,558,31"/>
+<area shape="rect" id="node7" href="$namespacesharp.html#a7ed0899941867073e5062af04fdbd3e7" title="Linearly interpolate a data field to a requested pressure level." alt="" coords="399,55,565,80"/>
+<area shape="rect" id="node4" href="$namespacesharp.html#a8aa123fbe3b59a7023446b0fe2186c49" title="Linearly interpolates between a and b with distance t." alt="" coords="643,5,734,31"/>
+<area shape="rect" id="node6" href="$namespacesharp.html#a772686549a5111c1152b778731119aa6" title="Finds the first index that satisfies value &lt; element." alt="" coords="613,55,764,80"/>
+<area shape="rect" id="node5" href="$namespacesharp.html#a8848423b96dfe09b90322efd2cc5bd43" title="Linearly interpolates between a and b with distance t." alt="" coords="812,5,917,31"/>
+</map>

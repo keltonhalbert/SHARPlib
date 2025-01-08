@@ -1,0 +1,8 @@
+<map id="sharp_theta_wetbulb" name="sharp_theta_wetbulb">
+<area shape="rect" id="node1" title=" " alt="" coords="5,55,164,80"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#a5e3156aa7f5bafbd908184c7f51927ee" title="Compute the wetbulb potential temperature." alt="" coords="212,55,371,80"/>
+<area shape="rect" id="node3" href="$namespacesharp.html#ae4385866921cd7286946d9ffdd65c25e" title="Lift a parcel dry adiabatically to its Lifted Condensation Level (LCL)." alt="" coords="419,55,523,80"/>
+<area shape="rect" id="node4" href="$namespacesharp.html#af016701e4a46d5c04d26c0a09c0aad38" title="Compute the temperature of the LCL." alt="" coords="571,5,740,31"/>
+<area shape="rect" id="node5" href="$namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb" title="Compute the potential temperature." alt="" coords="605,55,705,80"/>
+<area shape="rect" id="node6" href="$namespacesharp.html#ab50b565bcba73d207dc1433dee5b03c9" title="Comute the pressure level given potential temperature and temperature." alt="" coords="586,104,725,129"/>
+</map>

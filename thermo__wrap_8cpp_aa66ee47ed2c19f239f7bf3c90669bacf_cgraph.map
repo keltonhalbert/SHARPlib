@@ -1,0 +1,7 @@
+<map id="sharp_wetlift" name="sharp_wetlift">
+<area shape="rect" id="node1" title=" " alt="" coords="5,56,112,81"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#ad4014313c60a66a321e4050a2a07058e" title="Compute the temperature of a parcel lifted moist adiabatically to a new level." alt="" coords="160,56,267,81"/>
+<area shape="rect" id="node3" href="$namespacesharp.html#a78762bd2862b739e6ae331c45cb90202" title="Compute the temperature along a moist adiabat (wet&#45;bulb potential temperature) at a given pressure." alt="" coords="315,5,467,31"/>
+<area shape="rect" id="node4" href="$namespacesharp.html#ab535b8214969a50771219a275ebb7f4d" title="Computes the difference between the wet&#45;bulb potential temperatures for saturated and dry air given t..." alt="" coords="515,31,613,56"/>
+<area shape="rect" id="node5" href="$namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb" title="Compute the potential temperature." alt="" coords="341,107,441,132"/>
+</map>

@@ -1,0 +1,14 @@
+<map id="sharp::drylift" name="sharp::drylift">
+<area shape="rect" id="node1" title="Lift a parcel dry adiabatically to its Lifted Condensation Level (LCL)." alt="" coords="645,158,749,183"/>
+<area shape="rect" id="node2" href="$structsharp_1_1Parcel.html#a9523de2b8b4c28ca49fba3013f94cb06" title="Lifts a sharp::Parcel to compute its virtual temperature." alt="" coords="453,44,583,84"/>
+<area shape="rect" id="node6" href="$thermo__wrap_8cpp.html#a977ee5735b66a0a0b9d74f3325a0041e" title=" " alt="" coords="467,109,569,134"/>
+<area shape="rect" id="node7" href="$namespacesharp.html#a5e3156aa7f5bafbd908184c7f51927ee" title="Compute the wetbulb potential temperature." alt="" coords="439,158,597,183"/>
+<area shape="rect" id="node9" href="$namespacesharp.html#ab06f16aa1caac3136e863db8cd61e2e9" title="Compute the equivalent potential temperature." alt="" coords="464,231,572,257"/>
+<area shape="rect" id="node11" href="$namespacesharp.html#accda9c75278f1a32978bbfd662492822" title="Compute the wetbulb temperature." alt="" coords="459,281,577,306"/>
+<area shape="rect" id="node3" href="$namespacesharp.html#a2e6b7cd4a3594a8f2c2050b0e4784cce" title="Computes the Effective Inflow Layer for a given atmospheric sounding." alt="" coords="221,5,391,45"/>
+<area shape="rect" id="node5" href="$structsharp_1_1Parcel.html#aa258d27992d22d8b80cb221e6e2a6c19" title="Construct and return a most&#45;unstable Parcel." alt="" coords="233,69,379,109"/>
+<area shape="rect" id="node4" href="$convective__wrap_8cpp.html#af214bab6c6ba14dc06fe7df4f6abcdf8" title=" " alt="" coords="5,5,173,45"/>
+<area shape="rect" id="node8" href="$thermo__wrap_8cpp.html#adfde578d6548e8bbf3d24159d2e6f0bc" title=" " alt="" coords="227,158,385,183"/>
+<area shape="rect" id="node10" href="$thermo__wrap_8cpp.html#a6fa159149e40e0b462647cd423be313f" title=" " alt="" coords="253,231,359,257"/>
+<area shape="rect" id="node12" href="$thermo__wrap_8cpp.html#a3d62d7747127fc25886aed2e9db56cae" title=" " alt="" coords="247,281,365,306"/>
+</map>

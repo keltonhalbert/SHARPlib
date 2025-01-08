@@ -1,0 +1,6 @@
+<map id="sharp::drylift" name="sharp::drylift">
+<area shape="rect" id="node1" title="Lift a parcel dry adiabatically to its Lifted Condensation Level (LCL)." alt="" coords="5,55,109,80"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#af016701e4a46d5c04d26c0a09c0aad38" title="Compute the temperature of the LCL." alt="" coords="157,5,327,31"/>
+<area shape="rect" id="node3" href="$namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb" title="Compute the potential temperature." alt="" coords="192,55,292,80"/>
+<area shape="rect" id="node4" href="$namespacesharp.html#ab50b565bcba73d207dc1433dee5b03c9" title="Comute the pressure level given potential temperature and temperature." alt="" coords="173,104,311,129"/>
+</map>

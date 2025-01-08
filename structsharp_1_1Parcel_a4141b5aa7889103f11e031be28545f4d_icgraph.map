@@ -1,0 +1,5 @@
+<map id="sharp::Parcel::Parcel" name="sharp::Parcel::Parcel">
+<area shape="rect" id="node1" title=" " alt="" coords="215,45,367,70"/>
+<area shape="rect" id="node2" href="$structsharp_1_1Parcel.html#a1bf670e79f35a1ce8c904b7ead32ccbe" title="Construct and return a mixed&#45;layer Parcel." alt="" coords="9,5,163,45"/>
+<area shape="rect" id="node3" href="$structsharp_1_1Parcel.html#aa1b370d9ea08877cc6438241fd013e3a" title="Construct and return a surface&#45;based Parcel." alt="" coords="5,69,167,109"/>
+</map>

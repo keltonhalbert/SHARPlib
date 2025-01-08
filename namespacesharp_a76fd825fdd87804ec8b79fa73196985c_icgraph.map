@@ -1,0 +1,10 @@
+<map id="sharp::virtual_temperature" name="sharp::virtual_temperature">
+<area shape="rect" id="node1" title="Compute the full virtual temperature." alt="" coords="693,141,889,166"/>
+<area shape="rect" id="node2" href="$structsharp_1_1Parcel.html#a9523de2b8b4c28ca49fba3013f94cb06" title="Lifts a sharp::Parcel to compute its virtual temperature." alt="" coords="477,37,607,77"/>
+<area shape="rect" id="node6" href="$structsharp_1_1lifter__wobus.html#a82be5bdfdff54890488bbc1461b5b05e" title="Computes the virtual temperature of the parcel." alt="" coords="439,101,645,141"/>
+<area shape="rect" id="node7" href="$structsharp_1_1lifter__cm1.html#a2fc203010e232bd969ac0b09f15c4329" title="Computes the virtual temperature of the parcel." alt="" coords="443,165,641,205"/>
+<area shape="rect" id="node8" href="$thermo__wrap_8cpp.html#a0568dcc4e8ae316e0385f98ceee9fbb0" title=" " alt="" coords="445,230,639,255"/>
+<area shape="rect" id="node3" href="$namespacesharp.html#a2e6b7cd4a3594a8f2c2050b0e4784cce" title="Computes the Effective Inflow Layer for a given atmospheric sounding." alt="" coords="221,5,391,45"/>
+<area shape="rect" id="node5" href="$structsharp_1_1Parcel.html#aa258d27992d22d8b80cb221e6e2a6c19" title="Construct and return a most&#45;unstable Parcel." alt="" coords="233,69,379,109"/>
+<area shape="rect" id="node4" href="$convective__wrap_8cpp.html#af214bab6c6ba14dc06fe7df4f6abcdf8" title=" " alt="" coords="5,5,173,45"/>
+</map>

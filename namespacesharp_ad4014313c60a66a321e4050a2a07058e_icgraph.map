@@ -1,0 +1,5 @@
+<map id="sharp::wetlift" name="sharp::wetlift">
+<area shape="rect" id="node1" title="Compute the temperature of a parcel lifted moist adiabatically to a new level." alt="" coords="199,42,305,67"/>
+<area shape="rect" id="node2" href="$structsharp_1_1lifter__wobus.html#a92ffe04c0425aef07c524759d799066e" title="Overloads operator() to call sharp::wetlift." alt="" coords="5,5,151,45"/>
+<area shape="rect" id="node3" href="$thermo__wrap_8cpp.html#aa66ee47ed2c19f239f7bf3c90669bacf" title=" " alt="" coords="25,70,131,95"/>
+</map>

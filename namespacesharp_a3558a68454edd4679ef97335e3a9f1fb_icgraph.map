@@ -1,0 +1,16 @@
+<map id="sharp::_integ_trapz" name="sharp::_integ_trapz">
+<area shape="rect" id="node1" title="A kernel that computes the area under a curve using the trapezoidal rule." alt="" coords="957,190,1104,215"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d" title="Returns a trapezoidal integration of the given layer." alt="" coords="744,183,909,223"/>
+<area shape="rect" id="node3" href="$structsharp_1_1Parcel.html#a0560bd193b2d2d6bc6b08baa7463fba4" title="Compute CAPE and CINH for a previously lifted sharp::Parcel." alt="" coords="501,77,680,102"/>
+<area shape="rect" id="node7" href="$namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822" title="Computes Entrainment CAPE using a previously lifted parcel." alt="" coords="245,134,429,159"/>
+<area shape="rect" id="node9" href="$namespacesharp.html#a298e2c96c389f2c5177d3626c908927e" title="Computes the mass&#45;weighted mean value of a field over a given pressure layer." alt="" coords="519,190,662,215"/>
+<area shape="rect" id="node13" href="$layer__wrap_8cpp.html#aedfe40469a1e381572599fb09d5f0406" title=" " alt="" coords="485,239,696,265"/>
+<area shape="rect" id="node14" href="$layer__wrap_8cpp.html#a162c242638de7fc2a22b915d14c587db" title=" " alt="" coords="512,289,669,329"/>
+<area shape="rect" id="node4" href="$namespacesharp.html#a2e6b7cd4a3594a8f2c2050b0e4784cce" title="Computes the Effective Inflow Layer for a given atmospheric sounding." alt="" coords="252,5,421,45"/>
+<area shape="rect" id="node6" href="$structsharp_1_1Parcel.html#aa258d27992d22d8b80cb221e6e2a6c19" title="Construct and return a most&#45;unstable Parcel." alt="" coords="263,69,410,109"/>
+<area shape="rect" id="node5" href="$convective__wrap_8cpp.html#af214bab6c6ba14dc06fe7df4f6abcdf8" title=" " alt="" coords="13,5,181,45"/>
+<area shape="rect" id="node8" href="$convective__wrap_8cpp.html#ab0bfb728bbbf3a731c330b61a5c415ad" title=" " alt="" coords="5,134,188,159"/>
+<area shape="rect" id="node10" href="$structsharp_1_1Parcel.html#a1bf670e79f35a1ce8c904b7ead32ccbe" title="Construct and return a mixed&#45;layer Parcel." alt="" coords="260,184,413,224"/>
+<area shape="rect" id="node11" href="$layer__wrap_8cpp.html#aed1a796336a18c40e0bf51019b76e09a" title=" " alt="" coords="243,249,431,274"/>
+<area shape="rect" id="node12" href="$layer__wrap_8cpp.html#acb9a81d9a712786d81c427d428eefd0a" title=" " alt="" coords="236,298,437,323"/>
+</map>
