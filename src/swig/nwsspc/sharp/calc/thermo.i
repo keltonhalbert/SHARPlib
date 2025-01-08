@@ -107,13 +107,13 @@ import_array();
 %rename (lcl_temperature) _lcl_temperature;
 %rename (vapor_pressure) _vapor_pressure;
 %rename (lapse_rate_max) _lapse_rate_max;
-%rename (theta_wetbulb) _theta_wetbulb;
+//%rename (theta_wetbulb) _theta_wetbulb;
 %rename (mixratio_ice) _mixratio_ice;
 %rename (theta_level) _theta_level;
 %rename (lapse_rate) _lapse_rate;
 %rename (buoyancy) _buoyancy;
 %rename (mixratio) _mixratio;
-%rename (wetbulb) _wetbulb;
+//%rename (wetbulb) _wetbulb;
 %rename (thetae) _thetae;
 %rename (theta) _theta;
 
@@ -126,13 +126,13 @@ import_array();
 %ignore lcl_temperature;
 %ignore vapor_pressure;
 %ignore lapse_rate_max;
-%ignore theta_wetbulb;
+//%ignore theta_wetbulb;
 %ignore mixratio_ice;
 %ignore theta_level;
 %ignore lapse_rate;
 %ignore buoyancy;
 %ignore mixratio;
-%ignore wetbulb;
+//%ignore wetbulb;
 %ignore thetae;
 %ignore theta;
 
@@ -507,7 +507,8 @@ void _virtual_temperature(const float temperature[], const std::ptrdiff_t N1,
     return;
 }
 
-float _wetbulb(float pressure, float temperature, float dewpoint) {
+
+/** float _wetbulb(float pressure, float temperature, float dewpoint) {
     return sharp::wetbulb(pressure, temperature, dewpoint);
 }
 
@@ -578,7 +579,7 @@ void _theta_wetbulb(const float pressure[], const std::ptrdiff_t N1,
     *NOUT = N1;
     return;
 }
-
+*/
 float _thetae(float pressure, float temperature, float dewpoint) {
     return sharp::thetae(pressure, temperature, dewpoint);
 }

@@ -239,15 +239,15 @@ def test_thermo(snd):
     vtmp2 = thermo.virtual_temperature(snd["tmpk"], mixr, ql, qi)
     print(vtmp2)
 
-    print("Wetbulb (K)")
-    print(thermo.wetbulb(100000.0, 300.0, 298.0))
-    wetb = thermo.wetbulb(snd["pres"], snd["tmpk"], snd["dwpk"])
-    print(wetb)
-
-    print("Theta Wetbulb (K)")
-    print(thermo.theta_wetbulb(100000.0, 300.0, 298.0))
-    twetb = thermo.theta_wetbulb(snd["pres"], snd["tmpk"], snd["dwpk"])
-    print(twetb)
+    # print("Wetbulb (K)")
+    # print(thermo.wetbulb(100000.0, 300.0, 298.0))
+    # wetb = thermo.wetbulb(snd["pres"], snd["tmpk"], snd["dwpk"])
+    # print(wetb)
+    #
+    # print("Theta Wetbulb (K)")
+    # print(thermo.theta_wetbulb(100000.0, 300.0, 298.0))
+    # twetb = thermo.theta_wetbulb(snd["pres"], snd["tmpk"], snd["dwpk"])
+    # print(twetb)
 
     print("Theta E (K)")
     print(thermo.thetae(100000.0, 300.0, 298.0))
