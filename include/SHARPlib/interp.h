@@ -22,11 +22,11 @@
 namespace sharp {
 
 /**
- * \author C++20 Standard Template Library <cmath>
+ * \author C++20 Standard Template Library
  *
  * \brief Linearly interpolates between a and b with distance t.
  *
- * This routine was copied from the C++20 <cmath> standard template library.
+ * This routine was copied from the C++20 standard template library.
  * It is used to linearly interpolate between A and B over a normalized
  * distance T, where 0 <= T <= 1. Full documentation and details can be found
  * in the paper located here:
@@ -63,11 +63,11 @@ template <typename _Fp>
 }
 
 /**
- * \author C++20 Standard Template Library <cmath>
+ * \author C++20 Standard Template Library
  *
  * \brief Linearly interpolates between a and b with distance t.
  *
- * This routine was copied from the C++20 <cmath> standard template library.
+ * This routine was copied from the C++20 standard template library.
  * It is used to linearly interpolate between A and B over a normalized
  * distance T, where 0 <= T <= 1. Full documentation and details can be found
  * in the paper located here:

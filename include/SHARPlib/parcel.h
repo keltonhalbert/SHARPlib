@@ -293,7 +293,6 @@ struct Parcel {
      *
      * \param   liftpcl         Parcel lifting function/functor
      * \param   pressure_arr    Array of env pressure (Pa)
-     * \param   env_vtmpk_arr   Array of env virtual temperature (K)
      * \param   pcl_vtmpk_arr   The array to fill with virtual temp (K)
      * \param   N               The length of the arrays
      */
@@ -427,12 +426,12 @@ struct Parcel {
      * sharp::HeightLayer, compute and return a mixed-layer
      * Parcel.
      *
+     * \param   mix_layer           sharp::PressureLayer or sharp::HeightLayer
      * \param   pressure            Array of pressure (Pa)
      * \param   height              Array of height (meters)
      * \param   pot_temperature     Array of potential temperature (K)
      * \param   wv_mixratio         Array of water vapor mixing ratio (unitless)
      * \param   N                   Length of arrays
-     * \param   Lyr                 sharp::PressureLayer or sharp::HeightLayer
      * \return sharp::Parcel with mixed-layer values
      */
     template <typename Lyr>

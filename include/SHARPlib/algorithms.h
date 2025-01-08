@@ -35,7 +35,7 @@ namespace sharp {
  * arrays over vectors for easy integration with SWIG bindings,
  * C code, and the potential future in which this runs on CUDA
  * architecture. Currently, the algorithms in the STL library are
- * not supported by the CUDA STL, but the types in <functional>
+ * not supported by the CUDA STL, but the types in \<functional\>
  * (i.e. std::less) are supported by the CUDA STL. Additionally, this
  * implementation of lower_bound is designed to reduce branching.
  *
@@ -76,7 +76,7 @@ template <typename T, typename C = std::less<>>
  * arrays over vectors for easy integration with SWIG bindings,
  * C code, and the potential future in which this runs on CUDA
  * architecture. Currently, the algorithms in the STL library are
- * not supported by the CUDA STL, but the types in <functional>
+ * not supported by the CUDA STL, but the types in \<functional\>
  * (i.e. std::less) are supported by the CUDA STL. Additionally, this
  * implementation of lower_bound is designed to reduce branching.
  *
