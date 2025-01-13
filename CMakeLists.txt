@@ -9,7 +9,7 @@ include(CTest)
 
 option(BUILD_PYBIND "Build python bindings with pybind11" OFF)
 option(NO_QC "Disable QC checks for missing/NaN values in SHARPlib" OFF)
-set(NO_QC ${NO_QC} CACHE BOOL "Disable QC checks for missin/NaN values in SHARPlib tests" FORCE)
+set(NO_QC ${NO_QC} CACHE BOOL "Disable QC checks for missing/NaN values in SHARPlib tests" FORCE)
 
 ## Bring the headers into the project
 include_directories(include)
@@ -70,15 +70,14 @@ if(NO_QC)
     target_compile_definitions(SHARPlib PRIVATE NO_QC)
 endif()
 
-## used for passing custom build options
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+## If an install prefix hasn't been set, use the 
+## current source directory
+if (NOT CMAKE_INSTALL_PREFIX) 
+    set(LOCAL_PREFIX "${CMAKE_SOURCE_DIR}")
+    set(CMAKE_INSTALL_PREFIX "${LOCAL_PREFIX}")
+endif()
 
-set(LOCAL_PREFIX "${CMAKE_SOURCE_DIR}")
-set(CMAKE_INSTALL_PREFIX "${LOCAL_PREFIX}")
-
-## install it to the PROJECT_ROOT/lib directory
-install(TARGETS SHARPlib DESTINATION lib)
-
+install(TARGETS SHARPlib DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 
 ## This ensures that tests and python bindings arent 
 ## unintentionally added or built by other CMake projects
