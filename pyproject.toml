@@ -1,0 +1,13 @@
+[build-system]
+requires = ["scikit-build-core", "pybind11"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "SHARPlib"
+version = "1.0.0"
+
+[tool.scikit-build]
+cmake.version = ">=3.15"
+
+[tool.scikit-build.cmake.define]
+BUILD_PYBIND = true
