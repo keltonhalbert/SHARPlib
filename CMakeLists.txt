@@ -16,15 +16,11 @@ endmacro(use_cxx17)
 ## This is where we set the CXX standard
 use_cxx17()
 
-## Bring in the Python headers for the
-## pybind11 bindings
-find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
-include_directories(${Python3_INCLUDE_DIRS})
+option(BUILD_PYBIND "Build python bindings with pybind11" OFF)
 
 ## Bring the headers into the project
 include_directories(include)
 include_directories(external/fmt/include)
-include_directories(external/pybind11/include)
 
 ## add all CPP files as sources
 file(GLOB SOURCES "src/SHARPlib/*.cpp" "src/SHARPlib/params/*.cpp")
@@ -51,7 +47,7 @@ else() # For GCC/Clang
 
     # Debug and Release flags
     set(CMAKE_CXX_FLAGS_DEBUG "-g -O3 -ftree-vectorize -funroll-loops")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -ftree-vectorize -funroll-loops")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -ftree-vectorize -funroll-loops -fPIC")
 endif()
 
 ## Check if the build type is set and default to
@@ -71,11 +67,16 @@ set(CMAKE_INSTALL_PREFIX "${LOCAL_PREFIX}")
 install(TARGETS SHARPlib DESTINATION lib)
 
 
-## This ensures that tests arent unintentionally added or built
-## by other CMake projects that link to this library
+## This ensures that tests and python bindings arent 
+## unintentionally added or built by other CMake projects
+## that link to this library
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
     add_subdirectory(tests/unit)
     add_subdirectory(tests/benchmark)
-endif ()
+endif()
+
+if (BUILD_PYBIND)
+    add_subdirectory(src/pybind)
+endif()
 
 enable_testing()
