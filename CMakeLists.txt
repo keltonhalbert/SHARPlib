@@ -16,6 +16,11 @@ endmacro(use_cxx17)
 ## This is where we set the CXX standard
 use_cxx17()
 
+## Bring in the Python headers for the
+## pybind11 bindings
+find_package(Python3 REQUIRED COMPONENTS Development)
+include_directories(${Python3_INCLUDE_DIRS})
+
 ## Bring the headers into the project
 include_directories(include)
 include_directories(external/fmt/include)
