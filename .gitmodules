@@ -7,3 +7,7 @@
 [submodule "external/benchmark"]
 	path = external/benchmark
 	url = git@github.com:google/benchmark.git
+[submodule "external/pybind11"]
+	path = external/pybind11
+	url = git@github.com:pybind/pybind11.git
+	branch = stable
