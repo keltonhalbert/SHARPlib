@@ -11,10 +11,6 @@
  * John Hart and Rich Thompson at SPC.
  */
 
-// clang-format off
-#include <pybind11/pybind11.h>
-
-// clang-format on
 #include <SHARPlib/algorithms.h>
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>

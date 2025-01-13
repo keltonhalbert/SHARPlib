@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.15)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 project(SHARPlib CXX)
 include(GNUInstallDirs)
@@ -18,7 +18,7 @@ use_cxx17()
 
 ## Bring in the Python headers for the
 ## pybind11 bindings
-find_package(Python3 REQUIRED COMPONENTS Development)
+find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
 include_directories(${Python3_INCLUDE_DIRS})
 
 ## Bring the headers into the project
