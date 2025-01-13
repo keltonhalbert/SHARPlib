@@ -5,7 +5,7 @@
 #include <SHARPlib/thermo.h>
 
 
-PYBIND11_MODULE(_thermo, m) {
+PYBIND11_MODULE(thermo, m) {
     m.doc() = "Sounding and Hodograph Analysis and Research Program Library (SHARPlib) :: Thermodynamic Routines";
     m.def("lcl_temperature", &sharp::lcl_temperature);
 }

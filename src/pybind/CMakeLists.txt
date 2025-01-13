@@ -9,10 +9,10 @@ include_directories(${Python3_INCLUDE_DIRS})
 include_directories(pybind11/include)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-pybind11_add_module(_thermo MODULE thermo.cpp)
+pybind11_add_module(thermo MODULE thermo.cpp)
 
-target_compile_options(_thermo PRIVATE)
-target_link_libraries(_thermo PRIVATE SHARPlib)
+target_compile_options(thermo PRIVATE)
+target_link_libraries(thermo PRIVATE SHARPlib)
 
-install(TARGETS _thermo DESTINATION ${CMAKE_INSTALL_PREFIX}/nwsspc/sharp/calc/)
+install(TARGETS thermo DESTINATION ${CMAKE_INSTALL_PREFIX}/nwsspc/sharp/calc/)
 
