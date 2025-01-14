@@ -11,3 +11,6 @@
 	path = external/pybind11
 	url = git@github.com:pybind/pybind11.git
 	branch = stable
+[submodule "external/nanobind"]
+	path = external/nanobind
+	url = https://github.com/wjakob/nanobind
