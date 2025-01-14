@@ -8,7 +8,7 @@
 
 namespace nb = nanobind;
 
-using profile_arr_t = nb::ndarray<float, nb::ndim<1>, nb::device::cpu, nb::c_contig>;
+using profile_arr_t = nb::ndarray<float, nb::ndim<1>, nb::device::cpu, nb::c_contig, nb::ro>;
 // clang-format on
 NB_MODULE(layer, m) {
     m.doc() = "Utility functions for operating on layers of the atmosphere.";
