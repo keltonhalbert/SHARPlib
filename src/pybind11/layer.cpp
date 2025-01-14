@@ -15,22 +15,34 @@ PYBIND11_MODULE(layer, m) {
     py::class_<sharp::HeightLayer>(m, "HeightLayer")
         .def(py::init<float, float, float>(), py::arg("bottom"), py::arg("top"),
              py::arg("delta") = 100.0f)
-        .def_readwrite("bottom", &sharp::HeightLayer::bottom)
-        .def_readwrite("top", &sharp::HeightLayer::top)
-        .def_readwrite("delta", &sharp::HeightLayer::delta);
+        .def_readwrite("bottom", &sharp::HeightLayer::bottom,
+                       "The bottom of the HeightLayer (meters)")
+        .def_readwrite("top", &sharp::HeightLayer::top,
+                       "The top of the HeightLayer (meters)")
+        .def_readwrite(
+            "delta", &sharp::HeightLayer::delta,
+            "The HeightLayer delta (increment) to use if iterating (meters).");
 
     py::class_<sharp::PressureLayer>(m, "PressureLayer")
         .def(py::init<float, float, float>(), py::arg("bottom"), py::arg("top"),
              py::arg("delta") = -1000.0f)
-        .def_readwrite("bottom", &sharp::PressureLayer::bottom)
-        .def_readwrite("top", &sharp::PressureLayer::top)
-        .def_readwrite("delta", &sharp::PressureLayer::delta);
+        .def_readwrite("bottom", &sharp::PressureLayer::bottom,
+                       "The bottom of the PressureLayer (Pa)")
+        .def_readwrite("top", &sharp::PressureLayer::top,
+                       "The top of the PressureLayer (Pa)")
+        .def_readwrite(
+            "delta", &sharp::PressureLayer::delta,
+            "The PressureLayer delta (increment) to use if iterating (Pa)");
 
     py::class_<sharp::LayerIndex>(m, "LayerIndex")
         .def(py::init<std::ptrdiff_t, std::ptrdiff_t>(), py::arg("kbot"),
              py::arg("ktop"))
-        .def_readwrite("kbot", &sharp::LayerIndex::kbot)
-        .def_readwrite("ktop", &sharp::LayerIndex::ktop);
+        .def_readwrite("kbot", &sharp::LayerIndex::kbot,
+                       "The bottom index of a layer on a coordinate array "
+                       "(pressure or height).")
+        .def_readwrite("ktop", &sharp::LayerIndex::ktop,
+                       "The top index of a layer on a coordinate array "
+                       "(pressure or height).");
 
     // Set up the numpy dtypes so we can vectorize functions that
     // return a sharp::HeightLayer or sharp::PressureLayer
