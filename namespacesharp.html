@@ -6819,7 +6819,7 @@ Here is the caller graph for this function:</div>
 
 <p>Computes the difference between the wet-bulb potential temperatures for saturated and dry air given the temperature. </p>
 <dl class="section author"><dt>Author</dt><dd>John Hart - NSSFC KCMO / NWSSPC OUN</dd></dl>
-<p>The Wobus Function (wobf) is defined as the difference between the wet-bulb potential temperature for saturated air (WBPTS) and the wet-bulb potential temperature for dry air (WBPTD) given the same temperature in Celsius.</p>
+<p>The Wobus Function (wobf) is defined as the difference between the wet-bulb potential temperature for saturated air (WBPTS) and the wet-bulb potential temperature for dry air (WBPTD) given an input temperature in Kelvin.</p>
 <p>WOBF(T) := WBPTS - WBPTD</p>
 <p>Although WBPTS and WBPTD are functions of both pressure and temperature, it is assumed their difference is a function of temperature only. The difference is also proportional to the heat imparted to a parcel.</p>
 <p>This function uses a polynomial approximation to the wobus function, fitted to values in Table 78 of PP.319-322 of the Smithsonian Meteorological Tables by Roland List (6th Revised Edition). Herman Wobus, a mathematician for the Navy Weather Research Facility in Norfolk, VA computed these coefficients a very long time ago, as he was retired as of the time of the documentation found on this routine written in 1981.</p>
