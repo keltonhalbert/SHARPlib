@@ -88,7 +88,7 @@ if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
 if (BUILD_PYBIND)
-    add_subdirectory(src/pybind11)
+    add_subdirectory(src/nanobind)
 endif()
 
 enable_testing()
