@@ -58,7 +58,7 @@ enum class adiabat : int {
  * The Wobus Function (wobf) is defined as the difference between
  * the wet-bulb potential temperature for saturated air (WBPTS)
  * and the wet-bulb potential temperature for dry air (WBPTD) given
- * the same temperature in Celsius.
+ * an input temperature in Kelvin.
  *
  * WOBF(T) := WBPTS - WBPTD
  *
