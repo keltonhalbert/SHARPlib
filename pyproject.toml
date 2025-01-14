@@ -5,9 +5,44 @@ build-backend = "scikit_build_core.build"
 [project]
 name = "SHARPlib"
 version = "1.0.0"
+description = "Sounding and Hodograph Analysis and Research Program Library (SHARPlib) for processing vertical profiles of meteorological/atmospheric sounding data."
+readme = "README.md"
+authors = [
+    { name = "Kelton Halbert", email = "kelton.halbert@noaa.gov" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+]
+keywords = [
+    "meteorology", 
+    "weather",
+    "atmospheric science",
+    "atmosphere",
+    "soundings",
+    "skewt"
+]
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.22.0"
+]
+
+[project.urls]
+"homepage" = "https://github.com/keltonhalbert/SHARPlib"
+"Documentation" = "https://keltonhalbert.github.io/SHARPlib"
+"Bluesky" = "https://bsky.app/profile/stormscale.io"
 
 [tool.scikit-build]
 cmake.version = ">=3.15"
+cmake.build-type = "Release"
 
 [tool.scikit-build.cmake.define]
 BUILD_PYBIND = true
