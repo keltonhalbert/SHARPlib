@@ -203,8 +203,8 @@ enum class adiabat : int {
  *
  * \return   potential_temperature (K)
  */
-[[nodiscard]] float theta(float pressure, float temperature,
-                          float ref_pressure = THETA_REF_PRESSURE);
+[[nodiscard]] float theta(const float pressure, const float temperature,
+                          const float ref_pressure = THETA_REF_PRESSURE);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center

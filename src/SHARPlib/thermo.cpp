@@ -109,7 +109,8 @@ float theta_level(const float potential_temperature, const float temperature) {
            std::pow((potential_temperature / temperature), CPOR);
 }
 
-float theta(float pressure, float temperature, float ref_pressure) {
+float theta(const float pressure, const float temperature,
+            const float ref_pressure) {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING) ||
         (ref_pressure == MISSING)) {
