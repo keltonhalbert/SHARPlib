@@ -66,8 +66,8 @@ Returns:
             // into the array for access
             auto tmpk = tmpk_arr.view();
 
-            float *wobf_arr = new float[tmpk_arr.size()];
-            for (size_t k = 0; k < tmpk_arr.size(); ++k) {
+            float *wobf_arr = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
                 wobf_arr[k] = sharp::wobf(tmpk(k));
             }
 
@@ -75,7 +75,7 @@ Returns:
                               [](void *p) noexcept { delete[] (float *)p; });
 
             return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                wobf_arr, {tmpk_arr.size()}, owner);
+                wobf_arr, {tmpk.shape(0)}, owner);
         },
         nb::arg("tmpk_arr"),
         R"pbdoc(
@@ -136,17 +136,17 @@ Returns:
     m.def(
         "lcl_temperature",
         [](const_prof_arr_t tmpk_arr, const_prof_arr_t dwpk_arr) {
-            if ((tmpk_arr.size() != dwpk_arr.size())) {
-                throw nb::buffer_error(
-                    "tmpk_arr and dwpk_arr must have the same size!");
-            }
             // Get a high performance view
             // into these arrays for access
             auto tmpk = tmpk_arr.view();
             auto dwpk = dwpk_arr.view();
+            if ((tmpk.shape(0) != dwpk.shape(0))) {
+                throw nb::buffer_error(
+                    "tmpk_arr and dwpk_arr must have the same size!");
+            }
 
-            float *lcl_tmpk_arr = new float[tmpk_arr.size()];
-            for (size_t k = 0; k < tmpk_arr.size(); ++k) {
+            float *lcl_tmpk_arr = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
                 lcl_tmpk_arr[k] = sharp::lcl_temperature(tmpk(k), dwpk(k));
             }
 
@@ -154,7 +154,7 @@ Returns:
                               [](void *p) noexcept { delete[] (float *)p; });
 
             return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                lcl_tmpk_arr, {tmpk_arr.size()}, owner);
+                lcl_tmpk_arr, {tmpk.shape(0)}, owner);
         },
         nb::arg("tmpk_arr"), nb::arg("dwpk_arr"),
         R"pbdoc(
