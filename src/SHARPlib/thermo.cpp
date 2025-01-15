@@ -25,8 +25,7 @@ struct lifter_wobus;
 struct lifter_cm1;
 
 float wobf(const float temperature) {
-#ifndef NO_QC
-    if (temperature == MISSING) return MISSING;
+#ifndef NO_QC if (temperature == MISSING) return MISSING;
 #endif
     float pol;
     const float x = temperature - ZEROCNK - 20.0f;
@@ -49,7 +48,7 @@ float wobf(const float temperature) {
     }
 }
 
-float vapor_pressure(float pressure, float temperature) {
+float vapor_pressure(const float pressure, const float temperature) {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING)) return MISSING;
 #endif
@@ -59,7 +58,7 @@ float vapor_pressure(float pressure, float temperature) {
     return std::min(es, pressure * 0.5f);
 }
 
-float vapor_pressure_ice(float pressure, float temperature) {
+float vapor_pressure_ice(const float pressure, const float temperature) {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING)) return MISSING;
 #endif

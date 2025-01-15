@@ -103,7 +103,8 @@ enum class adiabat : int {
  *
  * \return  vapor_pressure (Pa)
  */
-[[nodiscard]] float vapor_pressure(float pressure, float temperature);
+[[nodiscard]] float vapor_pressure(const float pressure,
+                                   const float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -124,7 +125,8 @@ enum class adiabat : int {
  *
  * \return  vapor_pressure (Pa)
  */
-[[nodiscard]] float vapor_pressure_ice(float pressure, float temperature);
+[[nodiscard]] float vapor_pressure_ice(const float pressure,
+                                       const float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
