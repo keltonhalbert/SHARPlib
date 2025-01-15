@@ -463,4 +463,29 @@ Parameters:
 Returns:
     The 1D array of potential temperature (K), or theta
     )pbdoc");
+
+    m.def("mixratio", static_cast<float (*)(float)>(&sharp::mixratio),
+          nb::arg("q"),
+          R"pbdoc(
+Compute the water vapor mixing ratio (kg/kg) from the specific humidity (kg/kg).
+
+Parameters:
+    q: The specific humidity (kg/kg)
+
+Returns:
+    The water vapor mixing ratio (kg/kg)
+    )pbdoc");
+
+    m.def("mixratio", static_cast<float (*)(float, float)>(&sharp::mixratio),
+          nb::arg("pressure"), nb::arg("temperature"),
+          R"pbdoc(
+Compute the water vapor mixing ratio (kg/kg) from the air pressure (Pa) and temperature (K).
+
+Parameters:
+    pressure: The air pressure (Pa)
+    temperature: The air temperature (K)
+
+Returns:
+    The water vapor mixing ratio (kg/kg)
+    )pbdoc");
 }
