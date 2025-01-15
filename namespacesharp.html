@@ -262,9 +262,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aaf448e4ec9a4f7ac7edc9b960f656fd8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#aaf448e4ec9a4f7ac7edc9b960f656fd8">vapor_pressure_ice</a> (float <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, float temperature)</td></tr>
 <tr class="memdesc:aaf448e4ec9a4f7ac7edc9b960f656fd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the vapor pressure over ice.  <br /></td></tr>
 <tr class="separator:aaf448e4ec9a4f7ac7edc9b960f656fd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af016701e4a46d5c04d26c0a09c0aad38"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#af016701e4a46d5c04d26c0a09c0aad38">lcl_temperature</a> (float temperature, float dewpoint)</td></tr>
-<tr class="memdesc:af016701e4a46d5c04d26c0a09c0aad38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the temperature of the LCL.  <br /></td></tr>
-<tr class="separator:af016701e4a46d5c04d26c0a09c0aad38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f435bc49cb516376e1dc595e837e98b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#a6f435bc49cb516376e1dc595e837e98b">lcl_temperature</a> (const float temperature, const float dewpoint)</td></tr>
+<tr class="memdesc:a6f435bc49cb516376e1dc595e837e98b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the temperature of the LCL.  <br /></td></tr>
+<tr class="separator:a6f435bc49cb516376e1dc595e837e98b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a90a9ae3f1a154cecbcf65d7dbf19233f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#a90a9ae3f1a154cecbcf65d7dbf19233f">temperature_at_mixratio</a> (float wv_mixratio, float <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>)</td></tr>
 <tr class="memdesc:a90a9ae3f1a154cecbcf65d7dbf19233f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the temperature at a given water vapor mixing ratio and pressure level.  <br /></td></tr>
 <tr class="separator:a90a9ae3f1a154cecbcf65d7dbf19233f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1322,7 +1322,7 @@ Here is the call graph for this function:</div>
 <p>Lift a parcel dry adiabatically to its Lifted Condensation Level (LCL). </p>
 <dl class="section author"><dt>Author</dt><dd>John Hart - NSSFC KCMO / NWSSPC OUN</dd></dl>
 <p>Given a parcel's initial pressure (Pa), temperature (K), and dewpoint temperature (K), lift the parcel dry adiabatically to its Lifted Condensation Level and store the resulting LCL pressure (Pa) and LCL temperature (K) in the variables passed by reference to the routine.</p>
-<p>The LCL temperature is computed using an approximation. See the <a class="el" href="namespacesharp.html#af016701e4a46d5c04d26c0a09c0aad38" title="Compute the temperature of the LCL.">sharp::lcl_temperature</a> documentation for more information.</p>
+<p>The LCL temperature is computed using an approximation. See the <a class="el" href="namespacesharp.html#a6f435bc49cb516376e1dc595e837e98b" title="Compute the temperature of the LCL.">sharp::lcl_temperature</a> documentation for more information.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">pressure</td><td>(Pa) </td></tr>
@@ -1355,7 +1355,7 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  368</span>    <span class="keywordflow">return</span>;</div>
 <div class="line"><span class="lineno">  369</span>}</div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="namespacesharp.html#af016701e4a46d5c04d26c0a09c0aad38">lcl_temperature()</a>, <a class="el" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>, <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, <a class="el" href="namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb">theta()</a>, <a class="el" href="namespacesharp.html#ab50b565bcba73d207dc1433dee5b03c9">theta_level()</a>, and <a class="el" href="namespacesharp.html#ab4bb52918c53f75e2175d67840111600">THETA_REF_PRESSURE</a>.</p>
+<p class="reference">References <a class="el" href="namespacesharp.html#a6f435bc49cb516376e1dc595e837e98b">lcl_temperature()</a>, <a class="el" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>, <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, <a class="el" href="namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb">theta()</a>, <a class="el" href="namespacesharp.html#ab50b565bcba73d207dc1433dee5b03c9">theta_level()</a>, and <a class="el" href="namespacesharp.html#ab4bb52918c53f75e2175d67840111600">THETA_REF_PRESSURE</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="structsharp_1_1Parcel.html#a9523de2b8b4c28ca49fba3013f94cb06">sharp::Parcel::lift_parcel()</a>, <a class="el" href="thermo__wrap_8h.html#a977ee5735b66a0a0b9d74f3325a0041e">sharp_drylift()</a>, <a class="el" href="namespacesharp.html#a5e3156aa7f5bafbd908184c7f51927ee">theta_wetbulb()</a>, <a class="el" href="namespacesharp.html#ab06f16aa1caac3136e863db8cd61e2e9">thetae()</a>, and <a class="el" href="namespacesharp.html#accda9c75278f1a32978bbfd662492822">wetbulb()</a>.</p>
 <div class="dynheader">
@@ -3806,8 +3806,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="af016701e4a46d5c04d26c0a09c0aad38" name="af016701e4a46d5c04d26c0a09c0aad38"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af016701e4a46d5c04d26c0a09c0aad38">&#9670;&#160;</a></span>lcl_temperature()</h2>
+<a id="a6f435bc49cb516376e1dc595e837e98b" name="a6f435bc49cb516376e1dc595e837e98b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f435bc49cb516376e1dc595e837e98b">&#9670;&#160;</a></span>lcl_temperature()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3815,13 +3815,13 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">float sharp::lcl_temperature </td>
           <td>(</td>
-          <td class="paramtype">float&#160;</td>
+          <td class="paramtype">const float&#160;</td>
           <td class="paramname"><em>temperature</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">float&#160;</td>
+          <td class="paramtype">const float&#160;</td>
           <td class="paramname"><em>dewpoint</em>&#160;</td>
         </tr>
         <tr>
@@ -3846,7 +3846,7 @@ Here is the caller graph for this function:</div>
 <dl class="section return"><dt>Returns</dt><dd>lcl_temperature (K) </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="thermo_8cpp_source.html#l00073">73</a> of file <a class="el" href="thermo_8cpp_source.html">thermo.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   73</span>                                                         {</div>
+<div class="fragment"><div class="line"><span class="lineno">   73</span>                                                                     {</div>
 <div class="line"><span class="lineno">   74</span><span class="preprocessor">#ifndef NO_QC</span></div>
 <div class="line"><span class="lineno">   75</span>    <span class="keywordflow">if</span> ((temperature == MISSING) || (dewpoint == MISSING)) {</div>
 <div class="line"><span class="lineno">   76</span>        <span class="keywordflow">return</span> MISSING;</div>
@@ -3866,7 +3866,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_af016701e4a46d5c04d26c0a09c0aad38_icgraph.svg" width="1036" height="312"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_a6f435bc49cb516376e1dc595e837e98b_icgraph.svg" width="1036" height="312"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -5496,7 +5496,7 @@ template&lt;typename Lft &gt; </div>
 <p>Compute the wetbulb potential temperature. </p>
 <dl class="section author"><dt>Author</dt><dd>John Hart - NSSFC KCMO / NWSSPC OUN</dd></dl>
 <p>Compute the wet bulb potential temperature (K) given the pressure (Pa), temperature (K), and dewpoint (K).</p>
-<p>First, it lifts a parcel with the given pressure, temperature, and dewpoint temperature to its Lifted Condensation Level (LCL). To compute the temperature and pressure of the LCL, an approximation is used. See the <a class="el" href="namespacesharp.html#af016701e4a46d5c04d26c0a09c0aad38" title="Compute the temperature of the LCL.">sharp::lcl_temperature</a> documentation for more information.</p>
+<p>First, it lifts a parcel with the given pressure, temperature, and dewpoint temperature to its Lifted Condensation Level (LCL). To compute the temperature and pressure of the LCL, an approximation is used. See the <a class="el" href="namespacesharp.html#a6f435bc49cb516376e1dc595e837e98b" title="Compute the temperature of the LCL.">sharp::lcl_temperature</a> documentation for more information.</p>
 <p>After the parcel has reached the LCL, the lifter passed in lowers the parcel to the standard reference pressure level (1000.0 hPa) along a moist adiabat.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -5509,25 +5509,25 @@ template&lt;typename Lft &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>wetbulb_potential_temperature (K) </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="thermo_8h_source.html#l00483">483</a> of file <a class="el" href="thermo_8h_source.html">thermo.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  484</span>                                                  {</div>
-<div class="line"><span class="lineno">  485</span><span class="preprocessor">#ifndef NO_QC</span></div>
-<div class="line"><span class="lineno">  486</span>    <span class="keywordflow">if</span> ((pressure == MISSING) || (temperature == MISSING) ||</div>
-<div class="line"><span class="lineno">  487</span>        (dewpoint == MISSING)) {</div>
-<div class="line"><span class="lineno">  488</span>        <span class="keywordflow">return</span> MISSING;</div>
-<div class="line"><span class="lineno">  489</span>    }</div>
-<div class="line"><span class="lineno">  490</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  491</span> </div>
-<div class="line"><span class="lineno">  492</span>    <span class="keywordtype">float</span> pres_lcl = MISSING;</div>
-<div class="line"><span class="lineno">  493</span>    <span class="keywordtype">float</span> tmpk_lcl = MISSING;</div>
-<div class="line"><span class="lineno">  494</span> </div>
-<div class="line"><span class="lineno">  495</span>    <span class="comment">// pressure_at_lcl and temperature_at_lcl are passed by reference,</span></div>
-<div class="line"><span class="lineno">  496</span>    <span class="comment">// so the values are changed by the drylift routine</span></div>
-<div class="line"><span class="lineno">  497</span>    drylift(pressure, temperature, dewpoint, pres_lcl, tmpk_lcl);</div>
-<div class="line"><span class="lineno">  498</span>    lifter.setup(pres_lcl, tmpk_lcl);</div>
-<div class="line"><span class="lineno">  499</span> </div>
-<div class="line"><span class="lineno">  500</span>    <span class="keywordflow">return</span> lifter(pres_lcl, tmpk_lcl, THETA_REF_PRESSURE);</div>
-<div class="line"><span class="lineno">  501</span>}</div>
+<p class="definition">Definition at line <a class="el" href="thermo_8h_source.html#l00484">484</a> of file <a class="el" href="thermo_8h_source.html">thermo.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  485</span>                                                  {</div>
+<div class="line"><span class="lineno">  486</span><span class="preprocessor">#ifndef NO_QC</span></div>
+<div class="line"><span class="lineno">  487</span>    <span class="keywordflow">if</span> ((pressure == MISSING) || (temperature == MISSING) ||</div>
+<div class="line"><span class="lineno">  488</span>        (dewpoint == MISSING)) {</div>
+<div class="line"><span class="lineno">  489</span>        <span class="keywordflow">return</span> MISSING;</div>
+<div class="line"><span class="lineno">  490</span>    }</div>
+<div class="line"><span class="lineno">  491</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  492</span> </div>
+<div class="line"><span class="lineno">  493</span>    <span class="keywordtype">float</span> pres_lcl = MISSING;</div>
+<div class="line"><span class="lineno">  494</span>    <span class="keywordtype">float</span> tmpk_lcl = MISSING;</div>
+<div class="line"><span class="lineno">  495</span> </div>
+<div class="line"><span class="lineno">  496</span>    <span class="comment">// pressure_at_lcl and temperature_at_lcl are passed by reference,</span></div>
+<div class="line"><span class="lineno">  497</span>    <span class="comment">// so the values are changed by the drylift routine</span></div>
+<div class="line"><span class="lineno">  498</span>    drylift(pressure, temperature, dewpoint, pres_lcl, tmpk_lcl);</div>
+<div class="line"><span class="lineno">  499</span>    lifter.setup(pres_lcl, tmpk_lcl);</div>
+<div class="line"><span class="lineno">  500</span> </div>
+<div class="line"><span class="lineno">  501</span>    <span class="keywordflow">return</span> lifter(pres_lcl, tmpk_lcl, THETA_REF_PRESSURE);</div>
+<div class="line"><span class="lineno">  502</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="namespacesharp.html#ae4385866921cd7286946d9ffdd65c25e">drylift()</a>, <a class="el" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>, <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, and <a class="el" href="namespacesharp.html#ab4bb52918c53f75e2175d67840111600">THETA_REF_PRESSURE</a>.</p>
 
@@ -6450,7 +6450,7 @@ template&lt;typename Lft &gt; </div>
 <p>Compute the wetbulb temperature. </p>
 <dl class="section author"><dt>Author</dt><dd>John Hart - NSSFC KCMO / NWSSPC OUN</dd></dl>
 <p>Compute the wet bulb temperature (K) given the pressure (Pa), temperature (K), and dewpoint (K).</p>
-<p>First, it lifts a parcel with the given pressure, temperature, and dewpoint temperature to its Lifted Condensation Level (LCL). To compute the temperature and pressure of the LCL, an approximation is used. See the <a class="el" href="namespacesharp.html#af016701e4a46d5c04d26c0a09c0aad38" title="Compute the temperature of the LCL.">sharp::lcl_temperature</a> documentation for more information.</p>
+<p>First, it lifts a parcel with the given pressure, temperature, and dewpoint temperature to its Lifted Condensation Level (LCL). To compute the temperature and pressure of the LCL, an approximation is used. See the <a class="el" href="namespacesharp.html#a6f435bc49cb516376e1dc595e837e98b" title="Compute the temperature of the LCL.">sharp::lcl_temperature</a> documentation for more information.</p>
 <p>After the parcel has reached the LCL, the lifter passed in lowers the parcel to its initial pressure level along a moist adiabat.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -6463,25 +6463,25 @@ template&lt;typename Lft &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>wetbulb_temperature (K) </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="thermo_8h_source.html#l00436">436</a> of file <a class="el" href="thermo_8h_source.html">thermo.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  437</span>                                            {</div>
-<div class="line"><span class="lineno">  438</span><span class="preprocessor">#ifndef NO_QC</span></div>
-<div class="line"><span class="lineno">  439</span>    <span class="keywordflow">if</span> ((pressure == MISSING) || (temperature == MISSING) ||</div>
-<div class="line"><span class="lineno">  440</span>        (dewpoint == MISSING)) {</div>
-<div class="line"><span class="lineno">  441</span>        <span class="keywordflow">return</span> MISSING;</div>
-<div class="line"><span class="lineno">  442</span>    }</div>
-<div class="line"><span class="lineno">  443</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">  444</span> </div>
-<div class="line"><span class="lineno">  445</span>    <span class="keywordtype">float</span> pres_lcl = MISSING;</div>
-<div class="line"><span class="lineno">  446</span>    <span class="keywordtype">float</span> tmpk_lcl = MISSING;</div>
-<div class="line"><span class="lineno">  447</span> </div>
-<div class="line"><span class="lineno">  448</span>    <span class="comment">// pressure_at_lcl and temperature_at_lcl are passed by reference,</span></div>
-<div class="line"><span class="lineno">  449</span>    <span class="comment">// so the values are changed by the drylift routine</span></div>
-<div class="line"><span class="lineno">  450</span>    drylift(pressure, temperature, dewpoint, pres_lcl, tmpk_lcl);</div>
-<div class="line"><span class="lineno">  451</span>    lifter.setup(pres_lcl, tmpk_lcl);</div>
-<div class="line"><span class="lineno">  452</span> </div>
-<div class="line"><span class="lineno">  453</span>    <span class="keywordflow">return</span> lifter(pres_lcl, tmpk_lcl, pressure);</div>
-<div class="line"><span class="lineno">  454</span>}</div>
+<p class="definition">Definition at line <a class="el" href="thermo_8h_source.html#l00437">437</a> of file <a class="el" href="thermo_8h_source.html">thermo.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  438</span>                                            {</div>
+<div class="line"><span class="lineno">  439</span><span class="preprocessor">#ifndef NO_QC</span></div>
+<div class="line"><span class="lineno">  440</span>    <span class="keywordflow">if</span> ((pressure == MISSING) || (temperature == MISSING) ||</div>
+<div class="line"><span class="lineno">  441</span>        (dewpoint == MISSING)) {</div>
+<div class="line"><span class="lineno">  442</span>        <span class="keywordflow">return</span> MISSING;</div>
+<div class="line"><span class="lineno">  443</span>    }</div>
+<div class="line"><span class="lineno">  444</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">  445</span> </div>
+<div class="line"><span class="lineno">  446</span>    <span class="keywordtype">float</span> pres_lcl = MISSING;</div>
+<div class="line"><span class="lineno">  447</span>    <span class="keywordtype">float</span> tmpk_lcl = MISSING;</div>
+<div class="line"><span class="lineno">  448</span> </div>
+<div class="line"><span class="lineno">  449</span>    <span class="comment">// pressure_at_lcl and temperature_at_lcl are passed by reference,</span></div>
+<div class="line"><span class="lineno">  450</span>    <span class="comment">// so the values are changed by the drylift routine</span></div>
+<div class="line"><span class="lineno">  451</span>    drylift(pressure, temperature, dewpoint, pres_lcl, tmpk_lcl);</div>
+<div class="line"><span class="lineno">  452</span>    lifter.setup(pres_lcl, tmpk_lcl);</div>
+<div class="line"><span class="lineno">  453</span> </div>
+<div class="line"><span class="lineno">  454</span>    <span class="keywordflow">return</span> lifter(pres_lcl, tmpk_lcl, pressure);</div>
+<div class="line"><span class="lineno">  455</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="namespacesharp.html#ae4385866921cd7286946d9ffdd65c25e">drylift()</a>, <a class="el" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>, and <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>.</p>
 
@@ -7303,7 +7303,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="constants_8h_source.html#l00036">36</a> of file <a class="el" href="constants_8h_source.html">constants.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="namespacesharp.html#a0cc6e590243b248f4fb44d9b0e1a6400">buoyancy_dilution_potential()</a>, <a class="el" href="structsharp_1_1Parcel.html#a0560bd193b2d2d6bc6b08baa7463fba4">sharp::Parcel::cape_cinh()</a>, <a class="el" href="namespacesharp.html#ae4385866921cd7286946d9ffdd65c25e">drylift()</a>, <a class="el" href="namespacesharp.html#a2e6b7cd4a3594a8f2c2050b0e4784cce">effective_inflow_layer()</a>, <a class="el" href="namespacesharp.html#ab89a7e3555a52f0fd9f4086d5aba7037">energy_helicity_index()</a>, <a class="el" href="namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822">entrainment_cape()</a>, <a class="el" href="structsharp_1_1Parcel.html#a8a311e09b1d46a829212da94cf181537">sharp::Parcel::find_lfc_el()</a>, <a class="el" href="namespacesharp.html#ab77e344c7462c9615b0ddac228bc2193">height_layer_to_pressure()</a>, <a class="el" href="namespacesharp.html#a80858337a63be77bafadbb343d6e4931">helicity()</a>, <a class="el" href="namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d">integrate_layer_trapz()</a>, <a class="el" href="namespacesharp.html#ae8240f026498ad2775633a8d0dcf100d">interp_height()</a>, <a class="el" href="namespacesharp.html#a55e4f8ee4ff8a4a30d7b3f3d92a41c75">interp_pressure()</a>, <a class="el" href="namespacesharp.html#a43a01274768ee388a983046651a230d3">lapse_rate()</a>, <a class="el" href="namespacesharp.html#abd0d1a28608e145c455ace03e787e33b">lapse_rate_max()</a>, <a class="el" href="namespacesharp.html#a298e2c96c389f2c5177d3626c908927e">layer_mean()</a>, <a class="el" href="namespacesharp.html#a646b65095b84511b75f6a4a81e545e80">layer_minmax()</a>, <a class="el" href="namespacesharp.html#af016701e4a46d5c04d26c0a09c0aad38">lcl_temperature()</a>, <a class="el" href="namespacesharp.html#a3c8b9022103d067f30281d68fa81cbda">mean_wind()</a>, <a class="el" href="namespacesharp.html#ac38870166f07ac30aadbc46b81340cc4">mixratio()</a>, <a class="el" href="namespacesharp.html#a0ebcad18ef9939ff56f23d49c35dd04c">mixratio_ice()</a>, <a class="el" href="namespacesharp.html#ab5fed65fe0cdf797961047fb9cde3295">moist_static_energy()</a>, <a class="el" href="namespacesharp.html#a31da980f398c9f6a5960ddf868101a94">pressure_layer_to_height()</a>, <a class="el" href="namespacesharp.html#a78762bd2862b739e6ae331c45cb90202">saturated_lift()</a>, <a class="el" href="convective__wrap_8h.html#ab0bfb728bbbf3a731c330b61a5c415ad">sharp_entrainment_cape()</a>, <a class="el" href="layer__wrap_8h.html#a1772e4176b54acab025fba01152bf063">sharp_HeightLayer_get_bottom()</a>, <a class="el" href="layer__wrap_8h.html#a808a8ea0fe113278b18da8ce52f949c3">sharp_HeightLayer_get_top()</a>, <a class="el" href="winds__wrap_8h.html#a2275eb46450351ce583c7aef971a0507">sharp_HeightLayer_helicity()</a>, <a class="el" href="thermo__wrap_8h.html#a56e4699ce7fd1603ff1957e72c07d367">sharp_HeightLayer_lapse_rate()</a>, <a class="el" href="layer__wrap_8h.html#aff049d2f08d0ca532b51ee39dfeff547">sharp_HeightLayer_max()</a>, <a class="el" href="layer__wrap_8h.html#a1b669cfe5d14a85dc16aa2ec7b19f914">sharp_HeightLayer_min()</a>, <a class="el" href="parcel__wrap_8h.html#a22f7a49fe7912333a481f6c95f69591e">sharp_Parcel_get_cape()</a>, <a class="el" href="parcel__wrap_8h.html#a2b557d6f731937979a95f2c2546e4fc6">sharp_Parcel_get_cinh()</a>, <a class="el" href="parcel__wrap_8h.html#a7f6f65fafb088dcd06952e0fad794619">sharp_Parcel_get_dwpk()</a>, <a class="el" href="parcel__wrap_8h.html#aad62088857d06858a63e6f06ccdafdc0">sharp_Parcel_get_el_pres()</a>, <a class="el" href="parcel__wrap_8h.html#a192d05d00a38ba14c77bfb4e315eb1d8">sharp_Parcel_get_lcl_pres()</a>, <a class="el" href="parcel__wrap_8h.html#aaaf67b0585fd568c8f6748a1e6df4226">sharp_Parcel_get_lfc_pres()</a>, <a class="el" href="parcel__wrap_8h.html#ac1c765e060093c90bf5c512c112447d2">sharp_Parcel_get_pres()</a>, <a class="el" href="parcel__wrap_8h.html#a75a0b04a763461f32e1bd8ab49f7217c">sharp_Parcel_get_tmpk()</a>, <a class="el" href="layer__wrap_8h.html#a42191f83aa56bf2af5a9d7e7eaa7170e">sharp_PressureLayer_get_bottom()</a>, <a class="el" href="layer__wrap_8h.html#a4bd483073b22cf01d09a14e9b624f46e">sharp_PressureLayer_get_top()</a>, <a class="el" href="winds__wrap_8h.html#a111ef482a9bae9f405ccb271e0816769">sharp_PressureLayer_helicity()</a>, <a class="el" href="thermo__wrap_8h.html#aa9e6b801be3431516421ca34cab2ba95">sharp_PressureLayer_lapse_rate()</a>, <a class="el" href="layer__wrap_8h.html#af26d1ab7a5b701ce5e076ff2a0ef3955">sharp_PressureLayer_max()</a>, <a class="el" href="layer__wrap_8h.html#aa9e2591b56d47f5caa08217690927b49">sharp_PressureLayer_min()</a>, <a class="el" href="convective__wrap_8h.html#a1f68f58bf144a9465dc98d4bdfc55317">sharp_significant_tornado_parameter()</a>, <a class="el" href="winds__wrap_8h.html#ad1ed218be3e8e00573161dc21294cf9f">sharp_WindComponents_get_u()</a>, <a class="el" href="winds__wrap_8h.html#a9d757c87e16d8054f7cd55ce7461db8e">sharp_WindComponents_get_v()</a>, <a class="el" href="winds__wrap_8h.html#a2aed63ca74de2402bfa22a0e70c9b4fb">sharp_WindVector_get_direction()</a>, <a class="el" href="winds__wrap_8h.html#a0b8add65db6e72304b51176c26c5cae2">sharp_WindVector_get_speed()</a>, <a class="el" href="namespacesharp.html#a6eeef5c5c9f1cbe1736996eaf8fe9ae5">significant_tornado_parameter()</a>, <a class="el" href="namespacesharp.html#a792a4a2a9f9243a82fb44cb77c2ee561">specific_humidity()</a>, <a class="el" href="namespacesharp.html#a74a735636c932467b4d2ced544e0cb51">storm_motion_bunkers()</a>, <a class="el" href="namespacesharp.html#a7d1cb8e1918ad656aceef6a512151483">supercell_composite_parameter()</a>, <a class="el" href="namespacesharp.html#a90a9ae3f1a154cecbcf65d7dbf19233f">temperature_at_mixratio()</a>, <a class="el" href="namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb">theta()</a>, <a class="el" href="namespacesharp.html#ab50b565bcba73d207dc1433dee5b03c9">theta_level()</a>, <a class="el" href="namespacesharp.html#a5e3156aa7f5bafbd908184c7f51927ee">theta_wetbulb()</a>, <a class="el" href="namespacesharp.html#ab06f16aa1caac3136e863db8cd61e2e9">thetae()</a>, <a class="el" href="namespacesharp.html#ac17d8171de07c7a610de63da30ed4f6c">u_component()</a>, <a class="el" href="namespacesharp.html#af2232af9f4649a0701f64d2d7770f5ea">v_component()</a>, <a class="el" href="namespacesharp.html#a3e31a1a145fc25f07d6326481993b2c2">vapor_pressure()</a>, <a class="el" href="namespacesharp.html#aaf448e4ec9a4f7ac7edc9b960f656fd8">vapor_pressure_ice()</a>, <a class="el" href="namespacesharp.html#a24ba1a17b591165e527fa9bf6156eed2">vector_angle()</a>, <a class="el" href="namespacesharp.html#af887f27accb1a1d656a35abec65cab5f">vector_magnitude()</a>, <a class="el" href="namespacesharp.html#ace465acac91184c91987bb085a81777a">vector_magnitude_precise()</a>, <a class="el" href="namespacesharp.html#a1a4cb8e554c04774503b004939f27f54">vector_to_components()</a>, <a class="el" href="namespacesharp.html#a76fd825fdd87804ec8b79fa73196985c">virtual_temperature()</a>, <a class="el" href="namespacesharp.html#accda9c75278f1a32978bbfd662492822">wetbulb()</a>, <a class="el" href="namespacesharp.html#ad4014313c60a66a321e4050a2a07058e">wetlift()</a>, <a class="el" href="namespacesharp.html#a099a4575acc27d6e10f9dfb69bc315a1">wind_shear()</a>, and <a class="el" href="namespacesharp.html#ab535b8214969a50771219a275ebb7f4d">wobf()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="namespacesharp.html#a0cc6e590243b248f4fb44d9b0e1a6400">buoyancy_dilution_potential()</a>, <a class="el" href="structsharp_1_1Parcel.html#a0560bd193b2d2d6bc6b08baa7463fba4">sharp::Parcel::cape_cinh()</a>, <a class="el" href="namespacesharp.html#ae4385866921cd7286946d9ffdd65c25e">drylift()</a>, <a class="el" href="namespacesharp.html#a2e6b7cd4a3594a8f2c2050b0e4784cce">effective_inflow_layer()</a>, <a class="el" href="namespacesharp.html#ab89a7e3555a52f0fd9f4086d5aba7037">energy_helicity_index()</a>, <a class="el" href="namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822">entrainment_cape()</a>, <a class="el" href="structsharp_1_1Parcel.html#a8a311e09b1d46a829212da94cf181537">sharp::Parcel::find_lfc_el()</a>, <a class="el" href="namespacesharp.html#ab77e344c7462c9615b0ddac228bc2193">height_layer_to_pressure()</a>, <a class="el" href="namespacesharp.html#a80858337a63be77bafadbb343d6e4931">helicity()</a>, <a class="el" href="namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d">integrate_layer_trapz()</a>, <a class="el" href="namespacesharp.html#ae8240f026498ad2775633a8d0dcf100d">interp_height()</a>, <a class="el" href="namespacesharp.html#a55e4f8ee4ff8a4a30d7b3f3d92a41c75">interp_pressure()</a>, <a class="el" href="namespacesharp.html#a43a01274768ee388a983046651a230d3">lapse_rate()</a>, <a class="el" href="namespacesharp.html#abd0d1a28608e145c455ace03e787e33b">lapse_rate_max()</a>, <a class="el" href="namespacesharp.html#a298e2c96c389f2c5177d3626c908927e">layer_mean()</a>, <a class="el" href="namespacesharp.html#a646b65095b84511b75f6a4a81e545e80">layer_minmax()</a>, <a class="el" href="namespacesharp.html#a6f435bc49cb516376e1dc595e837e98b">lcl_temperature()</a>, <a class="el" href="namespacesharp.html#a3c8b9022103d067f30281d68fa81cbda">mean_wind()</a>, <a class="el" href="namespacesharp.html#ac38870166f07ac30aadbc46b81340cc4">mixratio()</a>, <a class="el" href="namespacesharp.html#a0ebcad18ef9939ff56f23d49c35dd04c">mixratio_ice()</a>, <a class="el" href="namespacesharp.html#ab5fed65fe0cdf797961047fb9cde3295">moist_static_energy()</a>, <a class="el" href="namespacesharp.html#a31da980f398c9f6a5960ddf868101a94">pressure_layer_to_height()</a>, <a class="el" href="namespacesharp.html#a78762bd2862b739e6ae331c45cb90202">saturated_lift()</a>, <a class="el" href="convective__wrap_8h.html#ab0bfb728bbbf3a731c330b61a5c415ad">sharp_entrainment_cape()</a>, <a class="el" href="layer__wrap_8h.html#a1772e4176b54acab025fba01152bf063">sharp_HeightLayer_get_bottom()</a>, <a class="el" href="layer__wrap_8h.html#a808a8ea0fe113278b18da8ce52f949c3">sharp_HeightLayer_get_top()</a>, <a class="el" href="winds__wrap_8h.html#a2275eb46450351ce583c7aef971a0507">sharp_HeightLayer_helicity()</a>, <a class="el" href="thermo__wrap_8h.html#a56e4699ce7fd1603ff1957e72c07d367">sharp_HeightLayer_lapse_rate()</a>, <a class="el" href="layer__wrap_8h.html#aff049d2f08d0ca532b51ee39dfeff547">sharp_HeightLayer_max()</a>, <a class="el" href="layer__wrap_8h.html#a1b669cfe5d14a85dc16aa2ec7b19f914">sharp_HeightLayer_min()</a>, <a class="el" href="parcel__wrap_8h.html#a22f7a49fe7912333a481f6c95f69591e">sharp_Parcel_get_cape()</a>, <a class="el" href="parcel__wrap_8h.html#a2b557d6f731937979a95f2c2546e4fc6">sharp_Parcel_get_cinh()</a>, <a class="el" href="parcel__wrap_8h.html#a7f6f65fafb088dcd06952e0fad794619">sharp_Parcel_get_dwpk()</a>, <a class="el" href="parcel__wrap_8h.html#aad62088857d06858a63e6f06ccdafdc0">sharp_Parcel_get_el_pres()</a>, <a class="el" href="parcel__wrap_8h.html#a192d05d00a38ba14c77bfb4e315eb1d8">sharp_Parcel_get_lcl_pres()</a>, <a class="el" href="parcel__wrap_8h.html#aaaf67b0585fd568c8f6748a1e6df4226">sharp_Parcel_get_lfc_pres()</a>, <a class="el" href="parcel__wrap_8h.html#ac1c765e060093c90bf5c512c112447d2">sharp_Parcel_get_pres()</a>, <a class="el" href="parcel__wrap_8h.html#a75a0b04a763461f32e1bd8ab49f7217c">sharp_Parcel_get_tmpk()</a>, <a class="el" href="layer__wrap_8h.html#a42191f83aa56bf2af5a9d7e7eaa7170e">sharp_PressureLayer_get_bottom()</a>, <a class="el" href="layer__wrap_8h.html#a4bd483073b22cf01d09a14e9b624f46e">sharp_PressureLayer_get_top()</a>, <a class="el" href="winds__wrap_8h.html#a111ef482a9bae9f405ccb271e0816769">sharp_PressureLayer_helicity()</a>, <a class="el" href="thermo__wrap_8h.html#aa9e6b801be3431516421ca34cab2ba95">sharp_PressureLayer_lapse_rate()</a>, <a class="el" href="layer__wrap_8h.html#af26d1ab7a5b701ce5e076ff2a0ef3955">sharp_PressureLayer_max()</a>, <a class="el" href="layer__wrap_8h.html#aa9e2591b56d47f5caa08217690927b49">sharp_PressureLayer_min()</a>, <a class="el" href="convective__wrap_8h.html#a1f68f58bf144a9465dc98d4bdfc55317">sharp_significant_tornado_parameter()</a>, <a class="el" href="winds__wrap_8h.html#ad1ed218be3e8e00573161dc21294cf9f">sharp_WindComponents_get_u()</a>, <a class="el" href="winds__wrap_8h.html#a9d757c87e16d8054f7cd55ce7461db8e">sharp_WindComponents_get_v()</a>, <a class="el" href="winds__wrap_8h.html#a2aed63ca74de2402bfa22a0e70c9b4fb">sharp_WindVector_get_direction()</a>, <a class="el" href="winds__wrap_8h.html#a0b8add65db6e72304b51176c26c5cae2">sharp_WindVector_get_speed()</a>, <a class="el" href="namespacesharp.html#a6eeef5c5c9f1cbe1736996eaf8fe9ae5">significant_tornado_parameter()</a>, <a class="el" href="namespacesharp.html#a792a4a2a9f9243a82fb44cb77c2ee561">specific_humidity()</a>, <a class="el" href="namespacesharp.html#a74a735636c932467b4d2ced544e0cb51">storm_motion_bunkers()</a>, <a class="el" href="namespacesharp.html#a7d1cb8e1918ad656aceef6a512151483">supercell_composite_parameter()</a>, <a class="el" href="namespacesharp.html#a90a9ae3f1a154cecbcf65d7dbf19233f">temperature_at_mixratio()</a>, <a class="el" href="namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb">theta()</a>, <a class="el" href="namespacesharp.html#ab50b565bcba73d207dc1433dee5b03c9">theta_level()</a>, <a class="el" href="namespacesharp.html#a5e3156aa7f5bafbd908184c7f51927ee">theta_wetbulb()</a>, <a class="el" href="namespacesharp.html#ab06f16aa1caac3136e863db8cd61e2e9">thetae()</a>, <a class="el" href="namespacesharp.html#ac17d8171de07c7a610de63da30ed4f6c">u_component()</a>, <a class="el" href="namespacesharp.html#af2232af9f4649a0701f64d2d7770f5ea">v_component()</a>, <a class="el" href="namespacesharp.html#a3e31a1a145fc25f07d6326481993b2c2">vapor_pressure()</a>, <a class="el" href="namespacesharp.html#aaf448e4ec9a4f7ac7edc9b960f656fd8">vapor_pressure_ice()</a>, <a class="el" href="namespacesharp.html#a24ba1a17b591165e527fa9bf6156eed2">vector_angle()</a>, <a class="el" href="namespacesharp.html#af887f27accb1a1d656a35abec65cab5f">vector_magnitude()</a>, <a class="el" href="namespacesharp.html#ace465acac91184c91987bb085a81777a">vector_magnitude_precise()</a>, <a class="el" href="namespacesharp.html#a1a4cb8e554c04774503b004939f27f54">vector_to_components()</a>, <a class="el" href="namespacesharp.html#a76fd825fdd87804ec8b79fa73196985c">virtual_temperature()</a>, <a class="el" href="namespacesharp.html#accda9c75278f1a32978bbfd662492822">wetbulb()</a>, <a class="el" href="namespacesharp.html#ad4014313c60a66a321e4050a2a07058e">wetlift()</a>, <a class="el" href="namespacesharp.html#a099a4575acc27d6e10f9dfb69bc315a1">wind_shear()</a>, and <a class="el" href="namespacesharp.html#ab535b8214969a50771219a275ebb7f4d">wobf()</a>.</p>
 
 </div>
 </div>
