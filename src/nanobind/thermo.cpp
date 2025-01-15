@@ -183,7 +183,7 @@ Compute the vapor pressure with respect to liquid water.
 The vapor pressure (or saturation vapor pressure) is computed with 
 respect to liquid water when the dewpoint temperature (or air temperature)
 is passed (in Kelvin), along with the air pressure (Pa). The air pressure 
-is used as a minim floor value for extremely cold temperatures at low
+is used as a minimum floor value for extremely cold temperatures at low
 pressures, and is consistent with how vapor pressure is treated in CM1. 
 
 This function uses the formulation by Bolton (1980), and is
@@ -226,7 +226,7 @@ Compute the vapor pressure with respect to liquid water.
 The vapor pressure (or saturation vapor pressure) is computed with 
 respect to liquid water when the dewpoint temperature (or air temperature)
 is passed (in Kelvin), along with the air pressure (Pa). The air pressure 
-is used as a minim floor value for extremely cold temperatures at low
+is used as a minimum floor value for extremely cold temperatures at low
 pressures, and is consistent with how vapor pressure is treated in CM1. 
 
 This function uses the formulation by Bolton (1980), and is
@@ -249,7 +249,7 @@ Compute the vapor pressure with respect to ice.
 The vapor pressure (or saturation vapor pressure) is computed with 
 respect to ice when the dewpoint temperature (or air temperature)
 is passed (in Kelvin), along with the air pressure (Pa). The air pressure 
-is used as a minim floor value for extremely cold temperatures at low
+is used as a minimum floor value for extremely cold temperatures at low
 pressures, and is consistent with how vapor pressure is treated in CM1. 
 
 This function uses the formulation by Bolton (1980), and is
