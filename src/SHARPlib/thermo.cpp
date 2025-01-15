@@ -120,14 +120,14 @@ float theta(const float pressure, const float temperature,
     return (temperature * std::pow(ref_pressure / pressure, ROCP));
 }
 
-float mixratio(float q) {
+float mixratio(const float q) {
 #ifndef NO_QC
     if (q == MISSING) return MISSING;
 #endif
     return q / (1.0 - q);
 }
 
-float mixratio(float pressure, float temperature) {
+float mixratio(const float pressure, const float temperature) {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING)) {
         return MISSING;
@@ -138,7 +138,7 @@ float mixratio(float pressure, float temperature) {
     return (EPSILON * e) / (pressure - e);
 }
 
-float mixratio_ice(float pressure, float temperature) {
+float mixratio_ice(const float pressure, const float temperature) {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING)) {
         return MISSING;

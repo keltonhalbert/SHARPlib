@@ -218,7 +218,7 @@ enum class adiabat : int {
  *
  * \return   mixratio   (kg/kg)
  */
-[[nodiscard]] float mixratio(float q);
+[[nodiscard]] float mixratio(const float q);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -237,7 +237,7 @@ enum class adiabat : int {
  *
  * \return   mixratio              (kg/kg)
  */
-[[nodiscard]] float mixratio(float pressure, float temperature);
+[[nodiscard]] float mixratio(const float pressure, const float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -256,7 +256,7 @@ enum class adiabat : int {
  *
  * \return   mixratio              (kg/kg)
  */
-[[nodiscard]] float mixratio_ice(float pressure, float temperature);
+[[nodiscard]] float mixratio_ice(const float pressure, const float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
