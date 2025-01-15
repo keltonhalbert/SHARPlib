@@ -11,7 +11,9 @@ namespace nb = nanobind;
 
 // clang-format on
 NB_MODULE(layer, m) {
-    m.doc() = "Utility functions for operating on layers of the atmosphere.";
+    m.doc() =
+        "Sounding and Hodograph Analysis and Research Program Library "
+        "(SHARPlib) :: Atmospheric Layer Routines";
 
     // Bind the constructors, named fields, and default arguments
     nb::class_<sharp::HeightLayer>(m, "HeightLayer")
