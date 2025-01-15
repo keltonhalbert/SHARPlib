@@ -363,4 +363,52 @@ Returns:
     The 1D array of temperature (K) of an air parcel at a given mixing ratio and pressure.
 
     )pbdoc");
+
+    m.def("theta_level", &sharp::theta_level, nb::arg("potential_temperature"),
+          nb::arg("theta"),
+          R"pbdoc(
+Computes the pressure level (Pa) of a parcel given the potential temperature (K) and air 
+temperature (K).
+
+Params:
+    potential_temperature: The potential temperature, or theta (K)
+    temperature: The air temperature (K)
+
+Returns:
+    The pressure level (Pa) corresponding to the potential temperature and air temperature.
+    )pbdoc");
+
+    m.def(
+        "theta_level",
+        [](const_prof_arr_t theta_arr, const_prof_arr_t tmpk_arr) {
+            auto theta = theta_arr.view();
+            auto tmpk = tmpk_arr.view();
+            if ((theta.shape(0) != tmpk.shape(0))) {
+                throw nb::buffer_error(
+                    "theta_arr and tmpk_arr must have the same size!");
+            }
+            float *pres_arr = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                pres_arr[k] = sharp::theta_level(theta(k), tmpk(k));
+            }
+
+            nb::capsule owner(pres_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                pres_arr, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("theta_arr"), nb::arg("tmpk_arr"),
+        R"pbdoc(
+Computes the pressure level (Pa) of a parcel given the potential temperature (K) and air 
+temperature (K).
+
+Params:
+    theta_arr: The 1D array of potential temperature, or theta (K)
+    tmpk_arr: The 1D array of air temperature (K)
+
+Returns:
+    The 1D pressure level (Pa) corresponding to the potential temperature and air temperature.
+
+    )pbdoc");
 }
