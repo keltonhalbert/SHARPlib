@@ -365,7 +365,7 @@ Returns:
     )pbdoc");
 
     m.def("theta_level", &sharp::theta_level, nb::arg("potential_temperature"),
-          nb::arg("theta"),
+          nb::arg("temperature"),
           R"pbdoc(
 Computes the pressure level (Pa) of a parcel given the potential temperature (K) and air 
 temperature (K).
