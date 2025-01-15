@@ -183,7 +183,8 @@ enum class adiabat : int {
  *
  * \return   pressure              (Pa)
  */
-[[nodiscard]] float theta_level(float potential_temperature, float temperature);
+[[nodiscard]] float theta_level(const float potential_temperature,
+                                const float temperature);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN

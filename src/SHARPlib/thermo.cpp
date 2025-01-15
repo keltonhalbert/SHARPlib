@@ -98,7 +98,7 @@ float temperature_at_mixratio(const float wv_mixratio, const float pressure) {
     return ZEROCNK + (243.5f * el - 440.8f) / (19.48f - el);
 }
 
-float theta_level(float potential_temperature, float temperature) {
+float theta_level(const float potential_temperature, const float temperature) {
 #ifndef NO_QC
     if ((potential_temperature == MISSING) || (temperature == MISSING)) {
         return MISSING;
