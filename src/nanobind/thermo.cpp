@@ -3,6 +3,7 @@
 
 // cland-format on
 #include <SHARPlib/thermo.h>
+#include "SHARPlib/constants.h"
 #include "sharplib_types.h"
 
 namespace nb = nanobind;
@@ -410,5 +411,56 @@ Params:
 Returns:
     The 1D pressure level (Pa) corresponding to the potential temperature and air temperature.
 
+    )pbdoc");
+
+    m.def("theta", &sharp::theta, nb::arg("pressure"), nb::arg("temperature"),
+          nb::arg("ref_pressure") = sharp::THETA_REF_PRESSURE,
+          R"pbdoc(
+Computes the potential temperature (K), or theta, given the air pressure (Pa), air temperature (K),
+and a reference pressure (default value is 100000 Pa).
+
+Parameters:
+    pressure: The air pressure (Pa)
+    temperature: The air temperature (K)
+    ref_pressure (optional): The reference pressure (default 100000.0 Pa)
+
+Returns:
+    The potential temperature (K), or theta
+    )pbdoc");
+
+    m.def(
+        "theta",
+        [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr,
+           const float ref_pres) {
+            auto pres = pres_arr.view();
+            auto tmpk = tmpk_arr.view();
+            if ((pres.shape(0) != tmpk.shape(0))) {
+                throw nb::buffer_error(
+                    "pres_arr and tmpk_arr must have the same size!");
+            }
+            float *theta_arr = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                theta_arr[k] = sharp::theta(pres(k), tmpk(k), ref_pres);
+            }
+
+            nb::capsule owner(theta_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                theta_arr, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("pres_arr"), nb::arg("tmpk_arr"),
+        nb::arg("ref_pressure") = sharp::THETA_REF_PRESSURE,
+        R"pbdoc(
+Computes the potential temperature (K), or theta, given the air pressure (Pa), air temperature (K),
+and a reference pressure (default value is 100000 Pa).
+
+Parameters:
+    pressure: The 1D array of air pressure (Pa)
+    temperature: The 1D array of air temperature (K)
+    ref_pressure (optional): The reference pressure (default 100000.0 Pa)
+
+Returns:
+    The 1D array of potential temperature (K), or theta
     )pbdoc");
 }
