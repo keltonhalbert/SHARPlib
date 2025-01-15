@@ -20,7 +20,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="namespacesharp.html#aaf448e4ec9a4f7ac7edc9b960f656fd8" target="_top" xlink:title="Compute the vapor pressure over ice.">
+<g id="a_node2"><a xlink:href="namespacesharp.html#ad9be01979b547fe6827968eafcf72929" target="_top" xlink:title="Compute the vapor pressure over ice.">
 <polygon fill="white" stroke="#666666" points="290,-19 146,-19 146,0 290,0 290,-19"/>
 <text text-anchor="middle" x="218" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">sharp::vapor_pressure_ice</text>
 </a>

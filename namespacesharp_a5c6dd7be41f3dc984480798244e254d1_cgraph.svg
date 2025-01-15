@@ -50,7 +50,7 @@
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="namespacesharp.html#aaf448e4ec9a4f7ac7edc9b960f656fd8" target="_top" xlink:title="Compute the vapor pressure over ice.">
+<g id="a_node4"><a xlink:href="namespacesharp.html#ad9be01979b547fe6827968eafcf72929" target="_top" xlink:title="Compute the vapor pressure over ice.">
 <polygon fill="white" stroke="#666666" points="433,-19 289,-19 289,0 433,0 433,-19"/>
 <text text-anchor="middle" x="361" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">sharp::vapor_pressure_ice</text>
 </a>
