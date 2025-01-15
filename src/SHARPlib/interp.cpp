@@ -20,7 +20,7 @@
 
 namespace sharp {
 
-float interp_height(float height_val, const float height_arr[],
+float interp_height(const float height_val, const float height_arr[],
                     const float data_arr[], const std::ptrdiff_t N) {
 #ifndef NO_QC
     if (height_val == MISSING) return MISSING;
@@ -63,7 +63,7 @@ float interp_height(float height_val, const float height_arr[],
     return lerp(data_bot, data_top, dz_norm);
 }
 
-float interp_pressure(float pressure_val, const float pressure_arr[],
+float interp_pressure(const float pressure_val, const float pressure_arr[],
                       const float data_arr[], const std::ptrdiff_t N) {
 #ifndef NO_QC
     if (pressure_val == MISSING) return MISSING;

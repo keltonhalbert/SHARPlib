@@ -48,7 +48,8 @@ namespace sharp {
  * \return  The value between __a and __b at distance __t between them.
  */
 template <typename _Fp>
-[[nodiscard]] constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) {
+[[nodiscard]] constexpr _Fp __lerp(const _Fp __a, const _Fp __b,
+                                   const _Fp __t) {
     if ((__a <= 0 && __b >= 0) || (__a >= 0 && __b <= 0))
         return __t * __b + (1 - __t) * __a;
 
@@ -89,7 +90,8 @@ template <typename _Fp>
  *
  * \return  The value between __a and __b at distance __t between them.
  */
-[[nodiscard]] constexpr float lerp(float __a, float __b, float __t) {
+[[nodiscard]] constexpr float lerp(const float __a, const float __b,
+                                   const float __t) {
     return __lerp(__a, __b, __t);
 }
 
@@ -115,7 +117,8 @@ template <typename _Fp>
  *
  * \return  The value of data_arr at the requested height_val.
  */
-[[nodiscard]] float interp_height(float height_val, const float height_arr[],
+[[nodiscard]] float interp_height(const float height_val,
+                                  const float height_arr[],
                                   const float data_arr[],
                                   const std::ptrdiff_t N);
 
@@ -140,7 +143,7 @@ template <typename _Fp>
  *
  * \return  The value of data_arr at the requested pressure_val.
  */
-[[nodiscard]] float interp_pressure(float pressure_val,
+[[nodiscard]] float interp_pressure(const float pressure_val,
                                     const float pressure_arr[],
                                     const float data_arr[],
                                     const std::ptrdiff_t N);
