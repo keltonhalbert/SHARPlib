@@ -306,4 +306,61 @@ Returns:
     The 1D array of vapor pressure (Pa) given dewpoint temperature, or the 
     saturation vapor pressure given the air temperature. 
     )pbdoc");
+
+    m.def("temperature_at_mixratio", &sharp::temperature_at_mixratio,
+          nb::arg("wv_mixratio"), nb::arg("pressure"),
+          R"pbdoc(
+Computes the temperature (K) of air at the given water vapor mixing ratio
+(kg/kg) and air pressure (Pa). Can be used to compute the dewpoint temperature 
+from mixing ratio. 
+
+The routine is implemented as in Bolton (1980) eq 11, and is considered to be 
+accurate to 0.03 K for -35C <= T <= 35C. 
+
+Parameters:
+    wv_mixratio: The water vapor mixing ratio (kg/kg)
+    pressure: The air pressure (Pa)
+
+Returns:
+    The temperature (K) of an air parcel at a given mixing ratio and pressure.
+    )pbdoc");
+
+    m.def(
+        "temperature_at_mixratio",
+        [](const_prof_arr_t mixr_arr, const_prof_arr_t pres_arr) {
+            auto mixr = mixr_arr.view();
+            auto pres = pres_arr.view();
+            if ((mixr.shape(0) != pres.shape(0))) {
+                throw nb::buffer_error(
+                    "mixr_arr and pres_arr must have the same size!");
+            }
+
+            float *dwpk_arr = new float[mixr.shape(0)];
+            for (size_t k = 0; k < mixr.shape(0); ++k) {
+                dwpk_arr[k] = sharp::temperature_at_mixratio(mixr(k), pres(k));
+            }
+
+            nb::capsule owner(dwpk_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                dwpk_arr, {mixr.shape(0)}, owner);
+        },
+        nb::arg("mixr_arr"), nb::arg("pres_arr"),
+        R"pbdoc(
+Computes the temperature (K) of air at the given water vapor mixing ratio
+(kg/kg) and air pressure (Pa). Can be used to compute the dewpoint temperature 
+from mixing ratio. 
+
+The routine is implemented as in Bolton (1980) eq 11, and is considered to be 
+accurate to 0.03 K for -35C <= T <= 35C. 
+
+Parameters:
+    mixr_arr: The 1D array of water vapor mixing ratio (kg/kg)
+    pres_arr: The 1D array of air pressure (Pa)
+
+Returns:
+    The 1D array of temperature (K) of an air parcel at a given mixing ratio and pressure.
+
+    )pbdoc");
 }
