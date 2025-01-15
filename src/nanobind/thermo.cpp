@@ -467,7 +467,7 @@ Returns:
     m.def("mixratio", static_cast<float (*)(float)>(&sharp::mixratio),
           nb::arg("q"),
           R"pbdoc(
-Compute the water vapor mixing ratio (kg/kg) from the specific humidity (kg/kg).
+Compute the water vapor mixing ratio (kg/kg) from specific humidity (kg/kg).
 
 Parameters:
     q: The specific humidity (kg/kg)
@@ -480,6 +480,8 @@ Returns:
           nb::arg("pressure"), nb::arg("temperature"),
           R"pbdoc(
 Compute the water vapor mixing ratio (kg/kg) from the air pressure (Pa) and temperature (K).
+If given the air temperature, this is the saturation mixing ratio. If given the dewpoint 
+temperature, tis is the mixing ratio. 
 
 Parameters:
     pressure: The air pressure (Pa)
@@ -487,5 +489,68 @@ Parameters:
 
 Returns:
     The water vapor mixing ratio (kg/kg)
+    )pbdoc");
+
+    m.def(
+        "mixratio",
+        [](const_prof_arr_t spfh_arr) {
+            auto spfh = spfh_arr.view();
+
+            float *mixr_arr = new float[spfh.shape(0)];
+            for (size_t k = 0; k < spfh.shape(0); ++k) {
+                mixr_arr[k] = sharp::mixratio(spfh(k));
+            }
+
+            nb::capsule owner(mixr_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                mixr_arr, {spfh.shape(0)}, owner);
+        },
+        nb::arg("q"),
+        R"pbdoc(
+Compute the water vapor mixing ratio (kg/kg) from the specific humidity (kg/kg).
+
+Parameters:
+    q: The 1D array of specific humidity (kg/kg)
+
+Returns:
+    The 1D array of water vapor mixing ratio (kg/kg)
+
+    )pbdoc");
+
+    m.def(
+        "mixratio",
+        [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr) {
+            auto pres = pres_arr.view();
+            auto tmpk = tmpk_arr.view();
+            if ((pres.shape(0) != tmpk.shape(0))) {
+                throw nb::buffer_error(
+                    "pres_arr and tmpk_arr must have the same size!");
+            }
+            float *mixr_arr = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                mixr_arr[k] = sharp::mixratio(pres(k), tmpk(k));
+            }
+
+            nb::capsule owner(mixr_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                mixr_arr, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("pres_arr"), nb::arg("tmpk_arr"),
+        R"pbdoc(
+Compute the water vapor mixing ratio (kg/kg) from the air pressure (Pa) and temperature (K).
+If given the air temperature, this is the saturation mixing ratio. If given the dewpoint 
+temperature, tis is the mixing ratio. 
+
+Parameters:
+    pressure: The 1D array of air pressure (Pa)
+    temperature: The 1D array of air temperature (K)
+
+Returns:
+    The 1D array of water vapor mixing ratio (kg/kg)
+
     )pbdoc");
 }
