@@ -70,7 +70,7 @@ float vapor_pressure_ice(float pressure, float temperature) {
     return std::min(es, pressure * 0.5f);
 }
 
-float lcl_temperature(float temperature, float dewpoint) {
+float lcl_temperature(const float temperature, const float dewpoint) {
 #ifndef NO_QC
     if ((temperature == MISSING) || (dewpoint == MISSING)) {
         return MISSING;

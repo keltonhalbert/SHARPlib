@@ -143,7 +143,8 @@ enum class adiabat : int {
  *
  * \return   lcl_temperature (K)
  */
-[[nodiscard]] float lcl_temperature(float temperature, float dewpoint);
+[[nodiscard]] float lcl_temperature(const float temperature,
+                                    const float dewpoint);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
