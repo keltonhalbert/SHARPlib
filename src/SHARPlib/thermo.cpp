@@ -24,7 +24,7 @@ namespace sharp {
 struct lifter_wobus;
 struct lifter_cm1;
 
-float wobf(float temperature) {
+float wobf(const float temperature) {
 #ifndef NO_QC
     if (temperature == MISSING) return MISSING;
 #endif

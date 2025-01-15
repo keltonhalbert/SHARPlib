@@ -82,7 +82,7 @@ enum class adiabat : int {
  *
  * \return  wobf            (K)
  */
-[[nodiscard]] float wobf(float temperature);
+[[nodiscard]] float wobf(const float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
