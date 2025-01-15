@@ -54,14 +54,14 @@ NB_MODULE(layer, m) {
         },
         nb::arg("layer"), nb::arg("pressure"),
         R"pbdoc(
-              Finds the array indices corresponding to the given PressureLayer.
+Finds the array indices corresponding to the given PressureLayer.
 
-              Parameters:
-                  layer: PressureLayer
-                  pressure: 1D NumPy array of pressures
+Parameters:
+    layer: PressureLayer
+    pressure: 1D NumPy array of pressures
 
-              Returns:
-                  A LayerIndex with {kbot, ktop}.
+Returns:
+    A LayerIndex with {kbot, ktop}.
           )pbdoc");
 
     m.def(
@@ -73,13 +73,13 @@ NB_MODULE(layer, m) {
         },
         nb::arg("layer"), nb::arg("height"),
         R"pbdoc(
-              Finds the array indices corresponding to the given HeightLayer.
+Finds the array indices corresponding to the given HeightLayer.
 
-              Parameters:
-                  layer: HeightLayer
-                  pressure: 1D NumPy array of heights
+Parameters:
+    layer: HeightLayer
+    pressure: 1D NumPy array of heights
 
-              Returns:
-                  A LayerIndex with {kbot, ktop}.
+Returns:
+    A LayerIndex with {kbot, ktop}.
           )pbdoc");
 }
