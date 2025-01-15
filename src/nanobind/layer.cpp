@@ -5,10 +5,10 @@
 // cland-format on
 #include <SHARPlib/layer.h>
 #include <cstddef>
+#include "sharplib_types.h"
 
 namespace nb = nanobind;
 
-using profile_arr_t = nb::ndarray<float, nb::ndim<1>, nb::device::cpu, nb::c_contig, nb::ro>;
 // clang-format on
 NB_MODULE(layer, m) {
     m.doc() = "Utility functions for operating on layers of the atmosphere.";
@@ -48,7 +48,7 @@ NB_MODULE(layer, m) {
     m.def(
         "get_layer_index",
         [](sharp::PressureLayer& layer,
-           profile_arr_t pressure_array) -> sharp::LayerIndex {
+           const_prof_arr_t pressure_array) -> sharp::LayerIndex {
             return sharp::get_layer_index(layer, pressure_array.data(),
                                           pressure_array.size());
         },
@@ -67,7 +67,7 @@ NB_MODULE(layer, m) {
     m.def(
         "get_layer_index",
         [](sharp::HeightLayer& layer,
-           profile_arr_t height_array) -> sharp::LayerIndex {
+           const_prof_arr_t height_array) -> sharp::LayerIndex {
             return sharp::get_layer_index(layer, height_array.data(),
                                           height_array.size());
         },
