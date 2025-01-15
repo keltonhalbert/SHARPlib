@@ -174,4 +174,136 @@ Returns:
     The 1D array of LCL temperatures (Kelvin)
 
         )pbdoc");
+
+    m.def("vapor_pressure", &sharp::vapor_pressure, nb::arg("pressure"),
+          nb::arg("temperature"),
+          R"pbdoc(
+Compute the vapor pressure with respect to liquid water.
+
+The vapor pressure (or saturation vapor pressure) is computed with 
+respect to liquid water when the dewpoint temperature (or air temperature)
+is passed (in Kelvin), along with the air pressure (Pa). The air pressure 
+is used as a minim floor value for extremely cold temperatures at low
+pressures, and is consistent with how vapor pressure is treated in CM1. 
+
+This function uses the formulation by Bolton (1980), and is
+accurate to within 0.3% for the temperature range of -35C <= T <= 35C.
+
+Parameters:
+    pressure: The air pressure (Pa)
+    temperature: The air temperature (K) or dewpoint temperature (K)
+
+Returns: 
+    The vapor pressure (Pa) given dewpoint temperature, or the 
+    saturation vapor pressure given the air temperature. 
+    )pbdoc");
+
+    m.def(
+        "vapor_pressure",
+        [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr) {
+            auto tmpk = tmpk_arr.view();
+            auto pres = pres_arr.view();
+            if ((tmpk.shape(0) != pres.shape(0))) {
+                throw nb::buffer_error(
+                    "tmpk_arr and pres_arr must have the same size!");
+            }
+
+            float *vappres_arr = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                vappres_arr[k] = sharp::vapor_pressure(pres(k), tmpk(k));
+            }
+
+            nb::capsule owner(vappres_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                vappres_arr, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("pres_arr"), nb::arg("tmpk_arr"),
+        R"pbdoc(
+Compute the vapor pressure with respect to liquid water.
+
+The vapor pressure (or saturation vapor pressure) is computed with 
+respect to liquid water when the dewpoint temperature (or air temperature)
+is passed (in Kelvin), along with the air pressure (Pa). The air pressure 
+is used as a minim floor value for extremely cold temperatures at low
+pressures, and is consistent with how vapor pressure is treated in CM1. 
+
+This function uses the formulation by Bolton (1980), and is
+accurate to within 0.3% for the temperature range of -35C <= T <= 35C.
+
+Parameters:
+    pres_arr: The 1D array of air pressure (Pa)
+    tmpk_arr: The 1D array of air temperature (K) or dewpoint temperature (K)
+
+Returns: 
+    The 1D array of vapor pressure (Pa) given dewpoint temperature, or the 
+    saturation vapor pressure given the air temperature. 
+    )pbdoc");
+
+    m.def("vapor_pressure_ice", &sharp::vapor_pressure_ice, nb::arg("pressure"),
+          nb::arg("temperature"),
+          R"pbdoc(
+Compute the vapor pressure with respect to ice.
+
+The vapor pressure (or saturation vapor pressure) is computed with 
+respect to ice when the dewpoint temperature (or air temperature)
+is passed (in Kelvin), along with the air pressure (Pa). The air pressure 
+is used as a minim floor value for extremely cold temperatures at low
+pressures, and is consistent with how vapor pressure is treated in CM1. 
+
+This function uses the formulation by Bolton (1980), and is
+accurate to within 0.3% for the temperature range of -35C <= T <= 35C.
+
+Parameters:
+    pressure: The air pressure (Pa)
+    temperature: The air temperature (K) or dewpoint temperature (K)
+
+Returns: 
+    The vapor pressure (Pa) given dewpoint temperature, or the 
+    saturation vapor pressure given the air temperature. 
+    )pbdoc");
+
+    m.def(
+        "vapor_pressure_ice",
+        [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr) {
+            auto tmpk = tmpk_arr.view();
+            auto pres = pres_arr.view();
+            if ((tmpk.shape(0) != pres.shape(0))) {
+                throw nb::buffer_error(
+                    "tmpk_arr and pres_arr must have the same size!");
+            }
+
+            float *vappres_arr = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                vappres_arr[k] = sharp::vapor_pressure_ice(pres(k), tmpk(k));
+            }
+
+            nb::capsule owner(vappres_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                vappres_arr, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("pres_arr"), nb::arg("tmpk_arr"),
+        R"pbdoc(
+Compute the vapor pressure with respect to ice.
+
+The vapor pressure (or saturation vapor pressure) is computed with 
+respect to ice when the dewpoint temperature (or air temperature)
+is passed (in Kelvin), along with the air pressure (Pa). The air pressure 
+is used as a minimum floor value for extremely cold temperatures at low
+pressures, and is consistent with how vapor pressure is treated in CM1. 
+
+This function uses the formulation by Bolton (1980), and is
+accurate to within 0.3% for the temperature range of -35C <= T <= 35C.
+
+Parameters:
+    pres_arr: The 1D array of air pressure (Pa)
+    tmpk_arr: The 1D array of air temperature (K) or dewpoint temperature (K)
+
+Returns: 
+    The 1D array of vapor pressure (Pa) given dewpoint temperature, or the 
+    saturation vapor pressure given the air temperature. 
+    )pbdoc");
 }
