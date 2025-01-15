@@ -99,7 +99,7 @@ var namespacesharp =
     [ "wetbulb", "namespacesharp.html#a5301da4223bbde718f7e5b2e8f14e420", null ],
     [ "wetlift", "namespacesharp.html#ad4014313c60a66a321e4050a2a07058e", null ],
     [ "wind_shear", "namespacesharp.html#a099a4575acc27d6e10f9dfb69bc315a1", null ],
-    [ "wobf", "namespacesharp.html#ab535b8214969a50771219a275ebb7f4d", null ],
+    [ "wobf", "namespacesharp.html#a52c7e44244cfacdbe530356f295ff114", null ],
     [ "CP_DRYAIR", "namespacesharp.html#afda77fe7a6cefaab1ecb404167ed90b4", null ],
     [ "CP_ICE", "namespacesharp.html#a5e0154c5bf801be652400fa05934af6c", null ],
     [ "CP_LIQUID", "namespacesharp.html#a2e3e641b9148566d1f4fc1bd06494ec2", null ],
