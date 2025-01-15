@@ -66,7 +66,7 @@
 <!-- Node13 -->
 <g id="node13" class="node">
 <title>Node13</title>
-<g id="a_node13"><a xlink:href="namespacesharp.html#a90a9ae3f1a154cecbcf65d7dbf19233f" target="_top" xlink:title="Compute the temperature at a given water vapor mixing ratio and pressure level.">
+<g id="a_node13"><a xlink:href="namespacesharp.html#ae369e44c9b4b9ad08819cad225840cba" target="_top" xlink:title="Compute the temperature at a given water vapor mixing ratio and pressure level.">
 <polygon fill="white" stroke="#666666" points="263,-67.5 153,-67.5 153,-37.5 263,-37.5 263,-67.5"/>
 <text text-anchor="start" x="161" y="-55.5" font-family="Helvetica,sans-Serif" font-size="10.00">sharp::temperature</text>
 <text text-anchor="middle" x="208" y="-44.5" font-family="Helvetica,sans-Serif" font-size="10.00">_at_mixratio</text>
@@ -82,7 +82,7 @@
 <!-- Node14 -->
 <g id="node14" class="node">
 <title>Node14</title>
-<g id="a_node14"><a xlink:href="namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb" target="_top" xlink:title="Compute the potential temperature.">
+<g id="a_node14"><a xlink:href="namespacesharp.html#ac3f1b3b63f158e6c88e94dd9daa2a71c" target="_top" xlink:title="Compute the potential temperature.">
 <polygon fill="white" stroke="#666666" points="245.5,-19 170.5,-19 170.5,0 245.5,0 245.5,-19"/>
 <text text-anchor="middle" x="208" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">sharp::theta</text>
 </a>
