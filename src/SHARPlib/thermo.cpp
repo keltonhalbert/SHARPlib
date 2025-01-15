@@ -84,7 +84,7 @@ float lcl_temperature(const float temperature, const float dewpoint) {
     return (1.0 / (term_1 + term_2)) + c1;
 }
 
-float temperature_at_mixratio(float wv_mixratio, float pressure) {
+float temperature_at_mixratio(const float wv_mixratio, const float pressure) {
 #ifndef NO_QC
     if ((wv_mixratio == MISSING) || (pressure == MISSING)) {
         return MISSING;

@@ -158,7 +158,7 @@ enum class adiabat : int {
  * given water vapor mixing ratio in kg/kg and the
  * air pressure in Pa.
  *
- * The is implemented as in Bolton (1980) eq 11, and is considered
+ * The routine is implemented as in Bolton (1980) eq 11, and is considered
  * to be accurate to 0.03 for -35C <= T <= 35C
  *
  * \param    wv_mixratio    (kg/kg)
@@ -166,7 +166,8 @@ enum class adiabat : int {
  *
  * \return   temperature    (K)
  */
-[[nodiscard]] float temperature_at_mixratio(float wv_mixratio, float pressure);
+[[nodiscard]] float temperature_at_mixratio(const float wv_mixratio,
+                                            const float pressure);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
