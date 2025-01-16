@@ -3,6 +3,7 @@
 
 // cland-format on
 #include <SHARPlib/thermo.h>
+#include "SHARPlib/constants.h"
 #include "sharplib_types.h"
 
 namespace nb = nanobind;
@@ -174,4 +175,382 @@ Returns:
     The 1D array of LCL temperatures (Kelvin)
 
         )pbdoc");
+
+    m.def("vapor_pressure", &sharp::vapor_pressure, nb::arg("pressure"),
+          nb::arg("temperature"),
+          R"pbdoc(
+Compute the vapor pressure with respect to liquid water.
+
+The vapor pressure (or saturation vapor pressure) is computed with 
+respect to liquid water when the dewpoint temperature (or air temperature)
+is passed (in Kelvin), along with the air pressure (Pa). The air pressure 
+is used as a minimum floor value for extremely cold temperatures at low
+pressures, and is consistent with how vapor pressure is treated in CM1. 
+
+This function uses the formulation by Bolton (1980), and is
+accurate to within 0.3% for the temperature range of -35C <= T <= 35C.
+
+Parameters:
+    pressure: The air pressure (Pa)
+    temperature: The air temperature (K) or dewpoint temperature (K)
+
+Returns: 
+    The vapor pressure (Pa) given dewpoint temperature, or the 
+    saturation vapor pressure given the air temperature. 
+    )pbdoc");
+
+    m.def(
+        "vapor_pressure",
+        [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr) {
+            auto tmpk = tmpk_arr.view();
+            auto pres = pres_arr.view();
+            if ((tmpk.shape(0) != pres.shape(0))) {
+                throw nb::buffer_error(
+                    "tmpk_arr and pres_arr must have the same size!");
+            }
+
+            float *vappres_arr = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                vappres_arr[k] = sharp::vapor_pressure(pres(k), tmpk(k));
+            }
+
+            nb::capsule owner(vappres_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                vappres_arr, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("pres_arr"), nb::arg("tmpk_arr"),
+        R"pbdoc(
+Compute the vapor pressure with respect to liquid water.
+
+The vapor pressure (or saturation vapor pressure) is computed with 
+respect to liquid water when the dewpoint temperature (or air temperature)
+is passed (in Kelvin), along with the air pressure (Pa). The air pressure 
+is used as a minimum floor value for extremely cold temperatures at low
+pressures, and is consistent with how vapor pressure is treated in CM1. 
+
+This function uses the formulation by Bolton (1980), and is
+accurate to within 0.3% for the temperature range of -35C <= T <= 35C.
+
+Parameters:
+    pres_arr: The 1D array of air pressure (Pa)
+    tmpk_arr: The 1D array of air temperature (K) or dewpoint temperature (K)
+
+Returns: 
+    The 1D array of vapor pressure (Pa) given dewpoint temperature, or the 
+    saturation vapor pressure given the air temperature. 
+    )pbdoc");
+
+    m.def("vapor_pressure_ice", &sharp::vapor_pressure_ice, nb::arg("pressure"),
+          nb::arg("temperature"),
+          R"pbdoc(
+Compute the vapor pressure with respect to ice.
+
+The vapor pressure (or saturation vapor pressure) is computed with 
+respect to ice when the dewpoint temperature (or air temperature)
+is passed (in Kelvin), along with the air pressure (Pa). The air pressure 
+is used as a minimum floor value for extremely cold temperatures at low
+pressures, and is consistent with how vapor pressure is treated in CM1. 
+
+This function uses the formulation by Bolton (1980), and is
+accurate to within 0.3% for the temperature range of -35C <= T <= 35C.
+
+Parameters:
+    pressure: The air pressure (Pa)
+    temperature: The air temperature (K) or dewpoint temperature (K)
+
+Returns: 
+    The vapor pressure (Pa) given dewpoint temperature, or the 
+    saturation vapor pressure given the air temperature. 
+    )pbdoc");
+
+    m.def(
+        "vapor_pressure_ice",
+        [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr) {
+            auto tmpk = tmpk_arr.view();
+            auto pres = pres_arr.view();
+            if ((tmpk.shape(0) != pres.shape(0))) {
+                throw nb::buffer_error(
+                    "tmpk_arr and pres_arr must have the same size!");
+            }
+
+            float *vappres_arr = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                vappres_arr[k] = sharp::vapor_pressure_ice(pres(k), tmpk(k));
+            }
+
+            nb::capsule owner(vappres_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                vappres_arr, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("pres_arr"), nb::arg("tmpk_arr"),
+        R"pbdoc(
+Compute the vapor pressure with respect to ice.
+
+The vapor pressure (or saturation vapor pressure) is computed with 
+respect to ice when the dewpoint temperature (or air temperature)
+is passed (in Kelvin), along with the air pressure (Pa). The air pressure 
+is used as a minimum floor value for extremely cold temperatures at low
+pressures, and is consistent with how vapor pressure is treated in CM1. 
+
+This function uses the formulation by Bolton (1980), and is
+accurate to within 0.3% for the temperature range of -35C <= T <= 35C.
+
+Parameters:
+    pres_arr: The 1D array of air pressure (Pa)
+    tmpk_arr: The 1D array of air temperature (K) or dewpoint temperature (K)
+
+Returns: 
+    The 1D array of vapor pressure (Pa) given dewpoint temperature, or the 
+    saturation vapor pressure given the air temperature. 
+    )pbdoc");
+
+    m.def("temperature_at_mixratio", &sharp::temperature_at_mixratio,
+          nb::arg("wv_mixratio"), nb::arg("pressure"),
+          R"pbdoc(
+Computes the temperature (K) of air at the given water vapor mixing ratio
+(kg/kg) and air pressure (Pa). Can be used to compute the dewpoint temperature 
+from mixing ratio. 
+
+The routine is implemented as in Bolton (1980) eq 11, and is considered to be 
+accurate to 0.03 K for -35C <= T <= 35C. 
+
+Parameters:
+    wv_mixratio: The water vapor mixing ratio (kg/kg)
+    pressure: The air pressure (Pa)
+
+Returns:
+    The temperature (K) of an air parcel at a given mixing ratio and pressure.
+    )pbdoc");
+
+    m.def(
+        "temperature_at_mixratio",
+        [](const_prof_arr_t mixr_arr, const_prof_arr_t pres_arr) {
+            auto mixr = mixr_arr.view();
+            auto pres = pres_arr.view();
+            if ((mixr.shape(0) != pres.shape(0))) {
+                throw nb::buffer_error(
+                    "mixr_arr and pres_arr must have the same size!");
+            }
+
+            float *dwpk_arr = new float[mixr.shape(0)];
+            for (size_t k = 0; k < mixr.shape(0); ++k) {
+                dwpk_arr[k] = sharp::temperature_at_mixratio(mixr(k), pres(k));
+            }
+
+            nb::capsule owner(dwpk_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                dwpk_arr, {mixr.shape(0)}, owner);
+        },
+        nb::arg("mixr_arr"), nb::arg("pres_arr"),
+        R"pbdoc(
+Computes the temperature (K) of air at the given water vapor mixing ratio
+(kg/kg) and air pressure (Pa). Can be used to compute the dewpoint temperature 
+from mixing ratio. 
+
+The routine is implemented as in Bolton (1980) eq 11, and is considered to be 
+accurate to 0.03 K for -35C <= T <= 35C. 
+
+Parameters:
+    mixr_arr: The 1D array of water vapor mixing ratio (kg/kg)
+    pres_arr: The 1D array of air pressure (Pa)
+
+Returns:
+    The 1D array of temperature (K) of an air parcel at a given mixing ratio and pressure.
+
+    )pbdoc");
+
+    m.def("theta_level", &sharp::theta_level, nb::arg("potential_temperature"),
+          nb::arg("temperature"),
+          R"pbdoc(
+Computes the pressure level (Pa) of a parcel given the potential temperature (K) and air 
+temperature (K).
+
+Params:
+    potential_temperature: The potential temperature, or theta (K)
+    temperature: The air temperature (K)
+
+Returns:
+    The pressure level (Pa) corresponding to the potential temperature and air temperature.
+    )pbdoc");
+
+    m.def(
+        "theta_level",
+        [](const_prof_arr_t theta_arr, const_prof_arr_t tmpk_arr) {
+            auto theta = theta_arr.view();
+            auto tmpk = tmpk_arr.view();
+            if ((theta.shape(0) != tmpk.shape(0))) {
+                throw nb::buffer_error(
+                    "theta_arr and tmpk_arr must have the same size!");
+            }
+            float *pres_arr = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                pres_arr[k] = sharp::theta_level(theta(k), tmpk(k));
+            }
+
+            nb::capsule owner(pres_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                pres_arr, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("theta_arr"), nb::arg("tmpk_arr"),
+        R"pbdoc(
+Computes the pressure level (Pa) of a parcel given the potential temperature (K) and air 
+temperature (K).
+
+Params:
+    theta_arr: The 1D array of potential temperature, or theta (K)
+    tmpk_arr: The 1D array of air temperature (K)
+
+Returns:
+    The 1D pressure level (Pa) corresponding to the potential temperature and air temperature.
+
+    )pbdoc");
+
+    m.def("theta", &sharp::theta, nb::arg("pressure"), nb::arg("temperature"),
+          nb::arg("ref_pressure") = sharp::THETA_REF_PRESSURE,
+          R"pbdoc(
+Computes the potential temperature (K), or theta, given the air pressure (Pa), air temperature (K),
+and a reference pressure (default value is 100000 Pa).
+
+Parameters:
+    pressure: The air pressure (Pa)
+    temperature: The air temperature (K)
+    ref_pressure (optional): The reference pressure (default 100000.0 Pa)
+
+Returns:
+    The potential temperature (K), or theta
+    )pbdoc");
+
+    m.def(
+        "theta",
+        [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr,
+           const float ref_pres) {
+            auto pres = pres_arr.view();
+            auto tmpk = tmpk_arr.view();
+            if ((pres.shape(0) != tmpk.shape(0))) {
+                throw nb::buffer_error(
+                    "pres_arr and tmpk_arr must have the same size!");
+            }
+            float *theta_arr = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                theta_arr[k] = sharp::theta(pres(k), tmpk(k), ref_pres);
+            }
+
+            nb::capsule owner(theta_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                theta_arr, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("pres_arr"), nb::arg("tmpk_arr"),
+        nb::arg("ref_pressure") = sharp::THETA_REF_PRESSURE,
+        R"pbdoc(
+Computes the potential temperature (K), or theta, given the air pressure (Pa), air temperature (K),
+and a reference pressure (default value is 100000 Pa).
+
+Parameters:
+    pressure: The 1D array of air pressure (Pa)
+    temperature: The 1D array of air temperature (K)
+    ref_pressure (optional): The reference pressure (default 100000.0 Pa)
+
+Returns:
+    The 1D array of potential temperature (K), or theta
+    )pbdoc");
+
+    m.def("mixratio", static_cast<float (*)(float)>(&sharp::mixratio),
+          nb::arg("q"),
+          R"pbdoc(
+Compute the water vapor mixing ratio (kg/kg) from specific humidity (kg/kg).
+
+Parameters:
+    q: The specific humidity (kg/kg)
+
+Returns:
+    The water vapor mixing ratio (kg/kg)
+    )pbdoc");
+
+    m.def("mixratio", static_cast<float (*)(float, float)>(&sharp::mixratio),
+          nb::arg("pressure"), nb::arg("temperature"),
+          R"pbdoc(
+Compute the water vapor mixing ratio (kg/kg) from the air pressure (Pa) and temperature (K).
+If given the air temperature, this is the saturation mixing ratio. If given the dewpoint 
+temperature, tis is the mixing ratio. 
+
+Parameters:
+    pressure: The air pressure (Pa)
+    temperature: The air temperature (K)
+
+Returns:
+    The water vapor mixing ratio (kg/kg)
+    )pbdoc");
+
+    m.def(
+        "mixratio",
+        [](const_prof_arr_t spfh_arr) {
+            auto spfh = spfh_arr.view();
+
+            float *mixr_arr = new float[spfh.shape(0)];
+            for (size_t k = 0; k < spfh.shape(0); ++k) {
+                mixr_arr[k] = sharp::mixratio(spfh(k));
+            }
+
+            nb::capsule owner(mixr_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                mixr_arr, {spfh.shape(0)}, owner);
+        },
+        nb::arg("q"),
+        R"pbdoc(
+Compute the water vapor mixing ratio (kg/kg) from the specific humidity (kg/kg).
+
+Parameters:
+    q: The 1D array of specific humidity (kg/kg)
+
+Returns:
+    The 1D array of water vapor mixing ratio (kg/kg)
+
+    )pbdoc");
+
+    m.def(
+        "mixratio",
+        [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr) {
+            auto pres = pres_arr.view();
+            auto tmpk = tmpk_arr.view();
+            if ((pres.shape(0) != tmpk.shape(0))) {
+                throw nb::buffer_error(
+                    "pres_arr and tmpk_arr must have the same size!");
+            }
+            float *mixr_arr = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                mixr_arr[k] = sharp::mixratio(pres(k), tmpk(k));
+            }
+
+            nb::capsule owner(mixr_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                mixr_arr, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("pres_arr"), nb::arg("tmpk_arr"),
+        R"pbdoc(
+Compute the water vapor mixing ratio (kg/kg) from the air pressure (Pa) and temperature (K).
+If given the air temperature, this is the saturation mixing ratio. If given the dewpoint 
+temperature, tis is the mixing ratio. 
+
+Parameters:
+    pressure: The 1D array of air pressure (Pa)
+    temperature: The 1D array of air temperature (K)
+
+Returns:
+    The 1D array of water vapor mixing ratio (kg/kg)
+
+    )pbdoc");
 }

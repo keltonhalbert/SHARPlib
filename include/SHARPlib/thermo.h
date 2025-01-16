@@ -103,7 +103,8 @@ enum class adiabat : int {
  *
  * \return  vapor_pressure (Pa)
  */
-[[nodiscard]] float vapor_pressure(float pressure, float temperature);
+[[nodiscard]] float vapor_pressure(const float pressure,
+                                   const float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -124,7 +125,8 @@ enum class adiabat : int {
  *
  * \return  vapor_pressure (Pa)
  */
-[[nodiscard]] float vapor_pressure_ice(float pressure, float temperature);
+[[nodiscard]] float vapor_pressure_ice(const float pressure,
+                                       const float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -156,7 +158,7 @@ enum class adiabat : int {
  * given water vapor mixing ratio in kg/kg and the
  * air pressure in Pa.
  *
- * The is implemented as in Bolton (1980) eq 11, and is considered
+ * The routine is implemented as in Bolton (1980) eq 11, and is considered
  * to be accurate to 0.03 for -35C <= T <= 35C
  *
  * \param    wv_mixratio    (kg/kg)
@@ -164,7 +166,8 @@ enum class adiabat : int {
  *
  * \return   temperature    (K)
  */
-[[nodiscard]] float temperature_at_mixratio(float wv_mixratio, float pressure);
+[[nodiscard]] float temperature_at_mixratio(const float wv_mixratio,
+                                            const float pressure);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -180,7 +183,8 @@ enum class adiabat : int {
  *
  * \return   pressure              (Pa)
  */
-[[nodiscard]] float theta_level(float potential_temperature, float temperature);
+[[nodiscard]] float theta_level(const float potential_temperature,
+                                const float temperature);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -199,8 +203,8 @@ enum class adiabat : int {
  *
  * \return   potential_temperature (K)
  */
-[[nodiscard]] float theta(float pressure, float temperature,
-                          float ref_pressure = THETA_REF_PRESSURE);
+[[nodiscard]] float theta(const float pressure, const float temperature,
+                          const float ref_pressure = THETA_REF_PRESSURE);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -214,7 +218,7 @@ enum class adiabat : int {
  *
  * \return   mixratio   (kg/kg)
  */
-[[nodiscard]] float mixratio(float q);
+[[nodiscard]] float mixratio(const float q);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -233,7 +237,7 @@ enum class adiabat : int {
  *
  * \return   mixratio              (kg/kg)
  */
-[[nodiscard]] float mixratio(float pressure, float temperature);
+[[nodiscard]] float mixratio(const float pressure, const float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -252,7 +256,7 @@ enum class adiabat : int {
  *
  * \return   mixratio              (kg/kg)
  */
-[[nodiscard]] float mixratio_ice(float pressure, float temperature);
+[[nodiscard]] float mixratio_ice(const float pressure, const float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center

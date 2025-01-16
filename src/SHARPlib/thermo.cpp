@@ -49,7 +49,7 @@ float wobf(const float temperature) {
     }
 }
 
-float vapor_pressure(float pressure, float temperature) {
+float vapor_pressure(const float pressure, const float temperature) {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING)) return MISSING;
 #endif
@@ -59,7 +59,7 @@ float vapor_pressure(float pressure, float temperature) {
     return std::min(es, pressure * 0.5f);
 }
 
-float vapor_pressure_ice(float pressure, float temperature) {
+float vapor_pressure_ice(const float pressure, const float temperature) {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING)) return MISSING;
 #endif
@@ -84,7 +84,7 @@ float lcl_temperature(const float temperature, const float dewpoint) {
     return (1.0 / (term_1 + term_2)) + c1;
 }
 
-float temperature_at_mixratio(float wv_mixratio, float pressure) {
+float temperature_at_mixratio(const float wv_mixratio, const float pressure) {
 #ifndef NO_QC
     if ((wv_mixratio == MISSING) || (pressure == MISSING)) {
         return MISSING;
@@ -98,7 +98,7 @@ float temperature_at_mixratio(float wv_mixratio, float pressure) {
     return ZEROCNK + (243.5f * el - 440.8f) / (19.48f - el);
 }
 
-float theta_level(float potential_temperature, float temperature) {
+float theta_level(const float potential_temperature, const float temperature) {
 #ifndef NO_QC
     if ((potential_temperature == MISSING) || (temperature == MISSING)) {
         return MISSING;
@@ -109,7 +109,8 @@ float theta_level(float potential_temperature, float temperature) {
            std::pow((potential_temperature / temperature), CPOR);
 }
 
-float theta(float pressure, float temperature, float ref_pressure) {
+float theta(const float pressure, const float temperature,
+            const float ref_pressure) {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING) ||
         (ref_pressure == MISSING)) {
@@ -119,14 +120,14 @@ float theta(float pressure, float temperature, float ref_pressure) {
     return (temperature * std::pow(ref_pressure / pressure, ROCP));
 }
 
-float mixratio(float q) {
+float mixratio(const float q) {
 #ifndef NO_QC
     if (q == MISSING) return MISSING;
 #endif
     return q / (1.0 - q);
 }
 
-float mixratio(float pressure, float temperature) {
+float mixratio(const float pressure, const float temperature) {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING)) {
         return MISSING;
@@ -137,7 +138,7 @@ float mixratio(float pressure, float temperature) {
     return (EPSILON * e) / (pressure - e);
 }
 
-float mixratio_ice(float pressure, float temperature) {
+float mixratio_ice(const float pressure, const float temperature) {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING)) {
         return MISSING;
