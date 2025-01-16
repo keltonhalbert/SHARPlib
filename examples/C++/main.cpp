@@ -2,7 +2,6 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/layer.h>
 #include <SHARPlib/parcel.h>
-#include <SHARPlib/profile.h>
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
 
@@ -30,8 +29,11 @@ std::vector<std::string> split(std::string& s, std::string delimiter) {
     return res;
 }
 
-void build_profile(sharp::Profile* prof, std::vector<std::string>& row,
-                   int idx) {
+void build_profile(float* pres_arr, float*hght_arr, float* tmpk_arr, 
+                   float* dwpk_arr, float* wdir_arr, float* wspd_arr, 
+                   float* mixr_arr, float* vtmp_arr, float* theta_arr, 
+                   float* theta_e_arr, float* uwin_arr, float* vwin_arr, 
+                   int* prof_N, std::vector<std::string>& row, int idx) {
     float pres = std::stof(row[0]) * sharp::HPA_TO_PA;
     float hght = std::stof(row[1]);
     float tmpk = std::stof(row[2]) + sharp::ZEROCNK;
@@ -39,25 +41,29 @@ void build_profile(sharp::Profile* prof, std::vector<std::string>& row,
     float wdir = std::stof(row[4]);
     float wspd = std::stof(row[5]);
 
-    prof->pres[idx] = pres;
-    prof->hght[idx] = hght;
-    prof->tmpk[idx] = tmpk;
-    prof->dwpk[idx] = dwpk;
-    prof->wdir[idx] = wdir;
-    prof->wspd[idx] = wspd;
+    pres_arr[idx] = pres;
+    hght_arr[idx] = hght;
+    tmpk_arr[idx] = tmpk;
+    dwpk_arr[idx] = dwpk;
+    wdir_arr[idx] = wdir;
+    wspd_arr[idx] = wspd;
 
-    prof->mixr[idx] = sharp::mixratio(pres, dwpk);
-    prof->vtmp[idx] = sharp::virtual_temperature(tmpk, prof->mixr[idx]);
-    prof->theta[idx] = sharp::theta(pres, tmpk, sharp::THETA_REF_PRESSURE);
-    prof->theta_e[idx] = sharp::thetae(pres, tmpk, dwpk);
+    mixr_arr[idx] = sharp::mixratio(pres, dwpk);
+    vtmp_arr[idx] = sharp::virtual_temperature(tmpk, mixr_arr[idx]);
+    theta_arr[idx] = sharp::theta(pres, tmpk, sharp::THETA_REF_PRESSURE);
+    theta_e_arr[idx] = sharp::thetae(pres, tmpk, dwpk);
 
     sharp::WindComponents uv = sharp::vector_to_components(wspd, wdir);
 
-    prof->uwin[idx] = uv.u;
-    prof->vwin[idx] = uv.v;
+    uwin_arr[idx] = uv.u;
+    vwin_arr[idx] = uv.v;
 }
 
-sharp::Profile* read_sounding(std::string filename) {
+// returns true if sounding loads correctly
+bool read_sounding(float* pres_arr, float*hght_arr, float* tmpk_arr, 
+        float* dwpk_arr, float* wdir_arr, float* wspd_arr, float* mixr_arr,
+        float* vtmp_arr, float* theta_arr, float* theta_e_arr, 
+        float* uwin_arr, float* vwin_arr, int* prof_N, std::string filename) {
     std::ifstream sndfile(filename);
     std::string line;
 
@@ -66,6 +72,7 @@ sharp::Profile* read_sounding(std::string filename) {
     bool found_begin = false;
     bool found_end = false;
     int NLINES = 0;
+
     // first iteration - count the number of data
     // rows so that we can allocate arrays of appropraite
     // size to store the data
@@ -82,7 +89,20 @@ sharp::Profile* read_sounding(std::string filename) {
         }
     }
 
-    sharp::Profile* prof = new sharp::Profile(NLINES, sharp::Source::PFC);
+    // initialize profile arrays
+    pres_arr = new float[NLINES];
+    hght_arr = new float[NLINES];
+    tmpk_arr = new float[NLINES];
+    dwpk_arr = new float[NLINES];
+    wdir_arr = new float[NLINES];
+    wspd_arr = new float[NLINES];
+    mixr_arr = new float[NLINES];
+    vtmp_arr = new float[NLINES];
+    theta_arr = new float[NLINES];
+    theta_e_arr = new float[NLINES];
+    uwin_arr = new float[NLINES];
+    vwin_arr = new float[NLINES];
+    *prof_N = NLINES;
 
     // return to the beginning of the file
     sndfile.clear();
@@ -105,7 +125,9 @@ sharp::Profile* read_sounding(std::string filename) {
                 // split the line on the comma
                 std::vector row = split(line, ",");
 
-                build_profile(prof, row, idx);
+                build_profile(pres_arr, hght_arr, tmpk_arr, dwpk_arr, wdir_arr, 
+                    wspd_arr, mixr_arr, vtmp_arr, theta_arr, theta_e_arr, 
+                    uwin_arr, vwin_arr, prof_N, row, idx);
 
                 idx += 1;
             }
@@ -114,14 +136,14 @@ sharp::Profile* read_sounding(std::string filename) {
         }
         sndfile.close();
         std::cout << "Success reading: " << filename << std::endl;
-        std::cout << "Number of vertical levels: " << prof->NZ << std::endl;
+        std::cout << "Number of vertical levels: " << *prof_N << std::endl;
 
-        return prof;
+        return true;
     }
 
     else {
         std::cout << "Unable to open file: " << filename << std::endl;
-        return nullptr;
+        return false;
     }
 }
 
@@ -129,7 +151,24 @@ int main(int argc, char* argv[]) {
     std::string snd_file1 =
         "../../data/test_snds/20160524_2302_EF3_37.57_-100.13_108_613967.snd";
     std::string snd_file2 = "../../data/test_snds/hires-SPC.txt";
-    sharp::Profile* prof = read_sounding(snd_file1);
+
+    float* pres_arr; 
+    float* hght_arr; 
+    float* tmpk_arr;
+    float* dwpk_arr;
+    float* wdir_arr; 
+    float* wspd_arr; 
+    float* mixr_arr;
+    float* vtmp_arr; 
+    float* theta_arr; 
+    float* theta_e_arr; 
+    float* uwin_arr; 
+    float* vwin_arr; 
+    int* prof_N;
+
+    bool prof = read_sounding(pres_arr, hght_arr, tmpk_arr, dwpk_arr, wdir_arr, wspd_arr, 
+            mixr_arr, vtmp_arr, theta_arr, theta_e_arr, uwin_arr, vwin_arr, 
+            prof_N, snd_file1);
 
     if (prof) {
         static constexpr sharp::lifter_wobus lifter;
@@ -190,6 +229,4 @@ int main(int argc, char* argv[]) {
         std::cout << "CAPE: " << ml_pcl.cape << "\t";
         std::cout << "CINH: " << ml_pcl.cinh << std::endl;
     }
-
-    delete prof;
 }
