@@ -152,56 +152,80 @@ int main(int argc, char* argv[]) {
         "../../data/test_snds/20160524_2302_EF3_37.57_-100.13_108_613967.snd";
     std::string snd_file2 = "../../data/test_snds/hires-SPC.txt";
 
-    float* pres_arr; 
-    float* hght_arr; 
-    float* tmpk_arr;
-    float* dwpk_arr;
-    float* wdir_arr; 
-    float* wspd_arr; 
-    float* mixr_arr;
-    float* vtmp_arr; 
-    float* theta_arr; 
-    float* theta_e_arr; 
-    float* uwin_arr; 
-    float* vwin_arr; 
-    int* prof_N;
+    float* pres_arr = {0}; 
+    float* hght_arr = {0}; 
+    float* tmpk_arr = {0};
+    float* dwpk_arr = {0};
+    float* wdir_arr = {0}; 
+    float* wspd_arr = {0}; 
+    float* mixr_arr = {0};
+    float* vtmp_arr = {0}; 
+    float* theta_arr = {0}; 
+    float* theta_e_arr = {0}; 
+    float* uwin_arr = {0}; 
+    float* vwin_arr = {0}; 
+    int prof_N = 0;
 
     bool prof = read_sounding(pres_arr, hght_arr, tmpk_arr, dwpk_arr, wdir_arr, wspd_arr, 
             mixr_arr, vtmp_arr, theta_arr, theta_e_arr, uwin_arr, vwin_arr, 
-            prof_N, snd_file1);
+            &prof_N, snd_file1);
 
     if (prof) {
         static constexpr sharp::lifter_wobus lifter;
-        sharp::Parcel sfc_pcl;
-        sharp::Parcel mu_pcl;
-        sharp::Parcel ml_pcl;
 
-        sharp::define_parcel(prof->pres, prof->tmpk, prof->dwpk, prof->mixr,
-                             prof->theta, prof->theta_e, prof->NZ, sfc_pcl,
-                             sharp::LPL::SFC);
-        sharp::define_parcel(prof->pres, prof->tmpk, prof->dwpk, prof->mixr,
-                             prof->theta, prof->theta_e, prof->NZ, ml_pcl,
-                             sharp::LPL::ML);
-        sharp::define_parcel(prof->pres, prof->tmpk, prof->dwpk, prof->mixr,
-                             prof->theta, prof->theta_e, prof->NZ, mu_pcl,
-                             sharp::LPL::MU);
+        // Define surface based parcel
+        sharp::Parcel sfc_pcl(pres_arr[0], tmpk_arr[0], dwpk_arr[0], sharp::LPL::SFC);
+
+        // Define mixed layer parcel
+        static constexpr float ml_depth = 10000.0; // Mixed Layer depth in Pascals
+        const float sfcpres = pres_arr[0];
+        sharp::PressureLayer mix_layer(sfcpres, sfcpres - ml_depth);
+
+        // get the mean attributes of the lowest 100 hPa
+        const float mean_mixr = sharp::layer_mean(mix_layer, pres_arr, mixr_arr, (std::ptrdiff_t) prof_N);
+        const float mean_thta = sharp::layer_mean(mix_layer, pres_arr, theta_arr, (std::ptrdiff_t) prof_N);
+
+        // set the parcel attributes
+        const float ml_pcl_pres = pres_arr[0];
+        const float ml_pcl_tmpk = sharp::theta(sharp::THETA_REF_PRESSURE, mean_thta, ml_pcl_pres);
+        const float ml_pcl_dwpk = sharp::temperature_at_mixratio(mean_mixr, ml_pcl_pres);
+
+        sharp::Parcel ml_pcl(ml_pcl_pres, ml_pcl_tmpk, ml_pcl_dwpk, sharp::LPL::ML);
+
+        // Define most unstable parcel
+        // Search for the most unstable parcel in the bottom
+        // 400 hPa of the profile
+        static constexpr float mu_depth = 40000.0f;  // 400 hPa in Pa
+        sharp::PressureLayer mu_layer(pres_arr[0], pres_arr[0] - mu_depth);
+
+        // layer_max returns the max, and will set the pressure
+        // of the max via a pointer to a float.
+        float mu_pcl_pres = 0;
+        layer_max(mu_layer, pres_arr, theta_e_arr, (std::ptrdiff_t) prof_N, &(mu_pcl_pres));
+        float mu_pcl_tmpk = sharp::interp_pressure(mu_pcl_pres, pres_arr, tmpk_arr, (std::ptrdiff_t) prof_N);
+        float mu_pcl_dwpk = sharp::interp_pressure(mu_pcl_pres, pres_arr, dwpk_arr, (std::ptrdiff_t) prof_N);
+
+        sharp::Parcel mu_pcl(mu_pcl_pres, mu_pcl_tmpk, mu_pcl_dwpk, sharp::LPL::MU);
 
         auto start_time = std::chrono::system_clock::now();
 
-        sharp::lift_parcel(lifter, prof->pres, prof->vtmp, prof->buoyancy,
-                           prof->NZ, &sfc_pcl);
-        sharp::cape_cinh(prof->pres, prof->hght, prof->buoyancy, prof->NZ,
-                         &sfc_pcl);
+        float* sfc_pcl_vtmpk_arr = new float[prof_N];
+        sfc_pcl.lift_parcel(lifter, pres_arr, sfc_pcl_vtmpk_arr, (std::ptrdiff_t) prof_N);
+        float* sfc_pcl_buoy_arr = new float[prof_N];
+        sharp::buoyancy(sfc_pcl_vtmpk_arr, vtmp_arr, sfc_pcl_buoy_arr, (std::ptrdiff_t) prof_N);
+        sfc_pcl.cape_cinh(pres_arr, hght_arr, sfc_pcl_buoy_arr, (std::ptrdiff_t) prof_N);
 
-        sharp::lift_parcel(lifter, prof->pres, prof->vtmp, prof->buoyancy,
-                           prof->NZ, &ml_pcl);
-        sharp::cape_cinh(prof->pres, prof->hght, prof->buoyancy, prof->NZ,
-                         &ml_pcl);
+        float* ml_pcl_vtmpk_arr = new float[prof_N];
+        ml_pcl.lift_parcel(lifter, pres_arr, ml_pcl_vtmpk_arr, (std::ptrdiff_t) prof_N);
+        float* ml_pcl_buoy_arr = new float[prof_N];
+        sharp::buoyancy(ml_pcl_vtmpk_arr, vtmp_arr, ml_pcl_buoy_arr, (std::ptrdiff_t) prof_N);
+        ml_pcl.cape_cinh(pres_arr, hght_arr, ml_pcl_buoy_arr, (std::ptrdiff_t) prof_N);
 
-        sharp::lift_parcel(lifter, prof->pres, prof->vtmp, prof->buoyancy,
-                           prof->NZ, &mu_pcl);
-        sharp::cape_cinh(prof->pres, prof->hght, prof->buoyancy, prof->NZ,
-                         &mu_pcl);
+        float* mu_pcl_vtmpk_arr = new float[prof_N];
+        mu_pcl.lift_parcel(lifter, pres_arr, mu_pcl_vtmpk_arr, (std::ptrdiff_t) prof_N);
+        float* mu_pcl_buoy_arr = new float[prof_N];
+        sharp::buoyancy(mu_pcl_vtmpk_arr, vtmp_arr, mu_pcl_buoy_arr, (std::ptrdiff_t) prof_N);
+        mu_pcl.cape_cinh(pres_arr, hght_arr, mu_pcl_buoy_arr, (std::ptrdiff_t) prof_N);
 
         auto end_time = std::chrono::system_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(
