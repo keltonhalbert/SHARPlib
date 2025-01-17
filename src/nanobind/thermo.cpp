@@ -601,4 +601,38 @@ Returns:
     The ice water mixing ratio (kg/kg)
 
     )pbdoc");
+
+    m.def("specific_humidity", &sharp::specific_humidity, nb::arg("rv"),
+          R"pbdoc(
+Compute the specific humidity (kg/kg) from a mixing ratio (kg/kg).
+
+Parameters:
+    rv: The water vapor mixing ratio (kg/kg)
+
+Returns:
+    The specific humidity (kg/kg)
+    )pbdoc");
+
+    m.def(
+        "specific_humidity",
+        [](const_prof_arr_t mixr_arr) {
+            auto mixr = mixr_arr.view();
+            float *spfh_arr = new float[mixr.shape(0)];
+            for (size_t k = 0; k < mixr.shape(0); ++k) {
+                spfh_arr[k] = sharp::specific_humidity(mixr(k));
+            }
+
+            nb::capsule owner(spfh_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                spfh_arr, {mixr.shape(0)}, owner);
+        },
+        nb::arg("mixr_arr"),
+        R"pbdoc(
+Compute the specific humidity (kg/kg) from a mixing ratio (kg/kg).
+
+Parameters:
+    mixr_arr: The 1D array of water vapor mixing ratios (kg/kg)
+    )pbdoc");
 }
