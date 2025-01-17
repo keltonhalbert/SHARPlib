@@ -507,12 +507,12 @@ Returns:
             return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
                 mixr_arr, {spfh.shape(0)}, owner);
         },
-        nb::arg("q"),
+        nb::arg("spfh_arr"),
         R"pbdoc(
 Compute the water vapor mixing ratio (kg/kg) from the specific humidity (kg/kg).
 
 Parameters:
-    q: The 1D array of specific humidity (kg/kg)
+    spfh_arr: The 1D array of specific humidity (kg/kg)
 
 Returns:
     The 1D array of water vapor mixing ratio (kg/kg)
@@ -543,14 +543,62 @@ Returns:
         R"pbdoc(
 Compute the water vapor mixing ratio (kg/kg) from the air pressure (Pa) and temperature (K).
 If given the air temperature, this is the saturation mixing ratio. If given the dewpoint 
-temperature, tis is the mixing ratio. 
+temperature, this is the mixing ratio. 
 
 Parameters:
-    pressure: The 1D array of air pressure (Pa)
-    temperature: The 1D array of air temperature (K)
+    pres_arr: The 1D array of air pressure (Pa)
+    tmpk_arr: The 1D array of air temperature (K)
 
 Returns:
     The 1D array of water vapor mixing ratio (kg/kg)
+
+    )pbdoc");
+
+    m.def("mixratio_ice", &sharp::mixratio_ice, nb::arg("pressure"),
+          nb::arg("temperature"),
+          R"pbdoc(
+Compute the ice water mixing ratio (kg/kg) from the air pressure (Pa) and temperature (K).
+If given the air temperatuer, this is the saturation mixing ratio. If given the dewpoint 
+temperature, this is the mixing ratio. 
+
+Parameters:
+    pressure: The air pressure (Pa)
+    temperature: The air temperature (K)
+Returns:
+    The ice water mixing ratio (kg/kg)
+    )pbdoc");
+
+    m.def(
+        "mixratio_ice",
+        [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr) {
+            auto pres = pres_arr.view();
+            auto tmpk = tmpk_arr.view();
+            if ((pres.shape(0) != tmpk.shape(0))) {
+                throw nb::buffer_error(
+                    "pres_arr and tmpk_arr must have the same size!");
+            }
+            float *mixr_arr = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                mixr_arr[k] = sharp::mixratio_ice(pres(k), tmpk(k));
+            }
+
+            nb::capsule owner(mixr_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                mixr_arr, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("pres_arr"), nb::arg("tmpk_arr"),
+        R"pbdoc(
+Compute the ice water mixing ratio (kg/kg) from the air pressure (Pa) and temperature (K).
+If given the air temperatuer, this is the saturation mixing ratio. If given the dewpoint 
+temperature, this is the mixing ratio. 
+
+Parameters:
+    pres_arr: The 1D array of air pressure (Pa)
+    tmpl_arr: The 1D array of air temperature (K)
+Returns:
+    The ice water mixing ratio (kg/kg)
 
     )pbdoc");
 }
