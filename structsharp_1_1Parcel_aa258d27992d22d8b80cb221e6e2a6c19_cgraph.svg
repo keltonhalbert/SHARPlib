@@ -328,7 +328,7 @@
 <!-- Node21 -->
 <g id="node21" class="node">
 <title>Node21</title>
-<g id="a_node21"><a xlink:href="namespacesharp.html#a76fd825fdd87804ec8b79fa73196985c" target="_top" xlink:title="Compute the full virtual temperature.">
+<g id="a_node21"><a xlink:href="namespacesharp.html#a38988e9aae5f478d49a59e29a4d384fb" target="_top" xlink:title="Compute the full virtual temperature.">
 <polygon fill="white" stroke="#666666" points="463,-132 316,-132 316,-113 463,-113 463,-132"/>
 <text text-anchor="middle" x="389.5" y="-120" font-family="Helvetica,sans-Serif" font-size="10.00">sharp::virtual_temperature</text>
 </a>

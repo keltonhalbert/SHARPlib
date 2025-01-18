@@ -9,6 +9,6 @@ var searchData=
   ['vector_5fmagnitude_6',['vector_magnitude',['../namespacesharp.html#af887f27accb1a1d656a35abec65cab5f',1,'sharp']]],
   ['vector_5fmagnitude_5fprecise_7',['vector_magnitude_precise',['../namespacesharp.html#ace465acac91184c91987bb085a81777a',1,'sharp']]],
   ['vector_5fto_5fcomponents_8',['vector_to_components',['../namespacesharp.html#a1a4cb8e554c04774503b004939f27f54',1,'sharp::vector_to_components(float wind_speed, float wind_direction)'],['../namespacesharp.html#ae211cc70dd043a0e2fe7e92ab9dd34a2',1,'sharp::vector_to_components(WindVector vect)']]],
-  ['virtual_5ftemperature_9',['virtual_temperature',['../namespacesharp.html#a76fd825fdd87804ec8b79fa73196985c',1,'sharp']]],
+  ['virtual_5ftemperature_9',['virtual_temperature',['../namespacesharp.html#a38988e9aae5f478d49a59e29a4d384fb',1,'sharp']]],
   ['vksq_10',['VKSQ',['../namespacesharp.html#aee70f2aa7bfda20363d82e6eef5b1a21',1,'sharp']]]
 ];

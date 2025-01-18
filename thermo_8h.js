@@ -22,7 +22,7 @@ var thermo_8h =
     [ "moist_adiabat_cm1", "thermo_8h.html#a71ceb865a2848e107761e7094f2365ca", null ],
     [ "moist_static_energy", "thermo_8h.html#ab5fed65fe0cdf797961047fb9cde3295", null ],
     [ "saturated_lift", "thermo_8h.html#a78762bd2862b739e6ae331c45cb90202", null ],
-    [ "specific_humidity", "thermo_8h.html#a792a4a2a9f9243a82fb44cb77c2ee561", null ],
+    [ "specific_humidity", "thermo_8h.html#a8989213ea919d548c0e199a2275891b4", null ],
     [ "temperature_at_mixratio", "thermo_8h.html#ae369e44c9b4b9ad08819cad225840cba", null ],
     [ "theta", "thermo_8h.html#ac3f1b3b63f158e6c88e94dd9daa2a71c", null ],
     [ "theta_level", "thermo_8h.html#a8eeef9c07c473d71fc6a2e2c4da88179", null ],
@@ -30,7 +30,7 @@ var thermo_8h =
     [ "thetae", "thermo_8h.html#ab06f16aa1caac3136e863db8cd61e2e9", null ],
     [ "vapor_pressure", "thermo_8h.html#ae237f32df23021613fdbd9cc6679cadb", null ],
     [ "vapor_pressure_ice", "thermo_8h.html#ad9be01979b547fe6827968eafcf72929", null ],
-    [ "virtual_temperature", "thermo_8h.html#a76fd825fdd87804ec8b79fa73196985c", null ],
+    [ "virtual_temperature", "thermo_8h.html#a38988e9aae5f478d49a59e29a4d384fb", null ],
     [ "wetbulb", "thermo_8h.html#accda9c75278f1a32978bbfd662492822", null ],
     [ "wetlift", "thermo_8h.html#ad4014313c60a66a321e4050a2a07058e", null ],
     [ "wobf", "thermo_8h.html#a52c7e44244cfacdbe530356f295ff114", null ]
