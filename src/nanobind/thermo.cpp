@@ -743,4 +743,78 @@ Returns:
     The 1D array of virtual temperature (K)
 
     )pbdoc");
+
+    // Skipping saturated_lift, because I don't intend
+    // for it to be called from Python directly.
+
+    m.def("wetlift", &sharp::wetlift, nb::arg("pressure"),
+          nb::arg("temperature"), nb::arg("lifted_pressure"),
+          R"pbdoc(
+Compute the temperature of a parcel lifted moist adiabatically to a new level. 
+
+With a given parcel defined by a pressure (Pa) and temperature (K), lift it 
+moist adiabatically to a new pressure level (Pa) and return the temperature of 
+the parcel at that level. 
+
+This function relies on the Wobus Function (thermo.wobf), and it was shown by 
+Robert Davies-Jones (2007) that the WObus function has a slight dependence on 
+pressure, which results in errors of up to 1.2 K in the temperature of a lifted 
+parcel. 
+
+Parameters:
+    pressure: The air pressure (Pa)
+    temperature: The saturated air temperature (K)
+    lifted_pressure: The new pressure level to lift to (Pa)
+
+Returns:
+    The new temperature (K) when lifted moist adiabatically to the new pressure level
+          )pbdoc");
+
+    m.def(
+        "wetlift",
+        [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr,
+           const_prof_arr_t lifted_pres_arr) {
+            auto pres = pres_arr.view();
+            auto tmpk = tmpk_arr.view();
+            auto lifted_pres = lifted_pres_arr.view();
+
+            if ((pres.shape(0) != tmpk.shape(0)) ||
+                (pres.shape(0) != lifted_pres.shape(0))) {
+                throw nb::buffer_error(
+                    "pres_arr, tmpk_arr, and lifted_pres_arr must have the "
+                    "same sizes!");
+            }
+            float *tmpk_out_arr = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                tmpk_out_arr[k] =
+                    sharp::wetlift(pres(k), tmpk(k), lifted_pres(k));
+            }
+
+            nb::capsule owner(tmpk_out_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                tmpk_out_arr, {tmpk.shape(0)}, owner);
+        },
+        R"pbdoc(
+Compute the temperature of a parcel lifted moist adiabatically to a new level. 
+
+With a given parcel defined by a pressure (Pa) and temperature (K), lift it 
+moist adiabatically to a new pressure level (Pa) and return the temperature of 
+the parcel at that level. 
+
+This function relies on the Wobus Function (thermo.wobf), and it was shown by 
+Robert Davies-Jones (2007) that the WObus function has a slight dependence on 
+pressure, which results in errors of up to 1.2 K in the temperature of a lifted 
+parcel. 
+
+Parameters:
+    pressure: The 1D array of air pressures (Pa)
+    temperature: The 1D array of saturated air temperatures (K)
+    lifted_pressure: The 1D array of new pressure levels to lift to (Pa)
+
+Returns:
+    The 1D array of new temperatures (K) when lifted moist adiabatically to the new pressure levels
+
+          )pbdoc");
 }
