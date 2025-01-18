@@ -1,4 +1,0 @@
-<map id="sharp::saturated_lift" name="sharp::saturated_lift">
-<area shape="rect" id="node1" title="Compute the temperature along a moist adiabat (wet&#45;bulb potential temperature) at a given pressure." alt="" coords="5,5,157,31"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#a52c7e44244cfacdbe530356f295ff114" title="Computes the difference between the wet&#45;bulb potential temperatures for saturated and dry air given t..." alt="" coords="205,5,304,31"/>
-</map>

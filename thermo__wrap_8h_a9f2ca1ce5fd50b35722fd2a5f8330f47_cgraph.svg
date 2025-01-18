@@ -20,7 +20,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:href="namespacesharp.html#a78762bd2862b739e6ae331c45cb90202" target="_top" xlink:title="Compute the temperature along a moist adiabat (wet&#45;bulb potential temperature) at a given pressure.">
+<g id="a_node2"><a xlink:href="namespacesharp.html#ab8a75ed92a2c2062162264a54f3a5338" target="_top" xlink:title="Compute the temperature along a moist adiabat (wet&#45;bulb potential temperature) at a given pressure.">
 <polygon fill="white" stroke="#666666" points="263,-19 149,-19 149,0 263,0 263,-19"/>
 <text text-anchor="middle" x="206" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">sharp::saturated_lift</text>
 </a>
@@ -35,7 +35,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="namespacesharp.html#a52c7e44244cfacdbe530356f295ff114" target="_top" xlink:title="Computes the difference between the wet&#45;bulb potential temperatures for saturated and dry air given t...">
+<g id="a_node3"><a xlink:href="namespacesharp.html#ab535b8214969a50771219a275ebb7f4d" target="_top" xlink:title="Computes the difference between the wet&#45;bulb potential temperatures for saturated and dry air given t...">
 <polygon fill="white" stroke="#666666" points="373,-19 299,-19 299,0 373,0 373,-19"/>
 <text text-anchor="middle" x="336" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">sharp::wobf</text>
 </a>

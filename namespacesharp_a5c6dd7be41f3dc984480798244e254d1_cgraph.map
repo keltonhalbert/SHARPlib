@@ -1,6 +1,0 @@
-<map id="sharp::_solve_cm1" name="sharp::_solve_cm1">
-<area shape="rect" id="node1" title=" " alt="" coords="5,31,148,56"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#a136ed55b860c71004fb8b75d1aa543cf" title="Compute the water vapor mixing ratio from specific humidity." alt="" coords="209,5,330,31"/>
-<area shape="rect" id="node3" href="$namespacesharp.html#a72f95fb5c4ff4fe801de999abc0aa17e" title="Compute the ice water mixing ratio." alt="" coords="196,55,343,80"/>
-<area shape="rect" id="node4" href="$namespacesharp.html#ad9be01979b547fe6827968eafcf72929" title="Compute the vapor pressure over ice." alt="" coords="391,55,583,80"/>
-</map>

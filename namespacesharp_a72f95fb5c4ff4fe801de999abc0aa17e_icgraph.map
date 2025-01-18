@@ -1,8 +1,0 @@
-<map id="sharp::mixratio_ice" name="sharp::mixratio_ice">
-<area shape="rect" id="node1" title="Compute the ice water mixing ratio." alt="" coords="684,67,831,93"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#a5c6dd7be41f3dc984480798244e254d1" title=" " alt="" coords="491,42,634,67"/>
-<area shape="rect" id="node6" href="$thermo__wrap_8cpp.html#ab30e4198dc286932d722c0c5841cdfc6" title=" " alt="" coords="489,91,636,117"/>
-<area shape="rect" id="node3" href="$namespacesharp.html#a71ceb865a2848e107761e7094f2365ca" title="Compute the temperature of a parcel lifted moist adiabatically to a new level." alt="" coords="247,42,441,67"/>
-<area shape="rect" id="node4" href="$structsharp_1_1lifter__cm1.html#a2eeb5b118ef40e873c09ac9b3635f7b9" title="Overloads operator() to call sharp::moist_adiabat_cm1." alt="" coords="33,5,171,45"/>
-<area shape="rect" id="node5" href="$thermo__wrap_8cpp.html#aac6beaaefcb6cf02512e6a74b6ab5be7" title=" " alt="" coords="5,70,199,95"/>
-</map>
