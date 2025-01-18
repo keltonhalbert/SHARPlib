@@ -691,7 +691,8 @@ Returns:
                 auto rl = rl_arr.view();
                 if (tmpk.shape(0) != rl.shape(0)) {
                     throw nb::buffer_error(
-                        "tmpk_arr and rl_arr must have the same size!");
+                        "tmpk_arr, rv_arr, and rl_arr must have the same "
+                        "size!");
                 }
                 vtmp_arr = new float[tmpk.shape(0)];
                 for (size_t k = 0; k < tmpk.shape(0); ++k) {
@@ -702,7 +703,8 @@ Returns:
                 auto ri = ri_arr.view();
                 if (tmpk.shape(0) != ri.shape(0)) {
                     throw nb::buffer_error(
-                        "tmpk_arr and ri_arr must have the same size!");
+                        "tmpk_arr, rv_arr, and ri_arr must have the same "
+                        "size!");
                 }
                 vtmp_arr = new float[tmpk.shape(0)];
                 for (size_t k = 0; k < tmpk.shape(0); ++k) {
