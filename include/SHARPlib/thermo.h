@@ -82,7 +82,7 @@ enum class adiabat : int {
  *
  * \return  wobf            (K)
  */
-[[nodiscard]] float wobf(const float temperature);
+[[nodiscard]] float wobf(float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -103,8 +103,7 @@ enum class adiabat : int {
  *
  * \return  vapor_pressure (Pa)
  */
-[[nodiscard]] float vapor_pressure(const float pressure,
-                                   const float temperature);
+[[nodiscard]] float vapor_pressure(float pressure, float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -125,8 +124,7 @@ enum class adiabat : int {
  *
  * \return  vapor_pressure (Pa)
  */
-[[nodiscard]] float vapor_pressure_ice(const float pressure,
-                                       const float temperature);
+[[nodiscard]] float vapor_pressure_ice(float pressure, float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -145,8 +143,7 @@ enum class adiabat : int {
  *
  * \return   lcl_temperature (K)
  */
-[[nodiscard]] float lcl_temperature(const float temperature,
-                                    const float dewpoint);
+[[nodiscard]] float lcl_temperature(float temperature, float dewpoint);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -166,8 +163,7 @@ enum class adiabat : int {
  *
  * \return   temperature    (K)
  */
-[[nodiscard]] float temperature_at_mixratio(const float wv_mixratio,
-                                            const float pressure);
+[[nodiscard]] float temperature_at_mixratio(float wv_mixratio, float pressure);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -183,8 +179,7 @@ enum class adiabat : int {
  *
  * \return   pressure              (Pa)
  */
-[[nodiscard]] float theta_level(const float potential_temperature,
-                                const float temperature);
+[[nodiscard]] float theta_level(float potential_temperature, float temperature);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -203,8 +198,8 @@ enum class adiabat : int {
  *
  * \return   potential_temperature (K)
  */
-[[nodiscard]] float theta(const float pressure, const float temperature,
-                          const float ref_pressure = THETA_REF_PRESSURE);
+[[nodiscard]] float theta(float pressure, float temperature,
+                          float ref_pressure = THETA_REF_PRESSURE);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -218,7 +213,7 @@ enum class adiabat : int {
  *
  * \return   mixratio   (kg/kg)
  */
-[[nodiscard]] float mixratio(const float q);
+[[nodiscard]] float mixratio(float q);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -237,7 +232,7 @@ enum class adiabat : int {
  *
  * \return   mixratio              (kg/kg)
  */
-[[nodiscard]] float mixratio(const float pressure, const float temperature);
+[[nodiscard]] float mixratio(float pressure, float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -256,7 +251,7 @@ enum class adiabat : int {
  *
  * \return   mixratio              (kg/kg)
  */
-[[nodiscard]] float mixratio_ice(const float pressure, const float temperature);
+[[nodiscard]] float mixratio_ice(float pressure, float temperature);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -269,7 +264,7 @@ enum class adiabat : int {
  *
  * \return  specific_humidity   (unitless)
  */
-[[nodiscard]] float specific_humidity(const float rv);
+[[nodiscard]] float specific_humidity(float rv);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -291,9 +286,8 @@ enum class adiabat : int {
  *
  * \return  virtual_temperature     (K)
  */
-[[nodiscard]] float virtual_temperature(const float temperature, const float rv,
-                                        const float rl = 0.0f,
-                                        const float ri = 0.0f);
+[[nodiscard]] float virtual_temperature(float temperature, float rv,
+                                        float rl = 0.0f, float ri = 0.0f);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -318,7 +312,7 @@ enum class adiabat : int {
  * \return  lifted_temperature  (K)
  */
 [[nodiscard]] float saturated_lift(float pressure, float theta_sat,
-                                   const float converge = 0.001f);
+                                   float converge = 0.001f);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
@@ -382,9 +376,8 @@ enum class adiabat : int {
 [[nodiscard]] float moist_adiabat_cm1(float pressure, float temperature,
                                       float new_pressure, float& rv_total,
                                       float& rv, float& rl, float& ri,
-                                      const float pres_incr,
-                                      const float converge,
-                                      const adiabat ma_type);
+                                      float pres_incr, float converge,
+                                      adiabat ma_type);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
