@@ -39,7 +39,7 @@ cmake --build build -j N_BUILD_PROCESSES --config Debug
 ```
 
 ### Building SHARPlib (Python)
-SHARPlib C++ code can be called from Python using [pybind11](https://github.com/pybind/pybind11) to handle the wrapping.
+SHARPlib C++ code can be called from Python using [nanobind](https://github.com/wjakob/nanobind) to handle the wrapping.
 Building SHARPlib with its Python bindings is quite easy-- you can simply install it via pip from the current directory: 
 ```bash
 pip install .
