@@ -734,8 +734,8 @@ of zero, if unspecified.
 Parameters:
     tmpk_arr: The 1D array of dry-bulb temperature (K)
     rv_arr: The 1D array of water vapor mixing ratio (kg/kg)
-    rl_arr: The 1D array of liquid water mixing ratio (kg/kg) 
-    ri_arr: The 1D array of ice water mixing ratio (kg/kg)
+    rl_arr: (optional) The 1D array of liquid water mixing ratio (kg/kg) 
+    ri_arr: (optional) The 1D array of ice water mixing ratio (kg/kg)
 
 Returns:
     The 1D array of virtual temperature (K)
