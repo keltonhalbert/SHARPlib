@@ -635,4 +635,110 @@ Compute the specific humidity (kg/kg) from a mixing ratio (kg/kg).
 Parameters:
     mixr_arr: The 1D array of water vapor mixing ratios (kg/kg)
     )pbdoc");
+
+    m.def("virtual_temperature", &sharp::virtual_temperature,
+          nb::arg("temperature"), nb::arg("rv"), nb::arg("rl") = 0.0f,
+          nb::arg("ri") = 0.0f,
+          R"pbdoc(
+Returns the virtual temperature in Kelvin given the dry-bulb 
+temperature (Kelvin), the water vapor mixing ratio (kg/kg), the 
+liquid water mixing ratio (kg/kg), and the ice water mixing ratios
+(kg/kg). The liquid and ice water mixing ratios have default values 
+of zero, if unspecified. 
+
+Parameters:
+    temperature: The dry-bulb temperature (K)
+    rv: The water vapor mixing ratio (kg/kg)
+    rl: The liquid water mixing ratio (kg/kg) 
+    ri: The ice water mixing ratio (kg/kg)
+
+Returns:
+    The virtual temperature (K)
+    )pbdoc");
+
+    m.def(
+        "virtual_temperature",
+        [](const_prof_arr_t tmpk_arr, const_prof_arr_t rv_arr,
+           const_prof_arr_t rl_arr, const_prof_arr_t ri_arr) {
+            auto tmpk = tmpk_arr.view();
+            auto rv = rv_arr.view();
+            float *vtmp_arr;
+
+            // tmpk and rv are always defined, check their
+            // sizes and ensure they're equal
+            if (tmpk.shape(0) != rv.shape(0)) {
+                throw nb::buffer_error(
+                    "tmpk_arr and rv_arr must have the same size!");
+            }
+
+            // check if rl_arr and ri_arr are not none
+            if (rl_arr.is_valid() && ri_arr.is_valid()) {
+                auto rl = rl_arr.view();
+                auto ri = ri_arr.view();
+                // ensure they're the same shape/size
+                if ((tmpk.shape(0) != rl.shape(0)) ||
+                    (tmpk.shape(0) != ri.shape(0))) {
+                    throw nb::buffer_error(
+                        "tmpk_arr and rv_arr must have the same size!");
+                }
+                vtmp_arr = new float[tmpk.shape(0)];
+
+                for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                    vtmp_arr[k] = sharp::virtual_temperature(tmpk(k), rv(k),
+                                                             rl(k), ri(k));
+                }
+            } else if (rl_arr.is_valid()) {
+                auto rl = rl_arr.view();
+                if (tmpk.shape(0) != rl.shape(0)) {
+                    throw nb::buffer_error(
+                        "tmpk_arr and rl_arr must have the same size!");
+                }
+                vtmp_arr = new float[tmpk.shape(0)];
+                for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                    vtmp_arr[k] =
+                        sharp::virtual_temperature(tmpk(k), rv(k), rl(k));
+                }
+            } else if (ri_arr.is_valid()) {
+                auto ri = ri_arr.view();
+                if (tmpk.shape(0) != ri.shape(0)) {
+                    throw nb::buffer_error(
+                        "tmpk_arr and ri_arr must have the same size!");
+                }
+                vtmp_arr = new float[tmpk.shape(0)];
+                for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                    vtmp_arr[k] =
+                        sharp::virtual_temperature(tmpk(k), rv(k), 0.0, ri(k));
+                }
+            } else {
+                vtmp_arr = new float[tmpk.shape(0)];
+                for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                    vtmp_arr[k] = sharp::virtual_temperature(tmpk(k), rv(k));
+                }
+            }
+
+            nb::capsule owner(vtmp_arr,
+                              [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                vtmp_arr, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("tmpk_arr"), nb::arg("rv_arr"), nb::arg("rl_arr") = nb::none(),
+        nb::arg("ri_arr") = nb::none(),
+        R"pbdoc(
+Returns the virtual temperature in Kelvin given the dry-bulb 
+temperature (Kelvin), the water vapor mixing ratio (kg/kg), the 
+liquid water mixing ratio (kg/kg), and the ice water mixing ratios
+(kg/kg). The liquid and ice water mixing ratios have default values 
+of zero, if unspecified. 
+
+Parameters:
+    tmpk_arr: The 1D array of dry-bulb temperature (K)
+    rv_arr: The 1D array of water vapor mixing ratio (kg/kg)
+    rl_arr: The 1D array of liquid water mixing ratio (kg/kg) 
+    ri_arr: The 1D array of ice water mixing ratio (kg/kg)
+
+Returns:
+    The 1D array of virtual temperature (K)
+
+    )pbdoc");
 }
