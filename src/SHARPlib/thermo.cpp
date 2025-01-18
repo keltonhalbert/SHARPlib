@@ -148,22 +148,19 @@ float mixratio_ice(const float pressure, const float temperature) {
     return (EPSILON * e) / (pressure - e);
 }
 
-float specific_humidity(float rv) {
+float specific_humidity(const float rv) {
 #ifndef NO_QC
     if (rv == MISSING) return MISSING;
 #endif
     return rv / (1.0 + rv);
 }
 
-float virtual_temperature(float temperature, float qv, float ql, float qi) {
+float virtual_temperature(const float temperature, const float qv,
+                          const float ql, const float qi) {
 #ifndef NO_QC
-    if (qv == MISSING) {
-        return temperature;
-    } else if (temperature == MISSING) {
+    if ((qv == MISSING) || (ql == MISSING) || (qi == MISSING) ||
+        (temperature == MISSING)) {
         return MISSING;
-    } else if ((ql == MISSING) || (qi == MISSING)) {
-        ql = 0.0f;
-        qi = 0.0f;
     }
 #endif
     return (temperature * ((1.0 + (qv / EPSILON)) / (1.0 + qv + ql + qi)));

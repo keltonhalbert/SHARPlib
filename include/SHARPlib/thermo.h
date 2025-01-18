@@ -269,7 +269,7 @@ enum class adiabat : int {
  *
  * \return  specific_humidity   (unitless)
  */
-[[nodiscard]] float specific_humidity(float rv);
+[[nodiscard]] float specific_humidity(const float rv);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -277,24 +277,23 @@ enum class adiabat : int {
  * \brief Compute the full virtual temperature.
  *
  * Returns the virtual temperature in Kelvin given the dry-bulb
- * temperature in Kelvin, the specific humidity of water vapor (qv) in
- * kg/kg, the specific humidity of liquid water (ql) in kg/kg, and the specific
- * himidity of ice water kg/kg.
+ * temperature in Kelvin, the water vapor mixing ratio (rv) in
+ * kg/kg, the liquid water mixing ratio (rl) in kg/kg, and the
+ * ice water mixing ratio (ri) in kg/kg.
  *
- * For convenience, the ql and qi terms have a default value of zero to
+ * For convenience, the rl and ri terms have a default value of zero to
  * easily support returning just the virtual temperature from water vapor.
- * If you are okay with lower accuracy, you may pass mixing ratios intead
- * of specific humidities.
  *
  * \param   temperature             (K)
- * \param   qv                      (kg/kg)
- * \param   ql                      (kg/kg)
- * \param   qi                      (kg/kg)
+ * \param   rv                      (kg/kg)
+ * \param   rl                      (kg/kg)
+ * \param   ri                      (kg/kg)
  *
  * \return  virtual_temperature     (K)
  */
-[[nodiscard]] float virtual_temperature(float temperature, float qv,
-                                        float ql = 0.0f, float qi = 0.0f);
+[[nodiscard]] float virtual_temperature(const float temperature, const float rv,
+                                        const float rl = 0.0f,
+                                        const float ri = 0.0f);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
