@@ -3,23 +3,28 @@
 
 image: redhat/ubi8
 
+variables:
+  BUILD_DIR: "build"
+  CMAKE_BUILD_OPTIONS: "-j 4"
+
 # Before doing anything, we need to make
 # sure the required libraries are installed
 # on the image, and initialize submodules
 before_script:
-  - dnf update -y && dnf install -y cmake gcc gcc-c++ git
+  - rm -rf build
+  - dnf update -y && dnf install -y cmake make gcc gcc-c++ git
   - git submodule update --init --recursive
 
 ## The CMake build step
 build:
   stage: build
-  script:
-    - cmake -B build .
-    - cmake --build build -j 4
-    - cmake --build build -j 4 --target SHARPlib_tests
-  artifacts:
+  cache:
     paths:
-      - build 
+      - build/ 
+  script:
+    - cmake -B $BUILD_DIR .
+    - cmake --build build $CMAKE_BUILD_OPTIONS 
+    - cmake --build build $CMAKE_BUILD_OPTIONS --target SHARPlib_tests
       # depending on your build setup it's most likely a good idea to cache outputs to reduce the build time
       # cache:
       #   paths:
@@ -30,5 +35,5 @@ test:
   stage: test
   script:
     - cd build
-    - ctest
+    - ctest --verbose
 
