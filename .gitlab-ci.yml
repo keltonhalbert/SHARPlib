@@ -39,7 +39,7 @@ test:
   stage: test
   script:
     - cd build
-    - make test
+    - ctest
 
 #deploy:
 #  stage: deploy
