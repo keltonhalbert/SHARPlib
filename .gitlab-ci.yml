@@ -4,7 +4,7 @@
 image: redhat/ubi8
 
 variables:
-  BUILD_DIR: "build"
+  BUILD_DIR: "buil_${COMPILER}"
   CMAKE_BUILD_OPTIONS: "-j 4"
 
 stages: 
@@ -29,13 +29,13 @@ build-linux:
   stage: build
   script:
     - echo "BUILDING $COMPILER"
-    - cmake -B "${BUILD_DIR}_${COMPILER}" . -DCMAKE_CXX_COMPILER=$COMPILER
-    - cmake --build "${BUILD_DIR}_${COMPILER}" $CMAKE_BUILD_OPTIONS 
-    - cmake --build "${BUILD_DIR}_${COMPILER}" $CMAKE_BUILD_OPTIONS --target SHARPlib_tests
+    - cmake -B ${BUILD_DIR} . -DCMAKE_CXX_COMPILER=$COMPILER
+    - cmake --build ${BUILD_DIR} $CMAKE_BUILD_OPTIONS 
+    - cmake --build ${BUILD_DIR} $CMAKE_BUILD_OPTIONS --target SHARPlib_tests
   artifacts:
     expire_in: 5 mins
     paths:
-      - "${BUILD_DIR}_${COMPILER}" 
+      - ${BUILD_DIR}
 
 # run tests using the binary built before
 test-linux:
@@ -43,6 +43,6 @@ test-linux:
   stage: test
   script:
     - echo "TESTING $COMPILER"
-    - cd "${BUILD_DIR}_${COMPILER}"
+    - cd ${BUILD_DIR}
     - ctest --verbose
 
