@@ -4,8 +4,8 @@
 image: redhat/ubi8
 
 variables:
-  BUILD_DIR: "buil_${COMPILER}"
-  CMAKE_BUILD_OPTIONS: "-j 4"
+  BUILD_DIR: "buid_${COMPILER}"
+  CMAKE_BUILD_OPTIONS: "-j 4 --target SHARPlib_tests"
 
 stages: 
   - build
@@ -31,7 +31,6 @@ build-linux:
     - echo "BUILDING $COMPILER"
     - cmake -B ${BUILD_DIR} . -DCMAKE_CXX_COMPILER=$COMPILER
     - cmake --build ${BUILD_DIR} $CMAKE_BUILD_OPTIONS 
-    - cmake --build ${BUILD_DIR} $CMAKE_BUILD_OPTIONS --target SHARPlib_tests
   artifacts:
     expire_in: 5 mins
     paths:
