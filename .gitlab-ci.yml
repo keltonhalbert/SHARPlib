@@ -15,10 +15,8 @@ image: redhat/ubi8
 
 build:
   stage: build
-  # instead of calling g++ directly you can also use some build toolkit like make
-  # install the necessary build tools when needed
   before_script:
-    - dnf update && dnf install -y cmake gcc gcc-c++ git
+    - dnf update -y && dnf install -y cmake gcc gcc-c++ git
     - git submodule update --init --recursive
   script:
     - cmake -B build .
