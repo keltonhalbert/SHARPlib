@@ -43,3 +43,6 @@ test-linux:
     - cd ${BUILD_DIR}
     - ctest --verbose
 
+sast:
+  stage: test
+  include: Security/SAST.gitlab-ci.yml
