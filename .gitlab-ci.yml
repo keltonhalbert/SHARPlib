@@ -15,11 +15,10 @@ image: redhat/ubi8
 
 before_script:
   - dnf update -y && dnf install -y cmake gcc gcc-c++ git
+  - git submodule update --init --recursive
 
 build:
   stage: build
-  before_script:
-    - git submodule update --init --recursive
   script:
     - cmake -B build .
     - cmake --build build -j 4
