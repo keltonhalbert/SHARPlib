@@ -17,13 +17,13 @@ before_script:
 ## The CMake build step
 build:
   stage: build
-  cache:
-    paths:
-      - build/ 
   script:
     - cmake -B $BUILD_DIR .
     - cmake --build build $CMAKE_BUILD_OPTIONS 
     - cmake --build build $CMAKE_BUILD_OPTIONS --target SHARPlib_tests
+  artifacts:
+    paths:
+      - build/ 
       # depending on your build setup it's most likely a good idea to cache outputs to reduce the build time
       # cache:
       #   paths:
