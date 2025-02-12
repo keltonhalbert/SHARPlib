@@ -21,13 +21,6 @@ stages:
     matrix:
       - COMPILER: [g++, clang++]
 
-.parallel-windows:
-  tags:
-    - saas-windows-medium-amd64 
-  parallel:
-    matrix:
-      - COMPILER: [cl, clang++]
-
 ## The CMake build step
 build-linux:
   extends: .parallel-linux
@@ -40,12 +33,6 @@ build-linux:
     expire_in: 5 mins
     paths:
       - ${BUILD_DIR}
-
-build-windows:
-  extends: .parallel-windows
-  stage: build
-  script:
-  - echo $(which ${COMPILER})
 
 # run tests using the binary built before
 test-linux:
