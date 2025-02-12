@@ -13,14 +13,12 @@
 
 image: redhat/ubi8
 
-cache:
-  paths:
-    - /var/cache/dnf  # Cache the dnf package manager's cache
+before_script:
+  - dnf update -y && dnf install -y cmake gcc gcc-c++ git
 
 build:
   stage: build
   before_script:
-    - dnf update -y && dnf install -y cmake gcc gcc-c++ git
     - git submodule update --init --recursive
   script:
     - cmake -B build .
