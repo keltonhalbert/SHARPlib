@@ -13,6 +13,10 @@
 
 image: redhat/ubi8
 
+cache:
+  paths:
+    - /var/cache/dnf  # Cache the dnf package manager's cache
+
 build:
   stage: build
   before_script:
