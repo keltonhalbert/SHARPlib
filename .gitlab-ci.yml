@@ -18,7 +18,7 @@ build:
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   before_script:
-    - apt update && apt -y install cmake gcc gcc-devel git
+    - dnf update && dnf install -y cmake gcc gcc-c++ git
     - git submodule update --init --recursive
   script:
     - cmake -B build .
