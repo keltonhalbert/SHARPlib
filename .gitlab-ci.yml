@@ -21,9 +21,10 @@ build:
   script:
     - cmake -B build .
     - cmake --build build -j 4
-  # artifacts:
-    # paths:
-      # - mybinary
+    - cmake --build build -j 4 --target SHARPlib_tests
+  artifacts:
+    paths:
+      - build 
       # depending on your build setup it's most likely a good idea to cache outputs to reduce the build time
       # cache:
       #   paths:
