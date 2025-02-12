@@ -45,4 +45,5 @@ test-linux:
 
 sast:
   stage: test
-  include: Security/SAST.gitlab-ci.yml
+
+include: Security/SAST.gitlab-ci.yml
