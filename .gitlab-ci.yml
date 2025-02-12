@@ -15,7 +15,7 @@ stages:
 # sure the required libraries are installed
 # on the image, and initialize submodules
 before_script:
-  - dnf update -y && dnf install -y cmake make gcc gcc-c++ git
+  - dnf update -y && dnf install -y cmake make gcc gcc-c++ clang git
   - git submodule update --init --recursive
 
 .parallel-linux:
