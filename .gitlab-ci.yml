@@ -11,14 +11,14 @@
 # can use versions as well, like gcc:5.2
 # see https://hub.docker.com/_/gcc/
 
-image: gcc:8.5.0
+image: redhat/ubi8
 
 build:
   stage: build
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   before_script:
-    - apt update && apt -y install cmake 
+    - apt update && apt -y install cmake gcc gcc-devel
     - git submodule update --init --recursive
   script:
     - cmake -B build .
