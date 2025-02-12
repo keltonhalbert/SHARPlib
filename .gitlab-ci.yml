@@ -33,6 +33,7 @@ build-linux:
     - cmake --build "${BUILD_DIR}_${COMPILER}" $CMAKE_BUILD_OPTIONS 
     - cmake --build "${BUILD_DIR}_${COMPILER}" $CMAKE_BUILD_OPTIONS --target SHARPlib_tests
   artifacts:
+    expire_in: 5 mins
     paths:
       - "${BUILD_DIR}_${COMPILER}" 
 
