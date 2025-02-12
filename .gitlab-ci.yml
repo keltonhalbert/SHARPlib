@@ -7,6 +7,10 @@ variables:
   BUILD_DIR: "build"
   CMAKE_BUILD_OPTIONS: "-j 4"
 
+stages: 
+  - build
+  - test
+  
 # Before doing anything, we need to make
 # sure the required libraries are installed
 # on the image, and initialize submodules
@@ -14,25 +18,30 @@ before_script:
   - dnf update -y && dnf install -y cmake make gcc gcc-c++ git
   - git submodule update --init --recursive
 
+.parallel-linux:
+  parallel:
+    matrix:
+      - COMPILER: [g++, clang++]
+
 ## The CMake build step
-build:
+build-linux:
+  extends: .parallel-linux
   stage: build
   script:
-    - cmake -B $BUILD_DIR .
+    - echo "BUILDING $COMPILER"
+    - cmake -B $BUILD_DIR . -DCMAKE_CXX_COMPILER=$COMPILER
     - cmake --build build $CMAKE_BUILD_OPTIONS 
     - cmake --build build $CMAKE_BUILD_OPTIONS --target SHARPlib_tests
   artifacts:
     paths:
       - build/ 
-      # depending on your build setup it's most likely a good idea to cache outputs to reduce the build time
-      # cache:
-      #   paths:
-      #     - "*.o"
 
 # run tests using the binary built before
-test:
+test-linux:
+  extends: .parallel-linux
   stage: test
   script:
+    - echo "TESTING $COMPILER"
     - cd build
     - ctest --verbose
 
