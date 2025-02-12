@@ -1,8 +1,6 @@
 # Use the official RHEL8 Universal Baseline Image (UBI) 
 # to build and test SHARPlib using CMake.
 
-image: redhat/ubi8
-
 variables:
   BUILD_DIR: "buid_${COMPILER}"
   CMAKE_BUILD_OPTIONS: "-j 4 --target SHARPlib_tests"
@@ -11,14 +9,14 @@ stages:
   - build
   - test
   
-# Before doing anything, we need to make
-# sure the required libraries are installed
-# on the image, and initialize submodules
-before_script:
-  - dnf update -y && dnf install -y cmake make gcc gcc-c++ clang git
-  - git submodule update --init --recursive
-
+# Set up a Linux build matrix that includes
+# information on the image, setup/install
+# dependencies, etc
 .parallel-linux:
+  image: redhat/ubi8
+  before_script:
+    - dnf update -y && dnf install -y cmake make gcc gcc-c++ clang git
+    - git submodule update --init --recursive
   parallel:
     matrix:
       - COMPILER: [g++, clang++]
