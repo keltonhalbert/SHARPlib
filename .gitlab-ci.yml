@@ -21,14 +21,12 @@ stages:
     matrix:
       - COMPILER: [g++, clang++]
 
-# Set up the MacOS build matrix 
-.parallel-macos:
+.parallel-windows:
   tags:
-    - saas-macos-medium-m1
-  image: macos-14-xcode-15
+    - saas-windows-medium-amd64 
   parallel:
     matrix:
-      - COMPILER: [g++, clang++]
+      - COMPILER: [cl, clang++]
 
 ## The CMake build step
 build-linux:
@@ -43,8 +41,8 @@ build-linux:
     paths:
       - ${BUILD_DIR}
 
-build-macos:
-  extends: .parallel-macos
+build-windows:
+  extends: .parallel-windows
   stage: build
   script:
   - echo $(which ${COMPILER})
