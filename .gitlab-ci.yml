@@ -29,12 +29,12 @@ build-linux:
   stage: build
   script:
     - echo "BUILDING $COMPILER"
-    - cmake -B $BUILD_DIR . -DCMAKE_CXX_COMPILER=$COMPILER
-    - cmake --build build $CMAKE_BUILD_OPTIONS 
-    - cmake --build build $CMAKE_BUILD_OPTIONS --target SHARPlib_tests
+    - cmake -B "'${BUILD_DIR}'_'${COMPILER}'" . -DCMAKE_CXX_COMPILER=$COMPILER
+    - cmake --build "'${BUILD_DIR}'_'${COMPILER}'" $CMAKE_BUILD_OPTIONS 
+    - cmake --build "'${BUILD_DIR}'_'${COMPILER}'" $CMAKE_BUILD_OPTIONS --target SHARPlib_tests
   artifacts:
     paths:
-      - build/ 
+      - "'${BUILD_DIR}'_'${COMPILER}'" 
 
 # run tests using the binary built before
 test-linux:
@@ -42,6 +42,6 @@ test-linux:
   stage: test
   script:
     - echo "TESTING $COMPILER"
-    - cd build
+    - cd "'${BUILD_DIR}'_'${COMPILER}'"
     - ctest --verbose
 
