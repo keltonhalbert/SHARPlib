@@ -21,6 +21,15 @@ stages:
     matrix:
       - COMPILER: [g++, clang++]
 
+# Set up the MacOS build matrix 
+.parallel-macos:
+  tags:
+    - saas-macos-medium-m1
+  image: macos-14-xcode-15
+  parallel:
+    matrix:
+      - COMPILER: [g++, clang++]
+
 ## The CMake build step
 build-linux:
   extends: .parallel-linux
@@ -33,6 +42,12 @@ build-linux:
     expire_in: 5 mins
     paths:
       - ${BUILD_DIR}
+
+build-macos:
+  extends: .parallel-macos
+  stage: build
+  script:
+  - echo $(which ${COMPILER})
 
 # run tests using the binary built before
 test-linux:
