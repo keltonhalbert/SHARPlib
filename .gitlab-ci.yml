@@ -6,8 +6,17 @@ variables:
   CMAKE_BUILD_OPTIONS: "-j 4 --target SHARPlib_tests"
 
 stages: 
+  - security
   - build
   - test
+
+sast:
+  stage: security
+  variables:
+    SAST_EXCLUDED_PATHS: "build, docs, tests" 
+
+include:
+- template: Security/SAST.gitlab-ci.yml
   
 # Set up a Linux build matrix that includes
 # information on the image, setup/install
@@ -43,10 +52,3 @@ test-linux:
     - cd ${BUILD_DIR}
     - ctest --verbose
 
-sast:
-  stage: test
-  variables:
-    SAST_EXCLUDED_PATHS: "build, docs, tests" 
-
-include:
-- template: Security/SAST.gitlab-ci.yml
