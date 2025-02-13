@@ -46,7 +46,7 @@ test-linux:
 sast:
   stage: test
   variables:
-    SAST_INCLUDE_PATHS: "include src"
+    SAST_EXCLUDED_PATHS: "build, docs, tests" 
 
 include:
 - template: Security/SAST.gitlab-ci.yml
