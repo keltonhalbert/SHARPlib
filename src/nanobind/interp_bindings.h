@@ -1,3 +1,6 @@
+#ifndef __SHARPLIB_INTERP_BINDINGS
+#define __SHARPLIB_INTERP_BINDINGS
+
 // clang-format off
 #include <nanobind/nanobind.h>
 
@@ -62,3 +65,5 @@ Returns:
 
         )pbdoc");
 }
+
+#endif

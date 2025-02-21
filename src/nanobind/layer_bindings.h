@@ -1,3 +1,5 @@
+#ifndef __SHARPLIB_LAYER_BINDINGS
+#define __SHARPLIB_LAYER_BINDINGS
 
 // clang-format off
 #include <nanobind/nanobind.h>
@@ -82,3 +84,5 @@ Returns:
     A LayerIndex with {kbot, ktop}.
         )pbdoc");
 }
+
+#endif

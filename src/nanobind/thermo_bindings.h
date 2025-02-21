@@ -1,3 +1,6 @@
+#ifndef __SHARPLIB_THERMO_BINDINGS
+#define __SHARPLIB_THERMO_BINDINGS
+
 // clang-format off
 #include <nanobind/nanobind.h>
 
@@ -816,3 +819,5 @@ Returns:
 
         )pbdoc");
 }
+
+#endif
