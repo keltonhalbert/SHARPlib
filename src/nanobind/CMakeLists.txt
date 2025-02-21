@@ -19,13 +19,6 @@ add_subdirectory(nanobind)
 include_directories(${Python3_INCLUDE_DIRS})
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-nanobind_add_module(thermo LTO thermo.cpp)
-nanobind_add_module(layer LTO layer.cpp)
-nanobind_add_module(interp LTO interp.cpp)
-
-target_link_libraries(thermo PRIVATE SHARPlib)
-target_link_libraries(layer PRIVATE SHARPlib)
-target_link_libraries(interp PRIVATE SHARPlib)
-
-install(TARGETS thermo layer interp DESTINATION nwsspc/sharp/calc)
-
+nanobind_add_module(calc LTO calc.cpp)
+target_link_libraries(calc PRIVATE SHARPlib)
+install(TARGETS calc DESTINATION nwsspc/sharp)

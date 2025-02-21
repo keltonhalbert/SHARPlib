@@ -1,21 +1,23 @@
+#ifndef __SHARPLIB_INTERP_BINDINGS
+#define __SHARPLIB_INTERP_BINDINGS
+
 // clang-format off
 #include <nanobind/nanobind.h>
 
-// cland-format on
 #include <SHARPlib/interp.h>
 #include "sharplib_types.h"
 
 namespace nb = nanobind;
-// clang-format on
-NB_MODULE(interp, m) {
-    m.doc() =
-        "Sounding and Hodograph Analysis and Research Program Library "
-        "(SHARPlib) :: Interpolation Routines";
 
-    m.def(
+void make_interp_bindings(nb::module_ m) {
+    nb::module_ m_interp = m.def_submodule("interp", 
+        "Sounding and Hodograph Analysis and Research Program Library "
+        "(SHARPlib) :: Interpolation Routines");
+
+    m_interp.def(
         "interp_height",
         [](const float hght_val, const_prof_arr_t hght_arr,
-           const_prof_arr_t data_arr) -> float {
+        const_prof_arr_t data_arr) -> float {
             if ((hght_arr.size() != data_arr.size())) {
                 throw nb::buffer_error(
                     "hght_arr and data_arr must have the same size!");
@@ -37,16 +39,16 @@ Returns:
 
         )pbdoc");
 
-    m.def(
+    m_interp.def(
         "interp_pressure",
         [](const float pres_val, const_prof_arr_t pres_arr,
-           const_prof_arr_t data_arr) -> float {
+        const_prof_arr_t data_arr) -> float {
             if ((pres_arr.size() != data_arr.size())) {
                 throw nb::buffer_error(
                     "hght_arr and data_arr must have the same size!");
             }
             return sharp::interp_pressure(pres_val, pres_arr.data(),
-                                          data_arr.data(), pres_arr.size());
+                                        data_arr.data(), pres_arr.size());
         },
         nb::arg("pres_val"), nb::arg("pres_arr"), nb::arg("data_arr"),
         R"pbdoc(
@@ -63,3 +65,5 @@ Returns:
 
         )pbdoc");
 }
+
+#endif

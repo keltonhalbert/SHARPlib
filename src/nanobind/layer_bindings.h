@@ -1,24 +1,23 @@
+#ifndef __SHARPLIB_LAYER_BINDINGS
+#define __SHARPLIB_LAYER_BINDINGS
+
 // clang-format off
 #include <nanobind/nanobind.h>
-#include <nanobind/ndarray.h>
 
-// cland-format on
 #include <SHARPlib/layer.h>
-#include <cstddef>
 #include "sharplib_types.h"
 
 namespace nb = nanobind;
 
-// clang-format on
-NB_MODULE(layer, m) {
-    m.doc() =
+void make_layer_bindings(nb::module_ m) {
+    nb::module_ m_layer = m.def_submodule("layer", 
         "Sounding and Hodograph Analysis and Research Program Library "
-        "(SHARPlib) :: Atmospheric Layer Routines";
+        "(SHARPlib) :: Atmospheric Layer Routines");
 
     // Bind the constructors, named fields, and default arguments
-    nb::class_<sharp::HeightLayer>(m, "HeightLayer")
+    nb::class_<sharp::HeightLayer>(m_layer, "HeightLayer")
         .def(nb::init<float, float, float>(), nb::arg("bottom"), nb::arg("top"),
-             nb::arg("delta") = 100.0f)
+            nb::arg("delta") = 100.0f)
         .def_rw("bottom", &sharp::HeightLayer::bottom,
                 "The bottom of the HeightLayer (meters)")
         .def_rw("top", &sharp::HeightLayer::top,
@@ -27,9 +26,9 @@ NB_MODULE(layer, m) {
             "delta", &sharp::HeightLayer::delta,
             "The HeightLayer delta (increment) to use if iterating (meters).");
 
-    nb::class_<sharp::PressureLayer>(m, "PressureLayer")
+    nb::class_<sharp::PressureLayer>(m_layer, "PressureLayer")
         .def(nb::init<float, float, float>(), nb::arg("bottom"), nb::arg("top"),
-             nb::arg("delta") = -1000.0f)
+            nb::arg("delta") = -1000.0f)
         .def_rw("bottom", &sharp::PressureLayer::bottom,
                 "The bottom of the PressureLayer (Pa)")
         .def_rw("top", &sharp::PressureLayer::top,
@@ -37,9 +36,9 @@ NB_MODULE(layer, m) {
         .def_rw("delta", &sharp::PressureLayer::delta,
                 "The PressureLayer delta (increment) to use if iterating (Pa)");
 
-    nb::class_<sharp::LayerIndex>(m, "LayerIndex")
+    nb::class_<sharp::LayerIndex>(m_layer, "LayerIndex")
         .def(nb::init<std::ptrdiff_t, std::ptrdiff_t>(), nb::arg("kbot"),
-             nb::arg("ktop"))
+            nb::arg("ktop"))
         .def_rw("kbot", &sharp::LayerIndex::kbot,
                 "The bottom index of a layer on a coordinate array "
                 "(pressure or height).")
@@ -47,12 +46,12 @@ NB_MODULE(layer, m) {
                 "The top index of a layer on a coordinate array "
                 "(pressure or height).");
 
-    m.def(
+    m_layer.def(
         "get_layer_index",
         [](sharp::PressureLayer& layer,
-           const_prof_arr_t pressure_array) -> sharp::LayerIndex {
+        const_prof_arr_t pressure_array) -> sharp::LayerIndex {
             return sharp::get_layer_index(layer, pressure_array.data(),
-                                          pressure_array.size());
+                                        pressure_array.size());
         },
         nb::arg("layer"), nb::arg("pressure"),
         R"pbdoc(
@@ -64,14 +63,14 @@ Parameters:
 
 Returns:
     A LayerIndex with {kbot, ktop}.
-          )pbdoc");
+            )pbdoc");
 
-    m.def(
+    m_layer.def(
         "get_layer_index",
         [](sharp::HeightLayer& layer,
-           const_prof_arr_t height_array) -> sharp::LayerIndex {
+        const_prof_arr_t height_array) -> sharp::LayerIndex {
             return sharp::get_layer_index(layer, height_array.data(),
-                                          height_array.size());
+                                        height_array.size());
         },
         nb::arg("layer"), nb::arg("height"),
         R"pbdoc(
@@ -83,5 +82,7 @@ Parameters:
 
 Returns:
     A LayerIndex with {kbot, ktop}.
-          )pbdoc");
+        )pbdoc");
 }
+
+#endif
