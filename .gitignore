@@ -52,15 +52,6 @@ _deps
 build
 .cache
 
-# SWIG python files and wrappers
-src/swig/build
-src/swig/*.egg-info
-src/swig/nwsspc/sharp/calc/*_wrap.cpp
-src/swig/nwsspc/sharp/calc/constants.py
-src/swig/nwsspc/sharp/calc/interp.py
-src/swig/nwsspc/sharp/calc/layer.py
-src/swig/nwsspc/sharp/calc/params.py
-src/swig/nwsspc/sharp/calc/parcel.py
-src/swig/nwsspc/sharp/calc/profile.py
-src/swig/nwsspc/sharp/calc/thermo.py
-src/swig/nwsspc/sharp/calc/winds.py
+# Ignore built docs
+docs/html
+docs/latex
