@@ -282,7 +282,7 @@ template <typename L, typename Cb, typename Ct>
  * \brief Converts a sharp::PressureLayer to a sharp::HeightLayer
  *
  * Converts a sharp::PressureLayer to a sharp::HeightLayer via
- * interpolation, with the obtion of returning the layer in meters
+ * interpolation, with the option of returning the layer in meters
  * AGL or MSL. If for some strange reason you provide a PressureLayer
  * that is out of the bounds of pressure[], then the bottom and top
  * of the output layer will be set to sharp::MISSING.
