@@ -3,6 +3,7 @@
 
 // clang-format off
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/tuple.h>
 
 #include <SHARPlib/layer.h>
 #include "sharplib_types.h"
@@ -167,6 +168,73 @@ Parameters:
     height: 1D NumPy array of heights
     toAGL: Whether or not to subtract the station height from the HeightLayer (default: False)
 
+    )pbdoc"
+    );
+
+    m_layer.def(
+        "layer_min",
+        [](
+            sharp::HeightLayer& layer, 
+            const_prof_arr_t height,
+            const_prof_arr_t data
+        ) {
+            float lvl_of_min;
+            float min = sharp::layer_min(
+                layer,
+                height.data(),
+                data.data(),
+                data.size(),
+                &lvl_of_min
+            );
+
+            return std::make_tuple(min, lvl_of_min);
+        },
+        nb::arg("layer"), nb::arg("height"), nb::arg("data"),
+        R"pbdoc(
+Returns the minimum value of the data array within the given HeightLayer. The 
+function bounds checks the layer by calling get_layer_index. 
+
+Parameters:
+    layer: HeightLayer 
+    height: 1D NumPy array of heights 
+    data: 1D array of data 
+
+Returns:
+    tuple: (min_value, level_of_min)
+
+    )pbdoc"
+    );
+
+    m_layer.def(
+        "layer_min",
+        [](
+            sharp::PressureLayer& layer, 
+            const_prof_arr_t pressure,
+            const_prof_arr_t data
+        ) {
+            float lvl_of_min;
+            float min = sharp::layer_min(
+                layer,
+                pressure.data(),
+                data.data(),
+                data.size(),
+                &lvl_of_min
+            );
+
+            return std::make_tuple(min, lvl_of_min);
+        },
+        nb::arg("layer"), nb::arg("pressure"), nb::arg("data"),
+        R"pbdoc(
+Returns the minimum value of the data array within the given PressureLayer. The 
+function bounds checks the layer by calling get_layer_index. 
+
+Parameters:
+    layer: PressureLayer 
+    pressure: 1D NumPy array of pressure 
+    data: 1D array of data 
+
+Returns:
+    tuple: (min_value, level_of_min)
     )pbdoc"
     );
 
