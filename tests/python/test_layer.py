@@ -134,20 +134,85 @@ def test_layer_bounds_check():
 
 
 def test_pressure_layer_min():
-    pass
+    pres = np.arange(10000, 110000, 10000)[::-1]
+    data = np.array([0, 0, 0, 0, -10, 0, 0, 0, 0, 0])
+
+    lyr1 = layer.PressureLayer(100000.0, 60000.0)  # min at top of layer
+    lyr2 = layer.PressureLayer(110000.0, 50000.0)  # out of bounds recovery
+    lyr3 = layer.PressureLayer(100000.0, 85000.0)  # min is not in layer
+    lyr4 = layer.PressureLayer(80000.0, 65000.0)  # min is just above layer
+    lyr5 = layer.PressureLayer(55000.0, 40000.0)  # min is just below layer
+
+    assert (layer.layer_min(lyr1, pres, data) == (-10.0, 60000.0))
+    assert (layer.layer_min(lyr2, pres, data) == (-10.0, 60000.0))
+    assert (layer.layer_min(lyr3, pres, data) == (0.0, 100000.0))
+    assert (layer.layer_min(lyr4, pres, data) ==
+            (pytest.approx(-4.807509899), 65000.0))
+    assert (layer.layer_min(lyr5, pres, data) ==
+            (pytest.approx(-5.22757434), 55000.0))
 
 
 def test_pressure_layer_max():
-    pass
+    pres = np.arange(10000, 110000, 10000)[::-1]
+    data = np.array([0, 0, 0, 0, 10, 0, 0, 0, 0, 0])
+
+    lyr1 = layer.PressureLayer(100000.0, 60000.0)  # min at top of layer
+    lyr2 = layer.PressureLayer(110000.0, 50000.0)  # out of bounds recovery
+    lyr3 = layer.PressureLayer(100000.0, 85000.0)  # min is not in layer
+    lyr4 = layer.PressureLayer(80000.0, 65000.0)  # min is just above layer
+    lyr5 = layer.PressureLayer(55000.0, 40000.0)  # min is just below layer
+
+    assert (layer.layer_max(lyr1, pres, data) == (10.0, 60000.0))
+    assert (layer.layer_max(lyr2, pres, data) == (10.0, 60000.0))
+    assert (layer.layer_max(lyr3, pres, data) == (0.0, 100000.0))
+    assert (layer.layer_max(lyr4, pres, data) ==
+            (pytest.approx(4.807509899), 65000.0))
+    assert (layer.layer_max(lyr5, pres, data) ==
+            (pytest.approx(5.22757434), 55000.0))
 
 
 def test_height_layer_min():
-    pass
+    hght = np.arange(1000.0, 11000.0, 1000.0)
+    data = np.array([0, 0, 0, 0, -10, 0, 0, 0, 0, 0])
+
+    lyr1 = layer.HeightLayer(1000.0, 6000.0)  # max at top of layer
+    lyr2 = layer.HeightLayer(-100.0, 20000.0)  # out of bounds recovery
+    lyr3 = layer.HeightLayer(6000.0, 10000.0)  # max is not in layer
+    lyr4 = layer.HeightLayer(1000.0, 4750.0)  # max is just above layer
+    lyr5 = layer.HeightLayer(5250.0, 9000.0)  # max is just below layer
+
+    assert (layer.layer_min(lyr1, hght, data) == (-10.0, 5000.0))
+    assert (layer.layer_min(lyr2, hght, data) == (-10.0, 5000.0))
+    assert (layer.layer_min(lyr3, hght, data) == (0.0, 6000.0))
+    assert (layer.layer_min(lyr4, hght, data) == (-7.5, 4750.0))
+    assert (layer.layer_min(lyr5, hght, data) == (-7.5, 5250.0))
 
 
 def test_height_layer_max():
-    pass
+    hght = np.arange(1000.0, 11000.0, 1000.0)
+    data = np.array([0, 0, 0, 0, 10, 0, 0, 0, 0, 0])
+
+    lyr1 = layer.HeightLayer(1000.0, 6000.0)  # max at top of layer
+    lyr2 = layer.HeightLayer(-100.0, 20000.0)  # out of bounds recovery
+    lyr3 = layer.HeightLayer(6000.0, 10000.0)  # max is not in layer
+    lyr4 = layer.HeightLayer(1000.0, 4750.0)  # max is just above layer
+    lyr5 = layer.HeightLayer(5250.0, 9000.0)  # max is just below layer
+
+    assert (layer.layer_max(lyr1, hght, data) == (10.0, 5000.0))
+    assert (layer.layer_max(lyr2, hght, data) == (10.0, 5000.0))
+    assert (layer.layer_max(lyr3, hght, data) == (0.0, 6000.0))
+    assert (layer.layer_max(lyr4, hght, data) == (7.5, 4750.0))
+    assert (layer.layer_max(lyr5, hght, data) == (7.5, 5250.0))
 
 
 def test_pressure_layer_mean():
-    pass
+    pres = np.arange(10000, 110000, 10000)[::-1]
+    data = np.array([0, 0, 0, 0, 10.0, 0, 0, 0, 0, 0])
+
+    lyr1 = layer.PressureLayer(100000.0, 60000.0)  # max at top of layer
+    lyr2 = layer.PressureLayer(110000.0, 5000.0)  # out of bounds recovery
+    lyr3 = layer.PressureLayer(100000.0, 10000.0)  # full layer
+
+    assert (layer.layer_mean(lyr1, pres, data) == 1.25)
+    assert (layer.layer_mean(lyr2, pres, data) == pytest.approx(1.111111))
+    assert (layer.layer_mean(lyr3, pres, data) == pytest.approx(1.111111))
