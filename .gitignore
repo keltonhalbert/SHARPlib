@@ -55,3 +55,6 @@ build
 # Ignore built docs
 docs/html
 docs/latex
+
+# Python
+__pycache__
