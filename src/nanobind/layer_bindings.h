@@ -238,6 +238,218 @@ Returns:
     )pbdoc"
     );
 
+    m_layer.def(
+        "layer_max",
+        [](
+            sharp::HeightLayer& layer, 
+            const_prof_arr_t height,
+            const_prof_arr_t data
+        ) {
+            float lvl_of_max;
+            float max = sharp::layer_max(
+                layer,
+                height.data(),
+                data.data(),
+                data.size(),
+                &lvl_of_max
+            );
+
+            return std::make_tuple(max, lvl_of_max);
+        },
+        nb::arg("layer"), nb::arg("height"), nb::arg("data"),
+        R"pbdoc(
+Returns the maximum value observed within the given data array over
+the given HeightLayer. The function bounds checks the layer by calling 
+get_layer_index. 
+
+Parameters:
+    layer: HeightLayer 
+    height: 1D NumPy array of height values 
+    data: 1D NumPy array of data values
+
+Returns:
+    tuple: (max_value, level_of_max)
+
+    )pbdoc"
+    );
+
+    m_layer.def(
+        "layer_max",
+        [](
+            sharp::PressureLayer& layer,
+            const_prof_arr_t pressure,
+            const_prof_arr_t data
+        ) {
+            float lvl_of_max;
+            float max = sharp::layer_max(
+                layer,
+                pressure.data(),
+                data.data(),
+                data.size(),
+                &lvl_of_max
+            );
+
+            return std::make_tuple(max, lvl_of_max);
+        },
+        nb::arg("layer"), nb::arg("pressure"), nb::arg("data"),
+        R"pbdoc(
+Returns the maximum value observed within the given data array over the given 
+PressureLayer. The function bounds checks the layer by calling get_layer_index. 
+
+Parameters:
+    layer: PressureLayer 
+    pressure: 1D NumPy array of pressure values 
+    data: 1D NumPy array of data values
+
+Returns:
+    tuple: (max_value, level_of_max)
+
+    )pbdoc"
+    );
+
+    m_layer.def(
+        "layer_mean",
+        [](
+            sharp::PressureLayer layer, 
+            const_prof_arr_t pressure,
+            const_prof_arr_t data
+        ) {
+
+            return sharp::layer_mean(
+                layer, 
+                pressure.data(), 
+                data.data(), 
+                data.size()
+            );
+
+        },
+        nb::arg("PressureLayer"), nb::arg("pressure"), nb::arg("data"),
+        R"pbdoc(
+Computes the pressure-weighted mean value of a field over 
+a given PressureLayer. 
+
+Parameters:
+    layer: PressureLayer 
+    pressure: 1D NumPy array of pressure values 
+    data: 1D NumPy array of data values
+
+    )pbdoc"
+    );
+
+    m_layer.def(
+        "layer_mean",
+        [](
+            sharp::HeightLayer layer,
+            const_prof_arr_t height, 
+            const_prof_arr_t pressure, 
+            const_prof_arr_t data,
+            const bool isAGL
+        ) {
+            return sharp::layer_mean(
+                layer,
+                height.data(),
+                pressure.data(),
+                data.data(),
+                data.size(),
+                isAGL
+            );
+
+        },
+        nb::arg("HeightLayer"), nb::arg("height"),
+        nb::arg("pressure"), nb::arg("data"),
+        nb::arg("isAGL") = false,
+        R"pbdoc(
+Computes the pressure-weighted mean value of a field over 
+a given HeightLayer. 
+
+Parameters:
+    layer: HeightLayer 
+    height: 1D NumPy array of height values
+    pressure: 1D NumPy array of pressure values 
+    data: 1D NumPy array of data values
+    isAGL: Whether or not the surface station height should be added to the HeightLayer (default: False)
+
+    )pbdoc"
+    );
+
+    m_layer.def(
+        "integrate_layer_trapz",
+        [](
+            sharp::HeightLayer layer,
+            const_prof_arr_t data,
+            const_prof_arr_t height,
+            const int integ_sign,
+            const bool weighted
+        ) {
+
+            return sharp::integrate_layer_trapz(
+                layer,
+                data.data(),
+                height.data(),
+                data.size(),
+                integ_sign,
+                weighted
+            );
+            
+        },
+        nb::arg("layer"), nb::arg("data"), nb::arg("height"),
+        nb::arg("integ_sign") = 0, nb::arg("weighted") = false,
+        R"pbdoc(
+Returns a trapezoidal integration of the given data array over 
+the given HeightLayer. There is an additional argument that 
+determines whether this is a weighted average or not. The sign 
+of the integration may be passed as well, i.e. integrating only 
+positive or negative area, by passing a 1, 0, or -1 to integ_sign. 
+
+Parameters:
+    layer: HeightLayer 
+    data: 1D NumPy array of data values 
+    height: 1D NumPy array of height values 
+    integ_sign: The sign of the area to integrate (-1: negative; 1: positive; 0: both; default: 0)
+    weighted: Boolean determining whether or not the integration is weighted by the coordinate array 
+
+    )pbdoc"
+    );
+
+    m_layer.def(
+        "integrate_layer_trapz",
+        [](
+            sharp::PressureLayer layer,
+            const_prof_arr_t data,
+            const_prof_arr_t pressure,
+            const int integ_sign,
+            const bool weighted
+        ) {
+
+            return sharp::integrate_layer_trapz(
+                layer, 
+                data.data(),
+                pressure.data(),
+                data.size(),
+                integ_sign,
+                weighted
+            );
+            
+        },
+        nb::arg("layer"), nb::arg("data"), nb::arg("pressure"),
+        nb::arg("integ_sign") = 0, nb::arg("weighted") = false,
+        R"pbdoc(
+Returns the trapezoidal integration of the given data array over 
+the given PressureLayer. There is an additional argument that 
+determines whether this is a weighted average or not. The sign 
+of the integration may be passed as well, i.e. integrating only 
+positive or negative area, by passing a 1, 0, or -1 to integ_sign. 
+
+Parameters:
+    layer: PressureLayer
+    data: 1D NumPy array of data values
+    pressure: 1D NumPy array of pressure values 
+    integ_sign: The sign of the area to integrate (-1: negative; 1: positive; 0: both; default: 0)
+    weighted: Boolean determining whether or not the integration is weighted by the coordinate array
+
+    )pbdoc"
+    );
+
 }
 
 #endif
