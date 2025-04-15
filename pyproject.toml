@@ -35,6 +35,9 @@ dependencies = [
     "numpy>=1.22.0"
 ]
 
+[project.optional-dependencies]
+test = ["pytest"]
+
 [project.urls]
 "homepage" = "https://github.com/keltonhalbert/SHARPlib"
 "Documentation" = "https://keltonhalbert.github.io/SHARPlib"
@@ -46,3 +49,6 @@ cmake.build-type = "Release"
 
 [tool.scikit-build.cmake.define]
 BUILD_PYBIND = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests/python"]
