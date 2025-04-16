@@ -364,8 +364,8 @@ struct Parcel {
      *
      * Searches the buoyancy array for the LFC and EL combination that
      * results in the most CAPE in the given profile. The buoyancy array is
-     * typically computed by calling sharp::lift_parcel. Once the LFC and EL
-     * are found, the values are set in sharp::Parcel.lfc_pres and
+     * typically computed by calling sharp::Parcel::lift_parcel. Once the LFC
+     * and EL are found, the values are set in sharp::Parcel.lfc_pres and
      * sharp::Parcel.eql_pres.
      *
      * \param   pres_arr    The pressure coordinate array (Pa)
@@ -381,7 +381,7 @@ struct Parcel {
      *
      * \brief Compute CAPE and CINH for a previously lifted sharp::Parcel.
      *
-     * Assuming that sharp::lift_parcel has been called, cape_cinh
+     * Assuming that sharp::Parcel::lift_parcel has been called, cape_cinh
      * will integrate the area between the LFC and EL to compute CAPE,
      * and integrate the area between the LPL and LCL to compute CINH.
      *
