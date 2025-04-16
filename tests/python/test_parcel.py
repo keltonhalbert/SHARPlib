@@ -1,10 +1,61 @@
 
+import os
 import pytest
 import numpy as np
+import pandas as pd
 
+from nwsspc.sharp.calc import layer
 from nwsspc.sharp.calc import parcel
 from nwsspc.sharp.calc import thermo
 from nwsspc.sharp.calc import constants
+
+
+def load_parquet(filename):
+    snd_df = pd.read_parquet(filename)
+    snd_df = snd_df[snd_df["vwin"].notna()]
+    snd_df = snd_df[snd_df["tmpc"].notna()]
+    snd_df = snd_df[snd_df["relh"].notna()]
+    snd_df = snd_df[snd_df["pres"] >= 50.0]
+
+    pres = snd_df["pres"].to_numpy().astype('float32')*100.0
+    hght = snd_df["hght"].to_numpy().astype('float32')
+    tmpk = snd_df["tmpc"].to_numpy().astype('float32')+273.15
+    dwpk = snd_df["dwpc"].to_numpy().astype('float32')+273.15
+    wdir = snd_df["wdir"].to_numpy().astype('float32')
+    wspd = snd_df["wspd"].to_numpy().astype('float32')
+    uwin = snd_df["uwin"].to_numpy().astype('float32')
+    vwin = snd_df["vwin"].to_numpy().astype('float32')
+
+    # turn into height above ground level
+    hght -= hght[0]
+
+    # TO-DO - need a better interface to the API for doing this
+    # uwin = np.empty(wspd.shape, dtype="float32")
+    # vwin = np.empty(wspd.shape, dtype="float32")
+    mixr = thermo.mixratio(pres, dwpk)
+    vtmp = thermo.virtual_temperature(tmpk, mixr)
+
+    return {
+        "pres": pres, "hght": hght,
+        "tmpk": tmpk, "mixr": mixr,
+        "vtmp": vtmp, "dwpk": dwpk,
+        "wdir": wdir, "wspd": wspd,
+        "uwin": uwin, "vwin": vwin
+    }
+
+
+data_dir = os.path.join(
+    os.path.dirname(__file__),
+    "..",
+    "..",
+    "data",
+    "test_snds"
+)
+filename = os.path.join(
+    data_dir,
+    "ddc.parquet"
+)
+snd_data = load_parquet(filename)
 
 
 def test_lifter_wobus():
@@ -40,3 +91,50 @@ def test_lifter_cm1():
 
     assert (np.isnan(lifter(np.nan, tmpk, new_pres)))
     assert (np.isnan(lifter(pres, np.nan, new_pres)))
+
+
+def test_surface_parcel():
+    pres = 100000.0
+    tmpk = 320.0
+    dwpk = 315.0
+
+    pcl = parcel.Parcel.surface_parcel(pres, tmpk, dwpk)
+
+    assert (pcl.pres == pres)
+    assert (pcl.tmpk == tmpk)
+    assert (pcl.dwpk == dwpk)
+
+
+def test_mixed_layer_parcel():
+    mix_lyr = layer.PressureLayer(
+        snd_data["pres"][0], snd_data["pres"][0] - 10000.0)
+    theta = thermo.theta(snd_data["pres"], snd_data["tmpk"])
+    pcl = parcel.Parcel.mixed_layer_parcel(
+        mix_lyr, snd_data["pres"], theta, snd_data["mixr"])
+
+    assert (pcl.pres == pytest.approx(92043.0))
+    assert (pcl.tmpk == pytest.approx(297.2543))
+    assert (pcl.dwpk == pytest.approx(289.40469))
+
+
+def test_most_unstable_parcel():
+    search_layer = layer.PressureLayer(
+        snd_data["pres"][0],
+        snd_data["pres"][0] - 40000.0
+    )
+
+    lifter = parcel.lifter_wobus()
+
+    pcl = parcel.Parcel.most_unstable_parcel(
+        search_layer,
+        lifter,
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["tmpk"],
+        snd_data["vtmp"],
+        snd_data["dwpk"]
+    )
+
+    assert (pcl.pres == pytest.approx(92043.0))
+    assert (pcl.tmpk == pytest.approx(298.15))
+    assert (pcl.dwpk == pytest.approx(291.532))
