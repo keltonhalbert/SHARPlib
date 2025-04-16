@@ -288,6 +288,13 @@ float _solve_cm1(float& pcl_pres_next, float& pcl_pi_next, float& pcl_t_next,
 float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
                         float& rv_total, float& rv, float& rl, float& ri,
                         float pres_incr, float converge, adiabat ma_type) {
+#ifndef NO_QC
+    if ((temperature == MISSING) || (pressure == MISSING) ||
+        (new_pressure == MISSING)) {
+        return MISSING;
+    }
+#endif
+
     // set up solver variables
     const bool ice = (ma_type >= adiabat::pseudo_ice) ? true : false;
     float dp = new_pressure - pressure;
