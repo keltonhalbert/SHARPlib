@@ -145,7 +145,7 @@ struct lifter_cm1 {
      * \param   tmpk        Parcel temperature (K)
      * \param   new_pres    Final level of parcel after lift (Pa)
      *
-     * \return  The virtual temperature of the lifted parcel
+     * \return  The temperature of the lifted parcel
      */
     [[nodiscard]] inline float operator()(const float pres, const float tmpk,
                                           const float new_pres) {
