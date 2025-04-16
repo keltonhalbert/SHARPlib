@@ -5,20 +5,23 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/tuple.h>
 
+// clang-format on
 #include <SHARPlib/layer.h>
+
 #include "sharplib_types.h"
 
 namespace nb = nanobind;
 
 void make_layer_bindings(nb::module_ m) {
-    nb::module_ m_layer = m.def_submodule("layer", 
+    nb::module_ m_layer = m.def_submodule(
+        "layer",
         "Sounding and Hodograph Analysis and Research Program Library "
         "(SHARPlib) :: Atmospheric Layer Routines");
 
     // Bind the constructors, named fields, and default arguments
     nb::class_<sharp::HeightLayer>(m_layer, "HeightLayer")
         .def(nb::init<float, float, float>(), nb::arg("bottom"), nb::arg("top"),
-            nb::arg("delta") = 100.0f)
+             nb::arg("delta") = 100.0f)
         .def_rw("bottom", &sharp::HeightLayer::bottom,
                 "The bottom of the HeightLayer (meters)")
         .def_rw("top", &sharp::HeightLayer::top,
@@ -29,7 +32,7 @@ void make_layer_bindings(nb::module_ m) {
 
     nb::class_<sharp::PressureLayer>(m_layer, "PressureLayer")
         .def(nb::init<float, float, float>(), nb::arg("bottom"), nb::arg("top"),
-            nb::arg("delta") = -1000.0f)
+             nb::arg("delta") = -1000.0f)
         .def_rw("bottom", &sharp::PressureLayer::bottom,
                 "The bottom of the PressureLayer (Pa)")
         .def_rw("top", &sharp::PressureLayer::top,
@@ -39,7 +42,7 @@ void make_layer_bindings(nb::module_ m) {
 
     nb::class_<sharp::LayerIndex>(m_layer, "LayerIndex")
         .def(nb::init<std::ptrdiff_t, std::ptrdiff_t>(), nb::arg("kbot"),
-            nb::arg("ktop"))
+             nb::arg("ktop"))
         .def_rw("kbot", &sharp::LayerIndex::kbot,
                 "The bottom index of a layer on a coordinate array "
                 "(pressure or height).")
@@ -50,9 +53,9 @@ void make_layer_bindings(nb::module_ m) {
     m_layer.def(
         "get_layer_index",
         [](sharp::PressureLayer& layer,
-        const_prof_arr_t pressure_array) -> sharp::LayerIndex {
+           const_prof_arr_t pressure_array) -> sharp::LayerIndex {
             return sharp::get_layer_index(layer, pressure_array.data(),
-                                        pressure_array.size());
+                                          pressure_array.size());
         },
         nb::arg("layer"), nb::arg("pressure"),
         R"pbdoc(
@@ -78,9 +81,9 @@ Returns:
     m_layer.def(
         "get_layer_index",
         [](sharp::HeightLayer& layer,
-        const_prof_arr_t height_array) -> sharp::LayerIndex {
+           const_prof_arr_t height_array) -> sharp::LayerIndex {
             return sharp::get_layer_index(layer, height_array.data(),
-                                        height_array.size());
+                                          height_array.size());
         },
         nb::arg("layer"), nb::arg("height"),
         R"pbdoc(
@@ -105,18 +108,10 @@ Returns:
 
     m_layer.def(
         "height_layer_to_pressure",
-        [](sharp::HeightLayer& layer,
-           const_prof_arr_t pressure,
-           const_prof_arr_t height,
-           const bool isAGL) -> sharp::PressureLayer {
+        [](sharp::HeightLayer& layer, const_prof_arr_t pressure,
+           const_prof_arr_t height, const bool isAGL) -> sharp::PressureLayer {
             return sharp::height_layer_to_pressure(
-                layer, 
-                pressure.data(), 
-                height.data(), 
-                height.size(), 
-                isAGL
-            );
-
+                layer, pressure.data(), height.data(), height.size(), isAGL);
         },
         nb::arg("layer"), nb::arg("pressure"), nb::arg("height"),
         nb::arg("isAGL") = false,
@@ -133,25 +128,14 @@ Parameters:
     height: 1D NumPy array of heights
     isAGL: Whether or not the station height needs to be added for interpolation (default: False) 
 
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_layer.def(
         "pressure_layer_to_height",
-        [](
-            sharp::PressureLayer& layer,
-            const_prof_arr_t pressure,
-            const_prof_arr_t height,
-            const bool toAGL
-        ) -> sharp::HeightLayer {
+        [](sharp::PressureLayer& layer, const_prof_arr_t pressure,
+           const_prof_arr_t height, const bool toAGL) -> sharp::HeightLayer {
             return sharp::pressure_layer_to_height(
-                layer, 
-                pressure.data(), 
-                height.data(), 
-                height.size(),
-                toAGL
-            );
-
+                layer, pressure.data(), height.data(), height.size(), toAGL);
         },
         nb::arg("layer"), nb::arg("pressure"), nb::arg("height"),
         nb::arg("toAGL") = false,
@@ -168,24 +152,15 @@ Parameters:
     height: 1D NumPy array of heights
     toAGL: Whether or not to subtract the station height from the HeightLayer (default: False)
 
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_layer.def(
         "layer_min",
-        [](
-            sharp::HeightLayer& layer, 
-            const_prof_arr_t height,
-            const_prof_arr_t data
-        ) {
+        [](sharp::HeightLayer& layer, const_prof_arr_t height,
+           const_prof_arr_t data) {
             float lvl_of_min;
-            float min = sharp::layer_min(
-                layer,
-                height.data(),
-                data.data(),
-                data.size(),
-                &lvl_of_min
-            );
+            float min = sharp::layer_min(layer, height.data(), data.data(),
+                                         data.size(), &lvl_of_min);
 
             return std::make_tuple(min, lvl_of_min);
         },
@@ -202,24 +177,15 @@ Parameters:
 Returns:
     tuple: (min_value, level_of_min)
 
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_layer.def(
         "layer_min",
-        [](
-            sharp::PressureLayer& layer, 
-            const_prof_arr_t pressure,
-            const_prof_arr_t data
-        ) {
+        [](sharp::PressureLayer& layer, const_prof_arr_t pressure,
+           const_prof_arr_t data) {
             float lvl_of_min;
-            float min = sharp::layer_min(
-                layer,
-                pressure.data(),
-                data.data(),
-                data.size(),
-                &lvl_of_min
-            );
+            float min = sharp::layer_min(layer, pressure.data(), data.data(),
+                                         data.size(), &lvl_of_min);
 
             return std::make_tuple(min, lvl_of_min);
         },
@@ -235,24 +201,15 @@ Parameters:
 
 Returns:
     tuple: (min_value, level_of_min)
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_layer.def(
         "layer_max",
-        [](
-            sharp::HeightLayer& layer, 
-            const_prof_arr_t height,
-            const_prof_arr_t data
-        ) {
+        [](sharp::HeightLayer& layer, const_prof_arr_t height,
+           const_prof_arr_t data) {
             float lvl_of_max;
-            float max = sharp::layer_max(
-                layer,
-                height.data(),
-                data.data(),
-                data.size(),
-                &lvl_of_max
-            );
+            float max = sharp::layer_max(layer, height.data(), data.data(),
+                                         data.size(), &lvl_of_max);
 
             return std::make_tuple(max, lvl_of_max);
         },
@@ -270,24 +227,15 @@ Parameters:
 Returns:
     tuple: (max_value, level_of_max)
 
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_layer.def(
         "layer_max",
-        [](
-            sharp::PressureLayer& layer,
-            const_prof_arr_t pressure,
-            const_prof_arr_t data
-        ) {
+        [](sharp::PressureLayer& layer, const_prof_arr_t pressure,
+           const_prof_arr_t data) {
             float lvl_of_max;
-            float max = sharp::layer_max(
-                layer,
-                pressure.data(),
-                data.data(),
-                data.size(),
-                &lvl_of_max
-            );
+            float max = sharp::layer_max(layer, pressure.data(), data.data(),
+                                         data.size(), &lvl_of_max);
 
             return std::make_tuple(max, lvl_of_max);
         },
@@ -304,24 +252,14 @@ Parameters:
 Returns:
     tuple: (max_value, level_of_max)
 
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_layer.def(
         "layer_mean",
-        [](
-            sharp::PressureLayer layer, 
-            const_prof_arr_t pressure,
-            const_prof_arr_t data
-        ) {
-
-            return sharp::layer_mean(
-                layer, 
-                pressure.data(), 
-                data.data(), 
-                data.size()
-            );
-
+        [](sharp::PressureLayer layer, const_prof_arr_t pressure,
+           const_prof_arr_t data) {
+            return sharp::layer_mean(layer, pressure.data(), data.data(),
+                                     data.size());
         },
         nb::arg("PressureLayer"), nb::arg("pressure"), nb::arg("data"),
         R"pbdoc(
@@ -333,31 +271,17 @@ Parameters:
     pressure: 1D NumPy array of pressure values 
     data: 1D NumPy array of data values
 
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_layer.def(
         "layer_mean",
-        [](
-            sharp::HeightLayer layer,
-            const_prof_arr_t height, 
-            const_prof_arr_t pressure, 
-            const_prof_arr_t data,
-            const bool isAGL
-        ) {
-            return sharp::layer_mean(
-                layer,
-                height.data(),
-                pressure.data(),
-                data.data(),
-                data.size(),
-                isAGL
-            );
-
+        [](sharp::HeightLayer layer, const_prof_arr_t height,
+           const_prof_arr_t pressure, const_prof_arr_t data, const bool isAGL) {
+            return sharp::layer_mean(layer, height.data(), pressure.data(),
+                                     data.data(), data.size(), isAGL);
         },
-        nb::arg("HeightLayer"), nb::arg("height"),
-        nb::arg("pressure"), nb::arg("data"),
-        nb::arg("isAGL") = false,
+        nb::arg("HeightLayer"), nb::arg("height"), nb::arg("pressure"),
+        nb::arg("data"), nb::arg("isAGL") = false,
         R"pbdoc(
 Computes the pressure-weighted mean value of a field over 
 a given HeightLayer. 
@@ -369,28 +293,15 @@ Parameters:
     data: 1D NumPy array of data values
     isAGL: Whether or not the surface station height should be added to the HeightLayer (default: False)
 
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_layer.def(
         "integrate_layer_trapz",
-        [](
-            sharp::HeightLayer layer,
-            const_prof_arr_t data,
-            const_prof_arr_t height,
-            const int integ_sign,
-            const bool weighted
-        ) {
-
-            return sharp::integrate_layer_trapz(
-                layer,
-                data.data(),
-                height.data(),
-                data.size(),
-                integ_sign,
-                weighted
-            );
-            
+        [](sharp::HeightLayer layer, const_prof_arr_t data,
+           const_prof_arr_t height, const int integ_sign, const bool weighted) {
+            return sharp::integrate_layer_trapz(layer, data.data(),
+                                                height.data(), data.size(),
+                                                integ_sign, weighted);
         },
         nb::arg("layer"), nb::arg("data"), nb::arg("height"),
         nb::arg("integ_sign") = 0, nb::arg("weighted") = false,
@@ -408,28 +319,16 @@ Parameters:
     integ_sign: The sign of the area to integrate (-1: negative; 1: positive; 0: both; default: 0)
     weighted: Boolean determining whether or not the integration is weighted by the coordinate array 
 
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_layer.def(
         "integrate_layer_trapz",
-        [](
-            sharp::PressureLayer layer,
-            const_prof_arr_t data,
-            const_prof_arr_t pressure,
-            const int integ_sign,
-            const bool weighted
-        ) {
-
-            return sharp::integrate_layer_trapz(
-                layer, 
-                data.data(),
-                pressure.data(),
-                data.size(),
-                integ_sign,
-                weighted
-            );
-            
+        [](sharp::PressureLayer layer, const_prof_arr_t data,
+           const_prof_arr_t pressure, const int integ_sign,
+           const bool weighted) {
+            return sharp::integrate_layer_trapz(layer, data.data(),
+                                                pressure.data(), data.size(),
+                                                integ_sign, weighted);
         },
         nb::arg("layer"), nb::arg("data"), nb::arg("pressure"),
         nb::arg("integ_sign") = 0, nb::arg("weighted") = false,
@@ -447,9 +346,7 @@ Parameters:
     integ_sign: The sign of the area to integrate (-1: negative; 1: positive; 0: both; default: 0)
     weighted: Boolean determining whether or not the integration is weighted by the coordinate array
 
-    )pbdoc"
-    );
-
+    )pbdoc");
 }
 
 #endif
