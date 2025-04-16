@@ -302,7 +302,7 @@ Here is the caller graph for this function:</div>
 
 <p>Compute CAPE and CINH for a previously lifted <a class="el" href="structsharp_1_1Parcel.html" title="Data that defines a Parcel, its attributes, and derived quantities.">sharp::Parcel</a>. </p>
 <dl class="section author"><dt>Author</dt><dd>Kelton Halbert - NWS Storm Prediction Center</dd></dl>
-<p>Assuming that sharp::lift_parcel has been called, cape_cinh will integrate the area between the LFC and EL to compute CAPE, and integrate the area between the LPL and LCL to compute CINH.</p>
+<p>Assuming that <a class="el" href="structsharp_1_1Parcel.html#a9523de2b8b4c28ca49fba3013f94cb06" title="Lifts a sharp::Parcel to compute its virtual temperature.">sharp::Parcel::lift_parcel</a> has been called, cape_cinh will integrate the area between the LFC and EL to compute CAPE, and integrate the area between the LPL and LCL to compute CINH.</p>
 <p>The results are set in pcl-&gt;cape and pcl-&gt;cinh.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -399,7 +399,7 @@ Here is the caller graph for this function:</div>
 
 <p>Find the LFC and EL that bounds the layer with the maximum CAPE. </p>
 <dl class="section author"><dt>Author</dt><dd>Kelton Halbert - NWS Storm Prediction Center</dd></dl>
-<p>Searches the buoyancy array for the LFC and EL combination that results in the most CAPE in the given profile. The buoyancy array is typically computed by calling sharp::lift_parcel. Once the LFC and EL are found, the values are set in sharp::Parcel.lfc_pres and sharp::Parcel.eql_pres.</p>
+<p>Searches the buoyancy array for the LFC and EL combination that results in the most CAPE in the given profile. The buoyancy array is typically computed by calling <a class="el" href="structsharp_1_1Parcel.html#a9523de2b8b4c28ca49fba3013f94cb06" title="Lifts a sharp::Parcel to compute its virtual temperature.">sharp::Parcel::lift_parcel</a>. Once the LFC and EL are found, the values are set in sharp::Parcel.lfc_pres and sharp::Parcel.eql_pres.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">pres_arr</td><td>The pressure coordinate array (Pa) </td></tr>
