@@ -2,20 +2,18 @@ import pytest
 import numpy as np
 
 from nwsspc.sharp.calc import interp
-
-MISSING = -9999.0
-
+from nwsspc.sharp.calc import constants
 
 def test_interp_height():
     hght = np.arange(100.0, 1100.0, 100.0)
     data = np.arange(1.0, 11.0, 1.0)
 
     # Test missing/nan/inf behavior
-    assert (interp.interp_height(0, hght, data) == MISSING)
-    assert (interp.interp_height(1100, hght, data) == MISSING)
-    assert (interp.interp_height(MISSING, hght, data) == MISSING)
-    assert (interp.interp_height(np.inf, hght, data) == MISSING)
-    assert (interp.interp_height(np.nan, hght, data) == MISSING)
+    assert (interp.interp_height(0, hght, data) == constants.MISSING)
+    assert (interp.interp_height(1100, hght, data) == constants.MISSING)
+    assert (interp.interp_height(constants.MISSING, hght, data) == constants.MISSING)
+    assert (interp.interp_height(np.inf, hght, data) == constants.MISSING)
+    assert (interp.interp_height(np.nan, hght, data) == constants.MISSING)
 
     # Test exact values along the edges of the arrays
     assert (interp.interp_height(100, hght, data) == 1)
@@ -35,11 +33,11 @@ def test_interp_pres():
     data = np.arange(1.0, 11.0, 1.0)
 
     # Test missing/nan/inf behavior
-    assert (interp.interp_pressure(0, pres, data) == MISSING)
-    assert (interp.interp_pressure(110000.0, pres, data) == MISSING)
-    assert (interp.interp_pressure(MISSING, pres, data) == MISSING)
-    assert (interp.interp_pressure(np.inf, pres, data) == MISSING)
-    assert (interp.interp_pressure(np.nan, pres, data) == MISSING)
+    assert (interp.interp_pressure(0, pres, data) == constants.MISSING)
+    assert (interp.interp_pressure(110000.0, pres, data) == constants.MISSING)
+    assert (interp.interp_pressure(constants.MISSING, pres, data) == constants.MISSING)
+    assert (interp.interp_pressure(np.inf, pres, data) == constants.MISSING)
+    assert (interp.interp_pressure(np.nan, pres, data) == constants.MISSING)
 
     # Test exact values along the edges of the array
     assert (interp.interp_pressure(100000.0, pres, data) == 1)

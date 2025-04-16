@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 
 from nwsspc.sharp.calc import layer
+from nwsspc.sharp.calc import constants
 
 
 def test_height_layer_construction():
@@ -89,14 +90,14 @@ def test_layer_conversion():
     oob3 = layer.pressure_layer_to_height(p_oob1, pres, hght)
     oob4 = layer.pressure_layer_to_height(p_oob2, pres, hght)
 
-    assert (oob1.bottom == -9999.0)
-    assert (oob2.bottom == -9999.0)
-    assert (oob3.bottom == -9999.0)
-    assert (oob4.bottom == -9999.0)
-    assert (oob1.top == -9999.0)
-    assert (oob2.top == -9999.0)
-    assert (oob3.top == -9999.0)
-    assert (oob4.top == -9999.0)
+    assert (oob1.bottom == constants.MISSING)
+    assert (oob2.bottom == constants.MISSING)
+    assert (oob3.bottom == constants.MISSING)
+    assert (oob4.bottom == constants.MISSING)
+    assert (oob1.top == constants.MISSING)
+    assert (oob2.top == constants.MISSING)
+    assert (oob3.top == constants.MISSING)
+    assert (oob4.top == constants.MISSING)
 
     # Make sure the enforcement of 1D arrays works
     with pytest.raises(TypeError):
