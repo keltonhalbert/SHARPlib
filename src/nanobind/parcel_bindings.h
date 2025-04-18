@@ -188,10 +188,10 @@ Parameters:
             "lift_parcel",
             [](sharp::Parcel& pcl, sharp::lifter_wobus& lifter,
                const_prof_arr_t pressure) {
-                float* virtemp_arr = new float[pressure.size()];
+                const std::ptrdiff_t NZ = pressure.size();
+                float* virtemp_arr = new float[NZ];
 
-                pcl.lift_parcel(lifter, pressure.data(), virtemp_arr,
-                                pressure.size());
+                pcl.lift_parcel(lifter, pressure.data(), virtemp_arr, NZ);
 
                 nb::capsule owner(virtemp_arr,
                                   [](void* p) noexcept { delete[] (float*)p; });
@@ -217,15 +217,15 @@ Returns:
             "lift_parcel",
             [](sharp::Parcel& pcl, sharp::lifter_cm1& lifter,
                const_prof_arr_t pressure) {
-                float* virtemp_arr = new float[pressure.size()];
+                const size_t NZ = pressure.size();
+                float* virtemp_arr = new float[NZ];
 
-                pcl.lift_parcel(lifter, pressure.data(), virtemp_arr,
-                                pressure.size());
+                pcl.lift_parcel(lifter, pressure.data(), virtemp_arr, NZ);
 
                 nb::capsule owner(virtemp_arr,
                                   [](void* p) noexcept { delete[] (float*)p; });
-                return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                    virtemp_arr, {pressure.shape(0)}, owner);
+                return nb::ndarray<nb::numpy, float, nb::ndim<1>>(virtemp_arr,
+                                                                  {NZ}, owner);
             },
             nb::arg("lifter"), nb::arg("pressure"),
             R"pbdoc(
@@ -353,13 +353,14 @@ Returns:
                const_prof_arr_t pressure, const_prof_arr_t height,
                const_prof_arr_t temperature, const_prof_arr_t virtemp,
                const_prof_arr_t dewpoint) {
-                float* pcl_virtemp_arr = new float[height.size()];
-                float* pcl_buoy_arr = new float[height.size()];
+                const std::ptrdiff_t NZ = height.size();
+                float* pcl_virtemp_arr = new float[NZ];
+                float* pcl_buoy_arr = new float[NZ];
 
                 sharp::Parcel max_pcl = sharp::Parcel::most_unstable_parcel(
                     layer, lifter, pressure.data(), height.data(),
                     temperature.data(), virtemp.data(), dewpoint.data(),
-                    pcl_virtemp_arr, pcl_buoy_arr, height.size());
+                    pcl_virtemp_arr, pcl_buoy_arr, NZ);
 
                 delete[] pcl_virtemp_arr;
                 delete[] pcl_buoy_arr;
@@ -392,13 +393,15 @@ Returns:
                const_prof_arr_t pressure, const_prof_arr_t height,
                const_prof_arr_t temperature, const_prof_arr_t virtemp,
                const_prof_arr_t dewpoint) {
-                float* pcl_virtemp_arr = new float[height.size()];
-                float* pcl_buoy_arr = new float[height.size()];
+                const std::ptrdiff_t NZ = height.size();
+
+                float* pcl_virtemp_arr = new float[NZ];
+                float* pcl_buoy_arr = new float[NZ];
 
                 sharp::Parcel max_pcl = sharp::Parcel::most_unstable_parcel(
                     layer, lifter, pressure.data(), height.data(),
                     temperature.data(), virtemp.data(), dewpoint.data(),
-                    pcl_virtemp_arr, pcl_buoy_arr, height.size());
+                    pcl_virtemp_arr, pcl_buoy_arr, NZ);
 
                 delete[] pcl_virtemp_arr;
                 delete[] pcl_buoy_arr;
@@ -431,13 +434,15 @@ Returns:
                const_prof_arr_t pressure, const_prof_arr_t height,
                const_prof_arr_t temperature, const_prof_arr_t virtemp,
                const_prof_arr_t dewpoint) {
-                float* pcl_virtemp_arr = new float[height.size()];
-                float* pcl_buoy_arr = new float[height.size()];
+                const std::ptrdiff_t NZ = height.size();
+
+                float* pcl_virtemp_arr = new float[NZ];
+                float* pcl_buoy_arr = new float[NZ];
 
                 sharp::Parcel max_pcl = sharp::Parcel::most_unstable_parcel(
                     layer, lifter, pressure.data(), height.data(),
                     temperature.data(), virtemp.data(), dewpoint.data(),
-                    pcl_virtemp_arr, pcl_buoy_arr, height.size());
+                    pcl_virtemp_arr, pcl_buoy_arr, NZ);
 
                 delete[] pcl_virtemp_arr;
                 delete[] pcl_buoy_arr;
@@ -470,13 +475,15 @@ Returns:
                const_prof_arr_t pressure, const_prof_arr_t height,
                const_prof_arr_t temperature, const_prof_arr_t virtemp,
                const_prof_arr_t dewpoint) {
-                float* pcl_virtemp_arr = new float[height.size()];
-                float* pcl_buoy_arr = new float[height.size()];
+                const std::ptrdiff_t NZ = height.size();
+
+                float* pcl_virtemp_arr = new float[NZ];
+                float* pcl_buoy_arr = new float[NZ];
 
                 sharp::Parcel max_pcl = sharp::Parcel::most_unstable_parcel(
                     layer, lifter, pressure.data(), height.data(),
                     temperature.data(), virtemp.data(), dewpoint.data(),
-                    pcl_virtemp_arr, pcl_buoy_arr, height.size());
+                    pcl_virtemp_arr, pcl_buoy_arr, NZ);
 
                 delete[] pcl_virtemp_arr;
                 delete[] pcl_buoy_arr;
