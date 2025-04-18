@@ -1,5 +1,5 @@
-#ifndef __SHARPLIB_INTERP_BINDINGS
-#define __SHARPLIB_INTERP_BINDINGS
+#ifndef SHARPLIB_INTERP_BINDINGS
+#define SHARPLIB_INTERP_BINDINGS
 
 // clang-format off
 #include <nanobind/nanobind.h>
