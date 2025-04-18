@@ -94,3 +94,34 @@ def test_effective_inflow_layer():
     assert (eil.top == pytest.approx(83432.0))
     assert (mupcl.cape == pytest.approx(3107.6428, abs=1e-1))
     assert (mupcl.cinh == pytest.approx(-36.41, abs=1e-1))
+
+
+def test_bunkers_motion():
+
+    mupcl = parcel.Parcel()
+    lifter = parcel.lifter_cm1()
+    lifter.ma_type = thermo.adiabat.pseudo_liq
+    eil = params.effective_inflow_layer(
+        lifter,
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["tmpk"],
+        snd_data["dwpk"],
+        snd_data["vtmp"],
+        mupcl=mupcl
+    )
+
+    storm_mtn = params.storm_motion_bunkers(
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["uwin"],
+        snd_data["vwin"],
+        eil, mupcl
+    )
+
+    assert (storm_mtn[0] == pytest.approx(9.74783))
+    assert (storm_mtn[1] == pytest.approx(5.570305))
+
+
+def test_stp():
+    pass
