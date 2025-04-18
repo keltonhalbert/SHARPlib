@@ -94,15 +94,33 @@ def test_lifter_cm1():
 
 
 def test_surface_parcel():
-    pres = 100000.0
-    tmpk = 320.0
-    dwpk = 315.0
+    pres = snd_data["pres"][0]
+    tmpk = snd_data["tmpk"][0]
+    dwpk = snd_data["dwpk"][0]
 
     pcl = parcel.Parcel.surface_parcel(pres, tmpk, dwpk)
 
-    assert (pcl.pres == pres)
-    assert (pcl.tmpk == tmpk)
-    assert (pcl.dwpk == dwpk)
+    # Wobus Lifter
+    lifter = parcel.lifter_wobus()
+    vtmpk = pcl.lift_parcel(lifter, snd_data["pres"])
+    buoy = thermo.buoyancy(vtmpk, snd_data["vtmp"])
+    pcl.cape_cinh(snd_data["pres"], snd_data["hght"], buoy)
+
+    assert (pcl.cape == pytest.approx(3353.4, abs=1e-1))
+    assert (pcl.cinh == pytest.approx(-34.5697, abs=1e-1))
+    assert (pcl.lfc_pressure == 71250.0)
+    assert (pcl.eql_pressure == 17436.0)
+
+    lifter = parcel.lifter_cm1()
+    lifter.ma_type = thermo.adiabat.pseudo_liq
+    vtmpk = pcl.lift_parcel(lifter, snd_data["pres"])
+    buoy = thermo.buoyancy(vtmpk, snd_data["vtmp"])
+    pcl.cape_cinh(snd_data["pres"], snd_data["hght"], buoy)
+
+    assert (pcl.cape == pytest.approx(3107.6, abs=1e-1))
+    assert (pcl.cinh == pytest.approx(-36.4, abs=1e-1))
+    assert (pcl.lfc_pressure == 70983.0)
+    assert (pcl.eql_pressure == 18439.0)
 
 
 def test_mixed_layer_parcel():
@@ -116,13 +134,32 @@ def test_mixed_layer_parcel():
     assert (pcl.tmpk == pytest.approx(297.2543))
     assert (pcl.dwpk == pytest.approx(289.40469))
 
+    lifter = parcel.lifter_wobus()
+    vtmpk = pcl.lift_parcel(lifter, snd_data["pres"])
+    buoy = thermo.buoyancy(vtmpk, snd_data["vtmp"])
+    pcl.cape_cinh(snd_data["pres"], snd_data["hght"], buoy)
+
+    assert (pcl.cape == pytest.approx(2148.6, abs=1e-1))
+    assert (pcl.cinh == pytest.approx(-128.49, abs=1e-1))
+    assert (pcl.lfc_pressure == pytest.approx(67018.0))
+    assert (pcl.eql_pressure == pytest.approx(19842.0))
+
+    lifter = parcel.lifter_cm1()
+    vtmpk = pcl.lift_parcel(lifter, snd_data["pres"])
+    buoy = thermo.buoyancy(vtmpk, snd_data["vtmp"])
+    pcl.cape_cinh(snd_data["pres"], snd_data["hght"], buoy)
+
+    assert (pcl.cape == pytest.approx(1929.36, abs=1e-1))
+    assert (pcl.cinh == pytest.approx(-133.71, abs=1e-1))
+    assert (pcl.lfc_pressure == pytest.approx(66648.0))
+    assert (pcl.eql_pressure == pytest.approx(20468.0))
+
 
 def test_most_unstable_parcel():
     search_layer = layer.PressureLayer(
         snd_data["pres"][0],
         snd_data["pres"][0] - 40000.0
     )
-
     lifter = parcel.lifter_wobus()
 
     pcl = parcel.Parcel.most_unstable_parcel(
@@ -138,3 +175,28 @@ def test_most_unstable_parcel():
     assert (pcl.pres == pytest.approx(92043.0))
     assert (pcl.tmpk == pytest.approx(298.15))
     assert (pcl.dwpk == pytest.approx(291.532))
+    assert (pcl.cape == pytest.approx(3353.4, abs=1e-1))
+    assert (pcl.cinh == pytest.approx(-34.5697, abs=1e-1))
+    assert (pcl.lfc_pressure == pytest.approx(71250.0, abs=1e-1))
+    assert (pcl.eql_pressure == pytest.approx(17436.0, abs=1e-1))
+
+    lifter = parcel.lifter_cm1()
+    lifter.ma_type = thermo.adiabat.pseudo_liq
+
+    pcl = parcel.Parcel.most_unstable_parcel(
+        search_layer,
+        lifter,
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["tmpk"],
+        snd_data["vtmp"],
+        snd_data["dwpk"]
+    )
+
+    assert (pcl.pres == pytest.approx(92043.0))
+    assert (pcl.tmpk == pytest.approx(298.15))
+    assert (pcl.dwpk == pytest.approx(291.532))
+    assert (pcl.cape == pytest.approx(3107.6, abs=1e-1))
+    assert (pcl.cinh == pytest.approx(-36.4, abs=1e-1))
+    assert (pcl.lfc_pressure == pytest.approx(70983.0, abs=1e-1))
+    assert (pcl.eql_pressure == pytest.approx(18439.0, abs=1e-1))

@@ -818,6 +818,32 @@ Returns:
     The 1D array of new temperatures (K) when lifted moist adiabatically to the new pressure levels
 
         )pbdoc");
+        m_therm.def(
+            "buoyancy",
+            [](const_prof_arr_t pcl_tmpk, const_prof_arr_t env_tmpk) {
+
+                float* buoy_arr = new float[pcl_tmpk.size()];
+
+                sharp::buoyancy(pcl_tmpk.data(), env_tmpk.data(), buoy_arr, pcl_tmpk.size());
+
+            nb::capsule owner(buoy_arr,
+                            [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                buoy_arr, {pcl_tmpk.size()}, owner);
+            },
+            nb::arg("parcel_temperature"), nb::arg("environment_temperature"),
+            R"pbdoc(
+Compute buoyancy given arrays of parcel & environment temperatures.
+
+Parameters:
+    parcel_temperature: 1D NumPy array of parcel temperatures (K)
+    environment_temperature: 1D NumPy array of environment temperatures (K)
+
+Returns:
+    1D NumPy array of buoyancy values (m/s^2)
+        )pbdoc"
+        );
 }
 
 #endif
