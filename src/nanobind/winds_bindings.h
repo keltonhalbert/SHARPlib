@@ -23,7 +23,7 @@ inline void make_winds_bindings(nb::module_ m) {
         .def_rw("direction", &sharp::WindVector::direction,
                 "Wind Direction (degrees from North)");
 
-    nb::class_<sharp::WindVector>(m_wind, "WindComponents")
+    nb::class_<sharp::WindComponents>(m_wind, "WindComponents")
         .def(nb::init<>())
         .def_rw("u", &sharp::WindComponents::u, "U wind component (m/s)")
         .def_rw("v", &sharp::WindComponents::v, "V wind component (m/s)");
@@ -137,8 +137,11 @@ Returns:
 
     m_wind.def(
         "mean_wind",
-        []() {
-
+        [](sharp::PressureLayer& layer, const_prof_arr_t pressure,
+           const_prof_arr_t u_wind, const prof_arr_t v_wind,
+           const bool weighted) {
+            return sharp::mean_wind(layer, pressure.data(), u_wind.data(),
+                                    v_wind.data(), pressure.size(), weighted);
         },
         nb::arg("layer"), nb::arg("pressure"), nb::arg("u_wind"),
         nb::arg("v_wind"), nb::arg("weighted") = false,
@@ -151,6 +154,7 @@ Parameters:
     pressure: 1D NumPy array of pressure coordinate values (Pa)
     u_wind: 1D NumPy array of U-wind component values (m/s)
     v_wind: 1D NumPy array of V-wind component values (m/s)
+    weighted: Boolean flag to compute pressure-weighted mean wind (default: False)
 
 Returns:
     WindComponents of U anf V mean wind components (m/s)
