@@ -9,7 +9,7 @@
 
 namespace nb = nanobind;
 
-void make_thermo_bindings (nb::module_ m) {
+inline void make_thermo_bindings (nb::module_ m) {
     nb::module_ m_therm = m.def_submodule("thermo", 
         "Sounding and Hodograph Analysis and Research Program Library "
         "(SHARPlib) :: Thermodynamic Routines");

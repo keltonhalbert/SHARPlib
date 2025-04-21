@@ -12,7 +12,7 @@
 
 namespace nb = nanobind;
 
-void make_layer_bindings(nb::module_ m) {
+inline void make_layer_bindings(nb::module_ m) {
     nb::module_ m_layer = m.def_submodule(
         "layer",
         "Sounding and Hodograph Analysis and Research Program Library "

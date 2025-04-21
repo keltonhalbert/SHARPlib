@@ -1,5 +1,5 @@
-#ifndef PARAMS_BINDINGS_H
-#define PARAMS_BINDINGS_H
+#ifndef SHARPLIB_PARAMS_BINDINGS_H
+#define SHARPLIB_PARAMS_BINDINGS_H
 
 // clang-format off
 #include <nanobind/nanobind.h>
