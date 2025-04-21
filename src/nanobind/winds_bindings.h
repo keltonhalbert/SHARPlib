@@ -116,7 +116,7 @@ Returns:
         [](sharp::PressureLayer layer, const_prof_arr_t pressure,
            const_prof_arr_t u_wind, const_prof_arr_t v_wind) {
             return sharp::wind_shear(layer, pressure.data(), u_wind.data(),
-                                     v_wind.data(), height.size());
+                                     v_wind.data(), pressure.size());
         },
         nb::arg("layer"), nb::arg("pressure"), nb::arg("u_wind"),
         nb::arg("v_wind"),
@@ -133,6 +133,27 @@ Parameters:
 
 Returns:
     WindComponents of U and V wind shear components (m/s)
+    )pbdoc");
+
+    m_wind.def(
+        "mean_wind",
+        []() {
+
+        },
+        nb::arg("layer"), nb::arg("pressure"), nb::arg("u_wind"),
+        nb::arg("v_wind"), nb::arg("weighted") = false,
+        R"pbdoc(
+Computes the mean wind over the given PressureLayer and input profile
+arrays of pressure, U-wind, and V-wind components. 
+
+Parameters:
+    layer: PressureLayer over which to compute mean
+    pressure: 1D NumPy array of pressure coordinate values (Pa)
+    u_wind: 1D NumPy array of U-wind component values (m/s)
+    v_wind: 1D NumPy array of V-wind component values (m/s)
+
+Returns:
+    WindComponents of U anf V mean wind components (m/s)
     )pbdoc");
 }
 
