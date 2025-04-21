@@ -59,7 +59,7 @@ filename = os.path.join(
 snd_data = load_parquet(filename)
 
 
-def test_effective_inflow_layer():
+def test_effective_inflow_layer_wobus():
 
     lifter = parcel.lifter_wobus()
     mupcl = parcel.Parcel()
@@ -78,6 +78,9 @@ def test_effective_inflow_layer():
     assert (mupcl.cape == pytest.approx(3353.4, abs=1e-1))
     assert (mupcl.cinh == pytest.approx(-34.5697))
 
+
+def test_effective_inflow_layer_cm1():
+    mupcl = parcel.Parcel()
     lifter = parcel.lifter_cm1()
     lifter.ma_type = thermo.adiabat.pseudo_liq
     eil = params.effective_inflow_layer(
@@ -96,8 +99,24 @@ def test_effective_inflow_layer():
     assert (mupcl.cinh == pytest.approx(-36.41, abs=1e-1))
 
 
-def test_bunkers_motion():
+def test_bunkers_motion_nonparcel():
+    # Non parcel based Bunkers motion
+    shr_lyr = layer.HeightLayer(0, 6000.0)
+    mw_lyr = layer.HeightLayer(0, 6000)
+    storm_mtn = params.storm_motion_bunkers(
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["uwin"],
+        snd_data["vwin"],
+        mw_lyr, shr_lyr,
+    )
 
+    assert (storm_mtn[0] == pytest.approx(10.232333))
+    assert (storm_mtn[1] == pytest.approx(5.7385511))
+
+
+def test_bunkers_motion():
+    # parcel based Bunkers motion
     mupcl = parcel.Parcel()
     lifter = parcel.lifter_cm1()
     lifter.ma_type = thermo.adiabat.pseudo_liq
