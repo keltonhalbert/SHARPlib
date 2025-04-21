@@ -111,8 +111,8 @@ def test_bunkers_motion_nonparcel():
         mw_lyr, shr_lyr,
     )
 
-    assert (storm_mtn[0] == pytest.approx(10.232333))
-    assert (storm_mtn[1] == pytest.approx(5.7385511))
+    assert (storm_mtn.u == pytest.approx(10.232333))
+    assert (storm_mtn.v == pytest.approx(5.7385511))
 
 
 def test_bunkers_motion():
@@ -138,8 +138,8 @@ def test_bunkers_motion():
         eil, mupcl
     )
 
-    assert (storm_mtn[0] == pytest.approx(9.74783))
-    assert (storm_mtn[1] == pytest.approx(5.570305))
+    assert (storm_mtn.u == pytest.approx(9.74783))
+    assert (storm_mtn.v == pytest.approx(5.570305))
 
 
 def test_stp():

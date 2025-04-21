@@ -9,10 +9,10 @@
 #include <SHARPlib/layer.h>
 #include <SHARPlib/params/convective.h>
 #include <SHARPlib/parcel.h>
+#include <SHARPlib/winds.h>
 
 #include <tuple>
 
-#include "SHARPlib/winds.h"
 #include "sharplib_types.h"
 
 namespace nb = nanobind;
@@ -129,7 +129,7 @@ Parameters:
                 height.size(), mean_wind_layer_agl, wind_shear_layer_agl,
                 leftMover, pressureWeighted);
 
-            return std::make_tuple(storm_mtn.u, storm_mtn.v);
+            return storm_mtn;
         },
         nb::arg("pressure"), nb::arg("height"), nb::arg("u_wind"),
         nb::arg("v_wind"), nb::arg("mean_wind_layer_agl"),
@@ -168,7 +168,7 @@ Returns:
                 pressure.data(), height.data(), u_wind.data(), v_wind.data(),
                 height.size(), eff_infl_lyr, mupcl, leftMover);
 
-            return std::make_tuple(storm_mtn.u, storm_mtn.v);
+            return storm_mtn;
         },
         nb::arg("pressure"), nb::arg("height"), nb::arg("u_wind"),
         nb::arg("v_wind"), nb::arg("eff_infl_lyr"), nb::arg("mupcl"),
