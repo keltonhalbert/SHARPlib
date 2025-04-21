@@ -267,6 +267,7 @@ Parameters:
                const_prof_arr_t buoy) {
                 pcl.cape_cinh(pres.data(), hght.data(), buoy.data(),
                               buoy.size());
+                return std::make_tuple(pcl.cape, pcl.cinh);
             },
             nb::arg("pres"), nb::arg("hght"), nb::arg("buoy"),
             R"pbdoc(

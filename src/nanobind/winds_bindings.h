@@ -159,6 +159,24 @@ Parameters:
 Returns:
     WindComponents of U anf V mean wind components (m/s)
     )pbdoc");
+
+    m_wind.def(
+        "vector_magnitude",
+        [](float u_comp, float v_comp) {
+            return sharp::vector_magnitude(u_comp, v_comp);
+        },
+        nb::arg("u_comp"), nb::arg("v_comp"),
+        R"pbdoc(
+Given the zonal (U) and meridional (V) components of a vector, 
+compute and return the magnitude (m/s) of the vector. 
+
+Parameters:
+    u_comp: U-wind component (m/s)
+    v_comp: V-wind component (m/s)
+
+Returns:
+    Wind speed (m/s)
+    )pbdoc");
 }
 
 #endif
