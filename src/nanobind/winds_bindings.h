@@ -177,6 +177,68 @@ Parameters:
 Returns:
     Wind speed (m/s)
     )pbdoc");
+
+    m_wind.def(
+        "u_component",
+        [](const_prof_arr_t wind_speed_arr,
+           const_prof_arr_t wind_direction_arr) {
+            auto wind_speed = wind_speed_arr.view();
+            auto wind_direction = wind_direction_arr.view();
+            float* uwin_arr = new float[wind_speed.shape(0)];
+
+            for (size_t k = 0; k < wind_speed.shape(0); ++k) {
+                uwin_arr[k] =
+                    sharp::u_component(wind_speed(k), wind_direction(k));
+            }
+
+            nb::capsule owner(uwin_arr,
+                              [](void* p) noexcept { delete[] (float*)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                uwin_arr, {wind_speed.shape(0)}, owner);
+        },
+        nb::arg("wind_speed"), nb::arg("wind_direction"),
+        R"pbdoc(
+Computes the zonal (U) wind component from a wind vector.
+
+Parameters:
+    wind_speed: 1D NumPy array of wind speeds (m/s)
+    wind_direction: 1D NumPy array of wind direction (degrees)
+
+Returns:
+    1D NumPy array of U-wind component values (m/s)
+    )pbdoc");
+
+    m_wind.def(
+        "v_component",
+        [](const_prof_arr_t wind_speed_arr,
+           const_prof_arr_t wind_direction_arr) {
+            auto wind_speed = wind_speed_arr.view();
+            auto wind_direction = wind_direction_arr.view();
+            float* vwin_arr = new float[wind_speed.shape(0)];
+
+            for (size_t k = 0; k < wind_speed.shape(0); ++k) {
+                vwin_arr[k] =
+                    sharp::v_component(wind_speed(k), wind_direction(k));
+            }
+
+            nb::capsule owner(vwin_arr,
+                              [](void* p) noexcept { delete[] (float*)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                vwin_arr, {wind_speed.shape(0)}, owner);
+        },
+        nb::arg("wind_speed"), nb::arg("wind_direction"),
+        R"pbdoc(
+Computes the meridional (V) wind component from a wind vector.
+
+Parameters:
+    wind_speed: 1D NumPy array of wind speeds (m/s)
+    wind_direction: 1D NumPy array of wind direction (degrees)
+
+Returns:
+    1D NumPy array of V-wind component values (m/s)
+    )pbdoc");
 }
 
 #endif
