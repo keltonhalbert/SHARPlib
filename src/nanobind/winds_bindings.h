@@ -179,6 +179,71 @@ Returns:
     )pbdoc");
 
     m_wind.def(
+        "vector_magnitude",
+        [](const_prof_arr_t u_comp_arr, const_prof_arr_t v_comp_arr) {
+            auto u_comp = u_comp_arr.view();
+            auto v_comp = v_comp_arr.view();
+            auto len = u_comp.shape(0);
+
+            float* wspd_arr = new float[u_comp.shape(0)];
+
+            for (int idx = 0; idx < len; ++idx) {
+                wspd_arr[idx] =
+                    sharp::vector_magnitude(u_comp(idx), v_comp(idx));
+            }
+
+            nb::capsule owner(wspd_arr,
+                              [](void* p) noexcept { delete[] (float*)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                wspd_arr, {u_comp.shape(0)}, owner);
+        },
+        nb::arg("u_comp"), nb::arg("v_comp"),
+        R"pbdoc(
+Given the zonal (U) and meridional (V) components of a vector, 
+compute and return the magnitude (m/s) of the vector. 
+
+Parameters:
+    u_comp: 1D NumPy array of U-wind component (m/s)
+    v_comp: 1D NumPy array of V-wind component (m/s)
+
+Returns:
+    1D NumPy array of wind speed (m/s)
+    )pbdoc");
+
+    m_wind.def(
+        "vector_angle",
+        [](const_prof_arr_t u_comp_arr, const_prof_arr_t v_comp_arr) {
+            auto u_comp = u_comp_arr.view();
+            auto v_comp = v_comp_arr.view();
+            auto len = u_comp.shape(0);
+
+            float* wdir_arr = new float[u_comp.shape(0)];
+
+            for (int idx = 0; idx < len; ++idx) {
+                wdir_arr[idx] = sharp::vector_angle(u_comp(idx), v_comp(idx));
+            }
+
+            nb::capsule owner(wdir_arr,
+                              [](void* p) noexcept { delete[] (float*)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                wdir_arr, {u_comp.shape(0)}, owner);
+        },
+        nb::arg("u_comp"), nb::arg("v_comp"),
+        R"pbdoc(
+Given the zonal (U) and meridional (V) components of a vector, 
+compute and return the angle (from North) of the vector. 
+
+Parameters:
+    u_comp: 1D NumPy array of U-wind component (m/s)
+    v_comp: 1D NumPy array of V-wind component (m/s)
+
+Returns:
+    1D NumPy array of wind direction (degrees from North)
+    )pbdoc");
+
+    m_wind.def(
         "u_component",
         [](const_prof_arr_t wind_speed_arr,
            const_prof_arr_t wind_direction_arr) {
