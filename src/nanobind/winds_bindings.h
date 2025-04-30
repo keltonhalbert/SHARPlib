@@ -160,6 +160,21 @@ Returns:
     WindComponents of U anf V mean wind components (m/s)
     )pbdoc");
 
+    m_wind.def("vector_magnitude", &sharp::vector_magnitude, nb::arg("u_comp"),
+               nb::arg("v_comp"),
+               R"pbdoc(
+Given the zonal (U) and meridional (V) wind components of a vector,
+compute and return the magnitude (m/s) of the vector.
+
+Parameters:
+    u_comp: U-wind component (m/s)
+    v_comp: V-wind component (m/s)
+
+Returns: 
+    Wind speed (m/s)
+
+    )pbdoc");
+
     m_wind.def(
         "vector_magnitude",
         [](float u_comp, float v_comp) {
@@ -211,6 +226,20 @@ Returns:
     1D NumPy array of wind speed (m/s)
     )pbdoc");
 
+    m_wind.def("vector_angle", &sharp::vector_angle, nb::arg("u_comp"),
+               nb::arg("v_comp"),
+               R"pbdoc(
+Given the zonal (U) and meridional (V) components of a vector,
+compute and return the angle (from North) of the vector. 
+
+Parameters:
+    u_comp: The U-wind component
+    v_comp: The V-wind component
+
+Returns:
+    Wind direvtion (degrees from North)
+    )pbdoc");
+
     m_wind.def(
         "vector_angle",
         [](const_prof_arr_t u_comp_arr, const_prof_arr_t v_comp_arr) {
@@ -243,6 +272,19 @@ Returns:
     1D NumPy array of wind direction (degrees from North)
     )pbdoc");
 
+    m_wind.def("u_component", &sharp::u_component, nb::arg("wind_speed"),
+               nb::arg("wind_direction"),
+               R"pbdoc(
+Computes the zonal (U) wind component from a wind vector.
+
+Parameters: 
+    wind_speed: The vector speed (m/s)
+    wind_direction: The vector direction (degrees from North)
+
+Returns:
+    The U-wind component (m/s)
+    )pbdoc");
+
     m_wind.def(
         "u_component",
         [](const_prof_arr_t wind_speed_arr,
@@ -272,6 +314,19 @@ Parameters:
 
 Returns:
     1D NumPy array of U-wind component values (m/s)
+    )pbdoc");
+
+    m_wind.def("v_component", &sharp::v_component, nb::arg("wind_speed"),
+               nb::arg("wind_direction"),
+               R"pbdoc(
+Computes the meridional (V) wind component from a wind vector.
+
+Parameters:
+    wind_speed: Vector speed (m/s)
+    wind_direction: Vector angle (degrees from North)
+
+Returns:
+    The V-wind component
     )pbdoc");
 
     m_wind.def(
