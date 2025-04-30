@@ -105,27 +105,21 @@ def test_wind_shear():
 
 
 def test_wind_magnitude():
-    wcomp = winds.WindComponents()
-    wcomp.u = 12.0
-    wcomp.v = 0.0
+    wcomp = winds.WindComponents(12.0, 0.0)
     wspd = winds.vector_magnitude(wcomp.u, wcomp.v)
 
     assert (wspd == wcomp.u)
 
 
 def test_wind_direction():
-    wcomp = winds.WindComponents()
-    wcomp.u = 12.0
-    wcomp.v = 0.0
+    wcomp = winds.WindComponents(12.0, 0.0)
 
     wdir = winds.vector_angle(wcomp.u, wcomp.v)
     assert (wdir == 270)
 
 
 def test_components():
-    wvec = winds.WindVector()
-    wvec.speed = 60.0
-    wvec.direction = 270.0
+    wvec = winds.WindVector(60.0, 270.0)
 
     u_comp = winds.u_component(wvec.speed, wvec.direction)
     v_comp = winds.v_component(wvec.speed, wvec.direction)

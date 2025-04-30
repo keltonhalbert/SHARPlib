@@ -19,12 +19,14 @@ inline void make_winds_bindings(nb::module_ m) {
 
     nb::class_<sharp::WindVector>(m_wind, "WindVector")
         .def(nb::init<>())
+        .def(nb::init<float, float>(), nb::arg("speed"), nb::arg("direction"))
         .def_rw("speed", &sharp::WindVector::speed, "Wind Speed (m/s)")
         .def_rw("direction", &sharp::WindVector::direction,
                 "Wind Direction (degrees from North)");
 
     nb::class_<sharp::WindComponents>(m_wind, "WindComponents")
         .def(nb::init<>())
+        .def(nb::init<float, float>(), nb::arg("u_comp"), nb::arg("v_comp"))
         .def_rw("u", &sharp::WindComponents::u, "U wind component (m/s)")
         .def_rw("v", &sharp::WindComponents::v, "V wind component (m/s)");
 
