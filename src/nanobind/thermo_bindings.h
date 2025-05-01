@@ -3,11 +3,14 @@
 
 // clang-format off
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/tuple.h>
 
 #include <SHARPlib/thermo.h>
+#include <SHARPlib/parcel.h>
 #include "sharplib_types.h"
 
 namespace nb = nanobind;
+
 
 inline void make_thermo_bindings (nb::module_ m) {
     nb::module_ m_therm = m.def_submodule("thermo", 
@@ -818,22 +821,245 @@ Returns:
     The 1D array of new temperatures (K) when lifted moist adiabatically to the new pressure levels
 
         )pbdoc");
-        m_therm.def(
-            "buoyancy",
-            [](const_prof_arr_t pcl_tmpk, const_prof_arr_t env_tmpk) {
 
-                float* buoy_arr = new float[pcl_tmpk.size()];
+    m_therm.def(
+        "drylift",
+        [](float pressure, float temperature, float dewpoint) {
+            float pressure_at_lcl, temperature_at_lcl;
+            
+            sharp::drylift(pressure, temperature, dewpoint, pressure_at_lcl, temperature_at_lcl);
 
-                sharp::buoyancy(pcl_tmpk.data(), env_tmpk.data(), buoy_arr, pcl_tmpk.size());
+            return nb::make_tuple(pressure_at_lcl, temperature_at_lcl);
+        },
+        nb::arg("pressure"), nb::arg("temperature"), nb::arg("dewpoint"),
+        R"pbdoc(
+Given a parcel's initial pressure (Pa), temperature (K), and 
+dewpoint temperature (K), lift the parcel dry adiabaitically to its
+Lifted Condensation Level and return the resulting LCL pressure (Pa)
+and temperature (K).
 
-            nb::capsule owner(buoy_arr,
+The LCL temperature is computed using an approximation. See the 
+lcl_temperature function documentation for more information.
+
+Parameters:
+    pressure: Parcel starting pressure (Pa)
+    temperature: Parcel starting temperature (K)
+    dewpoint: Parcel starting dewpoint temperature (K)
+
+Returns:
+    A tuple of (lcl_pres, lcl_temperature)
+    )pbdoc"
+    );
+
+    m_therm.def(
+        "wetbulb",
+        [](
+            sharp::lifter_wobus& lifter,
+            float pressure, 
+            float temperature,
+            float dewpoint
+        ) {
+
+            return sharp::wetbulb(lifter, pressure, temperature, dewpoint);
+        },
+        nb::arg("lifter"), nb::arg("pressure"),
+        nb::arg("temperature"), nb::arg("dewpoint"),
+        R"pbdoc(
+Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
+temperature (K), and dewpoint temperature (K).
+
+First, it lifts a parcel with the given pressure, temperature, and
+dewpoint temperature to its Lifted Condensation Level (LCL). To compute the 
+temperature and pressure of the LCL, an approximation is used. See the 
+lcl_temperature function for further detail. 
+
+After the parcel has reached the LCL, the lifter passed to the function 
+lowers the parcel to its initial pressure level along a moist adiabat or 
+pseudoadiabat. 
+
+Parameters:
+    lifter: a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+    pressure: The ambient pressure (Pa)
+    temperature: The ambient temperature (K)
+    dewpoint: The ambient dewpoint temperature (K)
+
+Returns:
+    The wetbulb temperature (K)
+    )pbdoc"
+    );
+
+    m_therm.def(
+        "wetbulb",
+        [](
+            sharp::lifter_cm1& lifter,
+            float pressure, 
+            float temperature,
+            float dewpoint
+        ) {
+
+            return sharp::wetbulb(lifter, pressure, temperature, dewpoint);
+        },
+        nb::arg("lifter"), nb::arg("pressure"),
+        nb::arg("temperature"), nb::arg("dewpoint"),
+        R"pbdoc(
+Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
+temperature (K), and dewpoint temperature (K).
+
+First, it lifts a parcel with the given pressure, temperature, and
+dewpoint temperature to its Lifted Condensation Level (LCL). To compute the 
+temperature and pressure of the LCL, an approximation is used. See the 
+lcl_temperature function for further detail. 
+
+After the parcel has reached the LCL, the lifter passed to the function 
+lowers the parcel to its initial pressure level along a moist adiabat or 
+pseudoadiabat. 
+
+Parameters:
+    lifter: a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+    pressure: The ambient pressure (Pa)
+    temperature: The ambient temperature (K)
+    dewpoint: The ambient dewpoint temperature (K)
+
+Returns:
+    The wetbulb temperature (K)
+    )pbdoc"
+    );
+
+    m_therm.def(
+        "wetbulb",
+        [](
+            sharp::lifter_wobus& lifter,
+            const_prof_arr_t pres_arr,
+            const_prof_arr_t tmpk_arr,
+            const_prof_arr_t dwpk_arr
+        ) {
+            auto pres = pres_arr.view();
+            auto tmpk = tmpk_arr.view();
+            auto dwpk = dwpk_arr.view();
+            
+            float* wb_out = new float[pres.shape(0)];
+
+            for (size_t k = 0; k <= pres.shape(0); ++k) {
+                wb_out[k] = sharp::wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
+            }
+            
+            nb::capsule owner(wb_out,
                             [](void *p) noexcept { delete[] (float *)p; });
 
             return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                buoy_arr, {pcl_tmpk.size()}, owner);
-            },
-            nb::arg("parcel_temperature"), nb::arg("environment_temperature"),
-            R"pbdoc(
+                wb_out, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("lifter"), nb::arg("pressure"),
+        nb::arg("temperature"), nb::arg("dewpoint"),
+        R"pbdoc(
+Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
+temperature (K), and dewpoint temperature (K).
+
+First, it lifts a parcel with the given pressure, temperature, and
+dewpoint temperature to its Lifted Condensation Level (LCL). To compute the 
+temperature and pressure of the LCL, an approximation is used. See the 
+lcl_temperature function for further detail. 
+
+After the parcel has reached the LCL, the lifter passed to the function 
+lowers the parcel to its initial pressure level along a moist adiabat or 
+pseudoadiabat. 
+
+Parameters:
+    lifter: a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+    pressure: 1D NumPy array of ambient pressures (Pa)
+    temperature: 1D NumPy array of ambient temperatureds (K)
+    dewpoint: 1D NumPy array of ambient dewpoint temperatures (K)
+
+Returns:
+    1D NumPy array of wetbulb temperatures (K)
+    )pbdoc"
+    );
+
+    m_therm.def(
+        "wetbulb",
+        [](
+            sharp::lifter_cm1& lifter,
+            const_prof_arr_t pres_arr,
+            const_prof_arr_t tmpk_arr,
+            const_prof_arr_t dwpk_arr
+        ) {
+            auto pres = pres_arr.view();
+            auto tmpk = tmpk_arr.view();
+            auto dwpk = dwpk_arr.view();
+            
+            float* wb_out = new float[pres.shape(0)];
+
+            for (size_t k = 0; k <= pres.shape(0); ++k) {
+                wb_out[k] = sharp::wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
+            }
+            
+            nb::capsule owner(wb_out,
+                            [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                wb_out, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("lifter"), nb::arg("pressure"),
+        nb::arg("temperature"), nb::arg("dewpoint"),
+        R"pbdoc(
+Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
+temperature (K), and dewpoint temperature (K).
+
+First, it lifts a parcel with the given pressure, temperature, and
+dewpoint temperature to its Lifted Condensation Level (LCL). To compute the 
+temperature and pressure of the LCL, an approximation is used. See the 
+lcl_temperature function for further detail. 
+
+After the parcel has reached the LCL, the lifter passed to the function 
+lowers the parcel to its initial pressure level along a moist adiabat or 
+pseudoadiabat. 
+
+Parameters:
+    lifter: a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+    pressure: 1D NumPy array of ambient pressures (Pa)
+    temperature: 1D NumPy array of ambient temperatureds (K)
+    dewpoint: 1D NumPy array of ambient dewpoint temperatures (K)
+
+Returns:
+    1D NumPy array of wetbulb temperatures (K)
+    )pbdoc"
+    );
+
+    m_therm.def(
+        "buoyancy",
+        [](float pcl_t, float env_t) {
+            return sharp::buoyancy(pcl_t, env_t);
+        },
+        nb::arg("parcel_temperature"),
+        nb::arg("environment_temperature"),
+        R"pbdoc(
+Compute buoyancy given parcel & environment temperatures.
+
+Parameters:
+    parcel_temperature: parcel temperature (K)
+    environment_temperature: environment temperature (K)
+
+Returns:
+    Buoyancy (m/s^2)
+    )pbdoc"
+    );
+
+    m_therm.def(
+        "buoyancy",
+        [](const_prof_arr_t pcl_tmpk, const_prof_arr_t env_tmpk) {
+
+            float* buoy_arr = new float[pcl_tmpk.size()];
+
+            sharp::buoyancy(pcl_tmpk.data(), env_tmpk.data(), buoy_arr, pcl_tmpk.size());
+
+        nb::capsule owner(buoy_arr,
+                        [](void *p) noexcept { delete[] (float *)p; });
+
+        return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+            buoy_arr, {pcl_tmpk.size()}, owner);
+        },
+        nb::arg("parcel_temperature"), nb::arg("environment_temperature"),
+        R"pbdoc(
 Compute buoyancy given arrays of parcel & environment temperatures.
 
 Parameters:
@@ -842,8 +1068,8 @@ Parameters:
 
 Returns:
     1D NumPy array of buoyancy values (m/s^2)
-        )pbdoc"
-        );
+    )pbdoc"
+    );
 }
 
 #endif
