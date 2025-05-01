@@ -111,11 +111,29 @@ def test_wind_magnitude():
     assert (wspd == wcomp.u)
 
 
-def test_wind_direction():
+def test_vector():
     wcomp = winds.WindComponents(12.0, 0.0)
 
+    wspd = winds.vector_magnitude(wcomp.u, wcomp.v)
     wdir = winds.vector_angle(wcomp.u, wcomp.v)
+
+    assert (wspd == wcomp.u)
     assert (wdir == 270)
+
+    wvec = winds.components_to_vector(wcomp.u, wcomp.v)
+
+    assert (wvec.speed == wcomp.u)
+    assert (wvec.direction == 270)
+
+    wvec = winds.components_to_vector(wcomp)
+
+    assert (wvec.speed == wcomp.u)
+    assert (wvec.direction == 270)
+
+    wspd, wdir = winds.components_to_vector(snd_data["uwin"], snd_data["vwin"])
+
+    assert (wspd == pytest.approx(snd_data["wspd"]))
+    assert (wdir == pytest.approx(snd_data["wdir"]))
 
 
 def test_components():
@@ -126,3 +144,18 @@ def test_components():
 
     assert (u_comp == 60.0)
     assert (v_comp == pytest.approx(0.0, abs=1e-6))
+
+    wcmp = winds.vector_to_components(wvec)
+
+    assert (wcmp.u == 60.0)
+    assert (wcmp.v == pytest.approx(0.0, abs=1e-6))
+
+    wcmp = winds.vector_to_components(wvec.speed, wvec.direction)
+
+    assert (wcmp.u == 60.0)
+    assert (wcmp.v == pytest.approx(0.0, abs=1e-6))
+
+    uwin, vwin = winds.vector_to_components(snd_data["wspd"], snd_data["wdir"])
+
+    assert (uwin == pytest.approx(snd_data["uwin"], abs=2e-5))
+    assert (vwin == pytest.approx(snd_data["vwin"], abs=2e-5))
