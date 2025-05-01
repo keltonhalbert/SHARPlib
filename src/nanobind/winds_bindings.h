@@ -3,6 +3,7 @@
 
 // clang-format off
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/tuple.h>
 
 // clang-format on 
 #include <SHARPlib/layer.h>
@@ -360,6 +361,158 @@ Parameters:
 
 Returns:
     1D NumPy array of V-wind component values (m/s)
+    )pbdoc");
+
+    m_wind.def(
+        "components_to_vector",
+        [](float u_comp, float v_comp) {
+            return sharp::components_to_vector(u_comp, v_comp);
+        },
+        nb::arg("u_comp"), nb::arg("v_comp"),
+        R"pbdoc(
+Given the zonal (U) and meridional (V) components of a vector, 
+compute and return the wind speed (m/s) and direction 
+(degrees from North) as a WindVector type.
+        
+Parameters:
+    u_comp: The U-wind component (m/s)
+    v_comp: The V-wind component (m/s)
+
+Returns:
+    WindVector containing wind speed (m/s) and direction (degrees from North)
+    )pbdoc");
+
+    m_wind.def(
+        "components_to_vector",
+        [](sharp::WindComponents& cmp) {
+            return sharp::components_to_vector(cmp);
+        },
+        nb::arg("wind_comp"),
+        R"pbdoc(
+Given the components of a vector via a WindComponents object (m/s),
+compute and return the wind speed (m/s) and wind direction (degrees from North)
+as a WindVector type.
+        
+Parameters:
+    wind_comp: WindComponents (m/s)
+
+Returns:
+    WindVector containing wind speed (m/s) and direction (degrees from North)
+    )pbdoc");
+
+    m_wind.def(
+        "components_to_vector",
+        [](const_prof_arr_t u_comp_arr, const_prof_arr_t v_comp_arr) {
+            auto u_comp = u_comp_arr.view();
+            auto v_comp = v_comp_arr.view();
+
+            float* wspd = new float[u_comp.shape(0)];
+            float* wdir = new float[v_comp.shape(0)];
+
+            for (size_t k = 0; k <= u_comp.shape(0); ++k) {
+                wspd[k] = sharp::vector_magnitude(u_comp(k), v_comp(k));
+                wdir[k] = sharp::vector_angle(u_comp(k), v_comp(k));
+            }
+
+            nb::capsule owner_wspd(
+                wspd, [](void* p) noexcept { delete[] (float*)p; });
+            nb::capsule owner_wdir(
+                wdir, [](void* p) noexcept { delete[] (float*)p; });
+
+            auto wspd_arr = nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                wspd, {u_comp.shape(0)}, owner_wspd);
+            auto wdir_arr = nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                wdir, {u_comp.shape(0)}, owner_wdir);
+
+            return nb::make_tuple(wspd_arr, wdir_arr);
+        },
+        nb::arg("u_comp"), nb::arg("v_comp"),
+        R"pbdoc(
+Given 1D NumPy arrays of zonal (U) and meridional (V) wind components,
+compute the wind speed (m/s) and direction (degrees from North).
+
+Parameters:
+    u_comp: 1D NumPy array of U-wind component values (m/s)
+    v_comp: 1D NumPy array of V-wind component values (m/s)
+
+Returns:
+    wspd: 1D NumPy array of wind speeds (m/s)
+    wdir: 1D NumPy array of wind directiond (degrees from North)
+    )pbdoc");
+
+    m_wind.def(
+        "vector_to_components",
+        [](float wind_speed, float wind_direction) {
+            return sharp::vector_to_components(wind_speed, wind_direction);
+        },
+        nb::arg("wind_speed"), nb::arg("wind_direction"),
+        R"pbdoc(
+Given the wind speed (m/s) and wind direction (degrees from North),
+compute and return the zonal and meridional vector components as WindComponents.
+
+Parameters:
+    wind_speed: The magnitude/speed of the vector (m/s)
+    wind_direction: The direction of the vector (degrees from North)
+
+Returns:
+    The U-wind and V-wind components (m/s) as WindComponents
+    )pbdoc");
+
+    m_wind.def(
+        "vector_to_components",
+        [](sharp::WindVector& vec) { return sharp::vector_to_components(vec); },
+        nb::arg("wind_vector"),
+        R"pbdoc(
+Given the wind speed (m/s) and direction (degrees from North),
+compute and return the zonal (U) and meridional (V) vector 
+components as WindComponents.
+
+Parameters:
+    wind_vector: WindComponents containing wind wpeed (m/s) and direction (degrees from North)
+
+Returns:
+    U and V wind components (m/s) in a WindComponents object
+    )pbdoc");
+
+    m_wind.def(
+        "vector_to_components",
+        [](const_prof_arr_t wspd_arr, const_prof_arr_t wdir_arr) {
+            auto wspd = wspd_arr.view();
+            auto wdir = wdir_arr.view();
+
+            float* u_comp = new float[wspd.shape(0)];
+            float* v_comp = new float[wspd.shape(0)];
+
+            for (size_t k = 0; k <= wspd.shape(0); ++k) {
+                u_comp[k] = sharp::u_component(wspd(k), wdir(k));
+                v_comp[k] = sharp::v_component(wspd(k), wdir(k));
+            }
+
+            nb::capsule owner_uwin(
+                u_comp, [](void* p) noexcept { delete[] (float*)p; });
+            nb::capsule owner_vwin(
+                v_comp, [](void* p) noexcept { delete[] (float*)p; });
+
+            auto uwin_arr = nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                u_comp, {wspd.shape(0)}, owner_uwin);
+            auto vwin_arr = nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                v_comp, {wdir.shape(0)}, owner_vwin);
+
+            return nb::make_tuple(uwin_arr, vwin_arr);
+        },
+        nb::arg("wspd"), nb::arg("wdir"),
+        R"pbdoc(
+Given 1D NumPy arrays of the wind speed (m/s) and direction (degrees from North),
+compute and return 1D NumPy arays of the zonal (U) and meridional (V) vector 
+componenWindComponents.
+
+Parameters:
+    wspd: 1D NumPy array of wind speeds (m/s)
+    wdir: 1D NumPy array of wind directions (degrees from North)
+
+Returns:
+    uwin: 1D NumPy array of U-wind components
+    vwin: 1D NumPy array of V-wind components
     )pbdoc");
 }
 
