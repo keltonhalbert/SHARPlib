@@ -591,7 +591,7 @@ template <typename Lft>
  *
  * \brief Find the maximum lapse rate within a specified layer/depth (Pres)
  *
- * Given a mayer of the atmisphere (e.g. 800 hPa - 500 hPa), find the maximum
+ * Given a layer of the atmisphere (e.g. 800 hPa - 500 hPa), find the maximum
  * lapse rate over the provided depth (e.g. 100 hPa) within that given layer.
  * Returns the maximum lapse rate, with the optional ability to return the layer
  * that lapse rate exists within.
