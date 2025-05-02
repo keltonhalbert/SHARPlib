@@ -1235,7 +1235,7 @@ Returns:
             float* thetae = new float[pres.shape(0)];
 
             for (size_t k = 0; k < pres.shape(0); ++k) {
-                thetae[k] = sharp::thetae(pres(0), tmpk(0), dwpk(0));
+                thetae[k] = sharp::thetae(pres(k), tmpk(k), dwpk(k));
             }
             
             nb::capsule owner(thetae,
