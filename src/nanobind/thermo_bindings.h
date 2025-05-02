@@ -1266,6 +1266,139 @@ Returns:
     );
 
     m_therm.def(
+        "lapse_rate",
+        [](
+            sharp::HeightLayer layer,
+            const_prof_arr_t hght_arr,
+            const_prof_arr_t tmpk_arr
+        ) {
+            return sharp::lapse_rate(layer, hght_arr.data(), tmpk_arr.data(), tmpk_arr.size());
+        },
+        nb::arg("layer_agl"), nb::arg("height"),
+        nb::arg("temperature"),
+        R"pbdoc(
+Computes the lapse rate over a given HeightLayer (meters AGL).
+This routine handles converting the height AGL to MSL by adding
+the surface height value to the HeightLayer.
+
+Parameters:
+    layer_agl: a HeightLayer (meters AGL) to compute the lapse rate over
+    height: 1D NumPy array of height values (meters)
+    temperature: 1D NumPy array of temperature values (K)
+
+Returns:
+    The temperature lapse rate (K)
+    )pbdoc"
+    );
+
+    m_therm.def(
+        "lapse_rate",
+        [](
+            sharp::PressureLayer layer,
+            const_prof_arr_t pres_arr,
+            const_prof_arr_t hght_arr,
+            const_prof_arr_t tmpk_arr
+        ) {
+            return sharp::lapse_rate(layer, pres_arr.data(), hght_arr.data(), tmpk_arr.data(), tmpk_arr.size());
+        },
+        nb::arg("layer"), nb::arg("pressure"), 
+        nb::arg("height"), nb::arg("temperature"),
+        R"pbdoc(
+Computes the lapse rate over a given PressureLayer (Pa).
+
+Parameters:
+    layer: a PressureLayer (Pa) to compute the lapse rate over
+    pressure: 1D NumPy array of pressure values (Pa)
+    height: 1D NumPy array of height values (meters)
+    temperature: 1D NumPy array of temperature values (K)
+
+Returns:
+    The temperature lapse rate (K)
+    )pbdoc"
+    );
+
+    m_therm.def(
+        "lapse_rate_max",
+        [](
+            sharp::HeightLayer layer,
+            float depth, 
+            const_prof_arr_t hght_arr, 
+            const_prof_arr_t tmpk_arr
+        ) {
+            
+            sharp::HeightLayer out_lyr = {0, 0};
+            float max_lr = sharp::lapse_rate_max(
+                layer, 
+                depth, 
+                hght_arr.data(), 
+                tmpk_arr.data(), 
+                tmpk_arr.size(), 
+                &out_lyr
+            );
+
+            return nb::make_tuple(max_lr, out_lyr);
+        },
+        nb::arg("layer"), nb::arg("depth"),
+        nb::arg("height"), nb::arg("temperature"),
+        R"pbdoc(
+Given a layer of the atmosphere (e.g. 2 - 6 km), find the maximum
+lapse rate over the provided depth (e.g. 2 km) within that given layer. 
+Returns the maximum lapse rate, as well as the layer it was found in. 
+
+Parameters:
+    layer: a HeightLayer to search for the maximum lapse lapse_rate (meters AGL) 
+    depth: the depth used to compute a lapse rate within a layer (meters)
+    height: 1D NumPy array of height values (meters)
+    temperature: 1D NumPy array of temperature values (K)
+
+Returns:
+    A tuple containing the maximum lapse rate and the layer it was found in
+    )pbdoc"
+    );
+
+    m_therm.def(
+        "lapse_rate_max",
+        [](
+            sharp::PressureLayer layer,
+            float depth, 
+            const_prof_arr_t pres_arr,
+            const_prof_arr_t hght_arr, 
+            const_prof_arr_t tmpk_arr
+        ) {
+            
+            sharp::PressureLayer out_lyr = {0, 0};
+            float max_lr = sharp::lapse_rate_max(
+                layer, 
+                depth, 
+                pres_arr.data(),
+                hght_arr.data(), 
+                tmpk_arr.data(), 
+                tmpk_arr.size(), 
+                &out_lyr
+            );
+
+            return nb::make_tuple(max_lr, out_lyr);
+        },
+        nb::arg("layer"), nb::arg("depth"),
+        nb::arg("pressure"), nb::arg("height"), nb::arg("temperature"),
+        R"pbdoc(
+Given a layer of the atmosphere (e.g. 800 hPa - 500 hPa), find the maximum
+lapse rate over the provided depth (e.g. 100 hPa) within that given layer. 
+Returns the maximum lapse rate, as well as the layer it was found in. 
+
+Parameters:
+    layer: a PressureLayer to search for the maximum lapse lapse_rate (Pa) 
+    depth: the depth used to compute a lapse rate within a layer (Pa)
+    pressure: 1D NumPy array of pressure values (Pa)
+    height: 1D NumPy array of height values (meters)
+    temperature: 1D NumPy array of temperature values (K)
+
+Returns:
+    A tuple containing the maximum lapse rate and the layer it was found in
+    )pbdoc"
+    );
+
+    m_therm.def(
         "buoyancy",
         [](float pcl_t, float env_t) {
             return sharp::buoyancy(pcl_t, env_t);
