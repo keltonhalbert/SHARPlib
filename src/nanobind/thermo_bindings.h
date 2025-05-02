@@ -1026,6 +1026,178 @@ Returns:
     );
 
     m_therm.def(
+        "theta_wetbulb",
+        [](
+            sharp::lifter_wobus& lifter,
+            float pressure, 
+            float temperature,
+            float dewpoint
+        ) {
+            return sharp::theta_wetbulb(lifter, pressure, temperature, dewpoint);
+        },
+        nb::arg("lifter"), nb::arg("pressure"),
+        nb::arg("temperature"), nb::arg("dewpoint"),
+        R"pbdoc(
+Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
+temperature (K), and dewpoint temperature (K).
+
+First, it lifts a parcel with the given pressure, temperature, 
+and dewpoint temperature to its Lifted Condensation Level (LCL). 
+To compute the temperature and pressure of the LCL, an approximation 
+is used. See the lcl_temperature fuction for further detail. 
+
+After the parcel has reached the LCL, the lifted passed to the function 
+lowers the parcel to the standard parcel reference pressure level 
+(1000 hPa) along a moist adiabat.
+
+Parameters:
+    lifter: a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+    pressure: the ambient air pressure (Pa)
+    temperature: the ambient air temperature (K)
+    dewpoint: the ambient dewpoint temperature
+
+Returns:
+    The wet-bulb potential temperature (K)
+    )pbdoc"
+    );
+
+    m_therm.def(
+        "theta_wetbulb",
+        [](
+            sharp::lifter_cm1& lifter,
+            float pressure, 
+            float temperature,
+            float dewpoint
+        ) {
+            return sharp::theta_wetbulb(lifter, pressure, temperature, dewpoint);
+        },
+        nb::arg("lifter"), nb::arg("pressure"),
+        nb::arg("temperature"), nb::arg("dewpoint"),
+        R"pbdoc(
+Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
+temperature (K), and dewpoint temperature (K).
+
+First, it lifts a parcel with the given pressure, temperature, 
+and dewpoint temperature to its Lifted Condensation Level (LCL). 
+To compute the temperature and pressure of the LCL, an approximation 
+is used. See the lcl_temperature fuction for further detail. 
+
+After the parcel has reached the LCL, the lifted passed to the function 
+lowers the parcel to the standard parcel reference pressure level 
+(1000 hPa) along a moist adiabat.
+
+Parameters:
+    lifter: a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+    pressure: the ambient air pressure (Pa)
+    temperature: the ambient air temperature (K)
+    dewpoint: the ambient dewpoint temperature
+
+Returns:
+    The wet-bulb potential temperature (K)
+    )pbdoc"
+    );
+    
+    m_therm.def(
+        "theta_wetbulb",
+        [](
+            sharp::lifter_wobus& lifter,
+            const_prof_arr_t pres_arr,
+            const_prof_arr_t tmpk_arr,
+            const_prof_arr_t dwpk_arr
+        ) {
+            auto pres = pres_arr.view();
+            auto tmpk = tmpk_arr.view();
+            auto dwpk = dwpk_arr.view();
+
+            float* theta_wb = new float[pres.shape(0)];
+            
+            for (size_t k = 0; k < pres.shape(0); ++k) {
+                theta_wb[k] = sharp::theta_wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
+            }
+            
+            nb::capsule owner(theta_wb,
+                            [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                theta_wb, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("lifter"), nb::arg("pressure"),
+        nb::arg("temperature"), nb::arg("dewpoint"),
+        R"pbdoc(
+Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
+temperature (K), and dewpoint temperature (K).
+
+First, it lifts a parcel with the given pressure, temperature, 
+and dewpoint temperature to its Lifted Condensation Level (LCL). 
+To compute the temperature and pressure of the LCL, an approximation 
+is used. See the lcl_temperature fuction for further detail. 
+
+After the parcel has reached the LCL, the lifted passed to the function 
+lowers the parcel to the standard parcel reference pressure level 
+(1000 hPa) along a moist adiabat.
+
+Parameters:
+    lifter: a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+    pressure: 1D NumPy array of ambient air pressure (Pa)
+    temperature: 1D NumPy array of ambient air temperature (K)
+    dewpoint: 1D NumPy array of ambient dewpoint temperature
+
+Returns:
+    1D NumPy array of wet-bulb potential temperatures (K)
+    )pbdoc"
+    );
+    
+    m_therm.def(
+        "theta_wetbulb",
+        [](
+            sharp::lifter_cm1& lifter,
+            const_prof_arr_t pres_arr,
+            const_prof_arr_t tmpk_arr,
+            const_prof_arr_t dwpk_arr
+        ) {
+            auto pres = pres_arr.view();
+            auto tmpk = tmpk_arr.view();
+            auto dwpk = dwpk_arr.view();
+
+            float* theta_wb = new float[pres.shape(0)];
+            
+            for (size_t k = 0; k < pres.shape(0); ++k) {
+                theta_wb[k] = sharp::theta_wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
+            }
+            
+            nb::capsule owner(theta_wb,
+                            [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                theta_wb, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("lifter"), nb::arg("pressure"),
+        nb::arg("temperature"), nb::arg("dewpoint"),
+        R"pbdoc(
+Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
+temperature (K), and dewpoint temperature (K).
+
+First, it lifts a parcel with the given pressure, temperature, 
+and dewpoint temperature to its Lifted Condensation Level (LCL). 
+To compute the temperature and pressure of the LCL, an approximation 
+is used. See the lcl_temperature fuction for further detail. 
+
+After the parcel has reached the LCL, the lifted passed to the function 
+lowers the parcel to the standard parcel reference pressure level 
+(1000 hPa) along a moist adiabat.
+
+Parameters:
+    lifter: a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+    pressure: 1D NumPy array of ambient air pressure (Pa)
+    temperature: 1D NumPy array of ambient air temperature (K)
+    dewpoint: 1D NumPy array of ambient dewpoint temperature
+
+Returns:
+    1D NumPy array of wet-bulb potential temperatures (K)
+    )pbdoc"
+    );
+
+    m_therm.def(
         "buoyancy",
         [](float pcl_t, float env_t) {
             return sharp::buoyancy(pcl_t, env_t);
