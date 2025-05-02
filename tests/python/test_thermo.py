@@ -7,6 +7,7 @@ import pandas as pd
 
 from nwsspc.sharp.calc import layer
 from nwsspc.sharp.calc import thermo
+from nwsspc.sharp.calc import parcel
 from nwsspc.sharp.calc import constants
 
 
@@ -56,6 +57,57 @@ filename = os.path.join(
     "ddc.parquet"
 )
 snd_data = load_parquet(filename)
+
+
+def test_theta_wetbulb():
+    wobf = parcel.lifter_wobus()
+    cm1 = parcel.lifter_cm1()
+    cm1.ma_type = thermo.adiabat.pseudo_liq
+
+    thetaw = thermo.theta_wetbulb(wobf, 99300.0, 300.0, 297.0)
+    assert (thetaw == pytest.approx(298.10607))
+
+    thetaw = thermo.theta_wetbulb(
+        wobf,
+        snd_data["pres"][:3000],
+        snd_data["tmpk"][:3000],
+        snd_data["dwpk"][:3000]
+    )
+    assert (thetaw.min() == pytest.approx(287.99442))
+    assert (thetaw.max() == pytest.approx(300.6817))
+    assert (thetaw.mean() == pytest.approx(291.79718))
+
+    thetaw = thermo.theta_wetbulb(cm1, 99300.0, 300.0, 297.0)
+    assert (thetaw == pytest.approx(298.0095825))
+
+    # TO-DO: The solver fails to converge at very low
+    # pressures and temperatures.
+    # Need to look into how to remedy this.
+    thetaw = thermo.theta_wetbulb(
+        cm1,
+        snd_data["pres"][:3000],
+        snd_data["tmpk"][:3000],
+        snd_data["dwpk"][:3000]
+    )
+
+    assert (thetaw.min() == pytest.approx(288.2039))
+    assert (thetaw.max() == pytest.approx(300.84494))
+    assert (thetaw.mean() == pytest.approx(292.04013))
+
+    # thetaw = thermo.theta_wetbulb(
+    #     cm1, snd_data["pres"], snd_data["tmpk"], snd_data["dwpk"])
+    # print(thetaw.min(), thetaw.max(), thetaw.mean())
+
+
+def test_thetae():
+    thetae = thermo.thetae(99300.00, 300.0, 295.0)
+    assert (thetae == pytest.approx(351.2240295))
+
+    thetae = thermo.thetae(
+        snd_data["pres"], snd_data["tmpk"], snd_data["dwpk"])
+    assert (thetae.min() == pytest.approx(319.05536))
+    assert (thetae.max() == pytest.approx(510.92166))
+    assert (thetae.mean() == pytest.approx(362.22058))
 
 
 def test_lapse_rate():
