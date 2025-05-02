@@ -1198,6 +1198,74 @@ Returns:
     );
 
     m_therm.def(
+        "thetae",
+        &sharp::thetae,
+        nb::arg("pressure"), nb::arg("temperature"), nb::arg("dewpoint"),
+        R"pbdoc(
+Compute the equivalent potential temperature (K) given the 
+air pressure (Pa), air temperature (K), and dewpoint temperature (K).
+The equivalent potential temperature is computed as in Bolton 1980. 
+It was found in Davies-Jones 2009 to be the most accurate non-iterative 
+formulation of theta-e.
+
+ Bolton 1980: https://doi.org/10.1175/1520-0493(1980)108%3C1046:TCOEPT%3E2.0.CO;2
+ Davies-Jones 2009: https://doi.org/10.1175/2009MWR2774.1
+
+Parameters:
+    pressure: the ambient air pressure (Pa)
+    temperature: the ambient air temperature (K)
+    dewpoint: the dewpoint temperature (K)
+
+Returns:
+    The equivalent potential temperature (K)
+    )pbdoc"
+    );
+    
+    m_therm.def(
+        "thetae",
+        [](
+            const_prof_arr_t pres_arr,
+            const_prof_arr_t tmpk_arr,
+            const_prof_arr_t dwpk_arr
+        ) {
+            auto pres = pres_arr.view();
+            auto tmpk = tmpk_arr.view();
+            auto dwpk = dwpk_arr.view();
+
+            float* thetae = new float[pres.shape(0)];
+
+            for (size_t k = 0; k < pres.shape(0); ++k) {
+                thetae[k] = sharp::thetae(pres(0), tmpk(0), dwpk(0));
+            }
+            
+            nb::capsule owner(thetae,
+                            [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                thetae, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("pressure"), nb::arg("temperature"), nb::arg("dewpoint"),
+        R"pbdoc(
+Compute the equivalent potential temperature (K) given the 
+air pressure (Pa), air temperature (K), and dewpoint temperature (K).
+The equivalent potential temperature is computed as in Bolton 1980. 
+It was found in Davies-Jones 2009 to be the most accurate non-iterative 
+formulation of theta-e.
+
+ Bolton 1980: https://doi.org/10.1175/1520-0493(1980)108%3C1046:TCOEPT%3E2.0.CO;2
+ Davies-Jones 2009: https://doi.org/10.1175/2009MWR2774.1
+
+Parameters:
+    pressure: 1D NumPy array of ambient air pressure (Pa)
+    temperature: 1D NumPy array of ambient air temperature (K)
+    dewpoint: 1D NumPy array of dewpoint temperature (K)
+
+Returns:
+    1D NumPy array of equivalent potential temperature (K)
+    )pbdoc"
+    );
+
+    m_therm.def(
         "buoyancy",
         [](float pcl_t, float env_t) {
             return sharp::buoyancy(pcl_t, env_t);
