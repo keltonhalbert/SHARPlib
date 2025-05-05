@@ -297,3 +297,21 @@ def test_max_lapse_rate():
     assert (p_max_lr == pytest.approx(9.4798536))
     assert (p_max_lyr.bottom == 68000.0)
     assert (p_max_lyr.top == 63000.0)
+
+
+def test_buoyancy():
+    buoy = thermo.buoyancy(300.0, 290.0)
+    assert (buoy == pytest.approx(0.338160336))
+
+    pres = snd_data["pres"][0]
+    tmpk = snd_data["tmpk"][0]
+    dwpk = snd_data["dwpk"][0]
+
+    pcl = parcel.Parcel.surface_parcel(pres, tmpk, dwpk)
+    lifter = parcel.lifter_cm1()
+    lifter.ma_type = thermo.adiabat.adiab_ice
+    vtmpk = pcl.lift_parcel(lifter, snd_data["pres"])
+    buoy = thermo.buoyancy(vtmpk, snd_data["vtmp"])
+    assert (buoy.min() == pytest.approx(-2.9566746))
+    assert (buoy.max() == pytest.approx(0.46333456))
+    assert (buoy.mean() == pytest.approx(-0.3561962))
