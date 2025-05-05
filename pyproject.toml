@@ -4,7 +4,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "SHARPlib"
-version = "1.0.0"
+version = "1.0.0-beta1"
 description = "Sounding and Hodograph Analysis and Research Program Library (SHARPlib) for processing vertical profiles of meteorological/atmospheric sounding data."
 readme = "README.md"
 authors = [
@@ -28,7 +28,8 @@ keywords = [
     "atmospheric science",
     "atmosphere",
     "soundings",
-    "skewt"
+    "skewt",
+    "hodograph"
 ]
 requires-python = ">=3.10"
 dependencies = [
