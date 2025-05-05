@@ -110,6 +110,9 @@ def test_wind_magnitude():
 
     assert (wspd == wcomp.u)
 
+    wspd = winds.vector_magnitude(snd_data["uwin"], snd_data["vwin"])
+    assert (wspd == pytest.approx(snd_data["wspd"]))
+
 
 def test_vector():
     wcomp = winds.WindComponents(12.0, 0.0)
