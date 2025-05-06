@@ -60,6 +60,9 @@ snd_data = load_parquet(filename)
 
 
 def test_wobf():
+    wobf = thermo.wobf(constants.MISSING)
+    assert (wobf == constants.MISSING)
+
     wobf = thermo.wobf(300.0)
     assert (wobf == pytest.approx(292.115967))
 
@@ -70,6 +73,12 @@ def test_wobf():
 
 
 def test_lcl_temp():
+    lcl_t = thermo.lcl_temperature(constants.MISSING, 297.0)
+    assert (lcl_t == constants.MISSING)
+
+    lcl_t = thermo.lcl_temperature(300.0, constants.MISSING)
+    assert (lcl_t == constants.MISSING)
+
     lcl_t = thermo.lcl_temperature(300.0, 297.0)
     assert (lcl_t == pytest.approx(296.27252))
 
@@ -80,6 +89,12 @@ def test_lcl_temp():
 
 
 def test_vappres():
+    vappres = thermo.vapor_pressure(constants.MISSING, 300.0)
+    assert (vappres == constants.MISSING)
+
+    vappres = thermo.vapor_pressure(100000.0, constants.MISSING)
+    assert (vappres == constants.MISSING)
+
     vappres = thermo.vapor_pressure(100000.0, 300.0)
     assert (vappres == pytest.approx(3534.52))
 
@@ -93,6 +108,12 @@ def test_vappres_ice():
     vappres = thermo.vapor_pressure_ice(40000.0, 250.0)
     assert (vappres == pytest.approx(75.6271286))
 
+    vappres = thermo.vapor_pressure_ice(constants.MISSING, 250.0)
+    assert (vappres == constants.MISSING)
+
+    vappres = thermo.vapor_pressure_ice(40000.0, constants.MISSING)
+    assert (vappres == constants.MISSING)
+
     vappres = thermo.vapor_pressure_ice(snd_data["pres"], snd_data["tmpk"])
     assert (vappres.min() == pytest.approx(0.5158234))
     assert (vappres.max() == pytest.approx(4015.757))
@@ -100,16 +121,34 @@ def test_vappres_ice():
 
 
 def test_tmpk_at_mixr():
+    dwpk = thermo.temperature_at_mixratio(constants.MISSING, 100000.0)
+    assert (dwpk == constants.MISSING)
+
+    dwpk = thermo.temperature_at_mixratio(0.010, constants.MISSING)
+    assert (dwpk == constants.MISSING)
+
     dwpk = thermo.temperature_at_mixratio(snd_data["mixr"], snd_data["pres"])
     assert (dwpk == pytest.approx(snd_data["dwpk"], abs=1e-3))
 
 
 def test_theta_lvl():
+    plev = thermo.theta_level(constants.MISSING, 300.0)
+    assert (plev == constants.MISSING)
+
+    plev = thermo.theta_level(309.1682, constants.MISSING)
+    assert (plev == constants.MISSING)
+
     plev = thermo.theta_level(309.1682, 300.0)
     assert (plev == pytest.approx(90000.0))
 
 
 def test_theta():
+    theta = thermo.theta(constants.MISSING, 300.0)
+    assert (theta == constants.MISSING)
+
+    theta = thermo.theta(90000.0, constants.MISSING)
+    assert (theta == constants.MISSING)
+
     theta = thermo.theta(90000.0, 300.0)
     assert (theta == pytest.approx(309.1682))
 
@@ -120,6 +159,12 @@ def test_theta():
 
 
 def test_mixr():
+    mixr = thermo.mixratio(constants.MISSING, 300.0)
+    assert (mixr == constants.MISSING)
+
+    mixr = thermo.mixratio(100000.0, constants.MISSING)
+    assert (mixr == constants.MISSING)
+
     mixr = thermo.mixratio(100000.0, 300.0)
     assert (mixr == pytest.approx(0.022788666))
 
@@ -129,6 +174,12 @@ def test_mixr():
 
 
 def test_ice_mixr():
+    mixr = thermo.mixratio_ice(constants.MISSING, 250.0)
+    assert (mixr == constants.MISSING)
+
+    mixr = thermo.mixratio_ice(50000.0, constants.MISSING)
+    assert (mixr == constants.MISSING)
+
     mixr = thermo.mixratio_ice(50000.0, 250.0)
     assert (mixr == pytest.approx(0.0009421613067))
 
@@ -138,6 +189,9 @@ def test_ice_mixr():
 
 
 def test_spechum():
+    spfh = thermo.specific_humidity(constants.MISSING)
+    assert (spfh == constants.MISSING)
+
     spfh = thermo.specific_humidity(0.02)
     assert (spfh == pytest.approx(0.01960784))
 
@@ -147,6 +201,18 @@ def test_spechum():
 
 
 def test_virtemp():
+    vtmpk = thermo.virtual_temperature(constants.MISSING, 0.0)
+    assert (vtmpk == constants.MISSING)
+
+    vtmpk = thermo.virtual_temperature(300.0, constants.MISSING)
+    assert (vtmpk == constants.MISSING)
+
+    vtmpk = thermo.virtual_temperature(300.0, 0.0, constants.MISSING)
+    assert (vtmpk == constants.MISSING)
+
+    vtmpk = thermo.virtual_temperature(300.0, 0.0, 0.0, constants.MISSING)
+    assert (vtmpk == constants.MISSING)
+
     vtmpk = thermo.virtual_temperature(300.0, 0.0)
     assert (vtmpk == 300.0)
 
@@ -169,6 +235,18 @@ def test_virtemp():
 
 
 def test_drylift():
+    lcl_p, lcl_t = thermo.drylift(constants.MISSING, 300.0, 297.0)
+    assert (lcl_p == constants.MISSING)
+    assert (lcl_t == constants.MISSING)
+
+    lcl_p, lcl_t = thermo.drylift(100000.0, constants.MISSING, 297.0)
+    assert (lcl_p == constants.MISSING)
+    assert (lcl_t == constants.MISSING)
+
+    lcl_p, lcl_t = thermo.drylift(100000.0, 300.0, constants.MISSING)
+    assert (lcl_p == constants.MISSING)
+    assert (lcl_t == constants.MISSING)
+
     lcl_p, lcl_t = thermo.drylift(100000.0, 300.0, 297.0)
     assert (lcl_p == pytest.approx(95718.40625))
     assert (lcl_t == pytest.approx(296.27252))
@@ -178,6 +256,24 @@ def test_wetbulb():
     wobf = parcel.lifter_wobus()
     cm1 = parcel.lifter_cm1()
     cm1.ma_type = thermo.adiabat.pseudo_liq
+
+    wetbulb = thermo.wetbulb(wobf, constants.MISSING, 300.0, 297.0)
+    assert (wetbulb == constants.MISSING)
+
+    wetbulb = thermo.wetbulb(cm1, constants.MISSING, 300.0, 297.0)
+    assert (wetbulb == constants.MISSING)
+
+    wetbulb = thermo.wetbulb(wobf, 99300.0, constants.MISSING, 297.0)
+    assert (wetbulb == constants.MISSING)
+
+    wetbulb = thermo.wetbulb(cm1, 99300.0, constants.MISSING, 297.0)
+    assert (wetbulb == constants.MISSING)
+
+    wetbulb = thermo.wetbulb(wobf, 99300.0, 300.0, constants.MISSING)
+    assert (wetbulb == constants.MISSING)
+
+    wetbulb = thermo.wetbulb(cm1, 99300.0, 300.0, constants.MISSING)
+    assert (wetbulb == constants.MISSING)
 
     wetbulb = thermo.wetbulb(wobf, 99300.0, 300.0, 297.0)
     assert (wetbulb == pytest.approx(297.85162))
@@ -215,6 +311,24 @@ def test_theta_wetbulb():
     cm1 = parcel.lifter_cm1()
     cm1.ma_type = thermo.adiabat.pseudo_liq
 
+    thetaw = thermo.theta_wetbulb(wobf, constants.MISSING, 300.0, 297.0)
+    assert (thetaw == constants.MISSING)
+
+    thetaw = thermo.theta_wetbulb(cm1, constants.MISSING, 300.0, 297.0)
+    assert (thetaw == constants.MISSING)
+
+    thetaw = thermo.theta_wetbulb(wobf, 99300.0, constants.MISSING, 297.0)
+    assert (thetaw == constants.MISSING)
+
+    thetaw = thermo.theta_wetbulb(cm1, 99300.0, constants.MISSING, 297.0)
+    assert (thetaw == constants.MISSING)
+
+    thetaw = thermo.theta_wetbulb(wobf, 99300.0, 300.0, constants.MISSING)
+    assert (thetaw == constants.MISSING)
+
+    thetaw = thermo.theta_wetbulb(cm1, 99300.0, 300.0, constants.MISSING)
+    assert (thetaw == constants.MISSING)
+
     thetaw = thermo.theta_wetbulb(wobf, 99300.0, 300.0, 297.0)
     assert (thetaw == pytest.approx(298.10607))
 
@@ -247,6 +361,15 @@ def test_theta_wetbulb():
 
 
 def test_thetae():
+    thetae = thermo.thetae(constants.MISSING, 300.0, 295.0)
+    assert (thetae == constants.MISSING)
+
+    thetae = thermo.thetae(99300.0, constants.MISSING, 295.0)
+    assert (thetae == constants.MISSING)
+
+    thetae = thermo.thetae(99300.00, 300.0, constants.MISSING)
+    assert (thetae == constants.MISSING)
+
     thetae = thermo.thetae(99300.00, 300.0, 295.0)
     assert (thetae == pytest.approx(351.2240295))
 
@@ -300,6 +423,12 @@ def test_max_lapse_rate():
 
 
 def test_buoyancy():
+    buoy = thermo.buoyancy(constants.MISSING, 290.0)
+    assert (buoy == constants.MISSING)
+
+    buoy = thermo.buoyancy(300.0, constants.MISSING)
+    assert (buoy == constants.MISSING)
+
     buoy = thermo.buoyancy(300.0, 290.0)
     assert (buoy == pytest.approx(0.338160336))
 
