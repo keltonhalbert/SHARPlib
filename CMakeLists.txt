@@ -3,7 +3,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ version selection")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(SHARPlib CXX)
+project(SHARPlib VERSION 1.0.0 LANGUAGES CXX )
 include(GNUInstallDirs)
 include(CTest)
 
