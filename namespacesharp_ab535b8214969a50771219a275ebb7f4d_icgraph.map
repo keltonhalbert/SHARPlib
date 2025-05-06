@@ -1,9 +1,6 @@
 <map id="sharp::wobf" name="sharp::wobf">
-<area shape="rect" id="node1" title="Computes the difference between the wet&#45;bulb potential temperatures for saturated and dry air given t..." alt="" coords="597,56,696,81"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#ab8a75ed92a2c2062162264a54f3a5338" title="Compute the temperature along a moist adiabat (wet&#45;bulb potential temperature) at a given pressure." alt="" coords="397,5,549,31"/>
-<area shape="rect" id="node4" href="$namespacesharp.html#ad4014313c60a66a321e4050a2a07058e" title="Compute the temperature of a parcel lifted moist adiabatically to a new level." alt="" coords="221,55,327,80"/>
-<area shape="rect" id="node7" href="$thermo__wrap_8cpp.html#a0a64ef2c75362d5757bc850f28b166d9" title=" " alt="" coords="425,107,522,132"/>
-<area shape="rect" id="node3" href="$thermo__wrap_8cpp.html#a9f2ca1ce5fd50b35722fd2a5f8330f47" title=" " alt="" coords="199,5,349,31"/>
-<area shape="rect" id="node5" href="$structsharp_1_1lifter__wobus.html#a92ffe04c0425aef07c524759d799066e" title="Overloads operator() to call sharp::wetlift." alt="" coords="5,18,151,58"/>
-<area shape="rect" id="node6" href="$thermo__wrap_8cpp.html#aa66ee47ed2c19f239f7bf3c90669bacf" title=" " alt="" coords="25,83,131,108"/>
+<area shape="rect" id="node1" title="Computes the difference between the wet&#45;bulb potential temperatures for saturated and dry air given t..." alt="" coords="553,31,652,56"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#ab8a75ed92a2c2062162264a54f3a5338" title="Compute the temperature along a moist adiabat (wet&#45;bulb potential temperature) at a given pressure." alt="" coords="353,5,505,31"/>
+<area shape="rect" id="node3" href="$namespacesharp.html#ad4014313c60a66a321e4050a2a07058e" title="Compute the temperature of a parcel lifted moist adiabatically to a new level." alt="" coords="199,31,305,56"/>
+<area shape="rect" id="node4" href="$structsharp_1_1lifter__wobus.html#a92ffe04c0425aef07c524759d799066e" title="Overloads operator() to call sharp::wetlift." alt="" coords="5,23,151,63"/>
 </map>

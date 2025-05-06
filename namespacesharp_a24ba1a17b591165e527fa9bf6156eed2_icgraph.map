@@ -1,6 +1,4 @@
 <map id="sharp::vector_angle" name="sharp::vector_angle">
-<area shape="rect" id="node1" title="Computes the direction (degrees from North) a vector points to." alt="" coords="433,42,584,67"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#adc84f46d1ec5872b1777857983bdb4be" title="Conveniance function to compute wind speed and direction from components." alt="" coords="219,5,385,45"/>
-<area shape="rect" id="node4" href="$winds__wrap_8cpp.html#a478d6357c54b82d439b182c838da33eb" title=" " alt="" coords="227,70,377,95"/>
-<area shape="rect" id="node3" href="$winds__wrap_8cpp.html#a231e607727d73e68fe9ec62d7d3c45f1" title=" " alt="" coords="5,5,171,45"/>
+<area shape="rect" id="node1" title="Computes the direction (degrees from North) a vector points to." alt="" coords="220,13,371,38"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#adc84f46d1ec5872b1777857983bdb4be" title="Conveniance function to compute wind speed and direction from components." alt="" coords="5,5,172,45"/>
 </map>

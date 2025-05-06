@@ -1,7 +1,4 @@
 <map id="sharp::helicity" name="sharp::helicity">
-<area shape="rect" id="node1" title="Computes the Storm Relative Helicity (SRH) over a given layer." alt="" coords="465,70,580,95"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#ab89a7e3555a52f0fd9f4086d5aba7037" title=" " alt="" coords="235,5,401,45"/>
-<area shape="rect" id="node4" href="$winds__wrap_8cpp.html#a2275eb46450351ce583c7aef971a0507" title=" " alt="" coords="219,70,417,95"/>
-<area shape="rect" id="node5" href="$winds__wrap_8cpp.html#a111ef482a9bae9f405ccb271e0816769" title=" " alt="" coords="239,120,397,160"/>
-<area shape="rect" id="node3" href="$convective__wrap_8cpp.html#a8fa4a371ff32e44fd39e0703eab33a74" title=" " alt="" coords="5,5,171,45"/>
+<area shape="rect" id="node1" title="Computes the Storm Relative Helicity (SRH) over a given layer." alt="" coords="220,13,335,38"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#ab89a7e3555a52f0fd9f4086d5aba7037" title=" " alt="" coords="5,5,172,45"/>
 </map>

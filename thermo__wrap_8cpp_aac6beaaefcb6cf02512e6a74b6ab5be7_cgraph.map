@@ -1,9 +1,0 @@
-<map id="sharp_moist_adiabat_cm1" name="sharp_moist_adiabat_cm1">
-<area shape="rect" id="node1" title=" " alt="" coords="5,55,199,80"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#aa258841692c25171d3f3b2e8b1f52079" title="Compute the temperature of a parcel lifted moist adiabatically to a new level." alt="" coords="247,55,441,80"/>
-<area shape="rect" id="node3" href="$namespacesharp.html#a7494c22424745a8847092b64195fb9ae" title=" " alt="" coords="489,29,632,55"/>
-<area shape="rect" id="node7" href="$namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb" title="Compute the potential temperature." alt="" coords="511,79,611,104"/>
-<area shape="rect" id="node4" href="$namespacesharp.html#ac38870166f07ac30aadbc46b81340cc4" title="Compute the water vapor mixing ratio from specific humidity." alt="" coords="693,5,814,31"/>
-<area shape="rect" id="node5" href="$namespacesharp.html#a0ebcad18ef9939ff56f23d49c35dd04c" title="Compute the ice water mixing ratio." alt="" coords="680,55,827,80"/>
-<area shape="rect" id="node6" href="$namespacesharp.html#aaf448e4ec9a4f7ac7edc9b960f656fd8" title="Compute the vapor pressure over ice." alt="" coords="875,55,1067,80"/>
-</map>

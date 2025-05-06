@@ -6,10 +6,8 @@ var searchData=
   ['windcomponents_3',['WindComponents',['../structsharp_1_1WindComponents.html',1,'sharp']]],
   ['winds_2ecpp_4',['winds.cpp',['../winds_8cpp.html',1,'']]],
   ['winds_2eh_5',['winds.h',['../winds_8h.html',1,'']]],
-  ['winds_5fwrap_2ecpp_6',['winds_wrap.cpp',['../winds__wrap_8cpp.html',1,'']]],
-  ['winds_5fwrap_2eh_7',['winds_wrap.h',['../winds__wrap_8h.html',1,'']]],
-  ['windvector_8',['WindVector',['../structsharp_1_1WindVector.html',1,'sharp']]],
-  ['winter_2ecpp_9',['winter.cpp',['../winter_8cpp.html',1,'']]],
-  ['winter_2eh_10',['winter.h',['../winter_8h.html',1,'']]],
-  ['wobf_11',['wobf',['../namespacesharp.html#ab535b8214969a50771219a275ebb7f4d',1,'sharp']]]
+  ['windvector_6',['WindVector',['../structsharp_1_1WindVector.html',1,'sharp']]],
+  ['winter_2ecpp_7',['winter.cpp',['../winter_8cpp.html',1,'']]],
+  ['winter_2eh_8',['winter.h',['../winter_8h.html',1,'']]],
+  ['wobf_9',['wobf',['../namespacesharp.html#ab535b8214969a50771219a275ebb7f4d',1,'sharp']]]
 ];

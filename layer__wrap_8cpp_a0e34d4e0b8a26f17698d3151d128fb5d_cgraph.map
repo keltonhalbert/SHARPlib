@@ -1,8 +1,0 @@
-<map id="sharp_HeightLayer_to_PressureLayer" name="sharp_HeightLayer_to_PressureLayer">
-<area shape="rect" id="node1" title=" " alt="" coords="5,23,169,63"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#ab77e344c7462c9615b0ddac228bc2193" title="Converts a sharp::HeightLayer to a sharp::PressureLayer." alt="" coords="217,23,364,63"/>
-<area shape="rect" id="node3" href="$namespacesharp.html#ae8240f026498ad2775633a8d0dcf100d" title="Linearly interpolate a data field to a requested height level." alt="" coords="412,31,564,56"/>
-<area shape="rect" id="node4" href="$namespacesharp.html#a0bf533560780fdb77bc3656db8d89208" title="Linearly interpolates between a and b with distance t." alt="" coords="642,5,733,31"/>
-<area shape="rect" id="node6" href="$namespacesharp.html#a772686549a5111c1152b778731119aa6" title="Finds the first index that satisfies value &lt; element." alt="" coords="612,55,763,80"/>
-<area shape="rect" id="node5" href="$namespacesharp.html#ac4464059524ff56c7974141bb4cc7375" title="Linearly interpolates between a and b with distance t." alt="" coords="811,5,916,31"/>
-</map>

@@ -1,10 +1,6 @@
 <map id="sharp::mean_wind" name="sharp::mean_wind">
-<area shape="rect" id="node1" title="Compute the mean wind over the given sharp::PressureLayer." alt="" coords="673,67,815,92"/>
-<area shape="rect" id="node2" href="$winds__wrap_8cpp.html#a9995026cf811a9d4ec86b568b3201e63" title=" " alt="" coords="477,37,617,63"/>
-<area shape="rect" id="node3" href="$namespacesharp.html#a74a735636c932467b4d2ced544e0cb51" title="Estimates supercell storm motion using the Bunkers et al. 2000 method." alt="" coords="468,87,625,127"/>
-<area shape="rect" id="node4" href="$namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822" title="Computes Entrainment CAPE using a previously lifted parcel." alt="" coords="236,5,420,31"/>
-<area shape="rect" id="node6" href="$convective__wrap_8cpp.html#aa0e261971f41c6f95514e9ab584cc91e" title=" " alt="" coords="250,55,406,95"/>
-<area shape="rect" id="node7" href="$convective__wrap_8cpp.html#a9c1783d5b0cde5deea749c0f4e0ee310" title=" " alt="" coords="250,119,406,159"/>
-<area shape="rect" id="node8" href="$namespacesharp.html#ab31d383a3231f8fef873e5a16c0db856" title="Estimates supercell storm motion by using the Bunkers et al. 2014 method." alt="" coords="249,183,407,223"/>
-<area shape="rect" id="node5" href="$convective__wrap_8cpp.html#ab0bfb728bbbf3a731c330b61a5c415ad" title=" " alt="" coords="5,5,188,31"/>
+<area shape="rect" id="node1" title="Compute the mean wind over the given sharp::PressureLayer." alt="" coords="443,35,584,60"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#a74a735636c932467b4d2ced544e0cb51" title="Estimates supercell storm motion using the Bunkers et al. 2000 method." alt="" coords="237,27,395,67"/>
+<area shape="rect" id="node3" href="$namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822" title="Computes Entrainment CAPE using a previously lifted parcel." alt="" coords="5,5,189,31"/>
+<area shape="rect" id="node4" href="$namespacesharp.html#ab31d383a3231f8fef873e5a16c0db856" title="Estimates supercell storm motion by using the Bunkers et al. 2014 method." alt="" coords="19,55,176,95"/>
 </map>

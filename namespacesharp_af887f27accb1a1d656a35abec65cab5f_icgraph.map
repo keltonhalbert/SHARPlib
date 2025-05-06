@@ -1,12 +1,7 @@
 <map id="sharp::vector_magnitude" name="sharp::vector_magnitude">
-<area shape="rect" id="node1" title="Computes the magnitude of a vector given its components." alt="" coords="699,95,883,121"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#adc84f46d1ec5872b1777857983bdb4be" title="Conveniance function to compute wind speed and direction from components." alt="" coords="476,5,643,45"/>
-<area shape="rect" id="node4" href="$namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822" title="Computes Entrainment CAPE using a previously lifted parcel." alt="" coords="236,70,420,95"/>
-<area shape="rect" id="node6" href="$winds__wrap_8cpp.html#aeb2c523b18446c5d9c1bc6a15cb98a7b" title=" " alt="" coords="468,121,651,146"/>
-<area shape="rect" id="node7" href="$namespacesharp.html#a74a735636c932467b4d2ced544e0cb51" title="Estimates supercell storm motion using the Bunkers et al. 2000 method." alt="" coords="481,171,638,211"/>
-<area shape="rect" id="node3" href="$winds__wrap_8cpp.html#a231e607727d73e68fe9ec62d7d3c45f1" title=" " alt="" coords="245,5,411,45"/>
-<area shape="rect" id="node5" href="$convective__wrap_8cpp.html#ab0bfb728bbbf3a731c330b61a5c415ad" title=" " alt="" coords="5,70,188,95"/>
-<area shape="rect" id="node8" href="$convective__wrap_8cpp.html#aa0e261971f41c6f95514e9ab584cc91e" title=" " alt="" coords="250,120,406,160"/>
-<area shape="rect" id="node9" href="$convective__wrap_8cpp.html#a9c1783d5b0cde5deea749c0f4e0ee310" title=" " alt="" coords="250,184,406,224"/>
-<area shape="rect" id="node10" href="$namespacesharp.html#ab31d383a3231f8fef873e5a16c0db856" title="Estimates supercell storm motion by using the Bunkers et al. 2014 method." alt="" coords="249,248,407,288"/>
+<area shape="rect" id="node1" title="Computes the magnitude of a vector given its components." alt="" coords="452,70,636,95"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#adc84f46d1ec5872b1777857983bdb4be" title="Conveniance function to compute wind speed and direction from components." alt="" coords="237,5,404,45"/>
+<area shape="rect" id="node3" href="$namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822" title="Computes Entrainment CAPE using a previously lifted parcel." alt="" coords="5,70,189,95"/>
+<area shape="rect" id="node4" href="$namespacesharp.html#a74a735636c932467b4d2ced544e0cb51" title="Estimates supercell storm motion using the Bunkers et al. 2000 method." alt="" coords="242,120,399,160"/>
+<area shape="rect" id="node5" href="$namespacesharp.html#ab31d383a3231f8fef873e5a16c0db856" title="Estimates supercell storm motion by using the Bunkers et al. 2014 method." alt="" coords="19,120,176,160"/>
 </map>

@@ -1,10 +1,7 @@
 <map id="sharp::vapor_pressure_ice" name="sharp::vapor_pressure_ice">
-<area shape="rect" id="node1" title="Compute the vapor pressure over ice." alt="" coords="923,91,1115,117"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#a0ebcad18ef9939ff56f23d49c35dd04c" title="Compute the ice water mixing ratio." alt="" coords="706,66,853,91"/>
-<area shape="rect" id="node8" href="$thermo__wrap_8cpp.html#ac0d2e63a39f8d0501390e1ae61d38338" title=" " alt="" coords="684,115,875,141"/>
-<area shape="rect" id="node3" href="$namespacesharp.html#a7494c22424745a8847092b64195fb9ae" title=" " alt="" coords="491,42,634,67"/>
-<area shape="rect" id="node7" href="$thermo__wrap_8cpp.html#ab30e4198dc286932d722c0c5841cdfc6" title=" " alt="" coords="489,91,636,117"/>
-<area shape="rect" id="node4" href="$namespacesharp.html#aa258841692c25171d3f3b2e8b1f52079" title="Compute the temperature of a parcel lifted moist adiabatically to a new level." alt="" coords="247,42,441,67"/>
-<area shape="rect" id="node5" href="$structsharp_1_1lifter__cm1.html#a2eeb5b118ef40e873c09ac9b3635f7b9" title="Overloads operator() to call sharp::moist_adiabat_cm1." alt="" coords="33,5,171,45"/>
-<area shape="rect" id="node6" href="$thermo__wrap_8cpp.html#aac6beaaefcb6cf02512e6a74b6ab5be7" title=" " alt="" coords="5,70,199,95"/>
+<area shape="rect" id="node1" title="Compute the vapor pressure over ice." alt="" coords="820,13,1012,38"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#a0ebcad18ef9939ff56f23d49c35dd04c" title="Compute the ice water mixing ratio." alt="" coords="625,13,772,38"/>
+<area shape="rect" id="node3" href="$namespacesharp.html#a7494c22424745a8847092b64195fb9ae" title=" " alt="" coords="435,13,577,38"/>
+<area shape="rect" id="node4" href="$namespacesharp.html#aa258841692c25171d3f3b2e8b1f52079" title="Compute the temperature of a parcel lifted moist adiabatically to a new level." alt="" coords="192,13,387,38"/>
+<area shape="rect" id="node5" href="$structsharp_1_1lifter__cm1.html#a2eeb5b118ef40e873c09ac9b3635f7b9" title="Overloads operator() to call sharp::moist_adiabat_cm1." alt="" coords="5,5,144,45"/>
 </map>

@@ -1,6 +1,0 @@
-<map id="sharp_components_to_vector" name="sharp_components_to_vector">
-<area shape="rect" id="node1" title=" " alt="" coords="5,23,171,63"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#adc84f46d1ec5872b1777857983bdb4be" title="Conveniance function to compute wind speed and direction from components." alt="" coords="219,23,385,63"/>
-<area shape="rect" id="node3" href="$namespacesharp.html#a24ba1a17b591165e527fa9bf6156eed2" title="Computes the direction (degrees from North) a vector points to." alt="" coords="450,5,601,31"/>
-<area shape="rect" id="node4" href="$namespacesharp.html#af887f27accb1a1d656a35abec65cab5f" title="Computes the magnitude of a vector given its components." alt="" coords="433,55,617,80"/>
-</map>

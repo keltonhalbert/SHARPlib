@@ -1,9 +1,5 @@
 <map id="sharp::layer_minmax" name="sharp::layer_minmax">
-<area shape="rect" id="node1" title="Template for min/max value over sharp::PressureLayer or sharp::HeightLayer." alt="" coords="429,80,589,105"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#a6170e3f412ab95b3ba8d9a93ae55dc67" title="Returns the maximim value in the given layer." alt="" coords="247,55,381,80"/>
-<area shape="rect" id="node5" href="$namespacesharp.html#a01a9880c937f63e551893797253da4f7" title="Returns the minimum value in the given layer." alt="" coords="249,104,379,129"/>
-<area shape="rect" id="node3" href="$layer__wrap_8cpp.html#aff049d2f08d0ca532b51ee39dfeff547" title=" " alt="" coords="12,5,192,31"/>
-<area shape="rect" id="node4" href="$layer__wrap_8cpp.html#af26d1ab7a5b701ce5e076ff2a0ef3955" title=" " alt="" coords="5,55,199,80"/>
-<area shape="rect" id="node6" href="$layer__wrap_8cpp.html#a1b669cfe5d14a85dc16aa2ec7b19f914" title=" " alt="" coords="14,104,190,129"/>
-<area shape="rect" id="node7" href="$layer__wrap_8cpp.html#aa9e2591b56d47f5caa08217690927b49" title=" " alt="" coords="7,153,197,179"/>
+<area shape="rect" id="node1" title="Template for min/max value over sharp::PressureLayer or sharp::HeightLayer." alt="" coords="188,31,348,56"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#a6170e3f412ab95b3ba8d9a93ae55dc67" title="Returns the maximim value in the given layer." alt="" coords="5,5,140,31"/>
+<area shape="rect" id="node3" href="$namespacesharp.html#a01a9880c937f63e551893797253da4f7" title="Returns the minimum value in the given layer." alt="" coords="7,55,138,80"/>
 </map>

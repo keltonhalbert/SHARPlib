@@ -1,6 +1,5 @@
 <map id="sharp::Parcel::lift_parcel" name="sharp::Parcel::lift_parcel">
-<area shape="rect" id="node1" title="Lifts a sharp::Parcel to compute its virtual temperature." alt="" coords="439,37,569,77"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#a2e6b7cd4a3594a8f2c2050b0e4784cce" title="Computes the Effective Inflow Layer for a given atmospheric sounding." alt="" coords="221,5,391,45"/>
-<area shape="rect" id="node4" href="$structsharp_1_1Parcel.html#aa258d27992d22d8b80cb221e6e2a6c19" title="Construct and return a most&#45;unstable Parcel." alt="" coords="233,69,379,109"/>
-<area shape="rect" id="node3" href="$convective__wrap_8cpp.html#af214bab6c6ba14dc06fe7df4f6abcdf8" title=" " alt="" coords="5,5,173,45"/>
+<area shape="rect" id="node1" title="Lifts a sharp::Parcel to compute its virtual temperature." alt="" coords="223,37,353,77"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#a2e6b7cd4a3594a8f2c2050b0e4784cce" title="Computes the Effective Inflow Layer for a given atmospheric sounding." alt="" coords="5,5,175,45"/>
+<area shape="rect" id="node3" href="$structsharp_1_1Parcel.html#aa258d27992d22d8b80cb221e6e2a6c19" title="Construct and return a most&#45;unstable Parcel." alt="" coords="17,69,163,109"/>
 </map>

@@ -1,8 +1,5 @@
 <map id="sharp::specific_humidity" name="sharp::specific_humidity">
-<area shape="rect" id="node1" title="Compute specific humidity from a mixing ratio." alt="" coords="695,63,875,88"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822" title="Computes Entrainment CAPE using a previously lifted parcel." alt="" coords="236,5,420,31"/>
-<area shape="rect" id="node4" href="$namespacesharp.html#ab5fed65fe0cdf797961047fb9cde3295" title="Compute moist static energy." alt="" coords="484,55,631,95"/>
-<area shape="rect" id="node6" href="$thermo__wrap_8cpp.html#a57cc5deecd6d890490139407a981749e" title=" " alt="" coords="468,120,647,145"/>
-<area shape="rect" id="node3" href="$convective__wrap_8cpp.html#ab0bfb728bbbf3a731c330b61a5c415ad" title=" " alt="" coords="5,5,188,31"/>
-<area shape="rect" id="node5" href="$thermo__wrap_8cpp.html#a9c9c5dbb5d7955e51b8fd67d680850a3" title=" " alt="" coords="255,55,401,95"/>
+<area shape="rect" id="node1" title="Compute specific humidity from a mixing ratio." alt="" coords="432,5,612,31"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822" title="Computes Entrainment CAPE using a previously lifted parcel." alt="" coords="5,5,189,31"/>
+<area shape="rect" id="node3" href="$namespacesharp.html#ab5fed65fe0cdf797961047fb9cde3295" title="Compute moist static energy." alt="" coords="237,26,384,66"/>
 </map>

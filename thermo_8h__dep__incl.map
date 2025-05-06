@@ -1,11 +1,8 @@
 <map id="thermo.h" name="thermo.h">
-<area shape="rect" id="node1" title="Routines used to compute thermodynamic attributes of vertical sounding profiles." alt="" coords="274,5,355,31"/>
+<area shape="rect" id="node1" title="Routines used to compute thermodynamic attributes of vertical sounding profiles." alt="" coords="185,5,266,31"/>
 <area shape="rect" id="node2" href="$convective_8cpp.html" title="Routines used to computed derived sounding parameters from vertical atmospheric profiles." alt="" coords="5,152,125,177"/>
 <area shape="rect" id="node3" href="$convective_8h.html" title="Routines used to computed derived sounding parameters from vertical atmospheric profiles." alt="" coords="150,152,255,177"/>
-<area shape="rect" id="node5" href="$parcel_8cpp.html" title="Routines used for parcel lifting and integration." alt="" coords="433,152,522,177"/>
-<area shape="rect" id="node6" href="$parcel_8h.html" title="Routines used for parcel lifting and integration." alt="" coords="240,79,315,104"/>
-<area shape="rect" id="node8" href="$thermo_8cpp.html" title="Thermodynamic routines that do not directly involve parcel based ascent." alt="" coords="389,79,485,104"/>
-<area shape="rect" id="node9" href="$thermo__wrap_8cpp.html" title=" " alt="" coords="510,79,645,104"/>
-<area shape="rect" id="node4" href="$convective__wrap_8cpp.html" title=" " alt="" coords="123,225,282,251"/>
-<area shape="rect" id="node7" href="$parcel__wrap_8cpp.html" title=" " alt="" coords="280,152,408,177"/>
+<area shape="rect" id="node4" href="$parcel_8cpp.html" title="Routines used for parcel lifting and integration." alt="" coords="279,152,369,177"/>
+<area shape="rect" id="node5" href="$parcel_8h.html" title="Routines used for parcel lifting and integration." alt="" coords="188,79,263,104"/>
+<area shape="rect" id="node6" href="$thermo_8cpp.html" title="Thermodynamic routines that do not directly involve parcel based ascent." alt="" coords="337,79,433,104"/>
 </map>
