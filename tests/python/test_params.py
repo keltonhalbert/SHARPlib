@@ -4,10 +4,12 @@ import pytest
 import numpy as np
 import pandas as pd
 
+from nwsspc.sharp.calc import interp
 from nwsspc.sharp.calc import layer
 from nwsspc.sharp.calc import parcel
 from nwsspc.sharp.calc import params
 from nwsspc.sharp.calc import thermo
+from nwsspc.sharp.calc import winds
 from nwsspc.sharp.calc import constants
 
 
@@ -142,5 +144,132 @@ def test_bunkers_motion():
     assert (storm_mtn.v == pytest.approx(5.570305))
 
 
-def test_stp():
-    pass
+def test_stp_and_scp():
+    # get the mixed-layer parcel
+    mix_lyr = layer.PressureLayer(
+        snd_data["pres"][0], snd_data["pres"][0] - 10000.0)
+    theta = thermo.theta(snd_data["pres"], snd_data["tmpk"])
+    pcl = parcel.Parcel.mixed_layer_parcel(
+        mix_lyr,
+        snd_data["pres"],
+        theta,
+        snd_data["mixr"]
+    )
+
+    # lift the parcel and get CAPE
+    lifter = parcel.lifter_cm1()
+    lifter.ma_type = thermo.adiabat.pseudo_liq
+    vtmpk = pcl.lift_parcel(lifter, snd_data["pres"])
+    buoy = thermo.buoyancy(vtmpk, snd_data["vtmp"])
+    cape, cinh = pcl.cape_cinh(snd_data["pres"], snd_data["hght"], buoy)
+
+    # Get the effective inflow layer for effective SRH
+    mupcl = parcel.Parcel()
+    eil = params.effective_inflow_layer(
+        lifter,
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["tmpk"],
+        snd_data["dwpk"],
+        snd_data["vtmp"],
+        mupcl=mupcl
+    )
+
+    # Get the storm relative helicity for the effective inflow layer
+    storm_mtn = params.storm_motion_bunkers(
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["uwin"],
+        snd_data["vwin"],
+        eil, mupcl
+    )
+    esrh = winds.helicity(
+        eil,
+        storm_mtn,
+        snd_data["pres"],
+        snd_data["uwin"],
+        snd_data["vwin"]
+    )
+
+    # Get the effective bulk wind difference
+    eil_hght = layer.pressure_layer_to_height(
+        eil,
+        snd_data["pres"],
+        snd_data["hght"]
+    )
+    eql_hght = interp.interp_pressure(
+        mupcl.eql_pressure,
+        snd_data["pres"],
+        snd_data["hght"]
+    )
+    ebwd_lyr = layer.HeightLayer(eil_hght.bottom, 0.5*eql_hght)
+    ebwd_cmp = winds.wind_shear(
+        ebwd_lyr,
+        snd_data["hght"],
+        snd_data["uwin"],
+        snd_data["vwin"]
+    )
+    ebwd = winds.vector_magnitude(ebwd_cmp.u, ebwd_cmp.v)
+
+    # Get the LCL height in meters AGL
+    lcl_hght = interp.interp_pressure(
+        pcl.lcl_pressure,
+        snd_data["pres"],
+        snd_data["hght"]
+    ) - snd_data["hght"][0]
+
+    stp = params.significant_tornado_parameter(
+        pcl,
+        lcl_hght,
+        esrh,
+        ebwd
+    )
+    assert (stp == pytest.approx(0.48496481))
+
+    scp = params.supercell_composite_parameter(mupcl.cape, esrh, ebwd)
+    assert (scp == pytest.approx(7.96999))
+
+
+def test_ehi():
+    pres = snd_data["pres"][0]
+    tmpk = snd_data["tmpk"][0]
+    dwpk = snd_data["dwpk"][0]
+
+    pcl = parcel.Parcel.surface_parcel(pres, tmpk, dwpk)
+
+    # Wobus Lifter
+    lifter = parcel.lifter_wobus()
+    vtmpk = pcl.lift_parcel(lifter, snd_data["pres"])
+    buoy = thermo.buoyancy(vtmpk, snd_data["vtmp"])
+    cape, cinh = pcl.cape_cinh(snd_data["pres"], snd_data["hght"], buoy)
+
+    srh_lyr = layer.HeightLayer(0.0, 3000.0)
+    mupcl = parcel.Parcel()
+    eil = params.effective_inflow_layer(
+        lifter,
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["tmpk"],
+        snd_data["dwpk"],
+        snd_data["vtmp"],
+        mupcl=mupcl
+    )
+
+    # Get the storm relative helicity for the effective inflow layer
+    storm_mtn = params.storm_motion_bunkers(
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["uwin"],
+        snd_data["vwin"],
+        eil, mupcl
+    )
+    srh = winds.helicity(
+        srh_lyr,
+        storm_mtn,
+        snd_data["hght"],
+        snd_data["uwin"],
+        snd_data["vwin"]
+    )
+
+    ehi = params.energy_helicity_index(pcl.cape, srh)
+    assert (ehi == pytest.approx(4.411969661))

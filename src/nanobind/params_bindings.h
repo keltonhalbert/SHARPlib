@@ -203,18 +203,55 @@ Returns:
 
     )pbdoc");
 
-    m_params.def(
-        "significant_tornado_parameter",
-        [](sharp::Parcel pcl, float lcl_hght_agl, float storm_relative_helicity,
-           float bulk_wind_difference) {
-            return sharp::significant_tornado_parameter(pcl, lcl_hght_agl,
-                                                        storm_relative_helicity,
-                                                        bulk_wind_difference);
-        },
-        nb::arg("pcl"), nb::arg("lcl_hght_agl"),
-        nb::arg("storm_relative_helicity"), nb::arg("bulk_wind_difference"),
-        R"pbdoc(
-Computes the Significant Tornado Parameter
+    m_params.def("energy_helicity_index", &sharp::energy_helicity_index,
+                 nb::arg("cape"), nb::arg("helicity"),
+                 R"pbdoc(
+Computes the Energy Helicity Index.
+
+Parameters:
+    cape: Convective Available Potential Energy (J/kg)
+    helicity: Storm Relative Helicity (m^2 / s^2 a.k.a J/kg)
+
+Returns:
+    Energy Helicity Index (umitless)
+    )pbdoc");
+
+    m_params.def("significant_tornado_parameter",
+                 &sharp::significant_tornado_parameter, nb::arg("pcl"),
+                 nb::arg("lcl_hght_agl"), nb::arg("storm_relative_helicity"),
+                 nb::arg("bulk_wind_difference"),
+                 R"pbdoc(
+Computes the Significant Tornado Parameter.
+
+References:
+    Thompson et al 2012: https://www.spc.noaa.gov/publications/thompson/waf-env.pdf
+
+Parameters:
+    pcl: For effective-layer STP, a mixed-layer parcel, and for fixed-layer STP, a surface-based parcel 
+    lcl_hght_agl: The parcel LCL height in meters
+    storm_relative_helicity: For effecitve-layer STP, effecitve SRH, and for fixed-layer, 0-1 km SRH (m^2 / s^2)
+    bulk_wind_difference: For effective-layer STP, effecitve BWD, and for fixed-layer STP, 0-6 km BWD (m/s)
+    )pbdoc");
+
+    m_params.def("supercell_composite_parameter",
+                 &sharp::supercell_composite_parameter, nb::arg("mu_cape"),
+                 nb::arg("eff_srh"), nb::arg("eff_shear"),
+                 R"pbdoc(
+Computes the Supercell Composite Parameter. 
+
+References:
+    Thompson et al 2003: https://www.spc.noaa.gov/publications/thompson/ruc_waf.pdf
+    Thompson et al 2007: https://www.spc.noaa.gov/publications/thompson/effective.pdf
+    Thompson et al 2012: https://www.spc.noaa.gov/publications/thompson/waf-env.pdf
+        
+
+Parameters:
+    mu_cape: The CAPE of the Most Unstable Parcel (J/kg)
+    eff_srh: Effecive inflow layer Storm Relative Helicity (m^2/s^2) 
+    eff_shear: Effective layer shear (m/s)
+
+Returns:
+    Supercell Composite Parameter (unitless)
     )pbdoc");
 }
 
