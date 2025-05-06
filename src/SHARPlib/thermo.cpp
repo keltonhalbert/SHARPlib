@@ -504,6 +504,11 @@ float lapse_rate_max(PressureLayer layer, const float depth,
 }
 
 float buoyancy(float pcl_temperature, float env_temperature) {
+#ifndef NO_QC
+    if ((pcl_temperature == MISSING) || (env_temperature == MISSING)) {
+        return MISSING;
+    }
+#endif
     return GRAVITY * (pcl_temperature - env_temperature) / (env_temperature);
 }
 
