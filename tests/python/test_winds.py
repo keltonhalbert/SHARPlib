@@ -104,18 +104,18 @@ def test_wind_shear():
     assert (shr.v == pytest.approx(8.3890247))
 
 
-def test_wind_magnitude():
-    wcomp = winds.WindComponents(12.0, 0.0)
-    wspd = winds.vector_magnitude(wcomp.u, wcomp.v)
-
-    assert (wspd == wcomp.u)
-
-    wspd = winds.vector_magnitude(snd_data["uwin"], snd_data["vwin"])
-    assert (wspd == pytest.approx(snd_data["wspd"]))
-
-
 def test_vector():
     wcomp = winds.WindComponents(12.0, 0.0)
+
+    wspd = winds.vector_magnitude(constants.MISSING, wcomp.v)
+    wdir = winds.vector_angle(constants.MISSING, wcomp.v)
+    assert (wspd == constants.MISSING)
+    assert (wdir == constants.MISSING)
+
+    wspd = winds.vector_magnitude(wcomp.u, constants.MISSING)
+    wdir = winds.vector_angle(wcomp.u, constants.MISSING)
+    assert (wspd == constants.MISSING)
+    assert (wdir == constants.MISSING)
 
     wspd = winds.vector_magnitude(wcomp.u, wcomp.v)
     wdir = winds.vector_angle(wcomp.u, wcomp.v)
@@ -141,6 +141,16 @@ def test_vector():
 
 def test_components():
     wvec = winds.WindVector(60.0, 270.0)
+
+    u_comp = winds.u_component(constants.MISSING, wvec.direction)
+    v_comp = winds.v_component(constants.MISSING, wvec.direction)
+    assert (u_comp == constants.MISSING)
+    assert (v_comp == constants.MISSING)
+
+    u_comp = winds.u_component(wvec.speed, constants.MISSING)
+    v_comp = winds.v_component(wvec.speed, constants.MISSING)
+    assert (u_comp == constants.MISSING)
+    assert (v_comp == constants.MISSING)
 
     u_comp = winds.u_component(wvec.speed, wvec.direction)
     v_comp = winds.v_component(wvec.speed, wvec.direction)
