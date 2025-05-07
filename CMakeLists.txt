@@ -7,7 +7,7 @@ project(SHARPlib VERSION 1.0.0 LANGUAGES CXX )
 include(GNUInstallDirs)
 include(CTest)
 
-option(BUILD_PYBIND "Build python bindings with pybind11" OFF)
+option(BUILD_PYBIND "Build python bindings with nanobind" OFF)
 option(NO_QC "Disable QC checks for missing/NaN values in SHARPlib" OFF)
 set(NO_QC ${NO_QC} CACHE BOOL "Disable QC checks for missing/NaN values in SHARPlib tests" FORCE)
 
