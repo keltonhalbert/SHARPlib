@@ -4,7 +4,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "SHARPlib"
-version = "1.0.0-beta1"
+version = "1.0.0b1"
 description = "Sounding and Hodograph Analysis and Research Program Library (SHARPlib) for processing vertical profiles of meteorological/atmospheric sounding data."
 readme = "README.md"
 authors = [
@@ -53,3 +53,12 @@ BUILD_PYBIND = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests/python"]
+
+## To-Do: Learn cibuildwheel and get it going
+## on either github or gitlab. Probably 
+## github, since the gitlab runner for vlab
+## only supports Linux
+[tool.cibuildwheel]
+build-verbosity = 1 
+
+test-command = "pytest"
