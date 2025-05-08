@@ -200,6 +200,14 @@ def test_spechum():
     assert (spfh.mean() == pytest.approx(0.0011059974))
 
 
+def test_relh():
+    relh = thermo.relative_humidity(
+        snd_data["pres"], snd_data["tmpk"], snd_data["dwpk"])
+    assert (relh.min() == pytest.approx(0.005999, abs=1e-6))
+    assert (relh.max() == pytest.approx(0.883))
+    assert (relh.mean() == pytest.approx(0.1219267))
+
+
 def test_virtemp():
     vtmpk = thermo.virtual_temperature(constants.MISSING, 0.0)
     assert (vtmpk == constants.MISSING)
