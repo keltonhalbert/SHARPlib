@@ -227,6 +227,26 @@ template <typename Lifter>
                                                   float storm_relative_helicity,
                                                   float bulk_wind_difference);
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Computes the precipitable water vapor content over a layer
+ *
+ * Given a sharp::PressureLayer to integrate over, compute the preciptable water
+ * vapor from the given pressure and mixing ratio arrays.
+ *
+ * \parameters  layer           (Pa)
+ * \parameter   presssure       (Pa)
+ * \parameter   mixing_ratio    (unitless)
+ * \parameter   N               (length of arrays)
+ *
+ * \return precipitable water (mm)
+ */
+[[nodiscard]] float precipitable_water(PressureLayer layer,
+                                       const float pressure[],
+                                       const float mixing_ratio[],
+                                       const std::ptrdiff_t N);
+
 }  // end namespace sharp
 
 #endif  // SHARP_PARAMS_H

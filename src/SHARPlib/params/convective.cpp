@@ -292,6 +292,15 @@ float significant_tornado_parameter(Parcel pcl, float lcl_hght_agl,
     return stp;
 }
 
+float precipitable_water(PressureLayer layer, const float pressure[],
+                         const float mixing_ratio[], const std::ptrdiff_t N) {
+    float pwat =
+        integrate_layer_trapz(layer, mixing_ratio, pressure, N, 0, false) /
+        (GRAVITY * RHO_LWAT);
+    // convert from meters to millimeters
+    return pwat * 1000.0f;
+}
+
 }  // end namespace sharp
 
 namespace sharp::exper {}  // end namespace sharp::exper
