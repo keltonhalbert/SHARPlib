@@ -82,6 +82,8 @@ static constexpr float VKSQ = 0.18f;
 // Reference vapor pressure of water vapor at triple point
 // temperature (Pa)
 static constexpr float VAPPRES_REF = 611.65f;
+// Density of liquid water - kg / m^3
+static constexpr float RHO_LWAT = 999.97495;
 
 }  // end namespace sharp
 
