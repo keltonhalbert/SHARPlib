@@ -1,0 +1,4 @@
+<map id="sharp::equilibrium_moisture_content" name="sharp::equilibrium_moisture_content">
+<area shape="rect" id="node1" title="Computes the equilibrium moisture content for fuel." alt="" coords="196,5,339,45"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#a8c49aa0308947db413abf101a3dc5fae" title="Compute the Fosberg fire&#45;weather index." alt="" coords="5,5,148,45"/>
+</map>

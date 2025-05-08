@@ -43,6 +43,8 @@ var namespacesharp =
     [ "effective_inflow_layer", "namespacesharp.html#ad4acd4077bc73279a9af0011f3f09954", null ],
     [ "energy_helicity_index", "namespacesharp.html#ab89a7e3555a52f0fd9f4086d5aba7037", null ],
     [ "entrainment_cape", "namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822", null ],
+    [ "equilibrium_moisture_content", "namespacesharp.html#adedbd405d38d761f6841a0074fab67da", null ],
+    [ "fosberg_fire_index", "namespacesharp.html#a8c49aa0308947db413abf101a3dc5fae", null ],
     [ "get_layer_index", "namespacesharp.html#a4a8e42ed2ba834a1436242e320492bbc", null ],
     [ "get_layer_index", "namespacesharp.html#ac93f477dfa774c966b5da7521bd43ee6", null ],
     [ "get_layer_index", "namespacesharp.html#ac2f381378ac4ec13ad83d2ec92b2abcc", null ],

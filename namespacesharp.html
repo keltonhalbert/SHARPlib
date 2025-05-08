@@ -256,6 +256,12 @@ Functions</h2></td></tr>
 <tr class="memitem:af910931fdd9e0fe7d63ba7446743e354"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#af910931fdd9e0fe7d63ba7446743e354">precipitable_water</a> (<a class="el" href="structsharp_1_1PressureLayer.html">PressureLayer</a> layer, const float <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>[], const float mixing_ratio[], const std::ptrdiff_t N)</td></tr>
 <tr class="memdesc:af910931fdd9e0fe7d63ba7446743e354"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the precipitable water vapor content over a layer.  <br /></td></tr>
 <tr class="separator:af910931fdd9e0fe7d63ba7446743e354"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adedbd405d38d761f6841a0074fab67da"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#adedbd405d38d761f6841a0074fab67da">equilibrium_moisture_content</a> (float temperature, float rel_humidity)</td></tr>
+<tr class="memdesc:adedbd405d38d761f6841a0074fab67da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the equilibrium moisture content for fuel.  <br /></td></tr>
+<tr class="separator:adedbd405d38d761f6841a0074fab67da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c49aa0308947db413abf101a3dc5fae"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#a8c49aa0308947db413abf101a3dc5fae">fosberg_fire_index</a> (float temperature, float rel_humidity, float wind_speed)</td></tr>
+<tr class="memdesc:a8c49aa0308947db413abf101a3dc5fae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the Fosberg fire-weather index.  <br /></td></tr>
+<tr class="separator:a8c49aa0308947db413abf101a3dc5fae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab535b8214969a50771219a275ebb7f4d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#ab535b8214969a50771219a275ebb7f4d">wobf</a> (float temperature)</td></tr>
 <tr class="memdesc:ab535b8214969a50771219a275ebb7f4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the difference between the wet-bulb potential temperatures for saturated and dry air given the temperature.  <br /></td></tr>
 <tr class="separator:ab535b8214969a50771219a275ebb7f4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1977,6 +1983,155 @@ Here is the call graph for this function:</div>
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_a72bbdc4cfe7895dd51981902ac9fc822_cgraph.svg" width="1231" height="658"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="adedbd405d38d761f6841a0074fab67da" name="adedbd405d38d761f6841a0074fab67da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adedbd405d38d761f6841a0074fab67da">&#9670;&#160;</a></span>equilibrium_moisture_content()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float sharp::equilibrium_moisture_content </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>temperature</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rel_humidity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the equilibrium moisture content for fuel. </p>
+<dl class="section author"><dt>Author</dt><dd>Kelton Halber - NSW Storm Prediction Center</dd></dl>
+<p>Compute the equilibrium moisture content for fuel as in Simard (1968).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">temperature</td><td>(K) </td></tr>
+    <tr><td class="paramname">rel_humidity</td><td>(K)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>EMC (fraction) </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="fire_8cpp_source.html#l00020">20</a> of file <a class="el" href="fire_8cpp_source.html">fire.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   20</span>                                                                          {</div>
+<div class="line"><span class="lineno">   21</span><span class="preprocessor">#ifndef NO_QC</span></div>
+<div class="line"><span class="lineno">   22</span>    <span class="keywordflow">if</span> ((temperature == MISSING) || (rel_humidity)) {</div>
+<div class="line"><span class="lineno">   23</span>        <span class="keywordflow">return</span> MISSING;</div>
+<div class="line"><span class="lineno">   24</span>    }</div>
+<div class="line"><span class="lineno">   25</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">   26</span> </div>
+<div class="line"><span class="lineno">   27</span>    <span class="keywordtype">float</span> emc;</div>
+<div class="line"><span class="lineno">   28</span>    <span class="keywordflow">if</span> (rel_humidity &lt; 0.1) {</div>
+<div class="line"><span class="lineno">   29</span>        emc = 0.03229f + 0.281073f * (rel_humidity * 100.0f) -</div>
+<div class="line"><span class="lineno">   30</span>              0.000578f * (100.0f * rel_humidity) * temperature;</div>
+<div class="line"><span class="lineno">   31</span> </div>
+<div class="line"><span class="lineno">   32</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> ((rel_humidity &lt;= 0.1f) &amp;&amp; (rel_humidity &lt;= 0.5f)) {</div>
+<div class="line"><span class="lineno">   33</span>        emc = 2.22749f + 0.160107f * (rel_humidity * 100.0f) -</div>
+<div class="line"><span class="lineno">   34</span>              0.01478f * temperature;</div>
+<div class="line"><span class="lineno">   35</span> </div>
+<div class="line"><span class="lineno">   36</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">   37</span>        emc = 21.0606f +</div>
+<div class="line"><span class="lineno">   38</span>              0.005565f * ((rel_humidity * 100.0f) * (rel_humidity * 100.0f)) -</div>
+<div class="line"><span class="lineno">   39</span>              0.00035f * (100.0f * rel_humidity) * temperature -</div>
+<div class="line"><span class="lineno">   40</span>              0.483199f * (100.0f * rel_humidity);</div>
+<div class="line"><span class="lineno">   41</span>    }</div>
+<div class="line"><span class="lineno">   42</span> </div>
+<div class="line"><span class="lineno">   43</span>    <span class="keywordflow">return</span> emc / 100.0f;</div>
+<div class="line"><span class="lineno">   44</span>}</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="namespacesharp.html#a8c49aa0308947db413abf101a3dc5fae">fosberg_fire_index()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_adedbd405d38d761f6841a0074fab67da_icgraph.svg" width="344" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a8c49aa0308947db413abf101a3dc5fae" name="a8c49aa0308947db413abf101a3dc5fae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c49aa0308947db413abf101a3dc5fae">&#9670;&#160;</a></span>fosberg_fire_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float sharp::fosberg_fire_index </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>temperature</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rel_humidity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>wind_speed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the Fosberg fire-weather index. </p>
+<dl class="section author"><dt>Author</dt><dd>Kelton Halbert - NWS Storm Prediction Center</dd></dl>
+<p>Compute the Fosberg Fire-Weather Index (FWWI) as in Fosberg (1978).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">temperature</td><td>(K) </td></tr>
+    <tr><td class="paramname">rel_humidity</td><td>(fraction, unitless) </td></tr>
+    <tr><td class="paramname">wind_speed</td><td>(m/s)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Fosberg Fire-Weather Index </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="fire_8cpp_source.html#l00046">46</a> of file <a class="el" href="fire_8cpp_source.html">fire.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   47</span>                                           {</div>
+<div class="line"><span class="lineno">   48</span><span class="preprocessor">#ifndef NO_QC</span></div>
+<div class="line"><span class="lineno">   49</span>    <span class="keywordflow">if</span> ((temperature == MISSING) || (rel_humidity == MISSING) ||</div>
+<div class="line"><span class="lineno">   50</span>        (wind_speed == MISSING)) {</div>
+<div class="line"><span class="lineno">   51</span>        <span class="keywordflow">return</span> MISSING;</div>
+<div class="line"><span class="lineno">   52</span>    }</div>
+<div class="line"><span class="lineno">   53</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">   54</span>    <span class="keywordtype">float</span> emc =</div>
+<div class="line"><span class="lineno">   55</span>        equilibrium_moisture_content(temperature, rel_humidity) * 100.0f;</div>
+<div class="line"><span class="lineno">   56</span>    emc = emc / 30.0;</div>
+<div class="line"><span class="lineno">   57</span>    <span class="keywordtype">float</span> eta =</div>
+<div class="line"><span class="lineno">   58</span>        1 - 2 * (emc) + 1.5 * (std::pow(emc, 2)) - 0.5 * (std::pow(emc, 3));</div>
+<div class="line"><span class="lineno">   59</span> </div>
+<div class="line"><span class="lineno">   60</span>    <span class="keywordflow">return</span> eta * std::sqrt(1 + std::pow(wind_speed, 2)) / 0.3002;</div>
+<div class="line"><span class="lineno">   61</span>}</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="namespacesharp.html#adedbd405d38d761f6841a0074fab67da">equilibrium_moisture_content()</a>, and <a class="el" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_a8c49aa0308947db413abf101a3dc5fae_cgraph.svg" width="344" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -7337,7 +7492,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="constants_8h_source.html#l00036">36</a> of file <a class="el" href="constants_8h_source.html">constants.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="namespacesharp.html#aae31e8a18568ec26222b603e629c5598">buoyancy()</a>, <a class="el" href="namespacesharp.html#a0cc6e590243b248f4fb44d9b0e1a6400">buoyancy_dilution_potential()</a>, <a class="el" href="structsharp_1_1Parcel.html#a0560bd193b2d2d6bc6b08baa7463fba4">sharp::Parcel::cape_cinh()</a>, <a class="el" href="namespacesharp.html#ae4385866921cd7286946d9ffdd65c25e">drylift()</a>, <a class="el" href="namespacesharp.html#a2e6b7cd4a3594a8f2c2050b0e4784cce">effective_inflow_layer()</a>, <a class="el" href="namespacesharp.html#ab89a7e3555a52f0fd9f4086d5aba7037">energy_helicity_index()</a>, <a class="el" href="namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822">entrainment_cape()</a>, <a class="el" href="structsharp_1_1Parcel.html#a8a311e09b1d46a829212da94cf181537">sharp::Parcel::find_lfc_el()</a>, <a class="el" href="namespacesharp.html#ab77e344c7462c9615b0ddac228bc2193">height_layer_to_pressure()</a>, <a class="el" href="namespacesharp.html#a80858337a63be77bafadbb343d6e4931">helicity()</a>, <a class="el" href="namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d">integrate_layer_trapz()</a>, <a class="el" href="namespacesharp.html#ae8240f026498ad2775633a8d0dcf100d">interp_height()</a>, <a class="el" href="namespacesharp.html#a55e4f8ee4ff8a4a30d7b3f3d92a41c75">interp_pressure()</a>, <a class="el" href="namespacesharp.html#a43a01274768ee388a983046651a230d3">lapse_rate()</a>, <a class="el" href="namespacesharp.html#abd0d1a28608e145c455ace03e787e33b">lapse_rate_max()</a>, <a class="el" href="namespacesharp.html#a298e2c96c389f2c5177d3626c908927e">layer_mean()</a>, <a class="el" href="namespacesharp.html#a646b65095b84511b75f6a4a81e545e80">layer_minmax()</a>, <a class="el" href="namespacesharp.html#af016701e4a46d5c04d26c0a09c0aad38">lcl_temperature()</a>, <a class="el" href="namespacesharp.html#a3c8b9022103d067f30281d68fa81cbda">mean_wind()</a>, <a class="el" href="namespacesharp.html#ac38870166f07ac30aadbc46b81340cc4">mixratio()</a>, <a class="el" href="namespacesharp.html#a0ebcad18ef9939ff56f23d49c35dd04c">mixratio_ice()</a>, <a class="el" href="namespacesharp.html#aa258841692c25171d3f3b2e8b1f52079">moist_adiabat_cm1()</a>, <a class="el" href="namespacesharp.html#ab5fed65fe0cdf797961047fb9cde3295">moist_static_energy()</a>, <a class="el" href="namespacesharp.html#a31da980f398c9f6a5960ddf868101a94">pressure_layer_to_height()</a>, <a class="el" href="namespacesharp.html#ae6ffc299f3f13dc27df417f6e8fdfc2d">relative_humidity()</a>, <a class="el" href="namespacesharp.html#ab8a75ed92a2c2062162264a54f3a5338">saturated_lift()</a>, <a class="el" href="namespacesharp.html#a6eeef5c5c9f1cbe1736996eaf8fe9ae5">significant_tornado_parameter()</a>, <a class="el" href="namespacesharp.html#a792a4a2a9f9243a82fb44cb77c2ee561">specific_humidity()</a>, <a class="el" href="namespacesharp.html#a74a735636c932467b4d2ced544e0cb51">storm_motion_bunkers()</a>, <a class="el" href="namespacesharp.html#a7d1cb8e1918ad656aceef6a512151483">supercell_composite_parameter()</a>, <a class="el" href="namespacesharp.html#a90a9ae3f1a154cecbcf65d7dbf19233f">temperature_at_mixratio()</a>, <a class="el" href="namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb">theta()</a>, <a class="el" href="namespacesharp.html#ab50b565bcba73d207dc1433dee5b03c9">theta_level()</a>, <a class="el" href="namespacesharp.html#a5e3156aa7f5bafbd908184c7f51927ee">theta_wetbulb()</a>, <a class="el" href="namespacesharp.html#ab06f16aa1caac3136e863db8cd61e2e9">thetae()</a>, <a class="el" href="namespacesharp.html#ac17d8171de07c7a610de63da30ed4f6c">u_component()</a>, <a class="el" href="namespacesharp.html#af2232af9f4649a0701f64d2d7770f5ea">v_component()</a>, <a class="el" href="namespacesharp.html#a3e31a1a145fc25f07d6326481993b2c2">vapor_pressure()</a>, <a class="el" href="namespacesharp.html#aaf448e4ec9a4f7ac7edc9b960f656fd8">vapor_pressure_ice()</a>, <a class="el" href="namespacesharp.html#a24ba1a17b591165e527fa9bf6156eed2">vector_angle()</a>, <a class="el" href="namespacesharp.html#af887f27accb1a1d656a35abec65cab5f">vector_magnitude()</a>, <a class="el" href="namespacesharp.html#ace465acac91184c91987bb085a81777a">vector_magnitude_precise()</a>, <a class="el" href="namespacesharp.html#a1a4cb8e554c04774503b004939f27f54">vector_to_components()</a>, <a class="el" href="namespacesharp.html#a46e2f332f68747fee1eb817f7bd3a00b">virtual_temperature()</a>, <a class="el" href="namespacesharp.html#accda9c75278f1a32978bbfd662492822">wetbulb()</a>, <a class="el" href="namespacesharp.html#ad4014313c60a66a321e4050a2a07058e">wetlift()</a>, <a class="el" href="namespacesharp.html#a099a4575acc27d6e10f9dfb69bc315a1">wind_shear()</a>, and <a class="el" href="namespacesharp.html#ab535b8214969a50771219a275ebb7f4d">wobf()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="namespacesharp.html#aae31e8a18568ec26222b603e629c5598">buoyancy()</a>, <a class="el" href="namespacesharp.html#a0cc6e590243b248f4fb44d9b0e1a6400">buoyancy_dilution_potential()</a>, <a class="el" href="structsharp_1_1Parcel.html#a0560bd193b2d2d6bc6b08baa7463fba4">sharp::Parcel::cape_cinh()</a>, <a class="el" href="namespacesharp.html#ae4385866921cd7286946d9ffdd65c25e">drylift()</a>, <a class="el" href="namespacesharp.html#a2e6b7cd4a3594a8f2c2050b0e4784cce">effective_inflow_layer()</a>, <a class="el" href="namespacesharp.html#ab89a7e3555a52f0fd9f4086d5aba7037">energy_helicity_index()</a>, <a class="el" href="namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822">entrainment_cape()</a>, <a class="el" href="namespacesharp.html#adedbd405d38d761f6841a0074fab67da">equilibrium_moisture_content()</a>, <a class="el" href="structsharp_1_1Parcel.html#a8a311e09b1d46a829212da94cf181537">sharp::Parcel::find_lfc_el()</a>, <a class="el" href="namespacesharp.html#a8c49aa0308947db413abf101a3dc5fae">fosberg_fire_index()</a>, <a class="el" href="namespacesharp.html#ab77e344c7462c9615b0ddac228bc2193">height_layer_to_pressure()</a>, <a class="el" href="namespacesharp.html#a80858337a63be77bafadbb343d6e4931">helicity()</a>, <a class="el" href="namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d">integrate_layer_trapz()</a>, <a class="el" href="namespacesharp.html#ae8240f026498ad2775633a8d0dcf100d">interp_height()</a>, <a class="el" href="namespacesharp.html#a55e4f8ee4ff8a4a30d7b3f3d92a41c75">interp_pressure()</a>, <a class="el" href="namespacesharp.html#a43a01274768ee388a983046651a230d3">lapse_rate()</a>, <a class="el" href="namespacesharp.html#abd0d1a28608e145c455ace03e787e33b">lapse_rate_max()</a>, <a class="el" href="namespacesharp.html#a298e2c96c389f2c5177d3626c908927e">layer_mean()</a>, <a class="el" href="namespacesharp.html#a646b65095b84511b75f6a4a81e545e80">layer_minmax()</a>, <a class="el" href="namespacesharp.html#af016701e4a46d5c04d26c0a09c0aad38">lcl_temperature()</a>, <a class="el" href="namespacesharp.html#a3c8b9022103d067f30281d68fa81cbda">mean_wind()</a>, <a class="el" href="namespacesharp.html#ac38870166f07ac30aadbc46b81340cc4">mixratio()</a>, <a class="el" href="namespacesharp.html#a0ebcad18ef9939ff56f23d49c35dd04c">mixratio_ice()</a>, <a class="el" href="namespacesharp.html#aa258841692c25171d3f3b2e8b1f52079">moist_adiabat_cm1()</a>, <a class="el" href="namespacesharp.html#ab5fed65fe0cdf797961047fb9cde3295">moist_static_energy()</a>, <a class="el" href="namespacesharp.html#a31da980f398c9f6a5960ddf868101a94">pressure_layer_to_height()</a>, <a class="el" href="namespacesharp.html#ae6ffc299f3f13dc27df417f6e8fdfc2d">relative_humidity()</a>, <a class="el" href="namespacesharp.html#ab8a75ed92a2c2062162264a54f3a5338">saturated_lift()</a>, <a class="el" href="namespacesharp.html#a6eeef5c5c9f1cbe1736996eaf8fe9ae5">significant_tornado_parameter()</a>, <a class="el" href="namespacesharp.html#a792a4a2a9f9243a82fb44cb77c2ee561">specific_humidity()</a>, <a class="el" href="namespacesharp.html#a74a735636c932467b4d2ced544e0cb51">storm_motion_bunkers()</a>, <a class="el" href="namespacesharp.html#a7d1cb8e1918ad656aceef6a512151483">supercell_composite_parameter()</a>, <a class="el" href="namespacesharp.html#a90a9ae3f1a154cecbcf65d7dbf19233f">temperature_at_mixratio()</a>, <a class="el" href="namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb">theta()</a>, <a class="el" href="namespacesharp.html#ab50b565bcba73d207dc1433dee5b03c9">theta_level()</a>, <a class="el" href="namespacesharp.html#a5e3156aa7f5bafbd908184c7f51927ee">theta_wetbulb()</a>, <a class="el" href="namespacesharp.html#ab06f16aa1caac3136e863db8cd61e2e9">thetae()</a>, <a class="el" href="namespacesharp.html#ac17d8171de07c7a610de63da30ed4f6c">u_component()</a>, <a class="el" href="namespacesharp.html#af2232af9f4649a0701f64d2d7770f5ea">v_component()</a>, <a class="el" href="namespacesharp.html#a3e31a1a145fc25f07d6326481993b2c2">vapor_pressure()</a>, <a class="el" href="namespacesharp.html#aaf448e4ec9a4f7ac7edc9b960f656fd8">vapor_pressure_ice()</a>, <a class="el" href="namespacesharp.html#a24ba1a17b591165e527fa9bf6156eed2">vector_angle()</a>, <a class="el" href="namespacesharp.html#af887f27accb1a1d656a35abec65cab5f">vector_magnitude()</a>, <a class="el" href="namespacesharp.html#ace465acac91184c91987bb085a81777a">vector_magnitude_precise()</a>, <a class="el" href="namespacesharp.html#a1a4cb8e554c04774503b004939f27f54">vector_to_components()</a>, <a class="el" href="namespacesharp.html#a46e2f332f68747fee1eb817f7bd3a00b">virtual_temperature()</a>, <a class="el" href="namespacesharp.html#accda9c75278f1a32978bbfd662492822">wetbulb()</a>, <a class="el" href="namespacesharp.html#ad4014313c60a66a321e4050a2a07058e">wetlift()</a>, <a class="el" href="namespacesharp.html#a099a4575acc27d6e10f9dfb69bc315a1">wind_shear()</a>, and <a class="el" href="namespacesharp.html#ab535b8214969a50771219a275ebb7f4d">wobf()</a>.</p>
 
 </div>
 </div>
