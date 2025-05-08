@@ -232,8 +232,8 @@ template <typename Lifter>
  *
  * \brief Computes the precipitable water vapor content over a layer
  *
- * Given a sharp::PressureLayer to integrate over, compute the preciptable water
- * vapor from the given pressure and mixing ratio arrays.
+ * Given a sharp::PressureLayer to integrate over, compute the preciptable
+ * water from the given pressure and mixing ratio arrays.
  *
  * \parameters  layer           (Pa)
  * \parameter   presssure       (Pa)
