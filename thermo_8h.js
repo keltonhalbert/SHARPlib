@@ -21,6 +21,7 @@ var thermo_8h =
     [ "mixratio_ice", "thermo_8h.html#a0ebcad18ef9939ff56f23d49c35dd04c", null ],
     [ "moist_adiabat_cm1", "thermo_8h.html#aa258841692c25171d3f3b2e8b1f52079", null ],
     [ "moist_static_energy", "thermo_8h.html#ab5fed65fe0cdf797961047fb9cde3295", null ],
+    [ "relative_humidity", "thermo_8h.html#ae6ffc299f3f13dc27df417f6e8fdfc2d", null ],
     [ "saturated_lift", "thermo_8h.html#ab8a75ed92a2c2062162264a54f3a5338", null ],
     [ "specific_humidity", "thermo_8h.html#a792a4a2a9f9243a82fb44cb77c2ee561", null ],
     [ "temperature_at_mixratio", "thermo_8h.html#a90a9ae3f1a154cecbcf65d7dbf19233f", null ],

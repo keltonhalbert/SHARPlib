@@ -1,8 +1,10 @@
 var searchData=
 [
-  ['temperature_5fat_5fmixratio_0',['temperature_at_mixratio',['../namespacesharp.html#a90a9ae3f1a154cecbcf65d7dbf19233f',1,'sharp']]],
-  ['theta_1',['theta',['../namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb',1,'sharp']]],
-  ['theta_5flevel_2',['theta_level',['../namespacesharp.html#ab50b565bcba73d207dc1433dee5b03c9',1,'sharp']]],
-  ['theta_5fwetbulb_3',['theta_wetbulb',['../namespacesharp.html#a5e3156aa7f5bafbd908184c7f51927ee',1,'sharp::theta_wetbulb(Lft lifter, float pressure, float temperature, float dewpoint)'],['../namespacesharp.html#a4a24e90b43358dfbdac50c9008de657c',1,'sharp::theta_wetbulb(lifter_wobus lifter, float pressure, float temperature, float dewpoint)'],['../namespacesharp.html#a514db8e8d5e4925dd56fd773fdd9ef55',1,'sharp::theta_wetbulb(lifter_cm1 lifter, float pressure, float temperature, float dewpoint)']]],
-  ['thetae_4',['thetae',['../namespacesharp.html#ab06f16aa1caac3136e863db8cd61e2e9',1,'sharp']]]
+  ['saturated_5flift_0',['saturated_lift',['../namespacesharp.html#ab8a75ed92a2c2062162264a54f3a5338',1,'sharp']]],
+  ['setup_1',['setup',['../structsharp_1_1lifter__wobus.html#aff7ac3dd393ccac49f491014ffa09f57',1,'sharp::lifter_wobus::setup()'],['../structsharp_1_1lifter__cm1.html#a4750e359411eefdfb6d4970052637750',1,'sharp::lifter_cm1::setup()']]],
+  ['significant_5ftornado_5fparameter_2',['significant_tornado_parameter',['../namespacesharp.html#a6eeef5c5c9f1cbe1736996eaf8fe9ae5',1,'sharp']]],
+  ['specific_5fhumidity_3',['specific_humidity',['../namespacesharp.html#a792a4a2a9f9243a82fb44cb77c2ee561',1,'sharp']]],
+  ['storm_5fmotion_5fbunkers_4',['storm_motion_bunkers',['../namespacesharp.html#a74a735636c932467b4d2ced544e0cb51',1,'sharp::storm_motion_bunkers(const float pressure[], const float height[], const float u_wind[], const float v_wind[], const std::ptrdiff_t N, HeightLayer mean_wind_layer_agl, HeightLayer wind_shear_layer_agl, const bool leftMover=false, const bool pressureWeighted=false)'],['../namespacesharp.html#ab31d383a3231f8fef873e5a16c0db856',1,'sharp::storm_motion_bunkers(const float pressure[], const float height[], const float u_wind[], const float v_wind[], const std::ptrdiff_t N, PressureLayer eff_infl_lyr, const Parcel *mupcl, const bool leftMover=false)']]],
+  ['supercell_5fcomposite_5fparameter_5',['supercell_composite_parameter',['../namespacesharp.html#a7d1cb8e1918ad656aceef6a512151483',1,'sharp']]],
+  ['surface_5fparcel_6',['surface_parcel',['../structsharp_1_1Parcel.html#aa1b370d9ea08877cc6438241fd013e3a',1,'sharp::Parcel']]]
 ];

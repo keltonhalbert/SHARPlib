@@ -71,6 +71,7 @@ var namespacesharp =
     [ "moist_static_energy", "namespacesharp.html#ab5fed65fe0cdf797961047fb9cde3295", null ],
     [ "precipitable_water", "namespacesharp.html#af910931fdd9e0fe7d63ba7446743e354", null ],
     [ "pressure_layer_to_height", "namespacesharp.html#a31da980f398c9f6a5960ddf868101a94", null ],
+    [ "relative_humidity", "namespacesharp.html#ae6ffc299f3f13dc27df417f6e8fdfc2d", null ],
     [ "saturated_lift", "namespacesharp.html#ab8a75ed92a2c2062162264a54f3a5338", null ],
     [ "significant_tornado_parameter", "namespacesharp.html#a6eeef5c5c9f1cbe1736996eaf8fe9ae5", null ],
     [ "specific_humidity", "namespacesharp.html#a792a4a2a9f9243a82fb44cb77c2ee561", null ],

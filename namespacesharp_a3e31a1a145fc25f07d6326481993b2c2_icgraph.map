@@ -1,5 +1,6 @@
 <map id="sharp::vapor_pressure" name="sharp::vapor_pressure">
-<area shape="rect" id="node1" title="Compute the vapor pressure over liquid water." alt="" coords="175,43,341,68"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#a9edcf0847c46e877689081848c58e3f4" title="Compute the water vapor mixing ratio." alt="" coords="5,5,127,31"/>
-<area shape="rect" id="node3" href="$namespacesharp.html#ab06f16aa1caac3136e863db8cd61e2e9" title="Compute the equivalent potential temperature." alt="" coords="12,79,120,104"/>
+<area shape="rect" id="node1" title="Compute the vapor pressure over liquid water." alt="" coords="235,55,401,80"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#a9edcf0847c46e877689081848c58e3f4" title="Compute the water vapor mixing ratio." alt="" coords="35,5,157,31"/>
+<area shape="rect" id="node3" href="$namespacesharp.html#ae6ffc299f3f13dc27df417f6e8fdfc2d" title="Compute the relative humidity of water vapor with respect to liquid." alt="" coords="5,55,187,80"/>
+<area shape="rect" id="node4" href="$namespacesharp.html#ab06f16aa1caac3136e863db8cd61e2e9" title="Compute the equivalent potential temperature." alt="" coords="42,128,150,153"/>
 </map>
