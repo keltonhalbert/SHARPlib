@@ -14,6 +14,42 @@
 #ifndef SHARP_PARAMS_FIRE_H
 #define SHARP_PARAMS_FIRE_H
 
-namespace sharp {}  // namespace sharp
+namespace sharp {
+
+/**
+ * \author Kelton Halber - NSW Storm Prediction Center
+ *
+ * \brief Computes the equilibrium moisture content for fuel
+ *
+ * Compute the equilibrium moisture content for fuel as in
+ * Simard (1968).
+ *
+ * \param temperature   (K)
+ * \param rel_humidity  (K)
+ *
+ * \return EMC (fraction)
+ */
+[[nodiscard]] float equilibrium_moisture_content(float temperature,
+                                                 float rel_humidity);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Compute the Fosberg fire-weather index
+ *
+ * Compute the Fosberg Fire-Weather Index (FWWI) as in
+ * Fosberg (1978).
+ *
+ * \param temperature    (K)
+ * \param rel_humidity   (fraction, unitless)
+ * \param wind_speed     (m/s)
+ *
+ * \return Fosberg Fire-Weather Index
+ *
+ */
+[[nodiscard]] float fosberg_fire_index(float temperature, float rel_humidity,
+                                       float wind_speed);
+
+}  // namespace sharp
 
 #endif  // SHARP_PARAMS_FIRE_H
