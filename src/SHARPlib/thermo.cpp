@@ -164,6 +164,8 @@ float relative_humidity(float pressure, float temperature, float dewpoint) {
 
     const float vapor_pres = vapor_pressure(pressure, dewpoint);
     const float saturation_vapor_pres = vapor_pressure(pressure, temperature);
+
+    return vapor_pres / saturation_vapor_pres;
 }
 
 float virtual_temperature(float temperature, float qv, float ql, float qi) {

@@ -640,6 +640,70 @@ Parameters:
     mixr_arr: The 1D array of water vapor mixing ratios (kg/kg)
     )pbdoc");
 
+    m_therm.def(
+        "relative_humidity",
+        &sharp::relative_humidity, 
+        nb::arg("pressure"), nb::arg("temperature"), nb::arg("dewpoint"),
+        R"pbdoc(
+Compute the relative humidity of water vapor with respect to liquid water.
+NOTE: The pressure variable is only used as a sanity check when computing 
+vapor pressure at extremely low pressures and temperatures. If you do not 
+want or need this behavior, you can pass the THETA_REF_PRESSURE constant
+in place of an air pressure.
+
+Parameters:
+    pressure: the ambient air pressure (Pa)
+    temperature: the ambient air temperature (K)
+    dewpoint: the ambient dewpoint temperature (K)
+
+Returns:
+    Relative Humidity (fraction, unitless)
+    )pbdoc"
+    );
+    
+    m_therm.def(
+        "relative_humidity",
+        [](
+            const_prof_arr_t pres_arr,
+            const_prof_arr_t tmpk_arr,
+            const_prof_arr_t dwpk_arr
+        ) {
+
+            auto pres = pres_arr.view();
+            auto tmpk = tmpk_arr.view();
+            auto dwpk = dwpk_arr.view();
+
+            float* relh = new float[pres.shape(0)];
+
+            for (std::ptrdiff_t k = 0; k < pres.shape(0); ++k) {
+                relh[k] = sharp::relative_humidity(pres(k), tmpk(k), dwpk(k));
+            }
+
+            nb::capsule owner(relh,
+                            [](void *p) noexcept { delete[] (float *)p; });
+
+            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
+                relh, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("pressure"), nb::arg("temperature"), nb::arg("dewpoint"),
+        R"pbdoc(
+Compute the relative humidity of water vapor with respect to liquid water.
+NOTE: The pressure variable is only used as a sanity check when computing 
+vapor pressure at extremely low pressures and temperatures. If you do not
+want or need this behavior, you canpass in an array of THETA_REF_PRESSURE
+in place of air pressure.
+
+Paramters:
+    pressure: 1D NumPy array of ambient air pressure Pa)
+    temperature: 1D NumPy array of ambient air temperature (K)
+    dewpoint: 1D NumPy array of ambient dewpoint temperature (K)
+
+Returns:
+    1D NumPy array of relative humidity values (fraction, unitless)
+    )pbdoc"
+
+    );
+
     m_therm.def("virtual_temperature", &sharp::virtual_temperature,
         nb::arg("temperature"), nb::arg("rv"), nb::arg("rl") = 0.0f,
         nb::arg("ri") = 0.0f,
