@@ -154,6 +154,18 @@ float specific_humidity(float rv) {
     return rv / (1.0 + rv);
 }
 
+float relative_humidity(float pressure, float temperature, float dewpoint) {
+#ifndef NO_QC
+    if ((pressure == MISSING) || (temperature == MISSING) ||
+        (dewpoint == MISSING)) {
+        return MISSING;
+    }
+#endif
+
+    const float vapor_pres = vapor_pressure(pressure, dewpoint);
+    const float saturation_vapor_pres = vapor_pressure(pressure, temperature);
+}
+
 float virtual_temperature(float temperature, float qv, float ql, float qi) {
 #ifndef NO_QC
     if ((qv == MISSING) || (ql == MISSING) || (qi == MISSING) ||

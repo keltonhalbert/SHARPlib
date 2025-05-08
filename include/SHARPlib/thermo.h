@@ -269,6 +269,26 @@ enum class adiabat : int {
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
  *
+ * \brief Compute the relative humidity of water vapor with respect to liquid
+ *
+ * Compute the relative humidity with respect to liquid water given an input
+ * pressure (Pa), temperature (K), and dewpoint temperature (K). NOTE: The
+ * presssure value is only used to ensure sane values of vapor pressure at
+ * extremely cold temperatures/low pressures. If you do not want or need this
+ * behavior, you can pass in something like sharp::THETA_REF_PRESSURE instead.
+ *
+ * \oaram   pressure    (Pa)
+ * \param   temperature (K)
+ * \param   dewpoint    (K)
+ *
+ * \return  Relative Humidity (fraction, unitless)
+ */
+[[nodiscard]] float relative_humidity(float pressure, float temperature,
+                                      float dewpoint);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
  * \brief Compute the full virtual temperature.
  *
  * Returns the virtual temperature in Kelvin given the dry-bulb
