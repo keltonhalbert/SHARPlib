@@ -273,3 +273,10 @@ def test_ehi():
 
     ehi = params.energy_helicity_index(pcl.cape, srh)
     assert (ehi == pytest.approx(4.411969661))
+
+
+def test_precipitable_water():
+    plyr = layer.PressureLayer(snd_data["pres"][0], 40000.0)
+    pwat = params.precipitable_water(plyr, snd_data["pres"], snd_data["mixr"])
+
+    assert (pwat == pytest.approx(21.11469))
