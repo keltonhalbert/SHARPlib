@@ -253,6 +253,9 @@ Functions</h2></td></tr>
 <tr class="separator:a7d1cb8e1918ad656aceef6a512151483"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6eeef5c5c9f1cbe1736996eaf8fe9ae5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#a6eeef5c5c9f1cbe1736996eaf8fe9ae5">significant_tornado_parameter</a> (<a class="el" href="structsharp_1_1Parcel.html">Parcel</a> pcl, float lcl_hght_agl, float storm_relative_helicity, float bulk_wind_difference)</td></tr>
 <tr class="separator:a6eeef5c5c9f1cbe1736996eaf8fe9ae5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af910931fdd9e0fe7d63ba7446743e354"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#af910931fdd9e0fe7d63ba7446743e354">precipitable_water</a> (<a class="el" href="structsharp_1_1PressureLayer.html">PressureLayer</a> layer, const float <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>[], const float mixing_ratio[], const std::ptrdiff_t N)</td></tr>
+<tr class="memdesc:af910931fdd9e0fe7d63ba7446743e354"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the precipitable water vapor content over a layer.  <br /></td></tr>
+<tr class="separator:af910931fdd9e0fe7d63ba7446743e354"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab535b8214969a50771219a275ebb7f4d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#ab535b8214969a50771219a275ebb7f4d">wobf</a> (float temperature)</td></tr>
 <tr class="memdesc:ab535b8214969a50771219a275ebb7f4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the difference between the wet-bulb potential temperatures for saturated and dry air given the temperature.  <br /></td></tr>
 <tr class="separator:ab535b8214969a50771219a275ebb7f4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -450,6 +453,8 @@ Variables</h2></td></tr>
 <tr class="separator:aee70f2aa7bfda20363d82e6eef5b1a21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2a834f494fab1d9ccc18699ad11a51bc"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#a2a834f494fab1d9ccc18699ad11a51bc">VAPPRES_REF</a> = 611.65f</td></tr>
 <tr class="separator:a2a834f494fab1d9ccc18699ad11a51bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c5854beb8b7984ccfd1c7b60c60c783"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#a4c5854beb8b7984ccfd1c7b60c60c783">RHO_LWAT</a> = 999.97495</td></tr>
+<tr class="separator:a4c5854beb8b7984ccfd1c7b60c60c783"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="ad39fcd09ffea548c2aa8468c7d834d81" name="ad39fcd09ffea548c2aa8468c7d834d81"></a>
@@ -697,7 +702,7 @@ template&lt;typename _Fp &gt; </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_ac4464059524ff56c7974141bb4cc7375_icgraph.svg" width="1142" height="834"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_ac4464059524ff56c7974141bb4cc7375_icgraph.svg" width="1142" height="895"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -789,7 +794,7 @@ template&lt;typename _T &gt; </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_a3558a68454edd4679ef97335e3a9f1fb_icgraph.svg" width="830" height="230"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_a3558a68454edd4679ef97335e3a9f1fb_icgraph.svg" width="830" height="278"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -2145,7 +2150,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_ac93f477dfa774c966b5da7521bd43ee6_icgraph.svg" width="859" height="488"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_ac93f477dfa774c966b5da7521bd43ee6_icgraph.svg" width="859" height="524"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -2617,7 +2622,7 @@ template&lt;typename L &gt; </div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="namespacesharp.html#a3558a68454edd4679ef97335e3a9f1fb">_integ_trapz()</a>, <a class="el" href="namespacesharp.html#ac93f477dfa774c966b5da7521bd43ee6">get_layer_index()</a>, <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ab435e227d5dd201e1768b2bcb2e0aa81">height</a>, <a class="el" href="namespacesharp.html#ae8240f026498ad2775633a8d0dcf100d">interp_height()</a>, <a class="el" href="namespacesharp.html#a55e4f8ee4ff8a4a30d7b3f3d92a41c75">interp_pressure()</a>, <a class="el" href="structsharp_1_1LayerIndex.html#a29cd85832f403659b88daab19abac1ca">sharp::LayerIndex::kbot</a>, <a class="el" href="structsharp_1_1LayerIndex.html#a849a04de93753261c91c58b590e60ee2">sharp::LayerIndex::ktop</a>, <a class="el" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>, and <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="structsharp_1_1Parcel.html#a0560bd193b2d2d6bc6b08baa7463fba4">sharp::Parcel::cape_cinh()</a>, <a class="el" href="namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822">entrainment_cape()</a>, and <a class="el" href="namespacesharp.html#a298e2c96c389f2c5177d3626c908927e">layer_mean()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="structsharp_1_1Parcel.html#a0560bd193b2d2d6bc6b08baa7463fba4">sharp::Parcel::cape_cinh()</a>, <a class="el" href="namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822">entrainment_cape()</a>, <a class="el" href="namespacesharp.html#a298e2c96c389f2c5177d3626c908927e">layer_mean()</a>, and <a class="el" href="namespacesharp.html#af910931fdd9e0fe7d63ba7446743e354">precipitable_water()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2627,7 +2632,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_a7acec1642f27591dc988bf9e48b4612d_icgraph.svg" width="635" height="230"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_a7acec1642f27591dc988bf9e48b4612d_icgraph.svg" width="635" height="278"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -2742,7 +2747,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_ae8240f026498ad2775633a8d0dcf100d_icgraph.svg" width="835" height="616"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_ae8240f026498ad2775633a8d0dcf100d_icgraph.svg" width="835" height="680"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -2861,7 +2866,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_a55e4f8ee4ff8a4a30d7b3f3d92a41c75_icgraph.svg" width="850" height="627"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_a55e4f8ee4ff8a4a30d7b3f3d92a41c75_icgraph.svg" width="850" height="690"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -3910,7 +3915,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_a0bf533560780fdb77bc3656db8d89208_icgraph.svg" width="988" height="834"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_a0bf533560780fdb77bc3656db8d89208_icgraph.svg" width="988" height="895"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -3995,7 +4000,7 @@ template&lt;typename T , typename C  = std::less&lt;&gt;&gt; </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_a1edcf8bff9a13429bcbff7c1129024b3_icgraph.svg" width="1056" height="488"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_a1edcf8bff9a13429bcbff7c1129024b3_icgraph.svg" width="1056" height="524"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -4534,6 +4539,69 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_ab5fed65fe0cdf797961047fb9cde3295_icgraph.svg" width="390" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="af910931fdd9e0fe7d63ba7446743e354" name="af910931fdd9e0fe7d63ba7446743e354"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af910931fdd9e0fe7d63ba7446743e354">&#9670;&#160;</a></span>precipitable_water()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float sharp::precipitable_water </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsharp_1_1PressureLayer.html">PressureLayer</a>&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>pressure</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>mixing_ratio</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::ptrdiff_t&#160;</td>
+          <td class="paramname"><em>N</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the precipitable water vapor content over a layer. </p>
+<dl class="section author"><dt>Author</dt><dd>Kelton Halbert - NWS Storm Prediction Center</dd></dl>
+<p>Given a <a class="el" href="structsharp_1_1PressureLayer.html" title="A simple structure of two named floats that represent a pressure layer.">sharp::PressureLayer</a> to integrate over, compute the preciptable water vapor from the given pressure and mixing ratio arrays.</p>
+<p>\parameters layer (Pa) \parameter presssure (Pa) \parameter mixing_ratio (unitless) \parameter N (length of arrays)</p>
+<dl class="section return"><dt>Returns</dt><dd>precipitable water (mm) </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="convective_8cpp_source.html#l00295">295</a> of file <a class="el" href="convective_8cpp_source.html">convective.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  296</span>                                                                           {</div>
+<div class="line"><span class="lineno">  297</span>    <span class="keywordtype">float</span> pwat =</div>
+<div class="line"><span class="lineno">  298</span>        <a class="code hl_function" href="namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d">integrate_layer_trapz</a>(layer, mixing_ratio, pressure, N, 0, <span class="keyword">false</span>) /</div>
+<div class="line"><span class="lineno">  299</span>        (GRAVITY * RHO_LWAT);</div>
+<div class="line"><span class="lineno">  300</span>    <span class="comment">// convert from meters to millimeters</span></div>
+<div class="line"><span class="lineno">  301</span>    <span class="keywordflow">return</span> pwat * 1000.0f;</div>
+<div class="line"><span class="lineno">  302</span>}</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="namespacesharp.html#a6e49daafd469b40abf4197bf26af2097">GRAVITY</a>, <a class="el" href="namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d">integrate_layer_trapz()</a>, <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, and <a class="el" href="namespacesharp.html#a4c5854beb8b7984ccfd1c7b60c60c783">RHO_LWAT</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_af910931fdd9e0fe7d63ba7446743e354_cgraph.svg" width="938" height="184"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -5786,7 +5854,7 @@ template&lt;typename T , typename C  = std::less&lt;&gt;&gt; </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_a772686549a5111c1152b778731119aa6_icgraph.svg" width="1058" height="978"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_a772686549a5111c1152b778731119aa6_icgraph.svg" width="1058" height="1039"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -7019,7 +7087,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="constants_8h_source.html#l00038">38</a> of file <a class="el" href="constants_8h_source.html">constants.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="namespacesharp.html#aae31e8a18568ec26222b603e629c5598">buoyancy()</a>, <a class="el" href="namespacesharp.html#a0cc6e590243b248f4fb44d9b0e1a6400">buoyancy_dilution_potential()</a>, and <a class="el" href="namespacesharp.html#ab5fed65fe0cdf797961047fb9cde3295">moist_static_energy()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="namespacesharp.html#aae31e8a18568ec26222b603e629c5598">buoyancy()</a>, <a class="el" href="namespacesharp.html#a0cc6e590243b248f4fb44d9b0e1a6400">buoyancy_dilution_potential()</a>, <a class="el" href="namespacesharp.html#ab5fed65fe0cdf797961047fb9cde3295">moist_static_energy()</a>, and <a class="el" href="namespacesharp.html#af910931fdd9e0fe7d63ba7446743e354">precipitable_water()</a>.</p>
 
 </div>
 </div>
@@ -7348,6 +7416,32 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="constants_8h_source.html#l00021">21</a> of file <a class="el" href="constants_8h_source.html">constants.h</a>.</p>
+
+</div>
+</div>
+<a id="a4c5854beb8b7984ccfd1c7b60c60c783" name="a4c5854beb8b7984ccfd1c7b60c60c783"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c5854beb8b7984ccfd1c7b60c60c783">&#9670;&#160;</a></span>RHO_LWAT</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float sharp::RHO_LWAT = 999.97495</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="constants_8h_source.html#l00086">86</a> of file <a class="el" href="constants_8h_source.html">constants.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="namespacesharp.html#af910931fdd9e0fe7d63ba7446743e354">precipitable_water()</a>.</p>
 
 </div>
 </div>

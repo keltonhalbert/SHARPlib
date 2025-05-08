@@ -1,9 +1,10 @@
 <map id="sharp::_integ_trapz" name="sharp::_integ_trapz">
-<area shape="rect" id="node1" title="A kernel that computes the area under a curve using the trapezoidal rule." alt="" coords="677,131,824,157"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d" title="Returns a trapezoidal integration of the given layer." alt="" coords="464,124,629,164"/>
+<area shape="rect" id="node1" title="A kernel that computes the area under a curve using the trapezoidal rule." alt="" coords="677,157,824,182"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d" title="Returns a trapezoidal integration of the given layer." alt="" coords="464,149,629,189"/>
 <area shape="rect" id="node3" href="$structsharp_1_1Parcel.html#a0560bd193b2d2d6bc6b08baa7463fba4" title="Compute CAPE and CINH for a previously lifted sharp::Parcel." alt="" coords="237,77,416,102"/>
 <area shape="rect" id="node6" href="$namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822" title="Computes Entrainment CAPE using a previously lifted parcel." alt="" coords="5,134,189,159"/>
 <area shape="rect" id="node7" href="$namespacesharp.html#a298e2c96c389f2c5177d3626c908927e" title="Computes the mass&#45;weighted mean value of a field over a given pressure layer." alt="" coords="255,182,398,207"/>
+<area shape="rect" id="node9" href="$namespacesharp.html#af910931fdd9e0fe7d63ba7446743e354" title="Computes the precipitable water vapor content over a layer." alt="" coords="255,232,398,272"/>
 <area shape="rect" id="node4" href="$namespacesharp.html#a2e6b7cd4a3594a8f2c2050b0e4784cce" title="Computes the Effective Inflow Layer for a given atmospheric sounding." alt="" coords="13,5,182,45"/>
 <area shape="rect" id="node5" href="$structsharp_1_1Parcel.html#aa258d27992d22d8b80cb221e6e2a6c19" title="Construct and return a most&#45;unstable Parcel." alt="" coords="24,69,171,109"/>
 <area shape="rect" id="node8" href="$structsharp_1_1Parcel.html#a1bf670e79f35a1ce8c904b7ead32ccbe" title="Construct and return a mixed&#45;layer Parcel." alt="" coords="21,184,174,224"/>
