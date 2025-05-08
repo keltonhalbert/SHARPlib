@@ -253,6 +253,28 @@ Parameters:
 Returns:
     Supercell Composite Parameter (unitless)
     )pbdoc");
+
+    m_params.def(
+        "precipitable_water",
+        [](sharp::PressureLayer& layer, const_prof_arr_t pres,
+           const_prof_arr_t mixr) {
+            return sharp::precipitable_water(layer, pres.data(), mixr.data(),
+                                             pres.size());
+        },
+
+        nb::arg("layer"), nb::arg("pres"), nb::arg("mixr"),
+        R"pbdoc(
+Given a PressureLayer to integrate over, compute the precipitable water 
+from the given pressure and mixing ratio arrays.
+
+Parameters:
+    layer: a PressureLayer over which to integrate (Pa)
+    pres: 1D NumPy array of presssure values (Pa)
+    mixr: 1D NumPy array of water vapor mixing ratio values (unitless)
+
+Returns:
+    Precipitable water content (mm)
+    )pbdoc");
 }
 
 #endif
