@@ -4749,14 +4749,14 @@ Here is the caller graph for this function:</div>
 <p>\parameters layer (Pa) \parameter presssure (Pa) \parameter mixing_ratio (unitless) \parameter N (length of arrays)</p>
 <dl class="section return"><dt>Returns</dt><dd>precipitable water (mm) </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="convective_8cpp_source.html#l00322">322</a> of file <a class="el" href="convective_8cpp_source.html">convective.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  323</span>                                                                           {</div>
-<div class="line"><span class="lineno">  324</span>    <span class="keywordtype">float</span> pwat =</div>
-<div class="line"><span class="lineno">  325</span>        <a class="code hl_function" href="namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d">integrate_layer_trapz</a>(layer, mixing_ratio, pressure, N, 0, <span class="keyword">false</span>) /</div>
-<div class="line"><span class="lineno">  326</span>        (GRAVITY * RHO_LWAT);</div>
-<div class="line"><span class="lineno">  327</span>    <span class="comment">// convert from meters to millimeters</span></div>
-<div class="line"><span class="lineno">  328</span>    <span class="keywordflow">return</span> pwat * 1000.0f;</div>
-<div class="line"><span class="lineno">  329</span>}</div>
+<p class="definition">Definition at line <a class="el" href="convective_8cpp_source.html#l00331">331</a> of file <a class="el" href="convective_8cpp_source.html">convective.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  332</span>                                                                           {</div>
+<div class="line"><span class="lineno">  333</span>    <span class="keywordtype">float</span> pwat =</div>
+<div class="line"><span class="lineno">  334</span>        <a class="code hl_function" href="namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d">integrate_layer_trapz</a>(layer, mixing_ratio, pressure, N, 0, <span class="keyword">false</span>) /</div>
+<div class="line"><span class="lineno">  335</span>        (GRAVITY * RHO_LWAT);</div>
+<div class="line"><span class="lineno">  336</span>    <span class="comment">// convert from meters to millimeters</span></div>
+<div class="line"><span class="lineno">  337</span>    <span class="keywordflow">return</span> pwat * 1000.0f;</div>
+<div class="line"><span class="lineno">  338</span>}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="namespacesharp.html#a6e49daafd469b40abf4197bf26af2097">GRAVITY</a>, <a class="el" href="namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d">integrate_layer_trapz()</a>, <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, and <a class="el" href="namespacesharp.html#a4c5854beb8b7984ccfd1c7b60c60c783">RHO_LWAT</a>.</p>
 <div class="dynheader">
@@ -5100,24 +5100,33 @@ Here is the caller graph for this function:</div>
 <div class="line"><span class="lineno">  300</span>    <span class="keywordtype">float</span> mu_mixr =</div>
 <div class="line"><span class="lineno">  301</span>        <a class="code hl_function" href="namespacesharp.html#ac38870166f07ac30aadbc46b81340cc4">mixratio</a>(mu_pcl.<a class="code hl_variable" href="structsharp_1_1Parcel.html#acdce27acf6bd8a327993f5d4cf240906">pres</a>, mu_pcl.<a class="code hl_variable" href="structsharp_1_1Parcel.html#aec26ccd19be00c0c3368b416bee1cd61">dwpk</a>) * 1000.0f;  <span class="comment">// convert to g/kg</span></div>
 <div class="line"><span class="lineno">  302</span> </div>
-<div class="line"><span class="lineno">  303</span>    <span class="keywordtype">float</span> ship = (mu_pcl.<a class="code hl_variable" href="structsharp_1_1Parcel.html#abe6f9e3ee98fde1d361814a5d6384b1a">cape</a> * mu_mixr * lapse_rate_700_500mb *</div>
-<div class="line"><span class="lineno">  304</span>                  ((tmpk_500mb - ZEROCNK) * -1) * shear_0_6km) /</div>
-<div class="line"><span class="lineno">  305</span>                 42000000.0f;</div>
+<div class="line"><span class="lineno">  303</span>    <span class="comment">// restrict the inputs to specific ranges...</span></div>
+<div class="line"><span class="lineno">  304</span>    shear_0_6km = std::min(shear_0_6km, 27.0f);</div>
+<div class="line"><span class="lineno">  305</span>    shear_0_6km = std::max(shear_0_6km, 7.0f);</div>
 <div class="line"><span class="lineno">  306</span> </div>
-<div class="line"><span class="lineno">  307</span>    <span class="keywordflow">if</span> (mu_pcl.<a class="code hl_variable" href="structsharp_1_1Parcel.html#abe6f9e3ee98fde1d361814a5d6384b1a">cape</a> &lt; 1300.0f) {</div>
-<div class="line"><span class="lineno">  308</span>        ship = ship * (mu_pcl.<a class="code hl_variable" href="structsharp_1_1Parcel.html#abe6f9e3ee98fde1d361814a5d6384b1a">cape</a> / 1300.0f);</div>
-<div class="line"><span class="lineno">  309</span>    }</div>
-<div class="line"><span class="lineno">  310</span> </div>
-<div class="line"><span class="lineno">  311</span>    <span class="keywordflow">if</span> (lapse_rate_700_500mb &lt; 5.8f) {</div>
-<div class="line"><span class="lineno">  312</span>        ship = ship * (lapse_rate_700_500mb / 5.8f);</div>
-<div class="line"><span class="lineno">  313</span>    }</div>
-<div class="line"><span class="lineno">  314</span> </div>
-<div class="line"><span class="lineno">  315</span>    <span class="keywordflow">if</span> (freezing_lvl_agl &lt; 2400.0f) {</div>
-<div class="line"><span class="lineno">  316</span>        ship = ship * (freezing_lvl_agl / 2400.0f);</div>
-<div class="line"><span class="lineno">  317</span>    }</div>
-<div class="line"><span class="lineno">  318</span> </div>
-<div class="line"><span class="lineno">  319</span>    <span class="keywordflow">return</span> ship;</div>
-<div class="line"><span class="lineno">  320</span>}</div>
+<div class="line"><span class="lineno">  307</span>    mu_mixr = std::min(mu_mixr, 13.6f);</div>
+<div class="line"><span class="lineno">  308</span>    mu_mixr = std::max(mu_mixr, 11.0f);</div>
+<div class="line"><span class="lineno">  309</span> </div>
+<div class="line"><span class="lineno">  310</span>    tmpk_500mb = std::min(tmpk_500mb, -5.5f + ZEROCNK);</div>
+<div class="line"><span class="lineno">  311</span> </div>
+<div class="line"><span class="lineno">  312</span>    <span class="keywordtype">float</span> ship = (mu_pcl.<a class="code hl_variable" href="structsharp_1_1Parcel.html#abe6f9e3ee98fde1d361814a5d6384b1a">cape</a> * mu_mixr * lapse_rate_700_500mb *</div>
+<div class="line"><span class="lineno">  313</span>                  ((tmpk_500mb - ZEROCNK) * -1) * shear_0_6km) /</div>
+<div class="line"><span class="lineno">  314</span>                 42000000.0f;</div>
+<div class="line"><span class="lineno">  315</span> </div>
+<div class="line"><span class="lineno">  316</span>    <span class="keywordflow">if</span> (mu_pcl.<a class="code hl_variable" href="structsharp_1_1Parcel.html#abe6f9e3ee98fde1d361814a5d6384b1a">cape</a> &lt; 1300.0f) {</div>
+<div class="line"><span class="lineno">  317</span>        ship = ship * (mu_pcl.<a class="code hl_variable" href="structsharp_1_1Parcel.html#abe6f9e3ee98fde1d361814a5d6384b1a">cape</a> / 1300.0f);</div>
+<div class="line"><span class="lineno">  318</span>    }</div>
+<div class="line"><span class="lineno">  319</span> </div>
+<div class="line"><span class="lineno">  320</span>    <span class="keywordflow">if</span> (lapse_rate_700_500mb &lt; 5.8f) {</div>
+<div class="line"><span class="lineno">  321</span>        ship = ship * (lapse_rate_700_500mb / 5.8f);</div>
+<div class="line"><span class="lineno">  322</span>    }</div>
+<div class="line"><span class="lineno">  323</span> </div>
+<div class="line"><span class="lineno">  324</span>    <span class="keywordflow">if</span> (freezing_lvl_agl &lt; 2400.0f) {</div>
+<div class="line"><span class="lineno">  325</span>        ship = ship * (freezing_lvl_agl / 2400.0f);</div>
+<div class="line"><span class="lineno">  326</span>    }</div>
+<div class="line"><span class="lineno">  327</span> </div>
+<div class="line"><span class="lineno">  328</span>    <span class="keywordflow">return</span> ship;</div>
+<div class="line"><span class="lineno">  329</span>}</div>
 <div class="ttc" id="astructsharp_1_1Parcel_html_aec26ccd19be00c0c3368b416bee1cd61"><div class="ttname"><a href="structsharp_1_1Parcel.html#aec26ccd19be00c0c3368b416bee1cd61">sharp::Parcel::dwpk</a></div><div class="ttdeci">float dwpk</div><div class="ttdoc">Parcel starting dewpoint (K)</div><div class="ttdef"><b>Definition:</b> <a href="parcel_8h_source.html#l00246">parcel.h:246</a></div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="structsharp_1_1Parcel.html#abe6f9e3ee98fde1d361814a5d6384b1a">sharp::Parcel::cape</a>, <a class="el" href="structsharp_1_1Parcel.html#aec26ccd19be00c0c3368b416bee1cd61">sharp::Parcel::dwpk</a>, <a class="el" href="namespacesharp.html#ac38870166f07ac30aadbc46b81340cc4">mixratio()</a>, <a class="el" href="structsharp_1_1Parcel.html#acdce27acf6bd8a327993f5d4cf240906">sharp::Parcel::pres</a>, and <a class="el" href="namespacesharp.html#aa8d73d01806950def2c52b818f90cb6c">ZEROCNK</a>.</p>
