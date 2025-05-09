@@ -6,7 +6,7 @@
 <area shape="rect" id="node9" href="$namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d" title="Returns a trapezoidal integration of the given layer." alt="" coords="464,113,629,153"/>
 <area shape="rect" id="node13" href="$namespacesharp.html#a646b65095b84511b75f6a4a81e545e80" title="Template for min/max value over sharp::PressureLayer or sharp::HeightLayer." alt="" coords="467,603,627,629"/>
 <area shape="rect" id="node16" href="$namespacesharp.html#a3c8b9022103d067f30281d68fa81cbda" title="Compute the mean wind over the given sharp::PressureLayer." alt="" coords="476,261,617,286"/>
-<area shape="rect" id="node18" href="$namespacesharp.html#ab31d383a3231f8fef873e5a16c0db856" title="Estimates supercell storm motion by using the Bunkers et al. 2014 method." alt="" coords="19,436,176,476"/>
+<area shape="rect" id="node18" href="$namespacesharp.html#a31d937d833aa80555a0a78890c370f42" title="Estimates supercell storm motion by using the Bunkers et al. 2014 method." alt="" coords="19,436,176,476"/>
 <area shape="rect" id="node19" href="$namespacesharp.html#a31da980f398c9f6a5960ddf868101a94" title="Converts a sharp::PressureLayer to a sharp::HeightLayer." alt="" coords="465,393,628,433"/>
 <area shape="rect" id="node21" href="$namespacesharp.html#a099a4575acc27d6e10f9dfb69bc315a1" title="Compue the wind shear for a given layer." alt="" coords="477,653,617,678"/>
 <area shape="rect" id="node4" href="$structsharp_1_1Parcel.html#a0560bd193b2d2d6bc6b08baa7463fba4" title="Compute CAPE and CINH for a previously lifted sharp::Parcel." alt="" coords="237,343,416,369"/>

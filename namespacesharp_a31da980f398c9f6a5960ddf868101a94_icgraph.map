@@ -3,7 +3,7 @@
 <area shape="rect" id="node2" href="$structsharp_1_1Parcel.html#a0560bd193b2d2d6bc6b08baa7463fba4" title="Compute CAPE and CINH for a previously lifted sharp::Parcel." alt="" coords="225,45,404,70"/>
 <area shape="rect" id="node5" href="$namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822" title="Computes Entrainment CAPE using a previously lifted parcel." alt="" coords="223,94,407,119"/>
 <area shape="rect" id="node6" href="$namespacesharp.html#aa4e86da659bfca2eae1f0baddb84a303" title="compute the lapse rate over the given sharp::PressureLayer" alt="" coords="247,143,382,169"/>
-<area shape="rect" id="node7" href="$namespacesharp.html#ab31d383a3231f8fef873e5a16c0db856" title="Estimates supercell storm motion by using the Bunkers et al. 2014 method." alt="" coords="236,193,393,233"/>
+<area shape="rect" id="node7" href="$namespacesharp.html#a31d937d833aa80555a0a78890c370f42" title="Estimates supercell storm motion by using the Bunkers et al. 2014 method." alt="" coords="236,193,393,233"/>
 <area shape="rect" id="node3" href="$namespacesharp.html#a2e6b7cd4a3594a8f2c2050b0e4784cce" title="Computes the Effective Inflow Layer for a given atmospheric sounding." alt="" coords="5,5,175,45"/>
 <area shape="rect" id="node4" href="$structsharp_1_1Parcel.html#aa258d27992d22d8b80cb221e6e2a6c19" title="Construct and return a most&#45;unstable Parcel." alt="" coords="17,69,163,109"/>
 </map>

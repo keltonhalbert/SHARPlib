@@ -105,7 +105,8 @@ $(document).ready(function(){initNavTree('convective_8cpp.html',''); initResizab
 
 <p>Routines used to computed derived sounding parameters from vertical atmospheric profiles.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;<a class="el" href="constants_8h_source.html">SHARPlib/constants.h</a>&gt;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="convective_8h_source.html">SHARPlib/params/convective.h</a>&quot;</code><br />
+<code>#include &lt;<a class="el" href="constants_8h_source.html">SHARPlib/constants.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="layer_8h_source.html">SHARPlib/layer.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="parcel_8h_source.html">SHARPlib/parcel.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="thermo_8h_source.html">SHARPlib/thermo.h</a>&gt;</code><br />
@@ -113,7 +114,7 @@ $(document).ready(function(){initNavTree('convective_8cpp.html',''); initResizab
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for convective.cpp:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="convective_8cpp__incl.svg" width="819" height="403"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="convective_8cpp__incl.svg" width="954" height="476"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div>
@@ -135,9 +136,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a74a735636c932467b4d2ced544e0cb51"><td class="memItemLeft" align="right" valign="top">WindComponents&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#a74a735636c932467b4d2ced544e0cb51">sharp::storm_motion_bunkers</a> (const float pressure[], const float height[], const float u_wind[], const float v_wind[], const std::ptrdiff_t N, HeightLayer mean_wind_layer_agl, HeightLayer wind_shear_layer_agl, const bool leftMover=false, const bool pressureWeighted=false)</td></tr>
 <tr class="memdesc:a74a735636c932467b4d2ced544e0cb51"><td class="mdescLeft">&#160;</td><td class="mdescRight">Estimates supercell storm motion using the Bunkers et al. 2000 method.  <br /></td></tr>
 <tr class="separator:a74a735636c932467b4d2ced544e0cb51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab31d383a3231f8fef873e5a16c0db856"><td class="memItemLeft" align="right" valign="top">WindComponents&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#ab31d383a3231f8fef873e5a16c0db856">sharp::storm_motion_bunkers</a> (const float pressure[], const float height[], const float u_wind[], const float v_wind[], const std::ptrdiff_t N, PressureLayer eff_infl_lyr, const Parcel *mupcl, const bool leftMover=false)</td></tr>
-<tr class="memdesc:ab31d383a3231f8fef873e5a16c0db856"><td class="mdescLeft">&#160;</td><td class="mdescRight">Estimates supercell storm motion by using the Bunkers et al. 2014 method.  <br /></td></tr>
-<tr class="separator:ab31d383a3231f8fef873e5a16c0db856"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31d937d833aa80555a0a78890c370f42"><td class="memItemLeft" align="right" valign="top">WindComponents&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#a31d937d833aa80555a0a78890c370f42">sharp::storm_motion_bunkers</a> (const float pressure[], const float height[], const float u_wind[], const float v_wind[], const std::ptrdiff_t N, PressureLayer eff_infl_lyr, const Parcel &amp;mupcl, const bool leftMover=false)</td></tr>
+<tr class="memdesc:a31d937d833aa80555a0a78890c370f42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Estimates supercell storm motion by using the Bunkers et al. 2014 method.  <br /></td></tr>
+<tr class="separator:a31d937d833aa80555a0a78890c370f42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a72bbdc4cfe7895dd51981902ac9fc822"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822">sharp::entrainment_cape</a> (const float pressure[], const float height[], const float temperature[], const float mse_arr[], const float u_wind[], const float v_wind[], const std::ptrdiff_t N, Parcel *pcl)</td></tr>
 <tr class="memdesc:a72bbdc4cfe7895dd51981902ac9fc822"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes Entrainment CAPE using a previously lifted parcel.  <br /></td></tr>
 <tr class="separator:a72bbdc4cfe7895dd51981902ac9fc822"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -147,6 +148,9 @@ Functions</h2></td></tr>
 <tr class="separator:a7d1cb8e1918ad656aceef6a512151483"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6eeef5c5c9f1cbe1736996eaf8fe9ae5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#a6eeef5c5c9f1cbe1736996eaf8fe9ae5">sharp::significant_tornado_parameter</a> (Parcel pcl, float lcl_hght_agl, float storm_relative_helicity, float bulk_wind_difference)</td></tr>
 <tr class="separator:a6eeef5c5c9f1cbe1736996eaf8fe9ae5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cc62883642729e449cee8a013845c52"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#a2cc62883642729e449cee8a013845c52">sharp::significant_hail_parameter</a> (const <a class="el" href="structsharp_1_1Parcel.html">sharp::Parcel</a> &amp;mu_pcl, float lapse_rate_700_500mb, float tmpk_500mb, float freezing_lvl_agl, float shear_0_6km)</td></tr>
+<tr class="memdesc:a2cc62883642729e449cee8a013845c52"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute the Significant Hail Parameter  <br /></td></tr>
+<tr class="separator:a2cc62883642729e449cee8a013845c52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af910931fdd9e0fe7d63ba7446743e354"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#af910931fdd9e0fe7d63ba7446743e354">sharp::precipitable_water</a> (PressureLayer layer, const float pressure[], const float mixing_ratio[], const std::ptrdiff_t N)</td></tr>
 <tr class="memdesc:af910931fdd9e0fe7d63ba7446743e354"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the precipitable water vapor content over a layer.  <br /></td></tr>
 <tr class="separator:af910931fdd9e0fe7d63ba7446743e354"><td class="memSeparator" colspan="2">&#160;</td></tr>

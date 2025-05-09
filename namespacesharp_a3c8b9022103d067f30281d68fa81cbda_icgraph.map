@@ -2,5 +2,5 @@
 <area shape="rect" id="node1" title="Compute the mean wind over the given sharp::PressureLayer." alt="" coords="443,35,584,60"/>
 <area shape="rect" id="node2" href="$namespacesharp.html#a74a735636c932467b4d2ced544e0cb51" title="Estimates supercell storm motion using the Bunkers et al. 2000 method." alt="" coords="237,27,395,67"/>
 <area shape="rect" id="node3" href="$namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822" title="Computes Entrainment CAPE using a previously lifted parcel." alt="" coords="5,5,189,31"/>
-<area shape="rect" id="node4" href="$namespacesharp.html#ab31d383a3231f8fef873e5a16c0db856" title="Estimates supercell storm motion by using the Bunkers et al. 2014 method." alt="" coords="19,55,176,95"/>
+<area shape="rect" id="node4" href="$namespacesharp.html#a31d937d833aa80555a0a78890c370f42" title="Estimates supercell storm motion by using the Bunkers et al. 2014 method." alt="" coords="19,55,176,95"/>
 </map>

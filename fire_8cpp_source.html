@@ -143,11 +143,11 @@ $(document).ready(function(){initNavTree('fire_8cpp_source.html',''); initResiza
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">float</span> emc =</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <a class="code hl_function" href="namespacesharp.html#adedbd405d38d761f6841a0074fab67da">equilibrium_moisture_content</a>(temperature, rel_humidity) * 100.0f;</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    emc = emc / 30.0;</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordtype">float</span> eta =</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        1 - 2 * (emc) + 1.5 * (std::pow(emc, 2)) - 0.5 * (std::pow(emc, 3));</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    emc = emc / 30.0f;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordtype">float</span> eta = 1.0f - 2.0f * (emc) + 1.5f * (std::pow(emc, 2)) -</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                0.5f * (std::pow(emc, 3));</div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">return</span> eta * std::sqrt(1 + std::pow(wind_speed, 2)) / 0.3002;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">return</span> eta * std::sqrt(1.0f + std::pow(wind_speed, 2)) / 0.3002f;</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}  <span class="comment">// namespace sharp</span></div>
