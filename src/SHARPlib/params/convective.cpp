@@ -300,6 +300,15 @@ float significant_hail_parameter(const sharp::Parcel &mu_pcl,
     float mu_mixr =
         mixratio(mu_pcl.pres, mu_pcl.dwpk) * 1000.0f;  // convert to g/kg
 
+    // restrict the inputs to specific ranges...
+    shear_0_6km = std::min(shear_0_6km, 27.0f);
+    shear_0_6km = std::max(shear_0_6km, 7.0f);
+
+    mu_mixr = std::min(mu_mixr, 13.6f);
+    mu_mixr = std::max(mu_mixr, 11.0f);
+
+    tmpk_500mb = std::min(tmpk_500mb, -5.5f + ZEROCNK);
+
     float ship = (mu_pcl.cape * mu_mixr * lapse_rate_700_500mb *
                   ((tmpk_500mb - ZEROCNK) * -1) * shear_0_6km) /
                  42000000.0f;
