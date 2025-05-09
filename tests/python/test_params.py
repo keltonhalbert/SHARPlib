@@ -144,7 +144,7 @@ def test_bunkers_motion():
     assert (storm_mtn.v == pytest.approx(5.570305))
 
 
-def test_stp_and_scp():
+def test_stp_scp_ship():
     # get the mixed-layer parcel
     mix_lyr = layer.PressureLayer(
         snd_data["pres"][0], snd_data["pres"][0] - 10000.0)
@@ -228,6 +228,21 @@ def test_stp_and_scp():
 
     scp = params.supercell_composite_parameter(mupcl.cape, esrh, ebwd)
     assert (scp == pytest.approx(7.96999))
+
+    # get SHIP
+    plyr = layer.PressureLayer(70000.0, 50000.0)
+    hlyr = layer.HeightLayer(0.0, 6000.0)
+    lr75 = thermo.lapse_rate(
+        plyr, snd_data["pres"], snd_data["hght"], snd_data["tmpk"])
+    t500 = interp.interp_pressure(50000.0, snd_data["pres"], snd_data["tmpk"])
+    fzl = interp.find_first_height(
+        constants.ZEROCNK, snd_data["hght"], snd_data["tmpk"])
+    print(mupcl.cape, fzl, snd_data["hght"][0], t500)
+    shr06 = winds.wind_shear(
+        hlyr, snd_data["hght"], snd_data["uwin"], snd_data["vwin"])
+    shr06 = winds.vector_magnitude(shr06.u, shr06.v)
+    ship = params.significant_hail_parameter(mupcl, lr75, t500, fzl, shr06)
+    assert (ship == pytest.approx(1.952115))
 
 
 def test_ehi():
