@@ -54,11 +54,11 @@ float fosberg_fire_index(float temperature, float rel_humidity,
 #endif
     float emc =
         equilibrium_moisture_content(temperature, rel_humidity) * 100.0f;
-    emc = emc / 30.0;
-    float eta =
-        1 - 2 * (emc) + 1.5 * (std::pow(emc, 2)) - 0.5 * (std::pow(emc, 3));
+    emc = emc / 30.0f;
+    float eta = 1.0f - 2.0f * (emc) + 1.5f * (std::pow(emc, 2)) -
+                0.5f * (std::pow(emc, 3));
 
-    return eta * std::sqrt(1 + std::pow(wind_speed, 2)) / 0.3002;
+    return eta * std::sqrt(1.0f + std::pow(wind_speed, 2)) / 0.3002f;
 }
 
 }  // namespace sharp
