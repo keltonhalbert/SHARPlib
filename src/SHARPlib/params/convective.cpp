@@ -12,6 +12,8 @@
  * John Hart and Rich Thompson at SPC.
  */
 
+#include "SHARPlib/params/convective.h"
+
 #include <SHARPlib/constants.h>
 #include <SHARPlib/layer.h>
 #include <SHARPlib/parcel.h>
@@ -38,7 +40,7 @@ WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const std::ptrdiff_t N,
     HeightLayer mean_wind_layer_agl, HeightLayer wind_shear_layer_agl,
-    const bool leftMover = false, const bool pressureWeighted = false) {
+    const bool leftMover, const bool pressureWeighted) {
     constexpr float deviation = 7.5;  // deviation from mean wind in m/s
 
     PressureLayer mw_lyr = height_layer_to_pressure(mean_wind_layer_agl,
@@ -87,16 +89,16 @@ WindComponents storm_motion_bunkers(
 [[nodiscard]] WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const std::ptrdiff_t N, PressureLayer eff_infl_lyr,
-    const Parcel *mupcl, const bool leftMover = false) {
+    const Parcel &mupcl, const bool leftMover) {
     HeightLayer shr_layer = {0, 6000.0};
     HeightLayer dflt_mw_lyr = {0.0, 6000.0};
 
-    if (mupcl->eql_pressure == MISSING) {
+    if (mupcl.eql_pressure == MISSING) {
         return storm_motion_bunkers(pressure, height, u_wind, v_wind, N,
                                     dflt_mw_lyr, shr_layer, leftMover, false);
     }
 
-    const float eql_pres = mupcl->eql_pressure;
+    const float eql_pres = mupcl.eql_pressure;
     if ((eff_infl_lyr.bottom == MISSING) || (eff_infl_lyr.top == MISSING)) {
         return storm_motion_bunkers(pressure, height, u_wind, v_wind, N,
                                     dflt_mw_lyr, shr_layer, leftMover, false);
@@ -290,6 +292,31 @@ float significant_tornado_parameter(Parcel pcl, float lcl_hght_agl,
     float stp = cape_term * cinh_term * lcl_term * srh_term * shear_term;
     if (stp < 0) stp = 0;
     return stp;
+}
+
+float significant_hail_parameter(const sharp::Parcel &mu_pcl,
+                                 float lapse_rate_700_500mb, float tmpk_500mb,
+                                 float freezing_lvl_agl, float shear_0_6km) {
+    float mu_mixr =
+        mixratio(mu_pcl.pres, mu_pcl.dwpk) * 1000.0f;  // convert to g/kg
+
+    float ship = (mu_pcl.cape * mu_mixr * lapse_rate_700_500mb *
+                  ((tmpk_500mb - ZEROCNK) * -1) * shear_0_6km) /
+                 42000000.0f;
+
+    if (mu_pcl.cape < 1300.0f) {
+        ship = ship * (mu_pcl.cape / 1300.0f);
+    }
+
+    if (lapse_rate_700_500mb < 5.8f) {
+        ship = ship * (lapse_rate_700_500mb / 5.8f);
+    }
+
+    if (freezing_lvl_agl < 2400.0f) {
+        ship = ship * (freezing_lvl_agl / 2400.0f);
+    }
+
+    return ship;
 }
 
 float precipitable_water(PressureLayer layer, const float pressure[],

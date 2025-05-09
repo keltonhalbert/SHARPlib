@@ -159,7 +159,7 @@ Returns:
         "storm_motion_bunkers",
         [](const_prof_arr_t pressure, const_prof_arr_t height,
            const_prof_arr_t u_wind, const_prof_arr_t v_wind,
-           sharp::PressureLayer eff_infl_lyr, sharp::Parcel* mupcl,
+           sharp::PressureLayer eff_infl_lyr, sharp::Parcel& mupcl,
            const bool leftMover) {
             sharp::WindComponents storm_mtn = sharp::storm_motion_bunkers(
                 pressure.data(), height.data(), u_wind.data(), v_wind.data(),

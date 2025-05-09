@@ -189,7 +189,7 @@ template <typename Lifter>
 [[nodiscard]] WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const std::ptrdiff_t N, PressureLayer eff_infl_lyr,
-    const Parcel* mupcl, const bool leftMover = false);
+    const Parcel& mupcl, const bool leftMover = false);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -226,6 +226,44 @@ template <typename Lifter>
                                                   float lcl_hght_agl,
                                                   float storm_relative_helicity,
                                                   float bulk_wind_difference);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief compute the Significant Hail Parameter
+ *
+ * Compute the Significant Hail Parameter, which was developed to
+ * delineate between significant (>=2" diameter) and non-significant
+ * (<2" diameter) hail environments.
+ *
+ * The 0-6 km shear is confined to a range of 7-27 m/s, mixing ratio
+ * is confined to a range of 11-13.6 g/kg, and the 500mb temperature
+ * maximum is capped at -5.5C.
+ *
+ * After an initial calculation of SHIP, it undergoes the following
+ * modifications:
+ *  1) if MUCAPE < 1300 J/kg, SHIP = SHIP * (MUCAPE/1300)
+ *  2) if 700-500 mb lapse rate < 5.8 C/km, SHIP = SHIP * (lr75/5.8)
+ *  3) if the freezing level < 2400 m AGL, SHIP = SHIP * (fzl/2400)
+ *
+ * It is important to note the SHIP is NOT a forecast hail size.
+ * Values of SHIP greater than 1 indicate a favorable environment
+ * for significant hail, and values greater than 4 are considered
+ * very high.
+ *
+ * \param   mu_pcl    precomputed Most Unstable Parcel
+ * \param   lapse_rate_700_500mb    (K/km)
+ * \param   tmpk_500mb              (K)
+ * \param   freezing_lvl_agl        (meters)
+ * \param   shear_0_6km             (m/s)
+ *
+ * \return Significant Hail Parameter
+ */
+[[nodiscard]] float significant_hail_parameter(const sharp::Parcel& mu_pcl,
+                                               float lapse_rate_700_500mb,
+                                               float tmpk_500mb,
+                                               float freezing_lvl_agl,
+                                               float shear_0_6km);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
