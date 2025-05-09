@@ -105,3 +105,42 @@ TEST_CASE("Testing interp_pressure") {
     CHECK(sharp::interp_pressure(92500, pres_arr, data_arr, N) ==
           doctest::Approx(1.7399502648876880));
 }
+
+TEST_CASE("Testing find_first_pressure") {
+    constexpr std::ptrdiff_t N = 10;
+    // pressure is always in Pa
+    constexpr float pres_arr[N] = {100000, 90000, 80000, 70000, 60000,
+                                   50000,  40000, 30000, 20000, 10000};
+    constexpr float data_arr1[N] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    constexpr float data_arr2[N] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+
+    CHECK(sharp::find_first_pressure(5.0f, pres_arr, data_arr1, N) == 60000.0f);
+    CHECK(sharp::find_first_pressure(5.5f, pres_arr, data_arr1, N) ==
+          doctest::Approx(54772.3f));
+    CHECK(sharp::find_first_pressure(5.0f, pres_arr, data_arr2, N) == 50000.0f);
+    CHECK(sharp::find_first_pressure(5.5f, pres_arr, data_arr2, N) ==
+          doctest::Approx(54772.3f));
+
+#ifndef NO_WC
+    CHECK(sharp::find_first_pressure(sharp::MISSING, pres_arr, data_arr2, N) ==
+          sharp::MISSING);
+#endif
+}
+
+TEST_CASE("Testing find_first_height") {
+    constexpr std::ptrdiff_t N = 10;
+    constexpr float hght_arr[N] = {100, 200, 300, 400, 500,
+                                   600, 700, 800, 900, 1000};
+    constexpr float data_arr1[N] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    constexpr float data_arr2[N] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+
+    CHECK(sharp::find_first_height(5, hght_arr, data_arr1, N) == 500.0f);
+    CHECK(sharp::find_first_height(5.5f, hght_arr, data_arr1, N) == 550.0f);
+    CHECK(sharp::find_first_height(5, hght_arr, data_arr2, N) == 600.0f);
+    CHECK(sharp::find_first_height(5.5f, hght_arr, data_arr2, N) == 550.0f);
+
+#ifndef NO_QC
+    CHECK(sharp::find_first_height(sharp::MISSING, hght_arr, data_arr1, N) ==
+          sharp::MISSING);
+#endif
+}
