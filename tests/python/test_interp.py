@@ -4,6 +4,7 @@ import numpy as np
 from nwsspc.sharp.calc import interp
 from nwsspc.sharp.calc import constants
 
+
 def test_interp_height():
     hght = np.arange(100.0, 1100.0, 100.0)
     data = np.arange(1.0, 11.0, 1.0)
@@ -11,7 +12,8 @@ def test_interp_height():
     # Test missing/nan/inf behavior
     assert (interp.interp_height(0, hght, data) == constants.MISSING)
     assert (interp.interp_height(1100, hght, data) == constants.MISSING)
-    assert (interp.interp_height(constants.MISSING, hght, data) == constants.MISSING)
+    assert (interp.interp_height(constants.MISSING,
+            hght, data) == constants.MISSING)
     assert (interp.interp_height(np.inf, hght, data) == constants.MISSING)
     assert (interp.interp_height(np.nan, hght, data) == constants.MISSING)
 
@@ -35,7 +37,8 @@ def test_interp_pres():
     # Test missing/nan/inf behavior
     assert (interp.interp_pressure(0, pres, data) == constants.MISSING)
     assert (interp.interp_pressure(110000.0, pres, data) == constants.MISSING)
-    assert (interp.interp_pressure(constants.MISSING, pres, data) == constants.MISSING)
+    assert (interp.interp_pressure(
+        constants.MISSING, pres, data) == constants.MISSING)
     assert (interp.interp_pressure(np.inf, pres, data) == constants.MISSING)
     assert (interp.interp_pressure(np.nan, pres, data) == constants.MISSING)
 
@@ -53,3 +56,31 @@ def test_interp_pres():
             == pytest.approx(1.4868382))
     assert (interp.interp_pressure(92500.0, pres, data)
             == pytest.approx(1.73995423))
+
+
+def test_find_first_pres():
+    pres = np.arange(10000.0, 110000.0, 10000.0)[::-1]
+    data = np.arange(1.0, 11.0, 1.0)
+
+    assert (interp.find_first_pressure(5.0, pres, data) == 60000.0)
+    assert (interp.find_first_pressure(
+        5.5, pres, data) == pytest.approx(54772.26))
+    assert (interp.find_first_pressure(5.0, pres, data[::-1]) == 50000.0)
+    assert (interp.find_first_pressure(
+        5.5, pres, data[::-1]) == pytest.approx(54772.26))
+
+    assert (interp.find_first_pressure(
+        constants.MISSING, pres, data) == constants.MISSING)
+
+
+def test_find_first_height():
+    hght = np.arange(100.0, 1100.0, 100.0)
+    data = np.arange(1.0, 11.0, 1.0)
+
+    assert (interp.find_first_height(5.0, hght, data) == 500.0)
+    assert (interp.find_first_height(5.5, hght, data) == 550.0)
+    assert (interp.find_first_height(5.0, hght, data[::-1]) == 600.0)
+    assert (interp.find_first_height(5.5, hght, data[::-1]) == 550.0)
+
+    assert (interp.find_first_height(
+        constants.MISSING, hght, data) == constants.MISSING)

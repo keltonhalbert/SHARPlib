@@ -67,6 +67,48 @@ Returns:
     An interpolated data value from data_arr corresponding to pres_val 
 
         )pbdoc");
+
+    m_interp.def(
+        "find_first_pressure",
+        [](float data_val, const_prof_arr_t pres_arr,
+           const_prof_arr_t data_arr) {
+            return sharp::find_first_pressure(data_val, pres_arr.data(),
+                                              data_arr.data(), pres_arr.size());
+        },
+        nb::arg("data_val"), nb::arg("pressure"), nb::arg("data_array"),
+        R"pbdoc(
+Conducts a bottom-up search for the first occurrence of a given value,
+and interpolates in order to get the pressure level it occurs at.
+
+Parameters:
+    data_val: the value to search for 
+    pressure: 1D NumPy array of pressure values (Pa)
+    data_array: 1D NumPy array of values to search over
+
+Returns: 
+    The pressure level of first occurrence (Pa)
+    )pbdoc");
+
+    m_interp.def(
+        "find_first_height",
+        [](float data_val, const_prof_arr_t hght_arr,
+           const_prof_arr_t data_arr) {
+            return sharp::find_first_height(data_val, hght_arr.data(),
+                                            data_arr.data(), hght_arr.size());
+        },
+        nb::arg("data_val"), nb::arg("height"), nb::arg("data_array"),
+        R"pbdoc(
+Conducts a bottom-up search for the first occurrence of a given value,
+and interpolates in order to get the height level it occurs at.
+
+Parameters:
+    data_val: the value to search for 
+    height: 1D NumPy array of height values (meters)
+    data_array: 1D NumPy array of values to search over
+
+Returns: 
+    The height level of first occurrence (meters)
+    )pbdoc");
 }
 
 #endif
