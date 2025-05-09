@@ -56,7 +56,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "algorithms_8h.html",
-"namespacesharp_1_1exper.html"
+"namespacesharp.html#aee70f2aa7bfda20363d82e6eef5b1a21"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
