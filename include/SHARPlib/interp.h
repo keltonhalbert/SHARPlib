@@ -148,6 +148,45 @@ template <typename _Fp>
                                     const float data_arr[],
                                     const std::ptrdiff_t N);
 
+/**
+ * \athor Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Find the pressure level of first occurrence of a given value
+ *
+ * Conduct a bottom-up search for the first occurrence of a given value,
+ * and interpolate in order to get the pressure level it occurs at.
+ *
+ * \param   data_val        The value being searched for
+ * \param   pressure_arr    The pressure array to get the level from (Pa)
+ * \param   data_arr        The data array of values being searched over
+ * \param   N               The length of the arrays (number of values)
+ *
+ * \return  pressure_level  (Pa)
+ */
+[[nodiscard]] float find_first_pressure(const float data_val,
+                                        const float pressure_arr[],
+                                        const float data_arr[],
+                                        const std::ptrdiff_t N);
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Find the height lecel of first occurrence of a given value
+ *
+ * Conduct a bottom-up search for the first occurrence of a given value,
+ * and interpolate in order to get the pressure level it occurs at.
+ *
+ * \param   data_val    The value being searched for
+ * \param   height_arr  The height array to get the level from (meters)
+ * \param   data_arr    The data array of values being searched over
+ * \param   N           The length of the arrays (number of values)
+ *
+ * \return  height_level    (meters)
+ */
+[[nodiscard]] float find_first_height(const float data_val,
+                                      const float height_arr[],
+                                      const float data_arr[],
+                                      const std::ptrdiff_t N);
+
 }  // end namespace sharp
 
 #endif  // SHARP_INTERP_H

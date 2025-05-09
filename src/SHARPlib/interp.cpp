@@ -16,6 +16,7 @@
 #include <SHARPlib/interp.h>
 
 #include <cmath>
+#include <cstddef>
 #include <functional>
 
 namespace sharp {
@@ -109,6 +110,98 @@ float interp_pressure(const float pressure_val, const float pressure_arr[],
 
     // return the linear interpolation
     return lerp(data_bot, data_top, dp_norm);
+}
+
+float find_first_pressure(const float data_val, const float *pressure_arr,
+                          const float *data_arr, const std::ptrdiff_t N) {
+#ifndef NO_QC
+    if (data_val == MISSING) {
+        return MISSING;
+    }
+#endif
+
+    float val0, val1;
+    for (std::ptrdiff_t k = 1; k < N; ++k) {
+        val0 = data_arr[k - 1];
+        val1 = data_arr[k];
+
+        if (val0 == data_val) {
+            return pressure_arr[k - 1];
+        }
+        if (val1 == data_val) {
+            return pressure_arr[k];
+        }
+
+        // data are decreasing
+        if ((val0 > data_val) && (val1 < data_val)) {
+            const float logp_bot = std::log10(pressure_arr[k - 1]);
+            const float logp_top = std::log10(pressure_arr[k]);
+
+            const float d_norm = (val0 - data_val) / (val0 - val1);
+
+            // return the linear interpolation
+            return std::pow(10, lerp(logp_bot, logp_top, d_norm));
+        }
+
+        // data are increasing
+        if ((val0 < data_val) && (val1 > data_val)) {
+            const float logp_bot = std::log10(pressure_arr[k - 1]);
+            const float logp_top = std::log10(pressure_arr[k]);
+
+            const float d_norm = (data_val - val0) / (val1 - val0);
+
+            // return the linear interpolation
+            return std::pow(10, lerp(logp_bot, logp_top, d_norm));
+        }
+    }
+
+    return MISSING;
+}
+
+float find_first_height(const float data_val, const float *height_arr,
+                        const float *data_arr, const std::ptrdiff_t N) {
+#ifndef NO_QC
+    if (data_val == MISSING) {
+        return MISSING;
+    }
+#endif
+
+    float val0, val1;
+    for (std::ptrdiff_t k = 1; k < N; ++k) {
+        val0 = data_arr[k - 1];
+        val1 = data_arr[k];
+
+        if (val0 == data_val) {
+            return height_arr[k - 1];
+        }
+        if (val1 == data_val) {
+            return height_arr[k];
+        }
+
+        // data are decreasing
+        if ((val0 > data_val) && (val1 < data_val)) {
+            const float hght_bot = height_arr[k - 1];
+            const float hght_top = height_arr[k];
+
+            const float d_norm = (val0 - data_val) / (val0 - val1);
+
+            // return the linear interpolation
+            return lerp(hght_bot, hght_top, d_norm);
+        }
+
+        // data are increasing
+        if ((val0 < data_val) && (val1 > data_val)) {
+            const float hght_bot = height_arr[k - 1];
+            const float hght_top = height_arr[k];
+
+            const float d_norm = (data_val - val0) / (val1 - val0);
+
+            // return the linear interpolation
+            return lerp(hght_bot, hght_top, d_norm);
+        }
+    }
+
+    return MISSING;
 }
 
 }  // end namespace sharp
