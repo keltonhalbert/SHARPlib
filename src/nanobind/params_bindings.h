@@ -254,6 +254,57 @@ Returns:
     Supercell Composite Parameter (unitless)
     )pbdoc");
 
+    m_params.def("significant_hail_parameter",
+                 &sharp::significant_hail_parameter, nb::arg("mu_pcl"),
+                 nb::arg("lapse_rate_700_500mb"), nb::arg("tmpk_500mb"),
+                 nb::arg("freezing_level_agl"), nb::arg("shear_0_6km"),
+                 R"pbdoc(
+Compute the significant hail parameter, given a precomputed most-unstable parcel, 
+the 700-500 mb lapse rate, the 500mb temperature, the height (AGL) of the 
+freezing level, and the 0-6 km shear magnitude.
+
+The Sig. Hail Parameter (SHIP) was developed using a large database of 
+surface-modified, observed severe hail proximity soundings. It is based on 
+parameters, and is meant to delineate between SIG (>=2" diameter) and NON-SIG
+(<2" diameter) hail environments.
+
+SHIP = [(MUCAPE j/kg) * (Mixing Ratio of MU PARCEL g/kg) *  
+        (700-500mb LAPSE RATE c/km) * (-500mb TEMP C) *
+        (0-6km Shear m/s) ] / 42,000,000
+
+0-6 km shear is confined to a range of 7-27 m s-1, mixing ratio is confined to 
+a range of 11-13.6 g kg-1, and the 500 mb temperature is set to -5.5 C for 
+any warmer values.
+
+Once the initial version of SHIP is calculated, the values are modified in 
+the following scenarios:
+
+1) If MUCAPE < 1300 J kg-1, SHIP = SHIP * (MUCAPE/1300); 2) if 700-500 mb 
+lapse rate < 5.8 C km-1, SHIP = SHIP * (lr75/5.8); 3) if freezing 
+level < 2400 m AGL, SHIP = SHIP * (fzl/2400)
+
+It is important to note that SHIP is NOT a forecast hail size.
+
+Since SHIP is based on the RAP depiction of MUCAPE - unrepresentative MUCAPE 
+"bullseyes" may cause a similar increase in SHIP values. This typically occurs 
+when bad surface observations get into the RAP model.
+
+Developed in the same vein as the STP and SCP parameters, values of SHIP 
+greater than 1.00 indicate a favorable environment for SIG hail. Values greater 
+than 4 are considered very high. In practice, maximum contour values of 1.5-2.0 
+or higher will typically be present when SIG hail is going to be reported. 
+
+Parameters:
+    mu_pcl: A precomputed Most Unstable parcel
+    lapse_rate_700_500mb: The 700-500 mb lapse rate (K/km)
+    tmpk_500mb: The 500mb temperature (K)
+    freezing_level_agl: The height of the freezing level (AGL, meters)
+    shear_0_6km: The 0-6 km shear vector magnitude (m/s)
+
+Returns:
+    The significant hail parameter
+    )pbdoc");
+
     m_params.def(
         "precipitable_water",
         [](sharp::PressureLayer& layer, const_prof_arr_t pres,
