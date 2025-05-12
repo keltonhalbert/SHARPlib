@@ -351,5 +351,3 @@ PressureLayer hail_growth_layer(const float pressure[],
 }
 
 }  // end namespace sharp
-
-namespace sharp::exper {}  // end namespace sharp::exper
