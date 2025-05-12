@@ -294,3 +294,9 @@ def test_precipitable_water():
     pwat = params.precipitable_water(plyr, snd_data["pres"], snd_data["mixr"])
 
     assert (pwat == pytest.approx(21.11469))
+
+
+def test_dgz():
+    dgz = params.dendritic_layer(snd_data["pres"], snd_data["tmpk"])
+    assert (dgz.bottom == 49598)
+    assert (dgz.top == 46032)
