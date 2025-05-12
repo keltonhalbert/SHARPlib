@@ -37,6 +37,7 @@ var namespacesharp =
     [ "buoyancy_dilution_potential", "namespacesharp.html#a0cc6e590243b248f4fb44d9b0e1a6400", null ],
     [ "components_to_vector", "namespacesharp.html#adc84f46d1ec5872b1777857983bdb4be", null ],
     [ "components_to_vector", "namespacesharp.html#ad2ceb7b2c34f95d4333e24bd2b824b6a", null ],
+    [ "dendritic_layer", "namespacesharp.html#ae179ed56eaa16f22b4bf3583c0c4d5c2", null ],
     [ "drylift", "namespacesharp.html#ae4385866921cd7286946d9ffdd65c25e", null ],
     [ "effective_inflow_layer", "namespacesharp.html#a2e6b7cd4a3594a8f2c2050b0e4784cce", null ],
     [ "effective_inflow_layer", "namespacesharp.html#aa95eb7a4955df00fcb68b2cd624de2fc", null ],

@@ -103,10 +103,23 @@ $(document).ready(function(){initNavTree('winter_8h_source.html',''); initResiza
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#ifndef SHARP_PARAMS_WINTER_H</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#define SHARP_PARAMS_WINTER_H</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacesharp.html">sharp</a> {}  <span class="comment">// namespace sharp</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#endif  </span><span class="comment">// SHARP_PARAMS_WINTER_H</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;<a class="code" href="constants_8h.html">SHARPlib/constants.h</a>&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;<a class="code" href="layer_8h.html">SHARPlib/layer.h</a>&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacesharp.html">sharp</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>[[nodiscard]] PressureLayer <a class="code hl_function" href="namespacesharp.html#ae179ed56eaa16f22b4bf3583c0c4d5c2">dendritic_layer</a>(<span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>[],</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                                            <span class="keyword">const</span> <span class="keywordtype">float</span> temperature[],</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                                            <span class="keyword">const</span> std::ptrdiff_t N);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}  <span class="comment">// namespace sharp</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="preprocessor">#endif  </span><span class="comment">// SHARP_PARAMS_WINTER_H</span></div>
+<div class="ttc" id="aconstants_8h_html"><div class="ttname"><a href="constants_8h.html">constants.h</a></div><div class="ttdoc">Meteorological constants useful for computations with vertical atmospheric sounding profiles.</div></div>
+<div class="ttc" id="alayer_8h_html"><div class="ttname"><a href="layer_8h.html">layer.h</a></div><div class="ttdoc">Data structures and functions for performing operations over atmospheric layers.</div></div>
 <div class="ttc" id="anamespacesharp_html"><div class="ttname"><a href="namespacesharp.html">sharp</a></div><div class="ttdef"><b>Definition:</b> <a href="algorithms_8h_source.html#l00020">algorithms.h:20</a></div></div>
+<div class="ttc" id="anamespacesharp_html_a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093"><div class="ttname"><a href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">sharp::LayerCoordinate::pressure</a></div><div class="ttdeci">@ pressure</div><div class="ttdoc">Pressure coordinate.</div></div>
+<div class="ttc" id="anamespacesharp_html_ae179ed56eaa16f22b4bf3583c0c4d5c2"><div class="ttname"><a href="namespacesharp.html#ae179ed56eaa16f22b4bf3583c0c4d5c2">sharp::dendritic_layer</a></div><div class="ttdeci">PressureLayer dendritic_layer(const float pressure[], const float temperature[], const std::ptrdiff_t N)</div><div class="ttdoc">Get the layer encompassing the lowest dendritic growth zone (-12 to -17 C)</div><div class="ttdef"><b>Definition:</b> <a href="winter_8cpp_source.html#l00022">winter.cpp:22</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

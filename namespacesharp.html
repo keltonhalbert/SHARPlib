@@ -271,6 +271,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a8c49aa0308947db413abf101a3dc5fae"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#a8c49aa0308947db413abf101a3dc5fae">fosberg_fire_index</a> (float temperature, float rel_humidity, float wind_speed)</td></tr>
 <tr class="memdesc:a8c49aa0308947db413abf101a3dc5fae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the Fosberg fire-weather index.  <br /></td></tr>
 <tr class="separator:a8c49aa0308947db413abf101a3dc5fae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae179ed56eaa16f22b4bf3583c0c4d5c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structsharp_1_1PressureLayer.html">PressureLayer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#ae179ed56eaa16f22b4bf3583c0c4d5c2">dendritic_layer</a> (const float <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>[], const float temperature[], const std::ptrdiff_t N)</td></tr>
+<tr class="memdesc:ae179ed56eaa16f22b4bf3583c0c4d5c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the layer encompassing the lowest dendritic growth zone (-12 to -17 C)  <br /></td></tr>
+<tr class="separator:ae179ed56eaa16f22b4bf3583c0c4d5c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab535b8214969a50771219a275ebb7f4d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacesharp.html#ab535b8214969a50771219a275ebb7f4d">wobf</a> (float temperature)</td></tr>
 <tr class="memdesc:ab535b8214969a50771219a275ebb7f4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the difference between the wet-bulb potential temperatures for saturated and dry air given the temperature.  <br /></td></tr>
 <tr class="separator:ab535b8214969a50771219a275ebb7f4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1294,6 +1297,76 @@ Here is the call graph for this function:</div>
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_ad2ceb7b2c34f95d4333e24bd2b824b6a_cgraph.svg" width="410" height="86"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="ae179ed56eaa16f22b4bf3583c0c4d5c2" name="ae179ed56eaa16f22b4bf3583c0c4d5c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae179ed56eaa16f22b4bf3583c0c4d5c2">&#9670;&#160;</a></span>dendritic_layer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structsharp_1_1PressureLayer.html">PressureLayer</a> sharp::dendritic_layer </td>
+          <td>(</td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>pressure</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float&#160;</td>
+          <td class="paramname"><em>temperature</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::ptrdiff_t&#160;</td>
+          <td class="paramname"><em>N</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the layer encompassing the lowest dendritic growth zone (-12 to -17 C) </p>
+<dl class="section author"><dt>Author</dt><dd>Kelton Halbert - NWS Storm Prediction Center</dd></dl>
+<p>Search for and return the sharp::PressuerLayer of the lowest altitude dendritic growth zone. If none is found, the top and bottom pressure levels are set to <a class="el" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">sharp::MISSING</a>.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pressure</td><td>(Pa) </td></tr>
+    <tr><td class="paramname">temperature</td><td>(K)</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The top and bottom of the dendritic growth zone (Pa) </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="winter_8cpp_source.html#l00022">22</a> of file <a class="el" href="winter_8cpp_source.html">winter.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   23</span>                                                    {</div>
+<div class="line"><span class="lineno">   24</span>    <a class="code hl_struct" href="structsharp_1_1PressureLayer.html">sharp::PressureLayer</a> dgz = {<a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">sharp::MISSING</a>, <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">sharp::MISSING</a>};</div>
+<div class="line"><span class="lineno">   25</span> </div>
+<div class="line"><span class="lineno">   26</span>    dgz.<a class="code hl_variable" href="structsharp_1_1PressureLayer.html#a22a8b0e57b0b2e23f87a1f23e6b2cf96">bottom</a> =</div>
+<div class="line"><span class="lineno">   27</span>        find_first_pressure(-12.0f + ZEROCNK, pressure, temperature, N);</div>
+<div class="line"><span class="lineno">   28</span>    dgz.<a class="code hl_variable" href="structsharp_1_1PressureLayer.html#adb2306e425e88885902cde3e8f84531a">top</a> = find_first_pressure(-17.0f + ZEROCNK, pressure, temperature, N);</div>
+<div class="line"><span class="lineno">   29</span> </div>
+<div class="line"><span class="lineno">   30</span>    <span class="comment">// do_stuff</span></div>
+<div class="line"><span class="lineno">   31</span>    <span class="keywordflow">return</span> dgz;</div>
+<div class="line"><span class="lineno">   32</span>};</div>
+<div class="ttc" id="anamespacesharp_html_af2ffcc858ff03be6e2ae2fe2ee20040d"><div class="ttname"><a href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">sharp::MISSING</a></div><div class="ttdeci">static constexpr float MISSING</div><div class="ttdef"><b>Definition:</b> <a href="constants_8h_source.html#l00036">constants.h:36</a></div></div>
+<div class="ttc" id="astructsharp_1_1PressureLayer_html"><div class="ttname"><a href="structsharp_1_1PressureLayer.html">sharp::PressureLayer</a></div><div class="ttdoc">A simple structure of two named floats that represent a pressure layer.</div><div class="ttdef"><b>Definition:</b> <a href="layer_8h_source.html#l00093">layer.h:93</a></div></div>
+<div class="ttc" id="astructsharp_1_1PressureLayer_html_a22a8b0e57b0b2e23f87a1f23e6b2cf96"><div class="ttname"><a href="structsharp_1_1PressureLayer.html#a22a8b0e57b0b2e23f87a1f23e6b2cf96">sharp::PressureLayer::bottom</a></div><div class="ttdeci">float bottom</div><div class="ttdoc">The bottom of the pressure layer (Pa)</div><div class="ttdef"><b>Definition:</b> <a href="layer_8h_source.html#l00097">layer.h:97</a></div></div>
+<div class="ttc" id="astructsharp_1_1PressureLayer_html_adb2306e425e88885902cde3e8f84531a"><div class="ttname"><a href="structsharp_1_1PressureLayer.html#adb2306e425e88885902cde3e8f84531a">sharp::PressureLayer::top</a></div><div class="ttdeci">float top</div><div class="ttdoc">The top of the pressure layer (Pa)</div><div class="ttdef"><b>Definition:</b> <a href="layer_8h_source.html#l00102">layer.h:102</a></div></div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="structsharp_1_1PressureLayer.html#a22a8b0e57b0b2e23f87a1f23e6b2cf96">sharp::PressureLayer::bottom</a>, <a class="el" href="namespacesharp.html#a5a3a584cc97815f2911b7a6c53c9c778">find_first_pressure()</a>, <a class="el" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>, <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, <a class="el" href="structsharp_1_1PressureLayer.html#adb2306e425e88885902cde3e8f84531a">sharp::PressureLayer::top</a>, and <a class="el" href="namespacesharp.html#aa8d73d01806950def2c52b818f90cb6c">ZEROCNK</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_ae179ed56eaa16f22b4bf3583c0c4d5c2_cgraph.svg" width="407" height="36"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -2372,6 +2445,14 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>pressure_level (Pa) </dd></dl>
+
+<p class="reference">Referenced by <a class="el" href="namespacesharp.html#ae179ed56eaa16f22b4bf3583c0c4d5c2">dendritic_layer()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacesharp_a5a3a584cc97815f2911b7a6c53c9c778_icgraph.svg" width="407" height="36"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
 
 </div>
 </div>
@@ -3525,8 +3606,6 @@ Here is the caller graph for this function:</div>
 <div class="line"><span class="lineno">  479</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespacesharp.html#a43a01274768ee388a983046651a230d3">lapse_rate</a>(h_layer, height, temperature, N);</div>
 <div class="line"><span class="lineno">  480</span>}</div>
 <div class="ttc" id="anamespacesharp_html_a43a01274768ee388a983046651a230d3"><div class="ttname"><a href="namespacesharp.html#a43a01274768ee388a983046651a230d3">sharp::lapse_rate</a></div><div class="ttdeci">float lapse_rate(HeightLayer layer_agl, const float height[], const float temperature[], const std::ptrdiff_t N)</div><div class="ttdoc">compute the lapse rate over the given sharp::HeightLayer (AGL)</div><div class="ttdef"><b>Definition:</b> <a href="thermo_8cpp_source.html#l00424">thermo.cpp:424</a></div></div>
-<div class="ttc" id="astructsharp_1_1PressureLayer_html_a22a8b0e57b0b2e23f87a1f23e6b2cf96"><div class="ttname"><a href="structsharp_1_1PressureLayer.html#a22a8b0e57b0b2e23f87a1f23e6b2cf96">sharp::PressureLayer::bottom</a></div><div class="ttdeci">float bottom</div><div class="ttdoc">The bottom of the pressure layer (Pa)</div><div class="ttdef"><b>Definition:</b> <a href="layer_8h_source.html#l00097">layer.h:97</a></div></div>
-<div class="ttc" id="astructsharp_1_1PressureLayer_html_adb2306e425e88885902cde3e8f84531a"><div class="ttname"><a href="structsharp_1_1PressureLayer.html#adb2306e425e88885902cde3e8f84531a">sharp::PressureLayer::top</a></div><div class="ttdeci">float top</div><div class="ttdoc">The top of the pressure layer (Pa)</div><div class="ttdef"><b>Definition:</b> <a href="layer_8h_source.html#l00102">layer.h:102</a></div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="structsharp_1_1PressureLayer.html#a22a8b0e57b0b2e23f87a1f23e6b2cf96">sharp::PressureLayer::bottom</a>, <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ab435e227d5dd201e1768b2bcb2e0aa81">height</a>, <a class="el" href="namespacesharp.html#a43a01274768ee388a983046651a230d3">lapse_rate()</a>, <a class="el" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>, <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, <a class="el" href="namespacesharp.html#a31da980f398c9f6a5960ddf868101a94">pressure_layer_to_height()</a>, and <a class="el" href="structsharp_1_1PressureLayer.html#adb2306e425e88885902cde3e8f84531a">sharp::PressureLayer::top</a>.</p>
 <div class="dynheader">
@@ -3723,7 +3802,6 @@ Here is the call graph for this function:</div>
 <div class="line"><span class="lineno">  516</span>    }</div>
 <div class="line"><span class="lineno">  517</span>    <span class="keywordflow">return</span> max_lr;</div>
 <div class="line"><span class="lineno">  518</span>}</div>
-<div class="ttc" id="astructsharp_1_1PressureLayer_html"><div class="ttname"><a href="structsharp_1_1PressureLayer.html">sharp::PressureLayer</a></div><div class="ttdoc">A simple structure of two named floats that represent a pressure layer.</div><div class="ttdef"><b>Definition:</b> <a href="layer_8h_source.html#l00093">layer.h:93</a></div></div>
 <div class="ttc" id="astructsharp_1_1PressureLayer_html_a4444597984491f09fa0f4ae92c7984de"><div class="ttname"><a href="structsharp_1_1PressureLayer.html#a4444597984491f09fa0f4ae92c7984de">sharp::PressureLayer::delta</a></div><div class="ttdeci">float delta</div><div class="ttdoc">The pressure interval with which to iterate over the layer (Pa)</div><div class="ttdef"><b>Definition:</b> <a href="layer_8h_source.html#l00107">layer.h:107</a></div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="structsharp_1_1PressureLayer.html#a22a8b0e57b0b2e23f87a1f23e6b2cf96">sharp::PressureLayer::bottom</a>, <a class="el" href="structsharp_1_1PressureLayer.html#a4444597984491f09fa0f4ae92c7984de">sharp::PressureLayer::delta</a>, <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ab435e227d5dd201e1768b2bcb2e0aa81">height</a>, <a class="el" href="namespacesharp.html#a43a01274768ee388a983046651a230d3">lapse_rate()</a>, <a class="el" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>, <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, and <a class="el" href="structsharp_1_1PressureLayer.html#adb2306e425e88885902cde3e8f84531a">sharp::PressureLayer::top</a>.</p>
@@ -7908,7 +7986,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="constants_8h_source.html#l00036">36</a> of file <a class="el" href="constants_8h_source.html">constants.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="namespacesharp.html#aae31e8a18568ec26222b603e629c5598">buoyancy()</a>, <a class="el" href="namespacesharp.html#a0cc6e590243b248f4fb44d9b0e1a6400">buoyancy_dilution_potential()</a>, <a class="el" href="structsharp_1_1Parcel.html#a0560bd193b2d2d6bc6b08baa7463fba4">sharp::Parcel::cape_cinh()</a>, <a class="el" href="namespacesharp.html#ae4385866921cd7286946d9ffdd65c25e">drylift()</a>, <a class="el" href="namespacesharp.html#a2e6b7cd4a3594a8f2c2050b0e4784cce">effective_inflow_layer()</a>, <a class="el" href="namespacesharp.html#ab89a7e3555a52f0fd9f4086d5aba7037">energy_helicity_index()</a>, <a class="el" href="namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822">entrainment_cape()</a>, <a class="el" href="namespacesharp.html#adedbd405d38d761f6841a0074fab67da">equilibrium_moisture_content()</a>, <a class="el" href="namespacesharp.html#a8d4ab67c5360d24b017d262e0891002d">find_first_height()</a>, <a class="el" href="namespacesharp.html#a881c7f86e5a778493701d1ad695976f5">find_first_pressure()</a>, <a class="el" href="structsharp_1_1Parcel.html#a8a311e09b1d46a829212da94cf181537">sharp::Parcel::find_lfc_el()</a>, <a class="el" href="namespacesharp.html#a8c49aa0308947db413abf101a3dc5fae">fosberg_fire_index()</a>, <a class="el" href="namespacesharp.html#ab77e344c7462c9615b0ddac228bc2193">height_layer_to_pressure()</a>, <a class="el" href="namespacesharp.html#a80858337a63be77bafadbb343d6e4931">helicity()</a>, <a class="el" href="namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d">integrate_layer_trapz()</a>, <a class="el" href="namespacesharp.html#ae8240f026498ad2775633a8d0dcf100d">interp_height()</a>, <a class="el" href="namespacesharp.html#a55e4f8ee4ff8a4a30d7b3f3d92a41c75">interp_pressure()</a>, <a class="el" href="namespacesharp.html#a43a01274768ee388a983046651a230d3">lapse_rate()</a>, <a class="el" href="namespacesharp.html#abd0d1a28608e145c455ace03e787e33b">lapse_rate_max()</a>, <a class="el" href="namespacesharp.html#a298e2c96c389f2c5177d3626c908927e">layer_mean()</a>, <a class="el" href="namespacesharp.html#a646b65095b84511b75f6a4a81e545e80">layer_minmax()</a>, <a class="el" href="namespacesharp.html#af016701e4a46d5c04d26c0a09c0aad38">lcl_temperature()</a>, <a class="el" href="namespacesharp.html#a3c8b9022103d067f30281d68fa81cbda">mean_wind()</a>, <a class="el" href="namespacesharp.html#ac38870166f07ac30aadbc46b81340cc4">mixratio()</a>, <a class="el" href="namespacesharp.html#a0ebcad18ef9939ff56f23d49c35dd04c">mixratio_ice()</a>, <a class="el" href="namespacesharp.html#aa258841692c25171d3f3b2e8b1f52079">moist_adiabat_cm1()</a>, <a class="el" href="namespacesharp.html#ab5fed65fe0cdf797961047fb9cde3295">moist_static_energy()</a>, <a class="el" href="namespacesharp.html#a31da980f398c9f6a5960ddf868101a94">pressure_layer_to_height()</a>, <a class="el" href="namespacesharp.html#ae6ffc299f3f13dc27df417f6e8fdfc2d">relative_humidity()</a>, <a class="el" href="namespacesharp.html#ab8a75ed92a2c2062162264a54f3a5338">saturated_lift()</a>, <a class="el" href="namespacesharp.html#a6eeef5c5c9f1cbe1736996eaf8fe9ae5">significant_tornado_parameter()</a>, <a class="el" href="namespacesharp.html#a792a4a2a9f9243a82fb44cb77c2ee561">specific_humidity()</a>, <a class="el" href="namespacesharp.html#a74a735636c932467b4d2ced544e0cb51">storm_motion_bunkers()</a>, <a class="el" href="namespacesharp.html#a7d1cb8e1918ad656aceef6a512151483">supercell_composite_parameter()</a>, <a class="el" href="namespacesharp.html#a90a9ae3f1a154cecbcf65d7dbf19233f">temperature_at_mixratio()</a>, <a class="el" href="namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb">theta()</a>, <a class="el" href="namespacesharp.html#ab50b565bcba73d207dc1433dee5b03c9">theta_level()</a>, <a class="el" href="namespacesharp.html#a5e3156aa7f5bafbd908184c7f51927ee">theta_wetbulb()</a>, <a class="el" href="namespacesharp.html#ab06f16aa1caac3136e863db8cd61e2e9">thetae()</a>, <a class="el" href="namespacesharp.html#ac17d8171de07c7a610de63da30ed4f6c">u_component()</a>, <a class="el" href="namespacesharp.html#af2232af9f4649a0701f64d2d7770f5ea">v_component()</a>, <a class="el" href="namespacesharp.html#a3e31a1a145fc25f07d6326481993b2c2">vapor_pressure()</a>, <a class="el" href="namespacesharp.html#aaf448e4ec9a4f7ac7edc9b960f656fd8">vapor_pressure_ice()</a>, <a class="el" href="namespacesharp.html#a24ba1a17b591165e527fa9bf6156eed2">vector_angle()</a>, <a class="el" href="namespacesharp.html#af887f27accb1a1d656a35abec65cab5f">vector_magnitude()</a>, <a class="el" href="namespacesharp.html#ace465acac91184c91987bb085a81777a">vector_magnitude_precise()</a>, <a class="el" href="namespacesharp.html#a1a4cb8e554c04774503b004939f27f54">vector_to_components()</a>, <a class="el" href="namespacesharp.html#a46e2f332f68747fee1eb817f7bd3a00b">virtual_temperature()</a>, <a class="el" href="namespacesharp.html#accda9c75278f1a32978bbfd662492822">wetbulb()</a>, <a class="el" href="namespacesharp.html#ad4014313c60a66a321e4050a2a07058e">wetlift()</a>, <a class="el" href="namespacesharp.html#a099a4575acc27d6e10f9dfb69bc315a1">wind_shear()</a>, and <a class="el" href="namespacesharp.html#ab535b8214969a50771219a275ebb7f4d">wobf()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="namespacesharp.html#aae31e8a18568ec26222b603e629c5598">buoyancy()</a>, <a class="el" href="namespacesharp.html#a0cc6e590243b248f4fb44d9b0e1a6400">buoyancy_dilution_potential()</a>, <a class="el" href="structsharp_1_1Parcel.html#a0560bd193b2d2d6bc6b08baa7463fba4">sharp::Parcel::cape_cinh()</a>, <a class="el" href="namespacesharp.html#ae179ed56eaa16f22b4bf3583c0c4d5c2">dendritic_layer()</a>, <a class="el" href="namespacesharp.html#ae4385866921cd7286946d9ffdd65c25e">drylift()</a>, <a class="el" href="namespacesharp.html#a2e6b7cd4a3594a8f2c2050b0e4784cce">effective_inflow_layer()</a>, <a class="el" href="namespacesharp.html#ab89a7e3555a52f0fd9f4086d5aba7037">energy_helicity_index()</a>, <a class="el" href="namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822">entrainment_cape()</a>, <a class="el" href="namespacesharp.html#adedbd405d38d761f6841a0074fab67da">equilibrium_moisture_content()</a>, <a class="el" href="namespacesharp.html#a8d4ab67c5360d24b017d262e0891002d">find_first_height()</a>, <a class="el" href="namespacesharp.html#a881c7f86e5a778493701d1ad695976f5">find_first_pressure()</a>, <a class="el" href="structsharp_1_1Parcel.html#a8a311e09b1d46a829212da94cf181537">sharp::Parcel::find_lfc_el()</a>, <a class="el" href="namespacesharp.html#a8c49aa0308947db413abf101a3dc5fae">fosberg_fire_index()</a>, <a class="el" href="namespacesharp.html#ab77e344c7462c9615b0ddac228bc2193">height_layer_to_pressure()</a>, <a class="el" href="namespacesharp.html#a80858337a63be77bafadbb343d6e4931">helicity()</a>, <a class="el" href="namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d">integrate_layer_trapz()</a>, <a class="el" href="namespacesharp.html#ae8240f026498ad2775633a8d0dcf100d">interp_height()</a>, <a class="el" href="namespacesharp.html#a55e4f8ee4ff8a4a30d7b3f3d92a41c75">interp_pressure()</a>, <a class="el" href="namespacesharp.html#a43a01274768ee388a983046651a230d3">lapse_rate()</a>, <a class="el" href="namespacesharp.html#abd0d1a28608e145c455ace03e787e33b">lapse_rate_max()</a>, <a class="el" href="namespacesharp.html#a298e2c96c389f2c5177d3626c908927e">layer_mean()</a>, <a class="el" href="namespacesharp.html#a646b65095b84511b75f6a4a81e545e80">layer_minmax()</a>, <a class="el" href="namespacesharp.html#af016701e4a46d5c04d26c0a09c0aad38">lcl_temperature()</a>, <a class="el" href="namespacesharp.html#a3c8b9022103d067f30281d68fa81cbda">mean_wind()</a>, <a class="el" href="namespacesharp.html#ac38870166f07ac30aadbc46b81340cc4">mixratio()</a>, <a class="el" href="namespacesharp.html#a0ebcad18ef9939ff56f23d49c35dd04c">mixratio_ice()</a>, <a class="el" href="namespacesharp.html#aa258841692c25171d3f3b2e8b1f52079">moist_adiabat_cm1()</a>, <a class="el" href="namespacesharp.html#ab5fed65fe0cdf797961047fb9cde3295">moist_static_energy()</a>, <a class="el" href="namespacesharp.html#a31da980f398c9f6a5960ddf868101a94">pressure_layer_to_height()</a>, <a class="el" href="namespacesharp.html#ae6ffc299f3f13dc27df417f6e8fdfc2d">relative_humidity()</a>, <a class="el" href="namespacesharp.html#ab8a75ed92a2c2062162264a54f3a5338">saturated_lift()</a>, <a class="el" href="namespacesharp.html#a6eeef5c5c9f1cbe1736996eaf8fe9ae5">significant_tornado_parameter()</a>, <a class="el" href="namespacesharp.html#a792a4a2a9f9243a82fb44cb77c2ee561">specific_humidity()</a>, <a class="el" href="namespacesharp.html#a74a735636c932467b4d2ced544e0cb51">storm_motion_bunkers()</a>, <a class="el" href="namespacesharp.html#a7d1cb8e1918ad656aceef6a512151483">supercell_composite_parameter()</a>, <a class="el" href="namespacesharp.html#a90a9ae3f1a154cecbcf65d7dbf19233f">temperature_at_mixratio()</a>, <a class="el" href="namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb">theta()</a>, <a class="el" href="namespacesharp.html#ab50b565bcba73d207dc1433dee5b03c9">theta_level()</a>, <a class="el" href="namespacesharp.html#a5e3156aa7f5bafbd908184c7f51927ee">theta_wetbulb()</a>, <a class="el" href="namespacesharp.html#ab06f16aa1caac3136e863db8cd61e2e9">thetae()</a>, <a class="el" href="namespacesharp.html#ac17d8171de07c7a610de63da30ed4f6c">u_component()</a>, <a class="el" href="namespacesharp.html#af2232af9f4649a0701f64d2d7770f5ea">v_component()</a>, <a class="el" href="namespacesharp.html#a3e31a1a145fc25f07d6326481993b2c2">vapor_pressure()</a>, <a class="el" href="namespacesharp.html#aaf448e4ec9a4f7ac7edc9b960f656fd8">vapor_pressure_ice()</a>, <a class="el" href="namespacesharp.html#a24ba1a17b591165e527fa9bf6156eed2">vector_angle()</a>, <a class="el" href="namespacesharp.html#af887f27accb1a1d656a35abec65cab5f">vector_magnitude()</a>, <a class="el" href="namespacesharp.html#ace465acac91184c91987bb085a81777a">vector_magnitude_precise()</a>, <a class="el" href="namespacesharp.html#a1a4cb8e554c04774503b004939f27f54">vector_to_components()</a>, <a class="el" href="namespacesharp.html#a46e2f332f68747fee1eb817f7bd3a00b">virtual_temperature()</a>, <a class="el" href="namespacesharp.html#accda9c75278f1a32978bbfd662492822">wetbulb()</a>, <a class="el" href="namespacesharp.html#ad4014313c60a66a321e4050a2a07058e">wetlift()</a>, <a class="el" href="namespacesharp.html#a099a4575acc27d6e10f9dfb69bc315a1">wind_shear()</a>, and <a class="el" href="namespacesharp.html#ab535b8214969a50771219a275ebb7f4d">wobf()</a>.</p>
 
 </div>
 </div>
@@ -8264,7 +8342,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="constants_8h_source.html#l00029">29</a> of file <a class="el" href="constants_8h_source.html">constants.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="namespacesharp.html#a7494c22424745a8847092b64195fb9ae">_solve_cm1()</a>, <a class="el" href="namespacesharp.html#a2cc62883642729e449cee8a013845c52">significant_hail_parameter()</a>, <a class="el" href="namespacesharp.html#a90a9ae3f1a154cecbcf65d7dbf19233f">temperature_at_mixratio()</a>, <a class="el" href="namespacesharp.html#a3e31a1a145fc25f07d6326481993b2c2">vapor_pressure()</a>, <a class="el" href="namespacesharp.html#aaf448e4ec9a4f7ac7edc9b960f656fd8">vapor_pressure_ice()</a>, and <a class="el" href="namespacesharp.html#ab535b8214969a50771219a275ebb7f4d">wobf()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="namespacesharp.html#a7494c22424745a8847092b64195fb9ae">_solve_cm1()</a>, <a class="el" href="namespacesharp.html#ae179ed56eaa16f22b4bf3583c0c4d5c2">dendritic_layer()</a>, <a class="el" href="namespacesharp.html#a2cc62883642729e449cee8a013845c52">significant_hail_parameter()</a>, <a class="el" href="namespacesharp.html#a90a9ae3f1a154cecbcf65d7dbf19233f">temperature_at_mixratio()</a>, <a class="el" href="namespacesharp.html#a3e31a1a145fc25f07d6326481993b2c2">vapor_pressure()</a>, <a class="el" href="namespacesharp.html#aaf448e4ec9a4f7ac7edc9b960f656fd8">vapor_pressure_ice()</a>, and <a class="el" href="namespacesharp.html#ab535b8214969a50771219a275ebb7f4d">wobf()</a>.</p>
 
 </div>
 </div>
