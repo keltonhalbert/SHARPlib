@@ -284,6 +284,24 @@ template <typename Lifter>
                                        const float pressure[],
                                        const float mixing_ratio[],
                                        const std::ptrdiff_t N);
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Get the layer encompassing the lowest hail growth zone (-10 to
+ * -30 C)
+ *
+ * Search for and return the sharp::PressuerLayer of the lowest altitude
+ * hail growth zone. If none is found, the top and bottom pressure levels
+ * are set to sharp::MISSING.
+ *
+ * \param    pressure    (Pa)
+ * \param    temperature (K)
+ *
+ * \return   The top and bottom of the hail growth zone (Pa)
+ */
+[[nodiscard]] PressureLayer hail_growth_layer(const float pressure[],
+                                              const float temperature[],
+                                              const std::ptrdiff_t N);
 
 }  // end namespace sharp
 
