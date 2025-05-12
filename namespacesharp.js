@@ -53,6 +53,7 @@ var namespacesharp =
     [ "get_layer_index", "namespacesharp.html#a4a8e42ed2ba834a1436242e320492bbc", null ],
     [ "get_layer_index", "namespacesharp.html#ac93f477dfa774c966b5da7521bd43ee6", null ],
     [ "get_layer_index", "namespacesharp.html#ac2f381378ac4ec13ad83d2ec92b2abcc", null ],
+    [ "hail_growth_layer", "namespacesharp.html#aa20009e7c666c469ae2ee0e4febb5226", null ],
     [ "height_layer_to_pressure", "namespacesharp.html#ab77e344c7462c9615b0ddac228bc2193", null ],
     [ "helicity", "namespacesharp.html#a80858337a63be77bafadbb343d6e4931", null ],
     [ "integrate_layer_trapz", "namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d", null ],

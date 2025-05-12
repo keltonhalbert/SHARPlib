@@ -1,0 +1,4 @@
+<map id="sharp::hail_growth_layer" name="sharp::hail_growth_layer">
+<area shape="rect" id="node1" title="Get the layer encompassing the lowest hail growth zone (&#45;10 to &#45;30 C)" alt="" coords="5,5,148,45"/>
+<area shape="rect" id="node2" href="$namespacesharp.html#a5a3a584cc97815f2911b7a6c53c9c778" title="Find the pressure level of first occurrence of a given value." alt="" coords="196,13,381,38"/>
+</map>
