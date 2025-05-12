@@ -8,6 +8,8 @@
 // clang-format on
 #include <SHARPlib/layer.h>
 
+#include <iostream>
+
 #include "sharplib_types.h"
 
 namespace nb = nanobind;
@@ -28,7 +30,11 @@ inline void make_layer_bindings(nb::module_ m) {
                 "The top of the HeightLayer (meters)")
         .def_rw(
             "delta", &sharp::HeightLayer::delta,
-            "The HeightLayer delta (increment) to use if iterating (meters).");
+            "The HeightLayer delta (increment) to use if iterating (meters).")
+        .def("__repr__", [](const sharp::HeightLayer& layer) {
+            std::cout << "HeightLayer: {" << layer.bottom << ", " << layer.top
+                      << "}" << std::endl;
+        });
 
     nb::class_<sharp::PressureLayer>(m_layer, "PressureLayer")
         .def(nb::init<float, float, float>(), nb::arg("bottom"), nb::arg("top"),
@@ -38,7 +44,11 @@ inline void make_layer_bindings(nb::module_ m) {
         .def_rw("top", &sharp::PressureLayer::top,
                 "The top of the PressureLayer (Pa)")
         .def_rw("delta", &sharp::PressureLayer::delta,
-                "The PressureLayer delta (increment) to use if iterating (Pa)");
+                "The PressureLayer delta (increment) to use if iterating (Pa)")
+        .def("__repr__", [](const sharp::PressureLayer& layer) {
+            std::cout << "PressureLayer: {" << layer.bottom << ", " << layer.top
+                      << "}" << std::endl;
+        });
 
     nb::class_<sharp::LayerIndex>(m_layer, "LayerIndex")
         .def(nb::init<std::ptrdiff_t, std::ptrdiff_t>(), nb::arg("kbot"),
@@ -48,7 +58,11 @@ inline void make_layer_bindings(nb::module_ m) {
                 "(pressure or height).")
         .def_rw("ktop", &sharp::LayerIndex::ktop,
                 "The top index of a layer on a coordinate array "
-                "(pressure or height).");
+                "(pressure or height).")
+        .def("__repr__", [](const sharp::LayerIndex& layer) {
+            std::cout << "LayerIndex: {" << layer.kbot << ", " << layer.ktop
+                      << "}" << std::endl;
+        });
 
     m_layer.def(
         "get_layer_index",
