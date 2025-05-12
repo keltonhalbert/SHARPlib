@@ -25,7 +25,7 @@ PressureLayer dendritic_layer(const float pressure[], const float temperature[],
 
     dgz.bottom =
         find_first_pressure(-12.0f + ZEROCNK, pressure, temperature, N);
-    dgz.top = find_first_pressure(-17.0f, pressure, temperature, N);
+    dgz.top = find_first_pressure(-17.0f + ZEROCNK, pressure, temperature, N);
 
     // do_stuff
     return dgz;
