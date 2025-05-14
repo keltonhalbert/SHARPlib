@@ -18,6 +18,7 @@ add_subdirectory(nanobind)
 
 include_directories(${Python3_INCLUDE_DIRS})
 include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/external/fmt/include)
 
 nanobind_add_module(calc LTO calc.cpp)
 target_link_libraries(calc PRIVATE SHARPlib)
