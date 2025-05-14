@@ -20,6 +20,13 @@ include_directories(${Python3_INCLUDE_DIRS})
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/external/fmt/include)
 
+
 nanobind_add_module(calc LTO calc.cpp)
+if (MSVC) # For MSVC (cl) compiler
+    # Add compile options for MSVC
+    target_compile_options(calc PRIVATE
+        /utf-8        # Set source and execution character set to UTF-8
+    )
+endif()
 target_link_libraries(calc PRIVATE SHARPlib)
 install(TARGETS calc DESTINATION nwsspc/sharp)
