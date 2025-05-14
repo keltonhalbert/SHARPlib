@@ -22,6 +22,9 @@ jobs:
           echo "NUGET_PACKAGES=D:\nuget\packages" >> $ENV:GITHUB_ENV
           echo "DOTNET_ROOT=D:\tools\dotnet" >> $ENV:GITHUB_ENV
           echo "DOTNET_INSTALL_DIR=D:\tools\dotnet" >> $ENV:GITHUB_ENV
+          echo "LocalAppData=D:\a\_LocalAppData" >> $ENV:GITHUB_ENV
+          echo "TEMP=D:\a\_temp" >> $ENV:GITHUB_ENV
+          echo "TMP=D:\a\_temp" >> $ENV:GITHUB_ENV
 
       - name: Checkout 
         uses: actions/checkout@v4
