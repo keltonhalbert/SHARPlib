@@ -15,6 +15,14 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
+      - name: Set windows environment variables
+        if: startsWith(matrix.os, 'windows')
+        shell: pwsh
+        run: |
+          echo "NUGET_PACKAGES=D:\nuget\packages" >> $ENV:GITHUB_ENV
+          echo "DOTNET_ROOT=D:\tools\dotnet" >> $ENV:GITHUB_ENV
+          echo "DOTNET_INSTALL_DIR=D:\tools\dotnet" >> $ENV:GITHUB_ENV
+
       - name: Checkout 
         uses: actions/checkout@v4
         with:
