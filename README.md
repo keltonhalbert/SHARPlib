@@ -1,5 +1,6 @@
 # SHARPlib
 [![C++ CI (Linux, MacOS, Windows)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/cmake.yml/badge.svg)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/cmake.yml)
+[![Python CI (Linux, MacOS, Windows)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/python.yml/badge.svg?branch=develop)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/python.yml)
 [![Build Docs](https://github.com/keltonhalbert/SHARPlib/actions/workflows/doxygen-gh-pages.yml/badge.svg)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/doxygen-gh-pages.yml)
 
 
