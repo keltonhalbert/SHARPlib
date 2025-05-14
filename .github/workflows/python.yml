@@ -40,4 +40,4 @@ jobs:
           pip install --verbose .
       
       - name: Test
-        run: pythom -m pytest
+        run: python -m pytest
