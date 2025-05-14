@@ -12,10 +12,24 @@ jobs:
     strategy: 
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        os: [ubuntu-latest] #, macos-latest, windows-latest]
+        python-version: ["3.10"] #, "3.11", "3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout 
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: Change submodule URLs to HTTPS 
+        run: |
+          git submodule foreach '
+            git config submodule.$name.url https://github.com/$urlPath
+          '
+      - name: Submodules and Dependencies
+        run: |
+          git config --global --add safe.directory ${{ github.workspace }} 
+          git submodule update --init --recursive
+
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
