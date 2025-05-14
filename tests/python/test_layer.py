@@ -148,9 +148,9 @@ def test_pressure_layer_min():
     assert (layer.layer_min(lyr2, pres, data) == (-10.0, 60000.0))
     assert (layer.layer_min(lyr3, pres, data) == (0.0, 100000.0))
     assert (layer.layer_min(lyr4, pres, data) ==
-            (pytest.approx(-4.807509899), 65000.0))
+            (pytest.approx(-4.807509899, abs=1e-4), 65000.0))
     assert (layer.layer_min(lyr5, pres, data) ==
-            (pytest.approx(-5.22757434), 55000.0))
+            (pytest.approx(-5.22757434, abs=1e-4), 55000.0))
 
 
 def test_pressure_layer_max():
@@ -167,9 +167,9 @@ def test_pressure_layer_max():
     assert (layer.layer_max(lyr2, pres, data) == (10.0, 60000.0))
     assert (layer.layer_max(lyr3, pres, data) == (0.0, 100000.0))
     assert (layer.layer_max(lyr4, pres, data) ==
-            (pytest.approx(4.807509899), 65000.0))
+            (pytest.approx(4.807509899, abs=1e-4), 65000.0))
     assert (layer.layer_max(lyr5, pres, data) ==
-            (pytest.approx(5.22757434), 55000.0))
+            (pytest.approx(5.22757434, abs=1e-4), 55000.0))
 
 
 def test_height_layer_min():

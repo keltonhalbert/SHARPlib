@@ -4,6 +4,8 @@
 // clang-format off
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/tuple.h>
+#include <nanobind/stl/string.h>
+#include <fmt/core.h>
 
 // clang-format on
 #include <SHARPlib/layer.h>
@@ -28,7 +30,11 @@ inline void make_layer_bindings(nb::module_ m) {
                 "The top of the HeightLayer (meters)")
         .def_rw(
             "delta", &sharp::HeightLayer::delta,
-            "The HeightLayer delta (increment) to use if iterating (meters).");
+            "The HeightLayer delta (increment) to use if iterating (meters).")
+        .def("__repr__", [](const sharp::HeightLayer& layer) -> std::string {
+            return fmt::format("HeightLayer: [{0} meters, {1} meters]",
+                               layer.bottom, layer.top);
+        });
 
     nb::class_<sharp::PressureLayer>(m_layer, "PressureLayer")
         .def(nb::init<float, float, float>(), nb::arg("bottom"), nb::arg("top"),
@@ -38,7 +44,11 @@ inline void make_layer_bindings(nb::module_ m) {
         .def_rw("top", &sharp::PressureLayer::top,
                 "The top of the PressureLayer (Pa)")
         .def_rw("delta", &sharp::PressureLayer::delta,
-                "The PressureLayer delta (increment) to use if iterating (Pa)");
+                "The PressureLayer delta (increment) to use if iterating (Pa)")
+        .def("__repr__", [](const sharp::PressureLayer& layer) -> std::string {
+            return fmt::format("PressureLayer: [{0} Pa, {1} Pa]", layer.bottom,
+                               layer.top);
+        });
 
     nb::class_<sharp::LayerIndex>(m_layer, "LayerIndex")
         .def(nb::init<std::ptrdiff_t, std::ptrdiff_t>(), nb::arg("kbot"),
@@ -48,7 +58,11 @@ inline void make_layer_bindings(nb::module_ m) {
                 "(pressure or height).")
         .def_rw("ktop", &sharp::LayerIndex::ktop,
                 "The top index of a layer on a coordinate array "
-                "(pressure or height).");
+                "(pressure or height).")
+        .def("__repr__", [](const sharp::LayerIndex& layer) -> std::string {
+            return fmt::format("LayerIndex: [{0}, {1}]", layer.kbot,
+                               layer.ktop);
+        });
 
     m_layer.def(
         "get_layer_index",

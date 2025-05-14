@@ -10,6 +10,7 @@
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/winds.h>
 
+#include "SHARPlib/params/winter.h"
 #include "sharplib_types.h"
 
 namespace nb = nanobind;
@@ -325,6 +326,46 @@ Parameters:
 
 Returns:
     Precipitable water content (mm)
+    )pbdoc");
+
+    m_params.def(
+        "dendritic_layer",
+        [](const_prof_arr_t pres, const_prof_arr_t tmpk) {
+            return sharp::dendritic_layer(pres.data(), tmpk.data(),
+                                          pres.size());
+        },
+        nb::arg("pressure"), nb::arg("temperature"),
+        R"pbdoc(
+Search for and return the PressureLayer of the lowest altitude 
+dendritic growth zone. If none is found, the top and bottom of the 
+PressureLayer are set to MISSING. 
+
+Parameters:
+    pressure: 1D NumPy array of pressure values (Pa)
+    temperature: 1D NumPy array of temperature values (K)
+
+Return:
+    The PressureLayer containing the dendritic growth zone
+    )pbdoc");
+
+    m_params.def(
+        "hail_growth_layer",
+        [](const_prof_arr_t pres, const_prof_arr_t tmpk) {
+            return sharp::hail_growth_layer(pres.data(), tmpk.data(),
+                                            pres.size());
+        },
+        nb::arg("pressure"), nb::arg("temperature"),
+        R"pbdoc(
+Search for and return the PressureLayer of the lowest altitude 
+hail growth zone. If none is found, the top and bottom of the 
+PressureLayer are set to MISSING. 
+
+Parameters:
+    pressure: 1D NumPy array of pressure values (Pa)
+    temperature: 1D NumPy array of temperature values (K)
+
+Return:
+    The PressureLayer containing the hail growth zone
     )pbdoc");
 }
 

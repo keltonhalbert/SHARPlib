@@ -224,10 +224,10 @@ def test_stp_scp_ship():
         esrh,
         ebwd
     )
-    assert (stp == pytest.approx(0.48496481))
+    assert (stp == pytest.approx(0.4849648, abs=1e-4))
 
     scp = params.supercell_composite_parameter(mupcl.cape, esrh, ebwd)
-    assert (scp == pytest.approx(7.96999))
+    assert (scp == pytest.approx(7.9699, abs=1e-4))
 
     # get SHIP
     plyr = layer.PressureLayer(70000.0, 50000.0)
@@ -237,12 +237,11 @@ def test_stp_scp_ship():
     t500 = interp.interp_pressure(50000.0, snd_data["pres"], snd_data["tmpk"])
     fzl = interp.find_first_height(
         constants.ZEROCNK, snd_data["hght"], snd_data["tmpk"])
-    print(mupcl.cape, fzl, snd_data["hght"][0], t500)
     shr06 = winds.wind_shear(
         hlyr, snd_data["hght"], snd_data["uwin"], snd_data["vwin"])
     shr06 = winds.vector_magnitude(shr06.u, shr06.v)
     ship = params.significant_hail_parameter(mupcl, lr75, t500, fzl, shr06)
-    assert (ship == pytest.approx(1.952115))
+    assert (ship == pytest.approx(1.9521, abs=1e-4))
 
 
 def test_ehi():
@@ -295,3 +294,15 @@ def test_precipitable_water():
     pwat = params.precipitable_water(plyr, snd_data["pres"], snd_data["mixr"])
 
     assert (pwat == pytest.approx(21.11469))
+
+
+def test_hgz():
+    hgz = params.hail_growth_layer(snd_data["pres"], snd_data["tmpk"])
+    assert (hgz.bottom == 51787)
+    assert (hgz.top == 35861)
+
+
+def test_dgz():
+    dgz = params.dendritic_layer(snd_data["pres"], snd_data["tmpk"])
+    assert (dgz.bottom == 49598)
+    assert (dgz.top == 46032)

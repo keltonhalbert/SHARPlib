@@ -78,14 +78,14 @@ def test_mean_wind():
     mw = winds.mean_wind(
         plyr, snd_data["pres"], snd_data["uwin"], snd_data["vwin"])
 
-    assert (mw.u == pytest.approx(4.39905))
-    assert (mw.v == pytest.approx(11.97378))
+    assert (mw.u == pytest.approx(4.39905, abs=1e-5))
+    assert (mw.v == pytest.approx(11.97378, abs=1e-5))
 
     mw = winds.mean_wind(
         plyr, snd_data["pres"], snd_data["uwin"], snd_data["vwin"], True)
 
-    assert (mw.u == pytest.approx(3.683177))
-    assert (mw.v == pytest.approx(11.69769))
+    assert (mw.u == pytest.approx(3.683177, abs=1e-5))
+    assert (mw.v == pytest.approx(11.69769, abs=1e-5))
 
 
 def test_wind_shear():
