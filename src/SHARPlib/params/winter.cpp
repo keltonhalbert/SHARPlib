@@ -29,6 +29,6 @@ PressureLayer dendritic_layer(const float pressure[], const float temperature[],
 
     // do_stuff
     return dgz;
-};
+}
 
 }  // namespace sharp
