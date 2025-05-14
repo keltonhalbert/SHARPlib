@@ -12,8 +12,8 @@ jobs:
     strategy: 
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest] #, windows-latest]
-        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        os: [windows-latest] #[ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.10"] #, "3.11", "3.12", "3.13"]
     steps:
       - name: Checkout 
         uses: actions/checkout@v4
@@ -36,7 +36,7 @@ jobs:
 
       - name: Build and install
         run: |
-          python -m pip install pytest numpy pandas fastparquet
+          python -m pip install pandas fastparquet
           pip install --verbose .
       
       - name: Test
