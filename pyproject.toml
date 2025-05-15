@@ -63,3 +63,6 @@ build-verbosity = 1
 
 test-command = "pytest {project}/tests/python"
 test-requires = ["pytest", "pandas", "fastparquet"]
+
+[tool.cibuildwheel.macos.environment]
+MACOSX_DEPLOYMENT_TARGET = "10.14"
