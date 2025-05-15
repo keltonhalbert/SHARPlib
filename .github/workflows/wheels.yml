@@ -17,7 +17,7 @@ jobs:
       matrix:
         os: [ linux-intel, linux-arm, windows, macOS-intel, macOS-arm ]
         include:
-          - archs: auto64
+          - archs: auto
             platform: auto
           - os: linux-intel
             runs-on: ubuntu-latest
