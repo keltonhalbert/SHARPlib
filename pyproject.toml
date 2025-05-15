@@ -47,6 +47,7 @@ test = ["pytest"]
 [tool.scikit-build]
 cmake.version = ">=3.15"
 cmake.build-type = "Release"
+build-dir = "build/{wheel_tag}"
 
 [tool.scikit-build.cmake.define]
 BUILD_PYBIND = true
@@ -60,6 +61,7 @@ testpaths = ["tests/python"]
 ## only supports Linux
 [tool.cibuildwheel]
 build-verbosity = 1 
+archs = ["auto64"]
 skip = ["pp*", "*i686", "*win32"]
 enable = []
 
