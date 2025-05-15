@@ -60,7 +60,7 @@ testpaths = ["tests/python"]
 ## only supports Linux
 [tool.cibuildwheel]
 build-verbosity = 1 
-skip = ["pp*", "*-i686"]
+skip = ["pp*", "*i686", "*win32"]
 enable = []
 
 test-command = "pytest {project}/tests/python"
