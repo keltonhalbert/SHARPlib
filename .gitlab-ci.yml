@@ -73,14 +73,12 @@ wheels-linux:
   artifacts:
     paths:
       - wheelhouse/
-  tags: 
-    - linux
 
 wheels-windows:
   stage: wheels
   image: mcr.microsoft.com/windows/servercore:1809
   before_script:
-    - choco install python -y --version 3.8.6
+    - choco install python -y --version 3.10
     - choco install git.install -y
     - py -m pip install cibuildwheel==2.13.1
   script:
@@ -88,5 +86,3 @@ wheels-windows:
   artifacts:
     paths:
       - wheelhouse/
-  tags:
-    - windows
