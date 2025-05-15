@@ -62,4 +62,4 @@ testpaths = ["tests/python"]
 build-verbosity = 1 
 
 test-command = "pytest {project}/tests/python"
-test-requires = "pytest"
+test-requires = ["pytest", "pandas", "fastparquet"]
