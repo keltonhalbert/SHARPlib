@@ -1,5 +1,8 @@
-# SHARP-calc
-[![C++ CI](https://github.com/keltonhalbert/SHARP-calc/actions/workflows/cmake.yml/badge.svg)](https://github.com/keltonhalbert/SHARP-calc/actions/workflows/cmake.yml)
+# SHARPlib
+[![C++ CI (Linux, MacOS, Windows)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/cmake.yml/badge.svg)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/cmake.yml)
+[![Python CI (Linux, MacOS, Windows)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/python.yml/badge.svg)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/python.yml)
+[![Build Wheels](https://github.com/keltonhalbert/SHARPlib/actions/workflows/wheels.yml/badge.svg)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/wheels.yml)
+[![Build Docs](https://github.com/keltonhalbert/SHARPlib/actions/workflows/doxygen-gh-pages.yml/badge.svg)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/doxygen-gh-pages.yml)
 
 
 **Sounding and Hodograph Analysis and Research Program (SHARP)** C++ library for conducting analysis of atmospheric sounding profiles. Based on the NSHARP routines written by John Hart and Rich Thompson at the NWS Storm Prediction Center in Norman, Oklahoma. 
@@ -13,65 +16,60 @@ Though there are likely to be instances where it will need to be deviated from, 
 Another note to the Style Guide is that, where possible/appropriate, full or verbose variable names are preferred to abbreviated ones when working with function parameters. For example, `temperature` or `pressure` is preferable to `temp` or `pres` when defining function arguments, so that it is abundantly clear to the code reader what is being passed through. This is especially the case with temperature, as `temp` is commonly used to refer to temporary variables, leading to confusion. 
 
 ### BEFORE YOU BUILD
-SHARPlib has some light-weight dependencies for testing, benchmarking, documentation building, and string formatting. These can easily be downloaded for building by runing the following command to download the dependencies from GitHub over SSH:
-```
+SHARPlib has some light-weight dependencies for testing, benchmarking, documentation building, string formatting, and creating python bindings. These can easily be downloaded for building by runing the following command to download the dependencies from GitHub over SSH:
+```bash
 git submodule update --init --recursive 
 ```
 
+### Building SHARPlib (C++) 
+To build SHARPlib, execute the following commands in the project root directory:
+```bash
+cmake -B build .
+cmake --build build -j N_BUILD_PROCESSES
+```
+
+This will build the static library in the ```{$POJECT_ROOT}/build``` directory in parallel with N_BUILD_PROCESSES. This isn't terribly useful by itself, so to install the static library, you can execute: 
+```bash
+cmake -B build . --install-prefix=/path/to/where/you/want/SHARPlib
+cmake --build build -j N_BUILD_PROCESSES
+cmake --install build
+```
+
+If you wish to create a debug build, simply pass the following arguments to CMake:
+```bash
+cmake --build build -j N_BUILD_PROCESSES --config Debug
+```
+
+### Building SHARPlib (Python)
+SHARPlib C++ code can be called from Python using [nanobind](https://github.com/wjakob/nanobind) to handle the wrapping.
+Building SHARPlib with its Python bindings is quite easy-- you can simply install it via pip from the current directory: 
+```bash
+pip install .
+```
+
+If you desire to manually build the SHARPlib library + python bindings, you may execute:
+```bash
+cmake -B build . -DBUILD_PYBIND=ON
+cmake --build build -j N_BUILD_PROCESSES
+```
+
+
 ### Unit Testing Framework
 For unit tests, we make use of the [doctest singe header source library](https://github.com/doctest/doctest) found in the `tests` directory. In order to build and run the tests, execute the following commands from the project root directory:
-```
-mkdir build; cd build
-cmake ..
-make SHARPlib_tests
-make test
-```
-NOTE: Right now, on Apple CLang, (and potentially CLang as a whole) some of the kinematics unit tests don't pass. Don't be alarmed if that's the case, it's just a difference in how the compilers treat certain things and will be remedied in the future. 
 
-### Building the Static Library
-To build the static library, simply run the following commands from the project root directory:
-```
-mkdir build; cd build
-cmake .. 
-make
-make install
-```
-It will install the static library to PROJECT_ROOT/lib.
-
-The library will be built in release mode by default, which sets the `-O3` optimization flag. To build in debug mode, clean out the build directory (CMake will cache certain things) and run the following command and proceed to build normally:
-```
-cmake -DCMAKE_BUILD_TYPE=Debug ..
-```
-
-If you are planning on using the library with gridded data, you can turn off quality control checks traditionally only needed for observed sounding profile data. This can be disabled by running CMake with the following build flag:
-```
-cmake -DCMAKE_CXX_FLAGS="-DNO_QC" ..
-```
-This will also disable missing value checks in the tests directory.
-
-If you would like a verbose compile process, run the make command in the following manner:
-```
-make VERBOSE=1
-```
-
-### Building the Python bindings
-To build the python bindings, simply nagivate to the swig directory and install via pip. The python bindings require having SWIG installed, as well as a C++17 compatible compiler. The bindings will be installed in the following namespace tree: ```nwsspc.sharp.calc```.
-
-**WARNING**: You will need SWIG >= 4.1 for the library to compile. This is available through the conda-forge channel: ```conda install -c conda-forge swig==4.1```.
-```
-cd swig
-CC=/path/to/compilers/g++ pip install .
+```bash
+cmake -B build . 
+cmake --build build -j N_BUILD_PROCESSES --target SHARPlib_tests
+ctest --test-dir build
 ```
 
 
-### Building the Docs
-To build the HTML documentation pages, simply navigate your terminal to the `docs` directory and run:
-
-```
-cd docs
-git submodule update --init --recursive ## download the CSS for the documentation
+### Building the Documentation
+To build the HTML documentation pages, the following can be executed in the terminal from the project root: 
+```bash
 doxygen Doxyfile
 ```
 
 This will generate the HTML pages using the docstring in the header files. Obviously, it requires that Doxygen be installed, [which can be found here.](https://doxygen.nl/) 
 
+Documentation is automatically built on push, [and can be found here](https://keltonhalbert.github.io/SHARPlib/)

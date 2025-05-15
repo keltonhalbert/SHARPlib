@@ -11,21 +11,22 @@
  * John Hart and Rich Thompson at SPC.
  */
 
-#ifndef __SHARP_INTERP_H__
-#define __SHARP_INTERP_H__
+#ifndef SHARP_INTERP_H
+#define SHARP_INTERP_H
 
 #include <SHARPlib/constants.h>
 
 #include <cmath>
+#include <cstddef>
 
 namespace sharp {
 
 /**
- * \author C++20 Standard Template Library <cmath>
+ * \author C++20 Standard Template Library
  *
  * \brief Linearly interpolates between a and b with distance t.
  *
- * This routine was copied from the C++20 <cmath> standard template library.
+ * This routine was copied from the C++20 standard template library.
  * It is used to linearly interpolate between A and B over a normalized
  * distance T, where 0 <= T <= 1. Full documentation and details can be found
  * in the paper located here:
@@ -47,7 +48,8 @@ namespace sharp {
  * \return  The value between __a and __b at distance __t between them.
  */
 template <typename _Fp>
-[[nodiscard]] constexpr _Fp __lerp(_Fp __a, _Fp __b, _Fp __t) {
+[[nodiscard]] constexpr _Fp __lerp(const _Fp __a, const _Fp __b,
+                                   const _Fp __t) {
     if ((__a <= 0 && __b >= 0) || (__a >= 0 && __b <= 0))
         return __t * __b + (1 - __t) * __a;
 
@@ -62,11 +64,11 @@ template <typename _Fp>
 }
 
 /**
- * \author C++20 Standard Template Library <cmath>
+ * \author C++20 Standard Template Library
  *
  * \brief Linearly interpolates between a and b with distance t.
  *
- * This routine was copied from the C++20 <cmath> standard template library.
+ * This routine was copied from the C++20 standard template library.
  * It is used to linearly interpolate between A and B over a normalized
  * distance T, where 0 <= T <= 1. Full documentation and details can be found
  * in the paper located here:
@@ -88,12 +90,13 @@ template <typename _Fp>
  *
  * \return  The value between __a and __b at distance __t between them.
  */
-[[nodiscard]] constexpr float lerp(float __a, float __b, float __t) {
+[[nodiscard]] constexpr float lerp(const float __a, const float __b,
+                                   const float __t) {
     return __lerp(__a, __b, __t);
 }
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Linearly interpolate a data field to a requested height level.
  *
@@ -114,11 +117,13 @@ template <typename _Fp>
  *
  * \return  The value of data_arr at the requested height_val.
  */
-[[nodiscard]] float interp_height(float height_val, const float height_arr[],
-                                  const float data_arr[], const int N);
+[[nodiscard]] float interp_height(const float height_val,
+                                  const float height_arr[],
+                                  const float data_arr[],
+                                  const std::ptrdiff_t N);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Linearly interpolate a data field to a requested pressure level.
  *
@@ -138,10 +143,50 @@ template <typename _Fp>
  *
  * \return  The value of data_arr at the requested pressure_val.
  */
-[[nodiscard]] float interp_pressure(float pressure_val,
+[[nodiscard]] float interp_pressure(const float pressure_val,
                                     const float pressure_arr[],
-                                    const float data_arr[], const int N);
+                                    const float data_arr[],
+                                    const std::ptrdiff_t N);
+
+/**
+ * \athor Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Find the pressure level of first occurrence of a given value
+ *
+ * Conduct a bottom-up search for the first occurrence of a given value,
+ * and interpolate in order to get the pressure level it occurs at.
+ *
+ * \param   data_val        The value being searched for
+ * \param   pressure_arr    The pressure array to get the level from (Pa)
+ * \param   data_arr        The data array of values being searched over
+ * \param   N               The length of the arrays (number of values)
+ *
+ * \return  pressure_level  (Pa)
+ */
+[[nodiscard]] float find_first_pressure(const float data_val,
+                                        const float pressure_arr[],
+                                        const float data_arr[],
+                                        const std::ptrdiff_t N);
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Find the height lecel of first occurrence of a given value
+ *
+ * Conduct a bottom-up search for the first occurrence of a given value,
+ * and interpolate in order to get the pressure level it occurs at.
+ *
+ * \param   data_val    The value being searched for
+ * \param   height_arr  The height array to get the level from (meters)
+ * \param   data_arr    The data array of values being searched over
+ * \param   N           The length of the arrays (number of values)
+ *
+ * \return  height_level    (meters)
+ */
+[[nodiscard]] float find_first_height(const float data_val,
+                                      const float height_arr[],
+                                      const float data_arr[],
+                                      const std::ptrdiff_t N);
 
 }  // end namespace sharp
 
-#endif  // __SHARP_INTERP_H__
+#endif  // SHARP_INTERP_H

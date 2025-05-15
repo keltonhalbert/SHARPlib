@@ -11,8 +11,8 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
-#ifndef __SHARP_PARAMS_H__
-#define __SHARP_PARAMS_H__
+#ifndef SHARP_PARAMS_H
+#define SHARP_PARAMS_H
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/layer.h>
@@ -23,7 +23,7 @@
 namespace sharp {
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Computes the Effective Inflow Layer for a given atmospheric sounding.
  *
@@ -44,11 +44,13 @@ namespace sharp {
  * array that can be used to hold buoyancy values during parcel lifting and
  * integration.
  *
+ * \param   lifter          (parcel lifting functor)
  * \param   pressure        (Pa)
  * \param   height          (meters)
- * \param   temperature     (degK)
- * \param   dewpoint        (degK)
- * \param   virtemp_arr     (degK)
+ * \param   temperature     (K)
+ * \param   dewpoint        (K)
+ * \param   virtemp_arr     (K)
+ * \param   pcl_vtmpk_arr   (K)
  * \param   buoy_arr        (m/s^2)
  * \param   N               (length of arrays)
  * \param   cape_thresh     (J/kg; default=100.0)
@@ -57,14 +59,69 @@ namespace sharp {
  *
  * \return  {bottom, top}
  */
+template <typename Lifter>
 [[nodiscard]] PressureLayer effective_inflow_layer(
-    const float pressure[], const float height[], const float temperature[],
-    const float dewpoint[], const float virtemp_arr[], float buoy_arr[],
-    const int N, const float cape_thresh = 100.0,
-    const float cinh_thresh = -250.0, Parcel* mupcl = nullptr);
+    Lifter& lifter, const float pressure[], const float height[],
+    const float temperature[], const float dewpoint[],
+    const float virtemp_arr[], float pcl_vtmpk_arr[], float buoy_arr[],
+    const std::ptrdiff_t N, const float cape_thresh = 100.0,
+    const float cinh_thresh = -250.0, Parcel* mupcl = nullptr) {
+    int eff_kbot = 0;
+    float eff_pbot = MISSING;
+    float eff_ptop = MISSING;
+    float sfc_hght = height[0];
+    Parcel maxpcl;
+
+    // search for the effective inflow bottom
+    for (std::ptrdiff_t k = 0; k < N; ++k) {
+#ifndef NO_QC
+        if ((temperature[k] == MISSING) || (dewpoint[k] == MISSING)) {
+            continue;
+        }
+#endif
+        Parcel effpcl(pressure[k], temperature[k], dewpoint[k], LPL::MU);
+        // We don't want to lift every single profile...
+        if (height[k] - sfc_hght > 4000.0) break;
+
+        effpcl.lift_parcel(lifter, pressure, pcl_vtmpk_arr, N);
+        buoyancy(pcl_vtmpk_arr, virtemp_arr, buoy_arr, N);
+        effpcl.cape_cinh(pressure, height, buoy_arr, N);
+
+        if (effpcl.cape > maxpcl.cape) maxpcl = effpcl;
+        if ((effpcl.cape >= cape_thresh) && (effpcl.cinh >= cinh_thresh)) {
+            eff_pbot = effpcl.pres;
+            eff_kbot = k;
+            break;
+        }
+    }
+
+    if (eff_pbot == MISSING) return {MISSING, MISSING};
+
+    for (std::ptrdiff_t k = eff_kbot + 1; k < N; ++k) {
+#ifndef NO_QC
+        if ((temperature[k] == MISSING) || (dewpoint[k] == MISSING)) {
+            continue;
+        }
+#endif
+        Parcel effpcl(pressure[k], temperature[k], dewpoint[k], LPL::MU);
+        effpcl.lift_parcel(lifter, pressure, pcl_vtmpk_arr, N);
+        buoyancy(pcl_vtmpk_arr, virtemp_arr, buoy_arr, N);
+        effpcl.cape_cinh(pressure, height, buoy_arr, N);
+
+        if (effpcl.cape > maxpcl.cape) maxpcl = effpcl;
+        if ((effpcl.cape < cape_thresh) || (effpcl.cinh < cinh_thresh)) {
+            eff_ptop = effpcl.pres;
+            break;
+        }
+    }
+
+    if (eff_ptop == MISSING) return {MISSING, MISSING};
+    if (mupcl) *mupcl = maxpcl;
+    return {eff_pbot, eff_ptop};
+}
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Estimates supercell storm motion using the Bunkers et al. 2000 method.
  *
@@ -90,12 +147,12 @@ namespace sharp {
  */
 [[nodiscard]] WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
-    const float v_wind[], const int N, HeightLayer mean_wind_layer_agl,
-    HeightLayer wind_shear_layer_agl, const bool leftMover = false,
-    const bool pressureWeighted = false);
+    const float v_wind[], const std::ptrdiff_t N,
+    HeightLayer mean_wind_layer_agl, HeightLayer wind_shear_layer_agl,
+    const bool leftMover = false, const bool pressureWeighted = false);
 
 /**
- *  \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ *  \author Kelton Halbert - NWS Storm Prediction Center
  *
  *  \brief Estimates supercell storm motion by using the<!--
  *  --> Bunkers et al. 2014 method.
@@ -131,11 +188,11 @@ namespace sharp {
  */
 [[nodiscard]] WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
-    const float v_wind[], const int N, PressureLayer eff_infl_lyr,
-    const Parcel* mupcl, const bool leftMover = false);
+    const float v_wind[], const std::ptrdiff_t N, PressureLayer eff_infl_lyr,
+    const Parcel& mupcl, const bool leftMover = false);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Computes Entrainment CAPE using a previously lifted parcel.
  *
@@ -158,7 +215,7 @@ namespace sharp {
                                      const float temperature[],
                                      const float mse_arr[],
                                      const float u_wind[], const float v_wind[],
-                                     const int N, Parcel* pcl);
+                                     const std::ptrdiff_t N, Parcel* pcl);
 
 [[nodiscard]] float energy_helicity_index(float cape, float helicity);
 
@@ -170,6 +227,82 @@ namespace sharp {
                                                   float storm_relative_helicity,
                                                   float bulk_wind_difference);
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief compute the Significant Hail Parameter
+ *
+ * Compute the Significant Hail Parameter, which was developed to
+ * delineate between significant (>=2" diameter) and non-significant
+ * (<2" diameter) hail environments.
+ *
+ * The 0-6 km shear is confined to a range of 7-27 m/s, mixing ratio
+ * is confined to a range of 11-13.6 g/kg, and the 500mb temperature
+ * maximum is capped at -5.5C.
+ *
+ * After an initial calculation of SHIP, it undergoes the following
+ * modifications:
+ *  1) if MUCAPE < 1300 J/kg, SHIP = SHIP * (MUCAPE/1300)
+ *  2) if 700-500 mb lapse rate < 5.8 C/km, SHIP = SHIP * (lr75/5.8)
+ *  3) if the freezing level < 2400 m AGL, SHIP = SHIP * (fzl/2400)
+ *
+ * It is important to note the SHIP is NOT a forecast hail size.
+ * Values of SHIP greater than 1 indicate a favorable environment
+ * for significant hail, and values greater than 4 are considered
+ * very high.
+ *
+ * \param   mu_pcl    precomputed Most Unstable Parcel
+ * \param   lapse_rate_700_500mb    (K/km)
+ * \param   tmpk_500mb              (K)
+ * \param   freezing_lvl_agl        (meters)
+ * \param   shear_0_6km             (m/s)
+ *
+ * \return Significant Hail Parameter
+ */
+[[nodiscard]] float significant_hail_parameter(const sharp::Parcel& mu_pcl,
+                                               float lapse_rate_700_500mb,
+                                               float tmpk_500mb,
+                                               float freezing_lvl_agl,
+                                               float shear_0_6km);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Computes the precipitable water vapor content over a layer
+ *
+ * Given a sharp::PressureLayer to integrate over, compute the preciptable
+ * water from the given pressure and mixing ratio arrays.
+ *
+ * \parameters  layer           (Pa)
+ * \parameter   presssure       (Pa)
+ * \parameter   mixing_ratio    (unitless)
+ * \parameter   N               (length of arrays)
+ *
+ * \return precipitable water (mm)
+ */
+[[nodiscard]] float precipitable_water(PressureLayer layer,
+                                       const float pressure[],
+                                       const float mixing_ratio[],
+                                       const std::ptrdiff_t N);
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Get the layer encompassing the lowest hail growth zone (-10 to
+ * -30 C)
+ *
+ * Search for and return the sharp::PressuerLayer of the lowest altitude
+ * hail growth zone. If none is found, the top and bottom pressure levels
+ * are set to sharp::MISSING.
+ *
+ * \param    pressure    (Pa)
+ * \param    temperature (K)
+ *
+ * \return   The top and bottom of the hail growth zone (Pa)
+ */
+[[nodiscard]] PressureLayer hail_growth_layer(const float pressure[],
+                                              const float temperature[],
+                                              const std::ptrdiff_t N);
+
 }  // end namespace sharp
 
-#endif  // __SHARP_PARAMS_H__
+#endif  // SHARP_PARAMS_H

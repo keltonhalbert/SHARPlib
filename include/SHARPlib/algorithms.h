@@ -11,15 +11,16 @@
  * John Hart and Rich Thompson at SPC.
  */
 
-#ifndef __SHARP_ALGORITHMS_H__
-#define __SHARP_ALGORITHMS_H__
+#ifndef SHARP_ALGORITHMS_H
+#define SHARP_ALGORITHMS_H
 
+#include <cstddef>
 #include <functional>
 
 namespace sharp {
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Finds the index of the lower bound that does not <!--
  * --> satisfy element < value
@@ -34,7 +35,7 @@ namespace sharp {
  * arrays over vectors for easy integration with SWIG bindings,
  * C code, and the potential future in which this runs on CUDA
  * architecture. Currently, the algorithms in the STL library are
- * not supported by the CUDA STL, but the types in <functional>
+ * not supported by the CUDA STL, but the types in \<functional\>
  * (i.e. std::less) are supported by the CUDA STL. Additionally, this
  * implementation of lower_bound is designed to reduce branching.
  *
@@ -46,12 +47,14 @@ namespace sharp {
  * \return  Index of lower bound
  */
 template <typename T, typename C = std::less<>>
-[[nodiscard]] constexpr int lower_bound(const T array[], const int N,
-                                        const T& value, const C cmp = C{}) {
-    int len = N;
-    int idx = 0;
+[[nodiscard]] constexpr std::ptrdiff_t lower_bound(const T array[],
+                                                   const std::ptrdiff_t N,
+                                                   const T value,
+                                                   const C cmp = C{}) {
+    std::ptrdiff_t len = N;
+    std::ptrdiff_t idx = 0;
     while (len > 1) {
-        int half = len / 2;
+        std::ptrdiff_t half = len / 2;
         idx += cmp(array[idx + half - 1], value) * half;
         len -= half;  // = ceil(len / 2)
     }
@@ -59,7 +62,7 @@ template <typename T, typename C = std::less<>>
 }
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Finds the first index that satisfies value < element
  *
@@ -73,7 +76,7 @@ template <typename T, typename C = std::less<>>
  * arrays over vectors for easy integration with SWIG bindings,
  * C code, and the potential future in which this runs on CUDA
  * architecture. Currently, the algorithms in the STL library are
- * not supported by the CUDA STL, but the types in <functional>
+ * not supported by the CUDA STL, but the types in \<functional\>
  * (i.e. std::less) are supported by the CUDA STL. Additionally, this
  * implementation of lower_bound is designed to reduce branching.
  *
@@ -85,12 +88,14 @@ template <typename T, typename C = std::less<>>
  * \return  Index of the upper bound
  */
 template <typename T, typename C = std::less<>>
-[[nodiscard]] constexpr int upper_bound(const T array[], const int N,
-                                        const T& value, const C cmp = C{}) {
-    int len = N;
-    int idx = 0;
+[[nodiscard]] constexpr std::ptrdiff_t upper_bound(const T array[],
+                                                   const std::ptrdiff_t N,
+                                                   const T value,
+                                                   const C cmp = C{}) {
+    std::ptrdiff_t len = N;
+    std::ptrdiff_t idx = 0;
     while (len > 1) {
-        int half = len / 2;
+        std::ptrdiff_t half = len / 2;
         idx += !cmp(value, array[idx + half - 1]) * half;
         len -= half;  // = ceil(len / 2)
     }
@@ -98,7 +103,7 @@ template <typename T, typename C = std::less<>>
 }
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief A kernel that computes the area under a curve using <!--
  * --> the trapezoidal rule.
@@ -127,4 +132,4 @@ template <typename _T>
 
 }  // end namespace sharp
 
-#endif  // __SHARP_ALGORITHMS_H__
+#endif  // SHARP_ALGORITHMS_H

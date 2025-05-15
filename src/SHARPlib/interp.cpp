@@ -16,14 +16,16 @@
 #include <SHARPlib/interp.h>
 
 #include <cmath>
+#include <cstddef>
 #include <functional>
 
 namespace sharp {
 
-float interp_height(float height_val, const float height_arr[],
-                    const float data_arr[], const int N) {
+float interp_height(const float height_val, const float height_arr[],
+                    const float data_arr[], const std::ptrdiff_t N) {
 #ifndef NO_QC
     if (height_val == MISSING) return MISSING;
+    if (std::isnan(height_val)) return MISSING;
     // If the height value is beyond the top of the profile,
     // or below the surface, we can't reasonably extrapolate
     if ((height_val > height_arr[N - 1]) || (height_val < height_arr[0]))
@@ -31,8 +33,8 @@ float interp_height(float height_val, const float height_arr[],
 #endif
 
     static constexpr auto comp = std::less<float>();
-    int idx_top = upper_bound(height_arr, N, height_val, comp);
-    int idx_bot = idx_top - 1;
+    std::ptrdiff_t idx_top = upper_bound(height_arr, N, height_val, comp);
+    std::ptrdiff_t idx_bot = idx_top - 1;
 
 #ifndef NO_QC
     for (; idx_bot > 0; --idx_bot) {
@@ -62,10 +64,11 @@ float interp_height(float height_val, const float height_arr[],
     return lerp(data_bot, data_top, dz_norm);
 }
 
-float interp_pressure(float pressure_val, const float pressure_arr[],
-                      const float data_arr[], const int N) {
+float interp_pressure(const float pressure_val, const float pressure_arr[],
+                      const float data_arr[], const std::ptrdiff_t N) {
 #ifndef NO_QC
     if (pressure_val == MISSING) return MISSING;
+    if (std::isnan(pressure_val)) return MISSING;
     // If the pressure value is beyond the top of the profile,
     // or below the surface, we can't reasonably extrapolate
     if ((pressure_val < pressure_arr[N - 1]) ||
@@ -75,8 +78,8 @@ float interp_pressure(float pressure_val, const float pressure_arr[],
 #endif
 
     static constexpr auto comp = std::greater<float>();
-    int idx_top = upper_bound(pressure_arr, N, pressure_val, comp);
-    int idx_bot = idx_top - 1;
+    std::ptrdiff_t idx_top = upper_bound(pressure_arr, N, pressure_val, comp);
+    std::ptrdiff_t idx_bot = idx_top - 1;
 
 #ifndef NO_QC
     for (; idx_bot > 0; --idx_bot) {
@@ -107,6 +110,98 @@ float interp_pressure(float pressure_val, const float pressure_arr[],
 
     // return the linear interpolation
     return lerp(data_bot, data_top, dp_norm);
+}
+
+float find_first_pressure(const float data_val, const float *pressure_arr,
+                          const float *data_arr, const std::ptrdiff_t N) {
+#ifndef NO_QC
+    if (data_val == MISSING) {
+        return MISSING;
+    }
+#endif
+
+    float val0, val1;
+    for (std::ptrdiff_t k = 1; k < N; ++k) {
+        val0 = data_arr[k - 1];
+        val1 = data_arr[k];
+
+        if (val0 == data_val) {
+            return pressure_arr[k - 1];
+        }
+        if (val1 == data_val) {
+            return pressure_arr[k];
+        }
+
+        // data are decreasing
+        if ((val0 > data_val) && (val1 < data_val)) {
+            const float logp_bot = std::log10(pressure_arr[k - 1]);
+            const float logp_top = std::log10(pressure_arr[k]);
+
+            const float d_norm = (val0 - data_val) / (val0 - val1);
+
+            // return the linear interpolation
+            return std::pow(10, lerp(logp_bot, logp_top, d_norm));
+        }
+
+        // data are increasing
+        if ((val0 < data_val) && (val1 > data_val)) {
+            const float logp_bot = std::log10(pressure_arr[k - 1]);
+            const float logp_top = std::log10(pressure_arr[k]);
+
+            const float d_norm = (data_val - val0) / (val1 - val0);
+
+            // return the linear interpolation
+            return std::pow(10, lerp(logp_bot, logp_top, d_norm));
+        }
+    }
+
+    return MISSING;
+}
+
+float find_first_height(const float data_val, const float *height_arr,
+                        const float *data_arr, const std::ptrdiff_t N) {
+#ifndef NO_QC
+    if (data_val == MISSING) {
+        return MISSING;
+    }
+#endif
+
+    float val0, val1;
+    for (std::ptrdiff_t k = 1; k < N; ++k) {
+        val0 = data_arr[k - 1];
+        val1 = data_arr[k];
+
+        if (val0 == data_val) {
+            return height_arr[k - 1];
+        }
+        if (val1 == data_val) {
+            return height_arr[k];
+        }
+
+        // data are decreasing
+        if ((val0 > data_val) && (val1 < data_val)) {
+            const float hght_bot = height_arr[k - 1];
+            const float hght_top = height_arr[k];
+
+            const float d_norm = (val0 - data_val) / (val0 - val1);
+
+            // return the linear interpolation
+            return lerp(hght_bot, hght_top, d_norm);
+        }
+
+        // data are increasing
+        if ((val0 < data_val) && (val1 > data_val)) {
+            const float hght_bot = height_arr[k - 1];
+            const float hght_top = height_arr[k];
+
+            const float d_norm = (data_val - val0) / (val1 - val0);
+
+            // return the linear interpolation
+            return lerp(hght_bot, hght_top, d_norm);
+        }
+    }
+
+    return MISSING;
 }
 
 }  // end namespace sharp

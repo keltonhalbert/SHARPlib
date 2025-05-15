@@ -10,13 +10,15 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
-#ifndef __SHARP_PARCEL_H__
-#define __SHARP_PARCEL_H__
+#ifndef SHARP_PARCEL_H
+#define SHARP_PARCEL_H
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
 #include <SHARPlib/thermo.h>
+
+#include <cstddef>
 
 namespace sharp {
 
@@ -24,40 +26,88 @@ namespace sharp {
 //
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief A functor that calls the Wobus Wetlift funtion
  *
  * This functor is used to wrap the Wobus Wetlift function for parcel
- * lifting routines. These functions are wrapped by functors - classes
- * with their operator() overloaded - so that functions can be
+ * lifting routines. Functors - classes with their operator()
+ * overloaded - are used so that functions can be
  * passed to templates in a way that the compiler can still
  * optimize, rather than using function pointers or lambdas.
  *
  * Specifically, this functor is designed to be passed as a template
- * argument to sharp::lift_parcel, so that the method of computing
+ * argument to sharp::Parcel::lift_parcel, so that the method of computing
  * moist adiabats can be changed without changing the overall parcel
  * lifting code. The reason this is awesome is that the compiler
  * can still optimize and inline this code, while the user can configure
  * the parcel lifting algorithm to their specifications.
  */
 struct lifter_wobus {
+    static constexpr bool lift_from_lcl = true;
+
+    /**
+     * \brief Perform the setup step for the parcel lifter.
+     *
+     * Some parcel lifters require setup in order to handle
+     * adiabatic ascent and tracking of vapor, liquid, and
+     * ice mixing ratios. The Wobus lifter does not require
+     * this, however, so this function does nothing.
+     */
+    inline void setup([[maybe_unused]] const float lcl_pres,
+                      [[maybe_unused]] const float lcl_tmpk) const {}
+
     /**
      * \brief Overloads operator() to call sharp::wetlift.
      * \param   pres        Parcel pressure (Pa)
-     * \param   tmpk        Parcel temperature (degK)
+     * \param   tmpk        Parcel temperature (K)
      * \param   new_pres    Final level of parcel after lift (Pa)
      *
-     * \return  The virtual temperature of the lifted parcel
+     * \return  The temperature of the lifted parcel
      */
-    [[nodiscard]] inline float operator()(float pres, float tmpk,
-                                          float new_pres) const {
-        float pcl_tmpk = wetlift(pres, tmpk, new_pres);
-        return virtual_temperature(pcl_tmpk, mixratio(new_pres, pcl_tmpk));
+    [[nodiscard]] inline float operator()(const float pres, const float tmpk,
+                                          const float new_pres) const {
+        return wetlift(pres, tmpk, new_pres);
+    }
+
+    /**
+     * \brief Computes the virtual temperature of the parcel
+     * \param   pres        Parcel pressure (Pa)
+     * \param   tmpk        Parcel temperature (K)
+     *
+     * \return  The virtual temperature of the parcel
+     */
+    [[nodiscard]] inline float parcel_virtual_temperature(
+        const float pres, const float tmpk) const {
+        return virtual_temperature(tmpk, mixratio(pres, tmpk));
     }
 };
 
 struct lifter_cm1 {
+   private:
+    /**
+     * \brief Used to keep track of mixing ratio for conserved/adiabatic lifting
+     */
+    float rv_total = MISSING;
+
+    /**
+     * \brief Water vapor mixing ratio variable updated during parcel lifts
+     */
+    float rv = MISSING;
+
+    /**
+     * \brief Liquid water mixing ratio variable updated during parcel lifts
+     */
+    float rl = MISSING;
+
+    /**
+     * \brief Ice water mixing ratio variable updated during parcel lifts
+     */
+    float ri = MISSING;
+
+   public:
+    static constexpr bool lift_from_lcl = false;
+
     /**
      * \brief The type of moist adiabat to use, as defined by sharp::adiabat
      */
@@ -69,45 +119,51 @@ struct lifter_cm1 {
     float pressure_incr = 500.0f;
 
     /**
-     * \brief The iterative convergence criteria
+     * \brief The iterative convergence criteria (K)
      */
     float converge = 0.001f;
 
     /**
-     * \brief Used to keep track of mixing ratio for conserved/adiabatic lifting
+     * \brief perform the necessary setup for parcel ascent.
+     *
+     * This function sets the total water mixing ratio for
+     * adiabatic parcel ascent, and zeroes out the vapor,
+     * liquid, and ice mixing ratios from previous parcel
+     * ascents.
      */
-    float rv_total = MISSING;
-
-    /**
-     * \brief Water vapor mixing ratio variable updated during parcel lifts
-     */
-    float rv = 0.0;
-
-    /**
-     * \brief Liquid water mixing ratio variable updated during parcel lifts
-     */
-    float rl = 0.0;
-
-    /**
-     * \brief Ice water mixing ratio variable updated during parcel lifts
-     */
-    float ri = 0.0;
+    inline void setup(const float lcl_pres, const float lcl_tmpk) {
+        this->rv_total = mixratio(lcl_pres, lcl_tmpk);
+        this->rv = 0.0f;
+        this->rl = 0.0f;
+        this->ri = 0.0f;
+    }
 
     /**
      * \brief Overloads operator() to call sharp::moist_adiabat_cm1
      *
      * \param   pres        Parcel pressure (Pa)
-     * \param   tmpk        Parcel temperature (degK)
+     * \param   tmpk        Parcel temperature (K)
      * \param   new_pres    Final level of parcel after lift (Pa)
      *
-     * \return  The virtual temperature of the lifted parcel
+     * \return  The temperature of the lifted parcel
      */
-    [[nodiscard]] inline float operator()(float pres, float tmpk,
-                                          float new_pres) {
-        float pcl_tmpk = moist_adiabat_cm1(
-            pres, tmpk, new_pres, this->rv_total, this->rv, this->rl, this->ri,
-            this->pressure_incr, this->converge, this->ma_type);
-        return virtual_temperature(pcl_tmpk, this->rv, this->rl, this->ri);
+    [[nodiscard]] inline float operator()(const float pres, const float tmpk,
+                                          const float new_pres) {
+        return moist_adiabat_cm1(pres, tmpk, new_pres, this->rv_total, this->rv,
+                                 this->rl, this->ri, this->pressure_incr,
+                                 this->converge, this->ma_type);
+    }
+
+    /**
+     * \brief Computes the virtual temperature of the parcel
+     * \param   pres        Parcel pressure (Pa)
+     * \param   tmpk        Parcel temperature (K)
+     *
+     * \return  The virtual temperature of the parcel
+     */
+    [[nodiscard]] inline float parcel_virtual_temperature(
+        [[maybe_unused]] const float pres, const float tmpk) const {
+        return virtual_temperature(tmpk, this->rv, this->rl, this->ri);
     }
 };
 
@@ -132,9 +188,6 @@ struct lifter_cm1 {
  * vapor mixing ratio within the lowest 100 hPa are used to estimate a boundary
  * layer mean, and lifted from the surface.
  *
- * The EIL parcel is the mean Effective Inflow Layer parcel, in which a parcel
- * is lifted from the center of the Effective Inflow Layer
- *
  * The USR parcel means that the parcel initial lifting attributes have already
  * been set by the programmer or user, and there is no need for them to be
  * set or modified.
@@ -156,24 +209,19 @@ enum class LPL : int {
     MU = 3,  // most unstable
 
     /**
-     * \brief 100mb Mixed Layer Parcel
+     * \brief Mixed Layer Parcel
      */
-    ML = 4,  // 100mb mixed layer
+    ML = 4,  // Mixed layer
 
     /**
      * \brief User-defined Parcel
      */
     USR = 5,  // user-defined
-
-    /**
-     * \brief Mean Effective Inflow Layer Parcel
-     */
-    EIL = 6,  // Mean effective inflow layer
     END,
 };
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Data that defines a Parcel, its attributes, and derived quantities.
  *
@@ -183,32 +231,32 @@ enum class LPL : int {
  */
 struct Parcel {
     /**
-     * \brief Parcel starting pressure (hPa)
+     * \brief Parcel starting pressure (Pa)
      */
     float pres = MISSING;
 
     /**
-     * \brief Parcel starting temperature (degC)
+     * \brief Parcel starting temperature (K)
      */
     float tmpk = MISSING;
 
     /**
-     * \brief Parcel starting dewpoint (degC)
+     * \brief Parcel starting dewpoint (K)
      */
     float dwpk = MISSING;
 
     /**
-     * \brief Pressure at the Lifted Condensation Level (hPa)
+     * \brief Pressure at the Lifted Condensation Level (Pa)
      */
     float lcl_pressure = MISSING;
 
     /**
-     * \brief Pressure at the Level of Free Convection (hPa)
+     * \brief Pressure at the Level of Free Convection (Pa)
      */
     float lfc_pressure = MISSING;
 
     /**
-     * \brief Pressure at the parcel Equilibrium Level (hPa)
+     * \brief Pressure at the parcel Equilibrium Level (Pa)
      */
     float eql_pressure = MISSING;
 
@@ -227,145 +275,244 @@ struct Parcel {
      * \brief The type of parcel this is
      */
     LPL source;
+
+    Parcel();
+    Parcel(const float pressure, const float temperature, const float dewpoint,
+           const LPL lpl);
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Lifts a sharp::Parcel to compute its virtual temperature
+     *
+     * Lifts a sharp::Parcel dry adiabatically from its sharp::LPL to its
+     * LCL dry adiabatically, and then moist adiabatically from the
+     * LCL to the top of the profile. The moist adiabat used is determined
+     * bu the type of lifting functor passed to the function (i.e.
+     * sharp::lifter_wobus or sharp::lifter_cm1).
+     *
+     * \param   liftpcl         Parcel lifting function/functor
+     * \param   pressure_arr    Array of env pressure (Pa)
+     * \param   pcl_vtmpk_arr   The array to fill with virtual temp (K)
+     * \param   N               The length of the arrays
+     */
+    template <typename Lft>
+    void lift_parcel(Lft& liftpcl, const float pressure_arr[],
+                     float pcl_vtmpk_arr[], const std::ptrdiff_t N) {
+        // Lift the parcel from the LPL to the LCL
+        float pres_lcl;
+        float tmpk_lcl;
+        drylift(this->pres, this->tmpk, this->dwpk, pres_lcl, tmpk_lcl);
+        // If we are lifting elevated parcel (i.e. EIL), we need to make
+        // sure our LCL isnt above the top of our data.
+        if (pres_lcl < pressure_arr[N - 1]) return;
+
+        this->lcl_pressure = pres_lcl;
+
+        const float qv_lcl = mixratio(pres_lcl, tmpk_lcl);
+        const float thetav_lcl =
+            theta(pres_lcl, virtual_temperature(tmpk_lcl, qv_lcl),
+                  THETA_REF_PRESSURE);
+
+        // Define the dry and saturated lift layers
+        PressureLayer dry_lyr = {this->pres, this->lcl_pressure};
+        PressureLayer sat_lyr = {this->lcl_pressure, pressure_arr[N - 1]};
+
+        // The LayerIndex excludes the top and bottom for interpolation reasons
+        const LayerIndex dry_idx = get_layer_index(dry_lyr, pressure_arr, N);
+        const LayerIndex sat_idx = get_layer_index(sat_lyr, pressure_arr, N);
+
+        // zero out any residual buoyancy from
+        // other parcels that may have been lifted
+        for (std::ptrdiff_t k = 0; k < dry_idx.kbot; ++k) {
+            pcl_vtmpk_arr[k] = 0.0f;
+        }
+
+        // Virtual potential temperature (Theta-V)
+        // is conserved for a parcels dry ascent to the LCL
+        for (std::ptrdiff_t k = dry_idx.kbot; k < dry_idx.ktop + 1; ++k) {
+            const float pcl_vtmp =
+                theta(THETA_REF_PRESSURE, thetav_lcl, pressure_arr[k]);
+            pcl_vtmpk_arr[k] = pcl_vtmp;
+        }
+
+        float pres_bot = pres_lcl;
+        float tmpk_bot = tmpk_lcl;
+        liftpcl.setup(pres_lcl, tmpk_lcl);
+
+        // fill the array with the moist parcel buoyancy
+        for (std::ptrdiff_t k = sat_idx.kbot; k < N; ++k) {
+            // compute above-lcl buoyancy here
+            const float pcl_pres = pressure_arr[k];
+            const float pcl_tmpk = liftpcl(pres_bot, tmpk_bot, pcl_pres);
+
+            if constexpr (!Lft::lift_from_lcl) {
+                pres_bot = pcl_pres;
+                tmpk_bot = pcl_tmpk;
+            }
+
+            const float pcl_vtmpk =
+                liftpcl.parcel_virtual_temperature(pcl_pres, pcl_tmpk);
+            pcl_vtmpk_arr[k] = pcl_vtmpk;
+        }
+    }
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Find the LFC and EL that bounds the layer with the maximum CAPE
+     *
+     * Searches the buoyancy array for the LFC and EL combination that
+     * results in the most CAPE in the given profile. The buoyancy array is
+     * typically computed by calling sharp::Parcel::lift_parcel. Once the LFC
+     * and EL are found, the values are set in sharp::Parcel.lfc_pres and
+     * sharp::Parcel.eql_pres.
+     *
+     * \param   pres_arr    The pressure coordinate array (Pa)
+     * \param   hght_arr    The height coordinate array (meters)
+     * \param   buoy_arr    The profile buoyancy array (m/s^2)
+     * \param   N           The length of the arrays
+     */
+    void find_lfc_el(const float pres_arr[], const float hght_arr[],
+                     const float buoy_arr[], const std::ptrdiff_t N);
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Compute CAPE and CINH for a previously lifted sharp::Parcel.
+     *
+     * Assuming that sharp::Parcel::lift_parcel has been called, cape_cinh
+     * will integrate the area between the LFC and EL to compute CAPE,
+     * and integrate the area between the LPL and LCL to compute CINH.
+     *
+     * The results are set in pcl->cape and pcl->cinh.
+     *
+     * \param   pres_arr    Array of pressure (Pa)
+     * \param   hght_arr    Array of height (meters)
+     * \param   buoy_arr    Array of buoyancy (m/s^2)
+     * \param   N           Length of arrays
+     */
+    void cape_cinh(const float pres_arr[], const float hght_arr[],
+                   const float buoy_arr[], const std::ptrdiff_t N);
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Construct and return a surface-based Parcel
+     *
+     * Given input values of surface pressure, temperature,
+     * and dewpoint temperature, construct and return a Surface
+     * Based Parcel.
+     *
+     * \param    pressure        Surface pressure (Pa)
+     * \param    temperature     Surface temperature (K)
+     * \param    dewpoint        Surface dewpoint (K)
+     * \return   sharp::Parcel with surface values
+     */
+    static inline Parcel surface_parcel(const float pressure,
+                                        const float temperature,
+                                        const float dewpoint) noexcept {
+        return Parcel(pressure, temperature, dewpoint, LPL::SFC);
+    }
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Construct and return a mixed-layer Parcel
+     *
+     * Given input arrays of pressure, height, potential
+     * temperature, and water vapor mixing ratio, as well
+     * as a defined sharp::PressureLayer or
+     * sharp::HeightLayer, compute and return a mixed-layer
+     * Parcel.
+     *
+     * \param   mix_layer           sharp::PressureLayer or sharp::HeightLayer
+     * \param   pressure            Array of pressure (Pa)
+     * \param   height              Array of height (meters)
+     * \param   pot_temperature     Array of potential temperature (K)
+     * \param   wv_mixratio         Array of water vapor mixing ratio (unitless)
+     * \param   N                   Length of arrays
+     * \return sharp::Parcel with mixed-layer values
+     */
+    template <typename Lyr>
+    static Parcel mixed_layer_parcel(Lyr& mix_layer, const float pressure[],
+                                     [[maybe_unused]] const float height[],
+                                     const float pot_temperature[],
+                                     const float wv_mixratio[],
+                                     const std::ptrdiff_t N) noexcept {
+        float mean_mixr, mean_thta, pcl_pres;
+        if constexpr (Lyr::coord == LayerCoordinate::pressure) {
+            mean_mixr = layer_mean(mix_layer, pressure, wv_mixratio, N);
+            mean_thta = layer_mean(mix_layer, pressure, pot_temperature, N);
+            pcl_pres = mix_layer.bottom;
+
+        } else {
+            mean_mixr = layer_mean(mix_layer, height, pressure, wv_mixratio, N);
+            mean_thta =
+                layer_mean(mix_layer, height, pressure, pot_temperature, N);
+            pcl_pres =
+                sharp::interp_height(mix_layer.bottom, height, pressure, N);
+        }
+        const float tmpk = theta(THETA_REF_PRESSURE, mean_thta, pcl_pres);
+        const float dwpk = temperature_at_mixratio(mean_mixr, pcl_pres);
+
+        return Parcel(pcl_pres, tmpk, dwpk, LPL::ML);
+    }
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Construct and return a most-unstable Parcel
+     *
+     * Given input arrays of pressure, height, temperature,
+     * virtual temperature, and dewpoint, a scratch/working
+     * array to store values of buoyancy, and a defined
+     * sharp::PressureLayer or sharp::HeightLayer to search
+     * over, find and return the most-unstable parcel.
+     *
+     * \param   pressure            Array of pressure (Pa)
+     * \param   height              Array of height (meters)
+     * \param   temperature         Array of temperature (K)
+     * \param   virtemp             Array of virtual temperature (K)
+     * \param   dewpoint            Array of dewpoint temperature (K)
+     * \param   pcl_virtemp         Writeable array for parcel lifting calcs (K)
+     * \param   buoy_arr            Writeable array for buoyancy calcs (m/s^2)
+     * \param   N                   Length of arrays
+     * \param   search_layer        sharp::PressureLayer or sharp::HeightLay
+     * \param   lifter              The parcel moist adiabatic ascent function
+     * \return The most unstable sharp::Parcel within the search layer
+     */
+    template <typename Lyr, typename Lft>
+    static Parcel most_unstable_parcel(
+        Lyr& search_layer, Lft& lifter, const float pressure[],
+        const float height[], const float temperature[], const float virtemp[],
+        const float dewpoint[], float pcl_virtemp[], float buoy_arr[],
+        const std::ptrdiff_t N) noexcept {
+        LayerIndex lyr_idx;
+        if constexpr (Lyr::coord == LayerCoordinate::pressure) {
+            lyr_idx = get_layer_index(search_layer, pressure, N);
+
+        } else {
+            lyr_idx = get_layer_index(search_layer, height, N);
+        }
+
+        Parcel max_parcel;
+        for (std::ptrdiff_t idx = lyr_idx.kbot; idx <= lyr_idx.ktop; ++idx) {
+            const float pres = pressure[idx];
+            const float tmpk = temperature[idx];
+            const float dwpk = dewpoint[idx];
+            Parcel pcl(pres, tmpk, dwpk, LPL::MU);
+
+            pcl.lift_parcel(lifter, pressure, pcl_virtemp, N);
+            buoyancy(pcl_virtemp, virtemp, buoy_arr, N);
+            pcl.cape_cinh(pressure, height, buoy_arr, N);
+            if (pcl.cape > max_parcel.cape) max_parcel = pcl;
+        }
+
+        return max_parcel;
+    }
 };
-
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Sets the Lifted Parcel Level (LPL) attributes for a sharp::Parcel.
- *
- * Before computing CAPE and CINH, the parcel's level of origin, or the
- * Lifted Parcel Level (LPL), must be set. The enum sharp::LPL defines
- * common lifting levels, and passing the appropriate enum member
- * will set the sharp::Parcel attributes to that type of parcel or level.
- *
- * If you wish to set a custom LPL, you can do so and then set the
- * source to sharp::LPL::USR.
- *
- * \param   pressure        Array of pressure (Pa)
- * \param   temperature     Array of temperature (degK)
- * \param   dewpoint        Array of dewpoint temperature (degK)
- * \param   wv_mixratio     Array of water vapor mixing ratio (kg/kg)
- * \param   theta_arr       Array of potential temperature (degK)
- * \param   thetae_arr      Array of eqiv. potential temperature (degK)
- * \param   N               The length of the arrays
- * \param   pcl             The sharp::Parcel to set the attributes to
- * \param   source          The type of sharp::Parcel to define
- */
-void define_parcel(const float pressure[], const float temperature[],
-                   const float dewpoint[], const float wv_mixratio[],
-                   const float theta_arr[], const float thetae_arr[],
-                   const int N, Parcel& pcl, LPL source);
-
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Lifts a sharp::Parcel to compute buoyancy
- *
- * Lifts a sharp::Parcel dry adiabatically from its sharp::LPL to its
- * LCL dry adiabatically, and then moist adiabatically from the
- * LCL to the top of the profile. The moist adiabat used is determined
- * bu the type of lifting functor passed to the function (i.e.
- * sharp::lifter_wobus or sharp::lifter_cm1).
- *
- * \param   liftpcl
- * \param   pressure_arr                Array of env pressure (Pa)
- * \param   virtual_temperature_arr     Array of env virtual temperature (degK)
- * \param   buoyancy_arr                The array to fill with Buoyancy (m/s^2)
- * \param   N                           The length of the arrays
- * \param   pcl                         The sharp::Parcel to lift
- */
-template <typename Lft>
-void lift_parcel(Lft liftpcl, const float pressure_arr[],
-                 const float virtual_temperature_arr[], float buoyancy_arr[],
-                 const int N, Parcel* pcl) {
-    // Lift the parcel from the LPL to the LCL
-    float pres_lcl;
-    float tmpk_lcl;
-    drylift(pcl->pres, pcl->tmpk, pcl->dwpk, pres_lcl, tmpk_lcl);
-    // If we are lifting elevated parcel (i.e. EIL), we need to make
-    // sure out LCL isnt above the top of our data.
-    if (pres_lcl < pressure_arr[N - 1]) return;
-
-    pcl->lcl_pressure = pres_lcl;
-
-    const float qv_lcl = mixratio(pres_lcl, tmpk_lcl);
-    const float thetav_lcl = theta(
-        pres_lcl, virtual_temperature(tmpk_lcl, qv_lcl), THETA_REF_PRESSURE);
-
-    // Define the dry and saturated lift layers
-    PressureLayer dry_lyr = {pcl->pres, pcl->lcl_pressure};
-    PressureLayer sat_lyr = {pcl->lcl_pressure, pressure_arr[N - 1]};
-
-    // The LayerIndex excludes the top and bottom for interpolation reasons
-    const LayerIndex dry_idx = get_layer_index(dry_lyr, pressure_arr, N);
-    const LayerIndex sat_idx = get_layer_index(sat_lyr, pressure_arr, N);
-
-    // zero out any residual buoyancy from
-    // other parcels that may have been lifted
-    for (int k = 0; k < dry_idx.kbot; ++k) {
-        buoyancy_arr[k] = 0.0;
-    }
-
-    // Fill the array with dry parcel buoyancy.
-    // Virtual potential temperature (Theta-V)
-    // is conserved for a parcels dry ascent to the LCL
-    for (int k = dry_idx.kbot; k < dry_idx.ktop + 1; ++k) {
-        const float pcl_vtmp =
-            theta(THETA_REF_PRESSURE, thetav_lcl, pressure_arr[k]);
-        buoyancy_arr[k] = buoyancy(pcl_vtmp, virtual_temperature_arr[k]);
-    }
-
-    // fill the array with the moist parcel buoyancy
-    for (int k = sat_idx.kbot; k < N; ++k) {
-        // compute above-lcl buoyancy here
-        const float pcl_pres = pressure_arr[k];
-        const float pcl_vtmpk = liftpcl(pres_lcl, tmpk_lcl, pcl_pres);
-        const float env_vtmpk = virtual_temperature_arr[k];
-        buoyancy_arr[k] = buoyancy(pcl_vtmpk, env_vtmpk);
-    }
-}
-
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Find the LFC and EL that bounds the layer with the maximum CAPE
- *
- * Searches the buoyancy array for the LFC and EL combination that
- * results in the most CAPE in the given profile. The buoyancy array is
- * typically computed by calling sharp::lift_parcel. Once the LFC and EL
- * are found, the values are set in sharp::Parcel.lfc_pres and
- * sharp::Parcel.eql_pres.
- *
- * \param   pcl         a sharp::Parcel with its sharp::LPL/attributes defined
- * \param   pres_arr    The pressure coordinate array (Pa)
- * \param   hght_arr    The height coordinate array (meters)
- * \param   buoy_arr    The profile buoyancy array (m/s^2)
- * \param   N           The length of the arrays
- */
-void find_lfc_el(Parcel* pcl, const float pres_arr[], const float hght_arr[],
-                 const float buoy_arr[], const int N);
-
-/**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
- *
- * \brief Compute CAPE and CINH for a previously lifted sharp::Parcel.
- *
- * Assuming that sharp::lift_parcel has been called, cape_cinh
- * will integrate the area between the LFC and EL to compute CAPE,
- * and integrate the area between the LPL and LCL to compute CINH.
- *
- * The results are set in pcl->cape and pcl->cinh.
- *
- * \param   pres_arr    Array of pressure (Pa)
- * \param   hght_arr    Array of height (meters)
- * \param   buoy_arr    Array of buoyancy (m/s^2)
- * \param   N           Length of arrays
- * \param   pcl         A sharp::Parcel corresponding to the buoyancy array.
- */
-void cape_cinh(const float pres_arr[], const float hght_arr[],
-               const float buoy_arr[], const int N, Parcel* pcl);
 
 }  // end namespace sharp
 
-#endif  // __SHARP_PARCEL_H__
+#endif  // SHARP_PARCEL_H

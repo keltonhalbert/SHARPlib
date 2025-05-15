@@ -11,17 +11,19 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
-#ifndef __SHARP_WINDS_H__
-#define __SHARP_WINDS_H__
+#ifndef SHARP_WINDS_H
+#define SHARP_WINDS_H
 
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
 
+#include <cstddef>
+
 namespace sharp {
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief A simple structure of two named floats that represent a wind vector.
  */
@@ -38,7 +40,7 @@ struct WindVector {
 };
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief A simple structure of two names floats that represent<!--
  * --> the components of a wind vector.
@@ -141,7 +143,7 @@ struct WindComponents {
 
 /**
  *
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Conveniance function to compute wind speed and direction<!--
  * --> from components
@@ -159,7 +161,7 @@ struct WindComponents {
 
 /**
  *
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Conveniance function to compute wind speed and direction<!--
  * --> from components
@@ -176,7 +178,7 @@ struct WindComponents {
 
 /**
  *
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Conveniance function to compute the U and V components<!--
  * --> of a wind vector.
@@ -194,7 +196,7 @@ struct WindComponents {
 
 /**
  *
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Conveniance function to compute the U and V components<!--
  * --> of a wind vector.
@@ -210,7 +212,7 @@ struct WindComponents {
 
 /**
  *
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compute the mean wind over the given sharp::PressureLayer
  *
@@ -229,12 +231,13 @@ struct WindComponents {
  */
 [[nodiscard]] WindComponents mean_wind(PressureLayer layer, const float pres[],
                                        const float u_wind[],
-                                       const float v_wind[], const int N,
+                                       const float v_wind[],
+                                       const std::ptrdiff_t N,
                                        const bool weighted);
 
 /**
  *
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compue the wind shear for a given layer
  *
@@ -259,7 +262,7 @@ template <typename L>
 [[nodiscard]] constexpr WindComponents wind_shear(L layer, const float coord[],
                                                   const float u_wind[],
                                                   const float v_wind[],
-                                                  const int N) {
+                                                  const std::ptrdiff_t N) {
 #ifndef NO_QC
     if ((layer.bottom == MISSING) || (layer.top == MISSING))
         return {MISSING, MISSING};
@@ -306,7 +309,7 @@ template <typename L>
 }
 
 /**
- * \author Kelton Halbert - NWS Storm Prediction Center/OU-CIWRO
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Computes the Storm Relative Helicity (SRH) over a given layer
  *
@@ -338,7 +341,7 @@ template <typename L>
 template <typename L>
 [[nodiscard]] float helicity(L layer, WindComponents storm_motion,
                              const float coord[], const float u_wind[],
-                             const float v_wind[], const int N) {
+                             const float v_wind[], const std::ptrdiff_t N) {
 #ifndef NO_QC
     if ((storm_motion.u == MISSING) || (storm_motion.v == MISSING)) {
         return MISSING;
@@ -377,7 +380,7 @@ template <typename L>
     float sru_top;
     float srv_top;
     float layer_helicity = 0.0;
-    for (int k = layer_idx.kbot; k <= layer_idx.ktop; ++k) {
+    for (std::ptrdiff_t k = layer_idx.kbot; k <= layer_idx.ktop; ++k) {
 #ifndef NO_QC
         if ((u_wind[k] == MISSING) || (v_wind[k] == MISSING)) {
             continue;
@@ -415,4 +418,4 @@ template <typename L>
 
 }  // end namespace sharp
 
-#endif  // __SHARP_WINDS_H__
+#endif  // SHARP_WINDS_H

@@ -12,6 +12,8 @@
  * John Hart and Rich Thompson at SPC.
  */
 
+#include "SHARPlib/params/convective.h"
+
 #include <SHARPlib/constants.h>
 #include <SHARPlib/layer.h>
 #include <SHARPlib/parcel.h>
@@ -21,80 +23,24 @@
 namespace sharp {
 
 PressureLayer effective_inflow_layer(
-    const float pressure[], const float height[], const float temperature[],
-    const float dewpoint[], const float virtemp_arr[], float buoy_arr[],
-    const int N, const float cape_thresh, const float cinh_thresh,
-    Parcel *mupcl) {
-    // TO-DO: At some point, this will need to be
-    // templated or generalized to take other parcel
-    // lifters once things progress to that level...
-    static constexpr lifter_wobus lifter;
+    sharp::lifter_wobus &lifter, const float pressure[], const float height[],
+    const float temperature[], const float dewpoint[],
+    const float virtemp_arr[], float pcl_vtmpk_arr[], float buoy_arr[],
+    const std::ptrdiff_t N, const float cape_thresh, const float cinh_thresh,
+    Parcel *mupcl);
 
-    int eff_kbot = 0;
-    float eff_pbot = MISSING;
-    float eff_ptop = MISSING;
-    float sfc_hght = height[0];
-    Parcel maxpcl;
+PressureLayer effective_inflow_layer(
+    sharp::lifter_cm1 &lifter, const float pressure[], const float height[],
+    const float temperature[], const float dewpoint[],
+    const float virtemp_arr[], float pcl_vtmpk_arr[], float buoy_arr[],
+    const std::ptrdiff_t N, const float cape_thresh, const float cinh_thresh,
+    Parcel *mupcl);
 
-    // search for the effective inflow bottom
-    for (int k = 0; k < N; ++k) {
-#ifndef NO_QC
-        if ((temperature[k] == MISSING) || (dewpoint[k] == MISSING)) {
-            continue;
-        }
-#endif
-        Parcel effpcl;
-        effpcl.pres = pressure[k];
-        effpcl.tmpk = temperature[k];
-        effpcl.dwpk = dewpoint[k];
-        // We don't want to lift every single profile...
-        if (height[k] - sfc_hght > 4000.0) break;
-
-        lift_parcel(lifter, pressure, virtemp_arr, buoy_arr, N, &effpcl);
-        cape_cinh(pressure, height, buoy_arr, N, &effpcl);
-
-        if (effpcl.cape > maxpcl.cape) maxpcl = effpcl;
-        if ((effpcl.cape >= cape_thresh) && (effpcl.cinh >= cinh_thresh)) {
-            eff_pbot = effpcl.pres;
-            eff_kbot = k;
-            break;
-        }
-    }
-
-    if (eff_pbot == MISSING) return {MISSING, MISSING};
-
-    for (int k = eff_kbot + 1; k < N; ++k) {
-#ifndef NO_QC
-        if ((temperature[k] == MISSING) || (dewpoint[k] == MISSING)) {
-            continue;
-        }
-#endif
-        Parcel effpcl;
-        effpcl.pres = pressure[k];
-        effpcl.tmpk = temperature[k];
-        effpcl.dwpk = dewpoint[k];
-        lift_parcel(lifter, pressure, virtemp_arr, buoy_arr, N, &effpcl);
-        cape_cinh(pressure, height, buoy_arr, N, &effpcl);
-
-        if (effpcl.cape > maxpcl.cape) maxpcl = effpcl;
-        if ((effpcl.cape < cape_thresh) || (effpcl.cinh < cinh_thresh)) {
-            eff_ptop = effpcl.pres;
-            break;
-        }
-    }
-
-    if (eff_ptop == MISSING) return {MISSING, MISSING};
-    *mupcl = maxpcl;
-    return {eff_pbot, eff_ptop};
-}
-
-WindComponents storm_motion_bunkers(const float pressure[],
-                                    const float height[], const float u_wind[],
-                                    const float v_wind[], const int N,
-                                    HeightLayer mean_wind_layer_agl,
-                                    HeightLayer wind_shear_layer_agl,
-                                    const bool leftMover = false,
-                                    const bool pressureWeighted = false) {
+WindComponents storm_motion_bunkers(
+    const float pressure[], const float height[], const float u_wind[],
+    const float v_wind[], const std::ptrdiff_t N,
+    HeightLayer mean_wind_layer_agl, HeightLayer wind_shear_layer_agl,
+    const bool leftMover, const bool pressureWeighted) {
     constexpr float deviation = 7.5;  // deviation from mean wind in m/s
 
     PressureLayer mw_lyr = height_layer_to_pressure(mean_wind_layer_agl,
@@ -142,17 +88,17 @@ WindComponents storm_motion_bunkers(const float pressure[],
 
 [[nodiscard]] WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
-    const float v_wind[], const int N, PressureLayer eff_infl_lyr,
-    const Parcel *mupcl, const bool leftMover = false) {
+    const float v_wind[], const std::ptrdiff_t N, PressureLayer eff_infl_lyr,
+    const Parcel &mupcl, const bool leftMover) {
     HeightLayer shr_layer = {0, 6000.0};
     HeightLayer dflt_mw_lyr = {0.0, 6000.0};
 
-    if (mupcl->eql_pressure == MISSING) {
+    if (mupcl.eql_pressure == MISSING) {
         return storm_motion_bunkers(pressure, height, u_wind, v_wind, N,
                                     dflt_mw_lyr, shr_layer, leftMover, false);
     }
 
-    const float eql_pres = mupcl->eql_pressure;
+    const float eql_pres = mupcl.eql_pressure;
     if ((eff_infl_lyr.bottom == MISSING) || (eff_infl_lyr.top == MISSING)) {
         return storm_motion_bunkers(pressure, height, u_wind, v_wind, N,
                                     dflt_mw_lyr, shr_layer, leftMover, false);
@@ -178,8 +124,8 @@ WindComponents storm_motion_bunkers(const float pressure[],
 
 float entrainment_cape(const float pressure[], const float height[],
                        const float temperature[], const float mse_arr[],
-                       const float u_wind[], const float v_wind[], const int N,
-                       Parcel *pcl) {
+                       const float u_wind[], const float v_wind[],
+                       const std::ptrdiff_t N, Parcel *pcl) {
     // if cape is zero, we get a divide by zero issue later.
     // there can "technically" be LFC/EL without CAPE because of very,
     // very shallow buoyancy near zero when searching for LFC/EL.
@@ -195,14 +141,14 @@ float entrainment_cape(const float pressure[], const float height[],
     // compute MSE_bar
     mse_bar[0] = mse_arr[0];
     const float psfc = pressure[0];
-    for (int k = 1; k < N; ++k) {
+    for (std::ptrdiff_t k = 1; k < N; ++k) {
         PressureLayer mn_lyr = {psfc, pressure[k]};
         mse_bar[k] = layer_mean(mn_lyr, pressure, mse_arr, N);
     }
 
     // compute MSE_star
     const float hsfc = height[0];
-    for (int k = 0; k < N; ++k) {
+    for (std::ptrdiff_t k = 0; k < N; ++k) {
         const float tmpk = temperature[k];
         const float rsat = mixratio(pressure[k], tmpk);
         const float qsat = specific_humidity(rsat);
@@ -228,7 +174,7 @@ float entrainment_cape(const float pressure[], const float height[],
     // loop from the surface to the last level before 1km AGL.
     float V_sr_mean = 0.0;
     int count = 0;
-    for (int k = 0; k < layer_idx.ktop + 1; ++k) {
+    for (std::ptrdiff_t k = 0; k < layer_idx.ktop + 1; ++k) {
 #ifndef NO_QC
         if ((u_wind[k] == MISSING) || (v_wind[k] == MISSING)) {
             continue;
@@ -348,6 +294,60 @@ float significant_tornado_parameter(Parcel pcl, float lcl_hght_agl,
     return stp;
 }
 
-}  // end namespace sharp
+float significant_hail_parameter(const sharp::Parcel &mu_pcl,
+                                 float lapse_rate_700_500mb, float tmpk_500mb,
+                                 float freezing_lvl_agl, float shear_0_6km) {
+    float mu_mixr =
+        mixratio(mu_pcl.pres, mu_pcl.dwpk) * 1000.0f;  // convert to g/kg
 
-namespace sharp::exper {}  // end namespace sharp::exper
+    // restrict the inputs to specific ranges...
+    shear_0_6km = std::min(shear_0_6km, 27.0f);
+    shear_0_6km = std::max(shear_0_6km, 7.0f);
+
+    mu_mixr = std::min(mu_mixr, 13.6f);
+    mu_mixr = std::max(mu_mixr, 11.0f);
+
+    tmpk_500mb = std::min(tmpk_500mb, -5.5f + ZEROCNK);
+
+    float ship = (mu_pcl.cape * mu_mixr * lapse_rate_700_500mb *
+                  ((tmpk_500mb - ZEROCNK) * -1) * shear_0_6km) /
+                 42000000.0f;
+
+    if (mu_pcl.cape < 1300.0f) {
+        ship = ship * (mu_pcl.cape / 1300.0f);
+    }
+
+    if (lapse_rate_700_500mb < 5.8f) {
+        ship = ship * (lapse_rate_700_500mb / 5.8f);
+    }
+
+    if (freezing_lvl_agl < 2400.0f) {
+        ship = ship * (freezing_lvl_agl / 2400.0f);
+    }
+
+    return ship;
+}
+
+float precipitable_water(PressureLayer layer, const float pressure[],
+                         const float mixing_ratio[], const std::ptrdiff_t N) {
+    float pwat =
+        integrate_layer_trapz(layer, mixing_ratio, pressure, N, 0, false) /
+        (GRAVITY * RHO_LWAT);
+    // convert from meters to millimeters
+    return pwat * 1000.0f;
+}
+
+PressureLayer hail_growth_layer(const float pressure[],
+                                const float temperature[],
+                                const std::ptrdiff_t N) {
+    sharp::PressureLayer hgz = {sharp::MISSING, sharp::MISSING};
+
+    hgz.bottom =
+        find_first_pressure(-10.0f + ZEROCNK, pressure, temperature, N);
+    hgz.top = find_first_pressure(-30.0f + ZEROCNK, pressure, temperature, N);
+
+    // do_stuff
+    return hgz;
+}
+
+}  // end namespace sharp
