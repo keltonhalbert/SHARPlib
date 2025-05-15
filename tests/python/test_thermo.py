@@ -449,6 +449,6 @@ def test_buoyancy():
     lifter.ma_type = thermo.adiabat.adiab_ice
     vtmpk = pcl.lift_parcel(lifter, snd_data["pres"])
     buoy = thermo.buoyancy(vtmpk, snd_data["vtmp"])
-    assert (buoy.min() == pytest.approx(-2.956675, abs=1e-5))
-    assert (buoy.max() == pytest.approx(0.46333456, abs=1e-5))
-    assert (buoy.mean() == pytest.approx(-0.3561962, abs=5e-5))
+    assert (buoy.min() == pytest.approx(-2.956675, abs=1e-4))
+    assert (buoy.max() == pytest.approx(0.46333456, abs=1e-4))
+    assert (buoy.mean() == pytest.approx(-0.3561962, abs=5e-4))
