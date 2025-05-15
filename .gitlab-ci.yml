@@ -73,7 +73,8 @@ wheels-linux:
   artifacts:
     paths:
       - wheelhouse/
-  tags: linux
+  tags: 
+    - linux
 
 wheels-windows:
   stage: wheels
