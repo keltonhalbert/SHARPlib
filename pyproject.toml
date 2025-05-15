@@ -62,3 +62,4 @@ testpaths = ["tests/python"]
 build-verbosity = 1 
 
 test-command = "pytest"
+test-requires = "pytest"
