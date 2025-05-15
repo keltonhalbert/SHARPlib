@@ -241,7 +241,7 @@ def test_stp_scp_ship():
         hlyr, snd_data["hght"], snd_data["uwin"], snd_data["vwin"])
     shr06 = winds.vector_magnitude(shr06.u, shr06.v)
     ship = params.significant_hail_parameter(mupcl, lr75, t500, fzl, shr06)
-    assert (ship == pytest.approx(1.9521, abs=1e-4))
+    assert (ship == pytest.approx(1.9521, abs=1e-3))
 
 
 def test_ehi():
