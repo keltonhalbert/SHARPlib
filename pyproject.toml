@@ -61,5 +61,5 @@ testpaths = ["tests/python"]
 [tool.cibuildwheel]
 build-verbosity = 1 
 
-test-command = "pytest"
+test-command = "pytest {project}"
 test-requires = "pytest"
