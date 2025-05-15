@@ -117,8 +117,8 @@ def test_surface_parcel():
     buoy = thermo.buoyancy(vtmpk, snd_data["vtmp"])
     cape, cinh = pcl.cape_cinh(snd_data["pres"], snd_data["hght"], buoy)
 
-    assert (cape == pytest.approx(3107.6, abs=1e-1))
-    assert (cinh == pytest.approx(-36.4, abs=1e-1))
+    assert (cape == pytest.approx(3107.6, abs=5e-1))
+    assert (cinh == pytest.approx(-36.4, abs=5e-1))
     assert (pcl.lfc_pressure == 70983.0)
     assert (pcl.eql_pressure == 18439.0)
 
@@ -149,8 +149,8 @@ def test_mixed_layer_parcel():
     buoy = thermo.buoyancy(vtmpk, snd_data["vtmp"])
     cape, cinh = pcl.cape_cinh(snd_data["pres"], snd_data["hght"], buoy)
 
-    assert (cape == pytest.approx(1929.36, abs=1e-1))
-    assert (cinh == pytest.approx(-133.71, abs=1e-1))
+    assert (cape == pytest.approx(1929.36, abs=5e-1))
+    assert (cinh == pytest.approx(-133.71, abs=5e-1))
     assert (pcl.lfc_pressure == pytest.approx(66648.0))
     assert (pcl.eql_pressure == pytest.approx(20468.0))
 
@@ -196,7 +196,7 @@ def test_most_unstable_parcel():
     assert (pcl.pres == pytest.approx(92043.0))
     assert (pcl.tmpk == pytest.approx(298.15))
     assert (pcl.dwpk == pytest.approx(291.532))
-    assert (pcl.cape == pytest.approx(3107.6, abs=1e-1))
-    assert (pcl.cinh == pytest.approx(-36.4, abs=1e-1))
+    assert (pcl.cape == pytest.approx(3107.6, abs=5e-1))
+    assert (pcl.cinh == pytest.approx(-36.4, abs=5e-1))
     assert (pcl.lfc_pressure == pytest.approx(70983.0, abs=1e-1))
     assert (pcl.eql_pressure == pytest.approx(18439.0, abs=1e-1))

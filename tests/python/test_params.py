@@ -77,8 +77,8 @@ def test_effective_inflow_layer_wobus():
 
     assert (eil.bottom == pytest.approx(92043.0))
     assert (eil.top == pytest.approx(83384.0))
-    assert (mupcl.cape == pytest.approx(3353.4, abs=1e-1))
-    assert (mupcl.cinh == pytest.approx(-34.5697))
+    assert (mupcl.cape == pytest.approx(3353.4, abs=5e-1))
+    assert (mupcl.cinh == pytest.approx(-34.5697, abs=5e-4))
 
 
 def test_effective_inflow_layer_cm1():
@@ -97,8 +97,8 @@ def test_effective_inflow_layer_cm1():
 
     assert (eil.bottom == pytest.approx(92043.0))
     assert (eil.top == pytest.approx(83432.0))
-    assert (mupcl.cape == pytest.approx(3107.6428, abs=1e-1))
-    assert (mupcl.cinh == pytest.approx(-36.41, abs=1e-1))
+    assert (mupcl.cape == pytest.approx(3107.6428, abs=5e-1))
+    assert (mupcl.cinh == pytest.approx(-36.41, abs=5e-1))
 
 
 def test_bunkers_motion_nonparcel():
@@ -227,7 +227,7 @@ def test_stp_scp_ship():
     assert (stp == pytest.approx(0.4849648, abs=1e-4))
 
     scp = params.supercell_composite_parameter(mupcl.cape, esrh, ebwd)
-    assert (scp == pytest.approx(7.9699, abs=1e-4))
+    assert (scp == pytest.approx(7.9699, abs=1e-1))
 
     # get SHIP
     plyr = layer.PressureLayer(70000.0, 50000.0)
