@@ -1,8 +1,6 @@
 name: Build Wheels
 
 on:
-  push:
-    branches: ["develop"]
   workflow_dispatch:
   pull_request:
   release:
@@ -86,7 +84,7 @@ jobs:
       url: https://test.pypi.org/p/SHARPlib
     permissions:
       id-token: write
-      #if: github.event_name == 'release' && github.event.action == 'published'
+    if: github.event_name == 'release' && github.event.action == 'published'
     # or, alternatively, upload to PyPI on every tag starting with 'v' (remove on: release above to use this)
     # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     steps:
@@ -98,5 +96,5 @@ jobs:
           merge-multiple: true
 
       - uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
+      #with:
+      #repository-url: https://test.pypi.org/legacy/
