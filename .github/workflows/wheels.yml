@@ -1,10 +1,10 @@
 name: Build Wheels
 
 on:
+  push:
+    branches: ["develop"]
   workflow_dispatch:
   pull_request:
-  push:
-    branches: ["main"]
   release:
     types:
       - published
@@ -78,23 +78,23 @@ jobs:
           name: cibw-sdist
           path: dist/*.tar.gz
 
-  # upload_pypi:
-  #   needs: [build_wheels, build_sdist]
-  #   runs-on: ubuntu-latest
-  #   environment: pypi
-  #   permissions:
-  #     id-token: write
-  #   if: github.event_name == 'release' && github.event.action == 'published'
-  #   # or, alternatively, upload to PyPI on every tag starting with 'v' (remove on: release above to use this)
-  #   # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-  #   steps:
-  #     - uses: actions/download-artifact@v4
-  #       with:
-  #         # unpacks all CIBW artifacts into dist/
-  #         pattern: cibw-*
-  #         path: dist
-  #         merge-multiple: true
-  #
-  #     - uses: pypa/gh-action-pypi-publish@release/v1
-  #       with:
-  #         # To test: repository-url: https://test.pypi.org/legacy/
+  upload_pypi:
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    if: github.event_name == 'release' && github.event.action == 'published'
+    # or, alternatively, upload to PyPI on every tag starting with 'v' (remove on: release above to use this)
+    # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          # unpacks all CIBW artifacts into dist/
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
