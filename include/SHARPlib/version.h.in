@@ -1,0 +1,17 @@
+#ifndef SHARPLIB_VERSION_H
+#define SHARPLIB_VERSION_H
+
+// clang-format off
+
+#define PROJECT_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+#define PROJECT_VERSION_MINOR @PROJECT_VERSION_MINOR@
+#define PROJECT_VERSION_PATCH @PROJECT_VERSION_PATCH@
+
+#define PROJECT_VERSION "@PROJECT_VERSION@"     // e.g. "1.2.3" or "1.2.3-rc.1"
+#define FULL_VERSION "@FULL_VERSION@"           // e.g. "1.2.3-rc.1+5.gabc1234"
+#define PRE_RELEASE "@PRE_RELEASE@"             // e.g. "rc.1" or empty
+#define BUILD_METADATA "@BUILD_METADATA@"       // e.g. "5.gabc1234" or empty
+#define GIT_COMMIT_HASH "g@COMMIT_HASH@"        // e.g. "gabc1234" or empty
+#define IS_DIRTY @IS_DIRTY@                     // 0 or 1 (true if working directory is dirty)
+
+#endif // SHARPLIB_VERSION_H

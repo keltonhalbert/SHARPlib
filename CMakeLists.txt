@@ -3,7 +3,16 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ version selection")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(SHARPlib VERSION 1.0.0 LANGUAGES CXX )
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+include(GitVersion)
+get_version_from_git()
+
+configure_file(
+    ${CMAKE_SOURCE_DIR}/include/SHARPlib/version.h.in
+    ${CMAKE_SOURCE_DIR}/include/SHARPlib/version.h
+)
+
+project(SHARPlib VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH} LANGUAGES CXX )
 include(GNUInstallDirs)
 include(CTest)
 
