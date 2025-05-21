@@ -10,10 +10,10 @@
 This is a public mirror of the official version hosted on the NOAA Vlab Gitlab.
 
 ## Table of Contents
-[About SHARPlib](#About-SHARPlib)
-[Build/install C++](#building-sharplib-c++-library)
-[Build/install Python](#installing-sharplib-python-bindings)
-[Documentation](https://keltonhalbert.github.io/SHARPlib/)
+- [About SHARPlib](#About-SHARPlib)
+- [Build/install C++](#building-sharplib-c++-library)
+- [Build/install Python](#installing-sharplib-python-bindings)
+- [Documentation](https://keltonhalbert.github.io/SHARPlib/)
 
 ## About SHARPlib
 Since the 1990s, the National Weather Service (NWS) Storm Prediction Center (SPC) has actively researched, developed, and maintained various software packages and libraries in-house for the post-processing and visualization of atmospheric sounding data. Initially developed by John Hart, SHARP was developed to display and compute derived atmospheric indices from observed weather balloons, and vertical profiles from model forecast data. Eventually it was included in N-AWIPS/GEMPAK/AWIPS2 as NSHARP, used to process archive research data as SHARPTab, used to generate web graphics as SHARPGIF, used to post-process model and mesoanalysis gridded data, ported to Python as SHARPpy, and is used currently in SPC operations as BigSHARP.
