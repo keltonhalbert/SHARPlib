@@ -66,6 +66,7 @@ jobs:
         with:
           submodules: 'true'
           fetch-tags: 'true'
+          fetch-depth: 0
 
       - name: Change submodule URLs to HTTPS 
         run: |
