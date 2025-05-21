@@ -69,6 +69,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+          fetch-tags: 'true'
+          fetch-depth: 0
+
+      - name: Change submodule URLs to HTTPS 
+        run: |
+          git submodule foreach '
+            git config submodule.$name.url https://github.com/$urlPath
+          '
+      - name: Submodules and Dependencies
+        run: |
+          git config --global --add safe.directory ${{ github.workspace }} 
+          git submodule update --init --recursive
 
       - name: Build sdist
         run: pipx run build --sdist
