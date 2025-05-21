@@ -57,7 +57,6 @@ sdist.include = ["src/nanobind/_version.py"]
 
 [tool.scikit-build.cmake.define]
 BUILD_PYBIND = true
-PROJECT_VERSION = "{{version}}"
 
 [tool.setuptools_scm]  # Section required
 write_to = "src/nanobind/_version.py"
