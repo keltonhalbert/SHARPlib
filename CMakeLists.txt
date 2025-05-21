@@ -7,6 +7,16 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(GitVersion)
 get_version_from_git()
 
+if(NOT DEFINED PROJECT_VERSION_MAJOR)
+  if(DEFINED PROJECT_VERSION)
+      # Extract major, minor, patch from PROJECT_VERSION
+      string(REGEX REPLACE "^([0-9]+)\\.([0-9]+)\\.([0-9]+).*" "\\1;\\2;\\3" VERSION_LIST ${PROJECT_VERSION})
+      list(GET VERSION_LIST 0 PROJECT_VERSION_MAJOR)
+      list(GET VERSION_LIST 1 PROJECT_VERSION_MINOR)
+      list(GET VERSION_LIST 2 PROJECT_VERSION_PATCH)
+  endif()
+endif()
+
 configure_file(
     ${CMAKE_SOURCE_DIR}/include/SHARPlib/version.h.in
     ${CMAKE_SOURCE_DIR}/include/SHARPlib/version.h
