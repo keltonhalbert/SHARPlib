@@ -4,7 +4,7 @@
 <area shape="rect" id="node3" href="$structsharp_1_1Parcel.html#a0560bd193b2d2d6bc6b08baa7463fba4" title="Compute CAPE and CINH for a previously lifted sharp::Parcel." alt="" coords="223,132,401,157"/>
 <area shape="rect" id="node15" href="$structsharp_1_1Parcel.html#a9523de2b8b4c28ca49fba3013f94cb06" title="Lifts a sharp::Parcel to compute its virtual temperature." alt="" coords="247,290,377,330"/>
 <area shape="rect" id="node4" href="$structsharp_1_1Parcel.html#a8a311e09b1d46a829212da94cf181537" title="Find the LFC and EL that bounds the layer with the maximum CAPE." alt="" coords="479,157,616,197"/>
-<area shape="rect" id="node11" href="$namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d" title="Returns a trapezoidal integration of the given layer." alt="" coords="465,29,630,69"/>
+<area shape="rect" id="node11" href="$namespacesharp.html#a8ab599fbfe2b3793d7af8399c17d1327" title="Returns a trapezoidal integration of the given layer." alt="" coords="465,29,630,69"/>
 <area shape="rect" id="node14" href="$namespacesharp.html#a31da980f398c9f6a5960ddf868101a94" title="Converts a sharp::PressureLayer to a sharp::HeightLayer." alt="" coords="466,93,629,133"/>
 <area shape="rect" id="node5" href="$namespacesharp.html#ac93f477dfa774c966b5da7521bd43ee6" title="Returns the array indices corresponding to the given layer." alt="" coords="693,160,864,185"/>
 <area shape="rect" id="node8" href="$namespacesharp.html#a55e4f8ee4ff8a4a30d7b3f3d92a41c75" title="Linearly interpolate a data field to a requested pressure level." alt="" coords="695,104,862,129"/>

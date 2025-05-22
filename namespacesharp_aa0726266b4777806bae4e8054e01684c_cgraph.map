@@ -1,7 +1,7 @@
 <map id="sharp::layer_mean" name="sharp::layer_mean">
 <area shape="rect" id="node1" title="Computes the mass&#45;weighted mean value of a field over a given height layer." alt="" coords="5,45,148,70"/>
 <area shape="rect" id="node2" href="$namespacesharp.html#ab77e344c7462c9615b0ddac228bc2193" title="Converts a sharp::HeightLayer to a sharp::PressureLayer." alt="" coords="205,5,352,45"/>
-<area shape="rect" id="node7" href="$namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d" title="Returns a trapezoidal integration of the given layer." alt="" coords="196,69,361,109"/>
+<area shape="rect" id="node7" href="$namespacesharp.html#a8ab599fbfe2b3793d7af8399c17d1327" title="Returns a trapezoidal integration of the given layer." alt="" coords="196,69,361,109"/>
 <area shape="rect" id="node3" href="$namespacesharp.html#ae8240f026498ad2775633a8d0dcf100d" title="Linearly interpolate a data field to a requested height level." alt="" coords="419,13,571,38"/>
 <area shape="rect" id="node4" href="$namespacesharp.html#a0bf533560780fdb77bc3656db8d89208" title="Linearly interpolates between a and b with distance t." alt="" coords="658,38,749,63"/>
 <area shape="rect" id="node6" href="$namespacesharp.html#a772686549a5111c1152b778731119aa6" title="Finds the first index that satisfies value &lt; element." alt="" coords="628,111,779,137"/>

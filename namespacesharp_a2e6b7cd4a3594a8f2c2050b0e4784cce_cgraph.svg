@@ -83,7 +83,7 @@
 <!-- Node11 -->
 <g id="node11" class="node">
 <title>Node11</title>
-<g id="a_node11"><a xlink:href="namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d" target="_top" xlink:title="Returns a trapezoidal integration of the given layer.">
+<g id="a_node11"><a xlink:href="namespacesharp.html#a8ab599fbfe2b3793d7af8399c17d1327" target="_top" xlink:title="Returns a trapezoidal integration of the given layer.">
 <polygon fill="white" stroke="#666666" points="468.5,-314.5 344.5,-314.5 344.5,-284.5 468.5,-284.5 468.5,-314.5"/>
 <text text-anchor="start" x="352.5" y="-302.5" font-family="Helvetica,sans-Serif" font-size="10.00">sharp::integrate_layer</text>
 <text text-anchor="middle" x="406.5" y="-291.5" font-family="Helvetica,sans-Serif" font-size="10.00">_trapz</text>

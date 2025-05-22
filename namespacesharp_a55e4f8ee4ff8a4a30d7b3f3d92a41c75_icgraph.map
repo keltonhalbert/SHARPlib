@@ -3,7 +3,7 @@
 <area shape="rect" id="node2" href="$namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822" title="Computes Entrainment CAPE using a previously lifted parcel." alt="" coords="5,178,189,203"/>
 <area shape="rect" id="node3" href="$structsharp_1_1Parcel.html#a8a311e09b1d46a829212da94cf181537" title="Find the LFC and EL that bounds the layer with the maximum CAPE." alt="" coords="478,329,615,369"/>
 <area shape="rect" id="node7" href="$namespacesharp.html#a80858337a63be77bafadbb343d6e4931" title="Computes the Storm Relative Helicity (SRH) over a given layer." alt="" coords="489,547,604,573"/>
-<area shape="rect" id="node9" href="$namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d" title="Returns a trapezoidal integration of the given layer." alt="" coords="464,113,629,153"/>
+<area shape="rect" id="node9" href="$namespacesharp.html#a8ab599fbfe2b3793d7af8399c17d1327" title="Returns a trapezoidal integration of the given layer." alt="" coords="464,113,629,153"/>
 <area shape="rect" id="node13" href="$namespacesharp.html#a646b65095b84511b75f6a4a81e545e80" title="Template for min/max value over sharp::PressureLayer or sharp::HeightLayer." alt="" coords="467,603,627,629"/>
 <area shape="rect" id="node16" href="$namespacesharp.html#a3c8b9022103d067f30281d68fa81cbda" title="Compute the mean wind over the given sharp::PressureLayer." alt="" coords="476,261,617,286"/>
 <area shape="rect" id="node18" href="$namespacesharp.html#a31d937d833aa80555a0a78890c370f42" title="Estimates supercell storm motion by using the Bunkers et al. 2014 method." alt="" coords="19,436,176,476"/>

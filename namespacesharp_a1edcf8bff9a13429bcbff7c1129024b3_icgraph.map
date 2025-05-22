@@ -6,7 +6,7 @@
 <area shape="rect" id="node7" href="$structsharp_1_1Parcel.html#aa258d27992d22d8b80cb221e6e2a6c19" title="Construct and return a most&#45;unstable Parcel." alt="" coords="24,233,171,273"/>
 <area shape="rect" id="node8" href="$namespacesharp.html#ac2f381378ac4ec13ad83d2ec92b2abcc" title="Finds the array indices corresponding to the given sharp::PressureLayer." alt="" coords="464,342,635,367"/>
 <area shape="rect" id="node9" href="$namespacesharp.html#a80858337a63be77bafadbb343d6e4931" title="Computes the Storm Relative Helicity (SRH) over a given layer." alt="" coords="492,391,607,416"/>
-<area shape="rect" id="node11" href="$namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d" title="Returns a trapezoidal integration of the given layer." alt="" coords="467,112,632,152"/>
+<area shape="rect" id="node11" href="$namespacesharp.html#a8ab599fbfe2b3793d7af8399c17d1327" title="Returns a trapezoidal integration of the given layer." alt="" coords="467,112,632,152"/>
 <area shape="rect" id="node15" href="$namespacesharp.html#a646b65095b84511b75f6a4a81e545e80" title="Template for min/max value over sharp::PressureLayer or sharp::HeightLayer." alt="" coords="469,444,629,470"/>
 <area shape="rect" id="node18" href="$structsharp_1_1Parcel.html#a9523de2b8b4c28ca49fba3013f94cb06" title="Lifts a sharp::Parcel to compute its virtual temperature." alt="" coords="261,226,392,266"/>
 <area shape="rect" id="node5" href="$structsharp_1_1Parcel.html#a0560bd193b2d2d6bc6b08baa7463fba4" title="Compute CAPE and CINH for a previously lifted sharp::Parcel." alt="" coords="237,176,416,202"/>

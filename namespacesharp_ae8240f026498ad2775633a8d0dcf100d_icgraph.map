@@ -3,7 +3,7 @@
 <area shape="rect" id="node2" href="$namespacesharp.html#a72bbdc4cfe7895dd51981902ac9fc822" title="Computes Entrainment CAPE using a previously lifted parcel." alt="" coords="5,289,189,314"/>
 <area shape="rect" id="node3" href="$namespacesharp.html#ab77e344c7462c9615b0ddac228bc2193" title="Converts a sharp::HeightLayer to a sharp::PressureLayer." alt="" coords="473,56,620,96"/>
 <area shape="rect" id="node7" href="$namespacesharp.html#a80858337a63be77bafadbb343d6e4931" title="Computes the Storm Relative Helicity (SRH) over a given layer." alt="" coords="489,231,604,257"/>
-<area shape="rect" id="node9" href="$namespacesharp.html#a7acec1642f27591dc988bf9e48b4612d" title="Returns a trapezoidal integration of the given layer." alt="" coords="464,336,629,376"/>
+<area shape="rect" id="node9" href="$namespacesharp.html#a8ab599fbfe2b3793d7af8399c17d1327" title="Returns a trapezoidal integration of the given layer." alt="" coords="464,336,629,376"/>
 <area shape="rect" id="node14" href="$structsharp_1_1Parcel.html#a1bf670e79f35a1ce8c904b7ead32ccbe" title="Construct and return a mixed&#45;layer Parcel." alt="" coords="21,353,174,393"/>
 <area shape="rect" id="node16" href="$namespacesharp.html#a43a01274768ee388a983046651a230d3" title="compute the lapse rate over the given sharp::HeightLayer (AGL)" alt="" coords="479,501,614,526"/>
 <area shape="rect" id="node19" href="$namespacesharp.html#a646b65095b84511b75f6a4a81e545e80" title="Template for min/max value over sharp::PressureLayer or sharp::HeightLayer." alt="" coords="467,574,627,599"/>
