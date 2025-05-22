@@ -455,7 +455,7 @@ template <typename L>
 [[nodiscard]] float integrate_layer_trapz(L layer, const float var_array[],
                                           const float coord_array[],
                                           const std::ptrdiff_t N,
-                                          const int integ_sign = 0,
+                                          const float integ_sign = 0,
                                           const bool weighted = false) {
     float var_lyr_bottom;
     float coord_lyr_bottom = layer.bottom;
