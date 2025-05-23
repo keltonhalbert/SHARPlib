@@ -3,8 +3,10 @@
 [![Python CI (Linux, MacOS, Windows)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/python.yml/badge.svg)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/python.yml)
 [![Build Wheels](https://github.com/keltonhalbert/SHARPlib/actions/workflows/wheels.yml/badge.svg)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/wheels.yml)
 [![Build Docs](https://github.com/keltonhalbert/SHARPlib/actions/workflows/doxygen-gh-pages.yml/badge.svg)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/doxygen-gh-pages.yml)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/sharplib/badges/version.svg)](https://anaconda.org/conda-forge/sharplib)
 [![PyPI - Version](https://img.shields.io/pypi/v/SHARPlib)](https://pypi.org/project/SHARPlib/)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/SHARPlib)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/sharplib/badges/platforms.svg)](https://anaconda.org/conda-forge/sharplib)
 
 
 **Sounding and Hodograph Analysis and Research Program (SHARP)** C++ library for conducting analysis of atmospheric sounding profiles. Based on the NSHARP routines written by John Hart and Rich Thompson at the NWS Storm Prediction Center in Norman, Oklahoma. 
@@ -73,6 +75,11 @@ SHARPlib is available via pip/PyPI, and can be installed for Linux, MacOS, and W
 
 ```bash
 pip install SHARPlib
+```
+
+SHARPlib is also available via conda-forge, although it's current release candidate status means it is not yet a part of the main channels. Still, it can be installed using the following command: 
+```bash
+conda install conda-forge/label/sharplib_rc::sharplib 
 ```
 
 ### Building SHARPlib (Python)
