@@ -18,8 +18,8 @@ else()
 endif()
 
 configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/SHARPlib/version.h.in
-    ${CMAKE_CURRNET_SOURCE_DIR}/include/SHARPlib/version.h
+    include/SHARPlib/version.h.in
+    include/SHARPlib/version.h
 )
 
 project(SHARPlib VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH} LANGUAGES CXX )
