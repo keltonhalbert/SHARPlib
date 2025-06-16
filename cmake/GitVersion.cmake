@@ -7,7 +7,7 @@ function(get_version_from_git)
 
     execute_process(
         COMMAND ${GIT_EXECUTABLE} describe --tags --dirty --always --match "v[0-9]*"
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         OUTPUT_VARIABLE GIT_DESCRIBE
         OUTPUT_STRIP_TRAILING_WHITESPACE
         RESULT_VARIABLE GIT_RESULT
