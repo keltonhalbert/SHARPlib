@@ -14,6 +14,7 @@
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
 #include <SHARPlib/parcel.h>
+#include <SHARPlib/peters_lifter.h>
 #include <SHARPlib/thermo.h>
 
 namespace sharp {
