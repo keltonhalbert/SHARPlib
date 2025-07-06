@@ -50,6 +50,33 @@ enum class adiabat : int {
 };
 
 /**
+ * \brief Defines the kinds of ascent types used by sharp::peters_lift
+ */
+enum class ascent_type : int {
+    /**
+     * \brief Pseudoadiabatic non-entraining
+     */
+    pseudo_nonentr = 1,
+
+    /**
+     * \brief Pseudoadiabatic entraining
+     */
+    pseudo_entr = 2,
+
+    /**
+     * \brief Irreversible adiabatic non-entraining
+     */
+	adiab_nonentr = 3,
+
+    /**
+     * \brief Irreversible adiabatic entraining
+     */
+	adiab_entr = 4,
+    END,
+};
+
+
+/**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
  *
  * \brief Computes the difference between the wet-bulb potential<!--
@@ -292,6 +319,26 @@ enum class adiabat : int {
                                         float ql = 0.0f, float qi = 0.0f);
 
 /**
+ * \author Amelia Urquhart - OU-SoM
+ *
+ * \brief Computes the density temperature.
+ *
+ * Returns the density temperature according to Table 1 in Peters et al 2022
+ * given the dry-bulb temperature in degrees Kelvin, the specific humidity of
+ * water vapor (qv) in kg/kg, and the total water mass fraction (qt) in kg/kg.
+ *
+ * As with the virtual temperature function, if you are okay with lower accuracy,
+ * you may pass mixing ratios instead of specific humidities.
+ *
+ * \param   temperature             (degK)
+ * \param   qv                      (kg/kg)
+ * \param   qt                      (kg/kg)
+ *
+ * \return  density_temperature     (degK)
+ */
+[[nodiscard]] float density_temperature(float temperature, float qv, float qt);
+
+/**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
  *
  * \brief Compute the temperature along a moist adiabat <!--
@@ -381,6 +428,94 @@ enum class adiabat : int {
                                       const float pres_incr,
                                       const float converge,
                                       const adiabat ma_type);
+
+/**
+ * \author Amelia Urquhart - OU-SoM
+ *
+ * \brief Compute the temperature of a parcel lifted moist <!--
+ * -->adiabatically to a new level.
+ *
+ *  With a given parcel defined by a pressure and temperature (in Pascals and
+ *  degrees Kelvin), lift it moist adiabatically to a new pressure level
+ *  (in Pascals) and return the temperature of the parcel at that level.
+ *
+ *  This function is an implementation of Equation 32 from Peters et al. 2022,
+ *  (https://journals.ametsoc.org/view/journals/atsc/79/3/JAS-D-21-0118.1.xml)
+ *
+ *  NOTE: qt includes the mass fraction of both water vapor and cloud condensate
+ *  added together. It is constant in non-entraining irreversible adiabatic
+ *  ascent, but can change in all three other ascent types.
+ *
+ *  NOTE: It is assumed that the cloud condensate in the environment is negligible,
+ *  so Dr. Peters's formula assumes that qv_env is equal to qt_env.
+ *
+ * \param   temperature      (degK)
+ * \param   qt               (kg/kg)
+ * \param   pressure         (Pa)
+ * \param   temperature_env  (degK)
+ * \param   qv_env           (kg/kg)
+ * \param   entrainment_rate (1/m)
+ * \param   precip_rate      (1/m)
+ * \param   qt_entrainment   ([kg/kg]/m)
+ * \param   warmest_mixed_phase_temp (degK)
+ * \param   coldest_mixed_phase_temp (degK)
+ *
+ * \return  lapse_rate (K/m)
+ */
+float saturated_adiabatic_lapse_rate_peters_et_al(float temperature, 
+                                        float qt, 
+                                        float pressure, 
+                                        float temperature_env,
+                                        float qv_env,
+                                        float entrainment_rate,
+                                        float precip_rate,
+                                        float qt_entrainment,
+                                        float warmest_mixed_phase_temp,
+                                        float coldest_mixed_phase_temp);
+
+/**
+ * \author Amelia Urquhart - OU-SoM
+ *
+ * \brief Compute the temperature of a parcel lifted moist <!--
+ * -->adiabatically to a new level.
+ *
+ *  With a given parcel defined by a pressure and temperature (in Pascals and
+ *  degrees Kelvin), lift it moist adiabatically to a new pressure level
+ *  (in Pascals) and return the temperature of the parcel at that level.
+ *
+ *  This function is an implementation of Equation 32 from Peters et al. 2022,
+ *  (https://journals.ametsoc.org/view/journals/atsc/79/3/JAS-D-21-0118.1.xml)
+ *
+ *  NOTE: qt includes the mass fraction of both water vapor and cloud condensate
+ *  added together. It is constant in non-entraining irreversible adiabatic
+ *  ascent, but can change in all three other ascent types.
+ *
+ *  NOTE: It is assumed that the cloud condensate in the environment is negligible,
+ *  so Dr. Peters's formula assumes that qv_env is equal to qt_env.
+ *
+ * \param   pressure         (Pa)
+ * \param   temperature      (degK)
+ * \param   new_pressure     (Pa)
+ * \param   qv               (kg/kg)
+ * \param   qt               (kg/kg)
+ * \param   temperature_env  (degK)
+ * \param   qv_env           (kg/kg)
+ * \param   pres_incr        (Pa)
+ * \param   entrainment_rate (1/m)
+ * \param   ma_type          (sharp::ascent_type)
+ * \param   warmest_mixed_phase_temp (degK)
+ * \param   coldest_mixed_phase_temp (degK)
+ *
+ * \return  pcl_temperature (degK)
+ */
+float moist_adiabat_peters_et_al(float pressure, float temperature,
+                                      float new_pressure, float& qv, float& qt,
+									  float* pres, float* tmpk, float* mixr,
+									  int NZ, const float pres_incr,
+                                      float entrainment_rate,
+                                      const ascent_type ma_type,
+                                      const float warmest_mixed_phase_temp,
+                                      const float coldest_mixed_phase_temp);
 
 /**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN

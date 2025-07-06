@@ -60,10 +60,10 @@ void build_profile(float* pres_arr, float*hght_arr, float* tmpk_arr,
 }
 
 // returns true if sounding loads correctly
-bool read_sounding(float* pres_arr, float*hght_arr, float* tmpk_arr, 
-        float* dwpk_arr, float* wdir_arr, float* wspd_arr, float* mixr_arr,
-        float* vtmp_arr, float* theta_arr, float* theta_e_arr, 
-        float* uwin_arr, float* vwin_arr, int* prof_N, std::string filename) {
+bool read_sounding(float** pres_arr, float** hght_arr, float** tmpk_arr, 
+        float** dwpk_arr, float** wdir_arr, float** wspd_arr, float** mixr_arr,
+        float** vtmp_arr, float** theta_arr, float** theta_e_arr, 
+        float** uwin_arr, float** vwin_arr, int* prof_N, std::string filename) {
     std::ifstream sndfile(filename);
     std::string line;
 
@@ -90,18 +90,18 @@ bool read_sounding(float* pres_arr, float*hght_arr, float* tmpk_arr,
     }
 
     // initialize profile arrays
-    pres_arr = new float[NLINES];
-    hght_arr = new float[NLINES];
-    tmpk_arr = new float[NLINES];
-    dwpk_arr = new float[NLINES];
-    wdir_arr = new float[NLINES];
-    wspd_arr = new float[NLINES];
-    mixr_arr = new float[NLINES];
-    vtmp_arr = new float[NLINES];
-    theta_arr = new float[NLINES];
-    theta_e_arr = new float[NLINES];
-    uwin_arr = new float[NLINES];
-    vwin_arr = new float[NLINES];
+    *pres_arr = new float[NLINES];
+    *hght_arr = new float[NLINES];
+    *tmpk_arr = new float[NLINES];
+    *dwpk_arr = new float[NLINES];
+    *wdir_arr = new float[NLINES];
+    *wspd_arr = new float[NLINES];
+    *mixr_arr = new float[NLINES];
+    *vtmp_arr = new float[NLINES];
+    *theta_arr = new float[NLINES];
+    *theta_e_arr = new float[NLINES];
+    *uwin_arr = new float[NLINES];
+    *vwin_arr = new float[NLINES];
     *prof_N = NLINES;
 
     // return to the beginning of the file
@@ -125,9 +125,9 @@ bool read_sounding(float* pres_arr, float*hght_arr, float* tmpk_arr,
                 // split the line on the comma
                 std::vector row = split(line, ",");
 
-                build_profile(pres_arr, hght_arr, tmpk_arr, dwpk_arr, wdir_arr, 
-                    wspd_arr, mixr_arr, vtmp_arr, theta_arr, theta_e_arr, 
-                    uwin_arr, vwin_arr, prof_N, row, idx);
+                build_profile(*pres_arr, *hght_arr, *tmpk_arr, *dwpk_arr, *wdir_arr, 
+                    *wspd_arr, *mixr_arr, *vtmp_arr, *theta_arr, *theta_e_arr, 
+                    *uwin_arr, *vwin_arr, prof_N, row, idx);
 
                 idx += 1;
             }
@@ -137,6 +137,7 @@ bool read_sounding(float* pres_arr, float*hght_arr, float* tmpk_arr,
         sndfile.close();
         std::cout << "Success reading: " << filename << std::endl;
         std::cout << "Number of vertical levels: " << *prof_N << std::endl;
+        std::cout << "sizeof(pres_arr): " << sizeof(pres_arr) << std::endl;
 
         return true;
     }
@@ -152,30 +153,41 @@ int main(int argc, char* argv[]) {
         "../../data/test_snds/20160524_2302_EF3_37.57_-100.13_108_613967.snd";
     std::string snd_file2 = "../../data/test_snds/hires-SPC.txt";
 
-    float* pres_arr = {0}; 
-    float* hght_arr = {0}; 
-    float* tmpk_arr = {0};
-    float* dwpk_arr = {0};
-    float* wdir_arr = {0}; 
-    float* wspd_arr = {0}; 
-    float* mixr_arr = {0};
-    float* vtmp_arr = {0}; 
-    float* theta_arr = {0}; 
-    float* theta_e_arr = {0}; 
-    float* uwin_arr = {0}; 
-    float* vwin_arr = {0}; 
+    float* pres_arr = nullptr; 
+    float* hght_arr = nullptr; 
+    float* tmpk_arr = nullptr;
+    float* dwpk_arr = nullptr;
+    float* wdir_arr = nullptr; 
+    float* wspd_arr = nullptr; 
+    float* mixr_arr = nullptr;
+    float* vtmp_arr = nullptr; 
+    float* theta_arr = nullptr; 
+    float* theta_e_arr = nullptr; 
+    float* uwin_arr = nullptr; 
+    float* vwin_arr = nullptr; 
     int prof_N = 0;
 
-    bool prof = read_sounding(pres_arr, hght_arr, tmpk_arr, dwpk_arr, wdir_arr, wspd_arr, 
-            mixr_arr, vtmp_arr, theta_arr, theta_e_arr, uwin_arr, vwin_arr, 
+    // std::cout << "pre-read sounding" << std::endl;
+
+    bool prof = read_sounding(&pres_arr, &hght_arr, &tmpk_arr, &dwpk_arr, &wdir_arr, &wspd_arr, 
+            &mixr_arr, &vtmp_arr, &theta_arr, &theta_e_arr, &uwin_arr, &vwin_arr, 
             &prof_N, snd_file1);
 
-    if (prof) {
-        static constexpr sharp::lifter_wobus lifter;
 
+    // std::cout << "check-pres_arr: " << pres_arr << std::endl;
+
+    // std::cout << "pre-if prof" << std::endl;
+    if (prof) {
+        static sharp::lifter_peters_et_al lifter;
+
+        // std::cout << "pre-define parcels" << std::endl;
+        // std::cout << "pre-define sfc parcel" << std::endl;
+        // std::cout << "check-pres_arr: " << pres_arr << std::endl;
+        // std::cout << "check-pres_arr[0]: " << pres_arr[0] << std::endl;
         // Define surface based parcel
         sharp::Parcel sfc_pcl(pres_arr[0], tmpk_arr[0], dwpk_arr[0], sharp::LPL::SFC);
 
+        // std::cout << "pre-define ml parcel" << std::endl;
         // Define mixed layer parcel
         static constexpr float ml_depth = 10000.0; // Mixed Layer depth in Pascals
         const float sfcpres = pres_arr[0];
@@ -192,6 +204,7 @@ int main(int argc, char* argv[]) {
 
         sharp::Parcel ml_pcl(ml_pcl_pres, ml_pcl_tmpk, ml_pcl_dwpk, sharp::LPL::ML);
 
+        // std::cout << "pre-define mu parcel" << std::endl;
         // Define most unstable parcel
         // Search for the most unstable parcel in the bottom
         // 400 hPa of the profile
@@ -208,6 +221,8 @@ int main(int argc, char* argv[]) {
         sharp::Parcel mu_pcl(mu_pcl_pres, mu_pcl_tmpk, mu_pcl_dwpk, sharp::LPL::MU);
 
         auto start_time = std::chrono::system_clock::now();
+
+        // std::cout << "pre-lift parcels" << std::endl;
 
         float* sfc_pcl_vtmpk_arr = new float[prof_N];
         sfc_pcl.lift_parcel(lifter, pres_arr, sfc_pcl_vtmpk_arr, (std::ptrdiff_t) prof_N);

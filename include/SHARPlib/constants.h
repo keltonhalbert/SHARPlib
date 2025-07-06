@@ -63,6 +63,11 @@ static constexpr float EXP_LV = 2.501e6f;
 // Latent heat of sublimation of water
 // ice (J/kg) at triple point temperature
 static constexpr float EXP_LS = 2.836017e6f;
+// Latent heat of freezing of water
+// ice (J/kg) at triple point temperature
+static constexpr float EXP_LF = EXP_LS - EXP_LV;
+// triple point temperature, same as ZEROCNK but labeled different for clarity
+static constexpr float T_TRIP = 273.15f;
 
 // Some microphysics stuff I don't quite understand, but I think
 // It's meant to help with a more accurate, temperature-dependent

@@ -168,6 +168,19 @@ float virtual_temperature(float temperature, float qv, float ql, float qi) {
     return (temperature * ((1.0 + (qv / EPSILON)) / (1.0 + qv + ql + qi)));
 }
 
+float density_temperature(float temperature, float qv, float qt) {
+#ifndef NO_QC
+    if (qv == MISSING) {
+        return temperature;
+    } else if (temperature == MISSING) {
+        return MISSING;
+    } else if ((qt == MISSING)) {
+        qt = qv;
+    }
+#endif
+    return (temperature * (1 - qt + qv / EPSILON));
+}
+
 float saturated_lift(float pressure, float theta_sat, const float converge) {
 #ifndef NO_QC
     if ((pressure == MISSING) || (theta_sat == MISSING)) {
@@ -345,6 +358,307 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
     rl = pcl_rl_next;
     ri = pcl_ri_next;
     return pcl_t_next;
+}
+
+
+/**
+ * \author Amelia Urquhart - OU-SoM
+ * 
+ * Helper method for the Peters et al 2022 saturated lapse rate.
+ */
+float ice_fraction(float temperature, float warmest_mixed_phase_temp,
+                    float coldest_mixed_phase_temp) {
+    if(temperature >= warmest_mixed_phase_temp) {
+        return 0;
+    } else if (temperature <= coldest_mixed_phase_temp) {
+        return 1;
+    } else {
+        return (1 / (coldest_mixed_phase_temp - warmest_mixed_phase_temp))
+            * (temperature - warmest_mixed_phase_temp);
+    }
+}
+
+/**
+ * \author Amelia Urquhart - OU-SoM
+ * 
+ * Helper method for the Peters et al 2022 saturated lapse rate.
+ */
+float deriv_ice_fraction(float temperature, float warmest_mixed_phase_temp,
+                    float coldest_mixed_phase_temp) {
+    if(temperature >= warmest_mixed_phase_temp) {
+        return 0;
+    } else if (temperature <= coldest_mixed_phase_temp) {
+        return 0;
+    } else {
+        return (1 / (coldest_mixed_phase_temp - warmest_mixed_phase_temp));
+    }
+}
+
+/**
+ * \author Amelia Urquhart - OU-SoM
+ * 
+ * Helper method for the Peters et al 2022 saturated lapse rate.
+ */
+float saturation_mixing_ratio(float pressure, float temperature, int ice_flag,
+                float warmest_mixed_phase_temp,
+                float coldest_mixed_phase_temp) {
+
+    float term_1, term_2, r_sat;
+    
+    if(ice_flag == 0) {
+        term_1 = (CP_VAPOR - CP_LIQUID) / RVGAS;
+        term_2 = (EXP_LV - T_TRIP * (CP_VAPOR - CP_LIQUID)) / RVGAS;
+
+        // Saturation vapor pressure with respect to liquid I think
+		float esl = std::exp((temperature - T_TRIP) * term_2 / (temperature * 
+                T_TRIP)) * VAPPRES_REF * std::pow(temperature / T_TRIP, term_1);
+
+        r_sat = EPSILON * esl / (pressure - esl);
+
+        return r_sat;
+    } else if(ice_flag == 1) {
+        float omega = ice_fraction(temperature, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+
+        float r_sat_liquid = saturation_mixing_ratio(pressure, temperature, 0, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+        float r_sat_ice = saturation_mixing_ratio(pressure, temperature, 2, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+
+        r_sat = (1 - omega) * r_sat_liquid + omega * r_sat_ice;
+
+        return r_sat;
+    } else if(ice_flag == 2) {
+        term_1 = (CP_VAPOR - CP_ICE) / RVGAS;
+        term_2 = (EXP_LV - T_TRIP * (CP_VAPOR - CP_ICE)) / RVGAS;
+
+        // Saturation vapor pressure with respect to liquid I think
+		float esi = std::exp((temperature - T_TRIP) * term_2 / (temperature * 
+                T_TRIP)) * VAPPRES_REF * std::pow(temperature / T_TRIP, term_1);
+
+        r_sat = EPSILON * esi / (pressure - esi);
+
+        return r_sat;
+    } else {
+        return saturation_mixing_ratio(pressure, temperature, 1, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+    }
+}
+
+float saturated_adiabatic_lapse_rate_peters_et_al(float temperature, 
+                                        float qt, 
+                                        float pressure, 
+                                        float temperature_env,
+                                        float qv_env,
+                                        float entrainment_rate,
+                                        float precip_rate,
+                                        float qt_entrainment,
+                                        float warmest_mixed_phase_temp,
+                                        float coldest_mixed_phase_temp) {
+    float omega = ice_fraction(temperature, warmest_mixed_phase_temp, 
+        coldest_mixed_phase_temp);
+    float d_omega = deriv_ice_fraction(temperature, warmest_mixed_phase_temp, 
+        coldest_mixed_phase_temp);
+
+    float q_vsl = (1 - qt) * 
+        saturation_mixing_ratio(pressure, temperature, 0, 
+            warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+    float q_vsi = (1 - qt) * 
+        saturation_mixing_ratio(pressure, temperature, 2, 
+            warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+
+    // Computes water vapor mass fraction in the parcel. Is more efficient and 
+    // robust than keeping track externally
+    float qv = (1 - omega) * q_vsl + omega * q_vsi;
+
+    float temperature_entrainment = 
+        -entrainment_rate * (temperature - temperature_env);
+    float qv_entrainment = -entrainment_rate * (qv - qv_env);
+
+    if(qt_entrainment == MISSING) {
+        qt_entrainment = -entrainment_rate * (qt - qv_env) 
+            - precip_rate * (qt - qv);
+    }
+
+    float q_condensate = qt - qv;
+
+    float ql = q_condensate * (1 - omega);
+    float qi = q_condensate * omega;
+
+    float cp_moist_air = (1 - qt) * CP_DRYAIR + qv * CP_VAPOR + ql * CP_LIQUID
+        + qi * CP_ICE;
+
+    float density_temperature_parcel = 
+        density_temperature(temperature, qv, qt);
+    float density_temperature_env = 
+        density_temperature(temperature_env, qv_env, qv_env);
+
+    float buoyancy = GRAVITY 
+        * (density_temperature_parcel - density_temperature_env) 
+        / density_temperature_env;
+
+    float L_v = EXP_LV + (temperature - T_TRIP) * (CP_VAPOR - CP_LIQUID);
+    float L_i = EXP_LF + (temperature - T_TRIP) * (CP_LIQUID - CP_ICE);
+
+    float L_s = L_v + omega * L_i;
+
+    float Q_vsl = q_vsl / (EPSILON - EPSILON * qt + qv);
+    float Q_vsi = q_vsi / (EPSILON - EPSILON * qt + qv);
+
+    float Q_M = (1 - omega) * (q_vsl) / (1 - Q_vsl) + omega * (q_vsi) 
+        / (1 - Q_vsi);
+    float L_M = (1 - omega) * L_v * (q_vsl) 
+        / (1 - Q_vsl) + omega * (L_v + L_i) * (q_vsi) / (1 - Q_vsi);
+    // Moist air gas constant for environmental air
+    float R_m_env = (1 - qv_env) * RDGAS + qv_env * RVGAS;
+
+    float term_1 = buoyancy;
+    float term_2 = GRAVITY;
+    float term_3 = ((L_s * Q_M) / (R_m_env * temperature_env)) * GRAVITY;
+    float term_4 = (cp_moist_air - L_i * (qt - qv) * d_omega) * temperature_entrainment;
+    float term_5 = L_s * (qv_entrainment + qv / (1 - qt) * qt_entrainment);
+
+    float term_6 = cp_moist_air;
+    float term_7 = (L_i * (qt - qv) - L_s * (q_vsi - q_vsl)) * d_omega;
+    float term_8 = (L_s * L_M) / (RVGAS * temperature * temperature);
+
+    float dT_dz = -(term_1 + term_2 + term_3 - term_4 - term_5) 
+        / (term_6 - term_7 + term_8);
+
+    return dT_dz;
+}
+
+float moist_adiabat_peters_et_al(float pressure, float temperature,
+                                      float new_pressure, float& qv, float& qt,
+									  float* pres, float* tmpk, float* mixr,
+									  int NZ, const float pres_incr,
+                                      float entrainment_rate,
+                                      const ascent_type ma_type,
+                                      const float warmest_mixed_phase_temp,
+                                      const float coldest_mixed_phase_temp) {
+    // Used to keep track of the index used for interpolation of the 
+    // environmental profile. Removing the need to search for these each
+    // iteration should save some computation time.
+    int profile_index_0 = MISSING;
+
+    float parcel_temperature = temperature;
+    float parcel_qv = qv;
+    float parcel_qt = qt;
+
+    // Keeps track of changes to qt caused by entrainment and precipitation
+    float dqt_dz = MISSING;
+
+    // Ensures that the entrainment rate is zero if using non-entraining ascent
+    // logic
+    if(ma_type == ascent_type::adiab_nonentr
+        || ma_type == ascent_type::pseudo_nonentr) {
+        entrainment_rate = 0;
+    }
+
+    while(pressure > new_pressure){
+        float target_pressure = pressure - pres_incr;
+
+        if(target_pressure < new_pressure) {
+            target_pressure = new_pressure;
+        }
+
+        bool need_to_find_index = false;
+
+        // Runs on the first iteration only, sets the profile index
+        if(profile_index_0 == MISSING) {
+            need_to_find_index = true;
+        } else {
+            int profile_index_1 = std::min(profile_index_0 + 1, NZ - 1);
+
+            float pres_bottom_of_layer = pres[profile_index_0];
+            float pres_top_of_layer = pres[profile_index_1];
+
+            if(pres_bottom_of_layer != pres_top_of_layer 
+                && pressure < pres_top_of_layer) {
+                need_to_find_index = true;
+            }
+        }
+
+        // If the interpolation index needs to be found, search for it
+        if(need_to_find_index) {   
+            // Checks if parcel is already above profile, in which case it 
+            // skips the search
+            if(pressure < pres[NZ - 1]) {
+                profile_index_0 = NZ - 1;
+            }
+
+            for(int i = 0; i < NZ - 1; i++) {
+                float pres_bottom_of_layer = pres[i];
+                float pres_top_of_layer = pres[i + 1];
+
+                if(pressure <= pres_bottom_of_layer 
+                    && pressure > pres_top_of_layer) {
+                    profile_index_0 = i;
+                    break; // End search, index has been found
+                }
+            }
+        }
+
+        // Since the lifter does not automatically initialize qv or qt,
+        // this initializes them if necessary
+        if(qv == MISSING) {
+            qv = saturation_mixing_ratio(pressure, temperature, 1, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+            parcel_qv = qv;
+        }
+        if(qt == MISSING) {
+            qt = saturation_mixing_ratio(pressure, temperature, 1, warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+            parcel_qt = qt;
+        }
+
+        // Environmental interpolation scheme used here is very simple, but
+        // this can be changed later.
+        int profile_index_1 = std::min(profile_index_0 + 1, NZ - 1);
+        float env_temperature = 
+            (tmpk[profile_index_0] + tmpk[profile_index_1])/2;
+        float qv_0 = specific_humidity(mixr[profile_index_0]);
+        float qv_1 = specific_humidity(mixr[profile_index_1]);
+        float env_qv = (qv_0 + qv_1)/2;
+
+        float dz = RDGAS * sharp::virtual_temperature(env_temperature, env_qv) 
+            / GRAVITY * std::log(pressure / target_pressure); // hypsometric
+
+        float precip_rate; // Units: m^-1
+        if(ma_type == ascent_type::pseudo_entr 
+            || ma_type == ascent_type::pseudo_nonentr) {
+            precip_rate = 1 / dz; // sets correct behavior for pseudoadiabatic
+        } else {
+            precip_rate = 0; // sets correct behavior for irrev-adiabatic
+        }
+
+        float dT_dz = saturated_adiabatic_lapse_rate_peters_et_al(
+            parcel_temperature, parcel_qt, pressure, env_temperature,
+            env_qv, entrainment_rate, precip_rate, dqt_dz,
+            warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+
+        float new_temperature = parcel_temperature + dT_dz * dz;
+
+        float new_parcel_qv = (1 - parcel_qt)
+            * saturation_mixing_ratio(target_pressure, new_temperature, 1,
+                warmest_mixed_phase_temp, coldest_mixed_phase_temp);
+
+        float new_parcel_qt;
+        if(ma_type == ascent_type::pseudo_entr 
+            || ma_type == ascent_type::pseudo_nonentr) {
+            dqt_dz = (new_parcel_qv - parcel_qv) / dz;
+            new_parcel_qt = parcel_qv;
+        } else {
+            dqt_dz = -entrainment_rate * (parcel_qt - env_qv) 
+                - precip_rate * (parcel_qt - parcel_qv);
+            new_parcel_qt = parcel_qt + dqt_dz * dz;
+        }
+
+        parcel_temperature = new_temperature;
+        parcel_qv = new_parcel_qv;
+        parcel_qt = new_parcel_qt;
+
+        pressure = target_pressure;
+    }
+
+    // Updates qv and qt in the lifter before returning the new temperature
+    qv = parcel_qv;
+    qt = parcel_qt;
+    return parcel_temperature;
 }
 
 void drylift(float pressure, float temperature, float dewpoint,

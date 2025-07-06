@@ -73,6 +73,11 @@ template void Parcel::lift_parcel<lifter_cm1>(lifter_cm1& liftpcl,
                                               float pcl_vtmpk_arr[],
                                               const std::ptrdiff_t N);
 
+template void Parcel::lift_parcel<lifter_peters_et_al>(lifter_peters_et_al& liftpcl,
+                                              const float pressure_arr[],
+                                              float pcl_vtmpk_arr[],
+                                              const std::ptrdiff_t N);
+
 void Parcel::find_lfc_el(const float pres_arr[], const float hght_arr[],
                          const float buoy_arr[], const std::ptrdiff_t N) {
     PressureLayer sat_lyr = {this->lcl_pressure, pres_arr[N - 1]};
