@@ -220,6 +220,8 @@ struct lifter_peters_et_al {
                             lpl);
 
         lifter_peters_et_al lifter;
+        lifter.set_profile(prof_pres, prof_hght, prof_tmpk, prof_dwpk, 
+            prof_uwin, prof_vwin, prof_NZ);
         lifter.entr_rate = 0;
 
         if(ma_type == ascent_type::adiab_entr 

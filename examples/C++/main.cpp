@@ -180,6 +180,8 @@ int main(int argc, char* argv[]) {
     // std::cout << "pre-if prof" << std::endl;
     if (prof) {
         static sharp::lifter_peters_et_al lifter;
+        lifter.set_profile(pres_arr, hght_arr, tmpk_arr, dwpk_arr, uwin_arr, 
+            vwin_arr, prof_N);
 
         // std::cout << "pre-define parcels" << std::endl;
         // std::cout << "pre-define sfc parcel" << std::endl;
@@ -225,18 +227,24 @@ int main(int argc, char* argv[]) {
 
         // std::cout << "pre-lift parcels" << std::endl;
 
+        // entrainment rate must be recalculated for each LPL
+        lifter.determine_entrainment_rate(sharp::LPL::SFC);
         float* sfc_pcl_vtmpk_arr = new float[prof_N];
         sfc_pcl.lift_parcel(lifter, pres_arr, sfc_pcl_vtmpk_arr, (std::ptrdiff_t) prof_N);
         float* sfc_pcl_buoy_arr = new float[prof_N];
         sharp::buoyancy(sfc_pcl_vtmpk_arr, vtmp_arr, sfc_pcl_buoy_arr, (std::ptrdiff_t) prof_N);
         sfc_pcl.cape_cinh(pres_arr, hght_arr, sfc_pcl_buoy_arr, (std::ptrdiff_t) prof_N);
 
+        // entrainment rate must be recalculated for each LPL
+        lifter.determine_entrainment_rate(sharp::LPL::ML);
         float* ml_pcl_vtmpk_arr = new float[prof_N];
         ml_pcl.lift_parcel(lifter, pres_arr, ml_pcl_vtmpk_arr, (std::ptrdiff_t) prof_N);
         float* ml_pcl_buoy_arr = new float[prof_N];
         sharp::buoyancy(ml_pcl_vtmpk_arr, vtmp_arr, ml_pcl_buoy_arr, (std::ptrdiff_t) prof_N);
         ml_pcl.cape_cinh(pres_arr, hght_arr, ml_pcl_buoy_arr, (std::ptrdiff_t) prof_N);
 
+        // entrainment rate must be recalculated for each LPL
+        lifter.determine_entrainment_rate(sharp::LPL::MU);
         float* mu_pcl_vtmpk_arr = new float[prof_N];
         mu_pcl.lift_parcel(lifter, pres_arr, mu_pcl_vtmpk_arr, (std::ptrdiff_t) prof_N);
         float* mu_pcl_buoy_arr = new float[prof_N];
