@@ -30,10 +30,6 @@ option(BUILD_PYBIND "Build python bindings with nanobind" OFF)
 option(NO_QC "Disable QC checks for missing/NaN values in SHARPlib" OFF)
 set(NO_QC ${NO_QC} CACHE BOOL "Disable QC checks for missing/NaN values in SHARPlib tests" FORCE)
 
-## Bring the headers into the project
-include_directories(include)
-include_directories(external/fmt/include)
-
 ## add all CPP files as sources
 file(GLOB SOURCES "src/SHARPlib/*.cpp" "src/SHARPlib/params/*.cpp")
 
@@ -41,6 +37,8 @@ file(GLOB SOURCES "src/SHARPlib/*.cpp" "src/SHARPlib/params/*.cpp")
 ## The library target is SHARP, we are building a static lib,
 ## and the sources are proviced
 add_library(SHARPlib STATIC ${SOURCES})
+
+target_include_directories(SHARPlib PUBLIC include external/fmt/include)
 
 ## We are telling the build process that the SHARP library
 ## should use the C++ linker, and setting compile options
