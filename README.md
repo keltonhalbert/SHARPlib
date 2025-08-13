@@ -24,9 +24,9 @@ Since the 1990s, the National Weather Service (NWS) Storm Prediction Center (SPC
 
 SHARPpy sought to open source these computations and visualizations in order to facilitate reproducible open science, provide a cross-platform means of visualizing sounding data, and internally simplify the number of SHARP derivatives with unique code bases. While many of the goals were met by SHARPpy, it struggled in a few key areas:
 
-    - Pure python is not a performant solution when post-processing gridded data, particularly when dealing with parcel lifting routines.
-    - Maintaining an interactive data visualization application complete with live access data feeds along with a core computational library was challenging.
-    - The computational library component wasn't very generalizable, in large part because I wrote the code while taking an OOP class, and everything became a nail to the object hammer. 
+- Pure python is not a performant solution when post-processing gridded data, particularly when dealing with parcel lifting routines.
+- Maintaining an interactive data visualization application complete with live access data feeds along with a core computational library was challenging.
+- The computational library component wasn't very generalizable, in large part because I wrote the code while taking an OOP class, and everything became a nail to the object hammer. 
 
 SHARPlib seeks to take the successes of SHARPpy, while having the benefit of more experience and hindsight. It is most analogous to the ```sharppy.sharptab``` import, but written in C++ for performance and wrapped for Python/Numpy using [nanobind](https://github.com/wjakob/nanobind). It is separate from any visualization software and dependencies, generalized to be more composable where appropriate, and optimised for performance. 
 
@@ -77,9 +77,13 @@ SHARPlib is available via pip/PyPI, and can be installed for Linux, MacOS, and W
 pip install SHARPlib
 ```
 
-SHARPlib is also available via conda-forge, although it's current release candidate status means it is not yet a part of the main channels. Still, it can be installed using the following command: 
+SHARPlib is also available via conda-forge, and can be installed with `mamba` or `conda`:
 ```bash
-conda install conda-forge/label/sharplib_rc::sharplib 
+conda install sharplib 
+```
+If you do not have conda-forge set as your default channel:
+```bash
+conda install -c conda-forge sharplib
 ```
 
 ### Building SHARPlib (Python)
