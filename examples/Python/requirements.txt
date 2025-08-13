@@ -1,0 +1,17 @@
+numpy
+scipy
+gcsfs
+fsspec
+pandas
+xarray
+dask
+distributed
+kerchunk
+cfgrib
+metpy
+matplotlib
+cartopy
+cmocean
+jupyter 
+fastparquet
+sharplib
