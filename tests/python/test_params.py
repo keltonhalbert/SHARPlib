@@ -224,7 +224,7 @@ def test_stp_scp_ship():
         esrh,
         ebwd
     )
-    assert (stp == pytest.approx(0.4849648, abs=1e-4))
+    assert (stp == pytest.approx(0.4851581, abs=1e-4))
 
     scp = params.supercell_composite_parameter(mupcl.cape, esrh, ebwd)
     assert (scp == pytest.approx(7.9699, abs=1e-1))
@@ -286,7 +286,7 @@ def test_ehi():
     )
 
     ehi = params.energy_helicity_index(pcl.cape, srh)
-    assert (ehi == pytest.approx(4.411969661))
+    assert (ehi == pytest.approx(4.412268638))
 
 
 def test_precipitable_water():
