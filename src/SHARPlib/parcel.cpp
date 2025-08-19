@@ -75,6 +75,7 @@ template void Parcel::lift_parcel<lifter_cm1>(lifter_cm1& liftpcl,
 
 void Parcel::find_lfc_el(const float pres_arr[], const float hght_arr[],
                          const float buoy_arr[], const std::ptrdiff_t N) {
+    if (this->lcl_pressure <= pres_arr[N - 1]) return;
     PressureLayer sat_lyr = {this->lcl_pressure, pres_arr[N - 1]};
     LayerIndex lyr_idx = get_layer_index(sat_lyr, pres_arr, N);
 
@@ -106,7 +107,9 @@ void Parcel::find_lfc_el(const float pres_arr[], const float hght_arr[],
                 eql_pres_last = eql_pres;
                 pos_buoy = 0.0;
             }
-            for (lfc_pres = pbot - 500; lfc_pres > ptop + 500;
+            const float pres_start = std::min(this->lcl_pressure, pbot + 500);
+            const float pres_end = std::max(ptop - 500, pres_arr[N - 1]);
+            for (lfc_pres = pres_start; lfc_pres > pres_end;
                  lfc_pres -= 100.0) {
                 const float buoy =
                     interp_pressure(lfc_pres, pres_arr, buoy_arr, N);
@@ -119,7 +122,9 @@ void Parcel::find_lfc_el(const float pres_arr[], const float hght_arr[],
         pos_buoy += condition * lyr_top * (htop - hbot);
         // EL condition
         if ((lfc_pres != MISSING) && ((lyr_bot >= 0) && (lyr_top < 0))) {
-            for (eql_pres = pbot - 500; eql_pres > ptop + 500;
+            const float pres_start = std::min(lfc_pres, pbot + 500);
+            const float pres_end = std::max(ptop - 500, pres_arr[N - 1]);
+            for (eql_pres = pres_start; eql_pres > pres_end;
                  eql_pres -= 100.0) {
                 const float buoy =
                     interp_pressure(eql_pres, pres_arr, buoy_arr, N);
