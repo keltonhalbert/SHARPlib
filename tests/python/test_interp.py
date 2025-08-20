@@ -61,6 +61,7 @@ def test_interp_pres():
 def test_find_first_pres():
     pres = np.arange(10000.0, 110000.0, 10000.0)[::-1]
     data = np.arange(1.0, 11.0, 1.0)
+    data[2] = constants.MISSING
 
     assert (interp.find_first_pressure(5.0, pres, data) == 60000.0)
     assert (interp.find_first_pressure(
@@ -71,11 +72,14 @@ def test_find_first_pres():
 
     assert (interp.find_first_pressure(
         constants.MISSING, pres, data) == constants.MISSING)
+    assert (interp.find_first_pressure(
+        3, pres, data) == pytest.approx(79372.6))
 
 
 def test_find_first_height():
     hght = np.arange(100.0, 1100.0, 100.0)
     data = np.arange(1.0, 11.0, 1.0)
+    data[2] = constants.MISSING
 
     assert (interp.find_first_height(5.0, hght, data) == 500.0)
     assert (interp.find_first_height(5.5, hght, data) == 550.0)
@@ -84,3 +88,4 @@ def test_find_first_height():
 
     assert (interp.find_first_height(
         constants.MISSING, hght, data) == constants.MISSING)
+    assert (interp.find_first_height(3, hght, data) == 300.0)

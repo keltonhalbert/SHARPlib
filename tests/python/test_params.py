@@ -78,7 +78,7 @@ def test_effective_inflow_layer_wobus():
     assert (eil.bottom == pytest.approx(92043.0))
     assert (eil.top == pytest.approx(83384.0))
     assert (mupcl.cape == pytest.approx(3353.4, abs=5e-1))
-    assert (mupcl.cinh == pytest.approx(-34.5697, abs=5e-4))
+    assert (mupcl.cinh == pytest.approx(-34.5707, abs=5e-4))
 
 
 def test_effective_inflow_layer_cm1():
@@ -140,8 +140,8 @@ def test_bunkers_motion():
         eil, mupcl
     )
 
-    assert (storm_mtn.u == pytest.approx(9.74783))
-    assert (storm_mtn.v == pytest.approx(5.570305))
+    assert (storm_mtn.u == pytest.approx(9.65811))
+    assert (storm_mtn.v == pytest.approx(5.558156))
 
 
 def test_stp_scp_ship():
@@ -202,7 +202,9 @@ def test_stp_scp_ship():
         snd_data["pres"],
         snd_data["hght"]
     )
-    ebwd_lyr = layer.HeightLayer(eil_hght.bottom, 0.5*eql_hght)
+    depth = (eql_hght - eil_hght.bottom)*0.5
+    ebwd_lyr = layer.HeightLayer(
+        eil_hght.bottom, float(eil_hght.bottom + depth))
     ebwd_cmp = winds.wind_shear(
         ebwd_lyr,
         snd_data["hght"],
@@ -224,7 +226,7 @@ def test_stp_scp_ship():
         esrh,
         ebwd
     )
-    assert (stp == pytest.approx(0.4849648, abs=1e-4))
+    assert (stp == pytest.approx(0.48329, abs=1e-4))
 
     scp = params.supercell_composite_parameter(mupcl.cape, esrh, ebwd)
     assert (scp == pytest.approx(7.9699, abs=1e-1))
@@ -286,7 +288,7 @@ def test_ehi():
     )
 
     ehi = params.energy_helicity_index(pcl.cape, srh)
-    assert (ehi == pytest.approx(4.411969661))
+    assert (ehi == pytest.approx(4.41228, abs=1e-5))
 
 
 def test_precipitable_water():

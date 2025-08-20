@@ -75,20 +75,21 @@ template void Parcel::lift_parcel<lifter_cm1>(lifter_cm1& liftpcl,
 
 void Parcel::find_lfc_el(const float pres_arr[], const float hght_arr[],
                          const float buoy_arr[], const std::ptrdiff_t N) {
+    if (this->lcl_pressure <= pres_arr[N - 1]) return;
     PressureLayer sat_lyr = {this->lcl_pressure, pres_arr[N - 1]};
     LayerIndex lyr_idx = get_layer_index(sat_lyr, pres_arr, N);
 
-    float lyr_bot = 0.0;
     float pos_buoy = 0.0;
-    float pos_buoy_last = 0.0;
+    float pos_buoy_max = 0.0;
     float pbot = sat_lyr.bottom;
     float buoy_bot = interp_pressure(sat_lyr.bottom, pres_arr, buoy_arr, N);
     float hbot = interp_pressure(sat_lyr.bottom, pres_arr, hght_arr, N);
     // set the LFC pressure to the LCL if the buoyancy is positive
     float lfc_pres = (buoy_bot > 0) ? sat_lyr.bottom : MISSING;
     float eql_pres = MISSING;
-    float lfc_pres_last = MISSING;
-    float eql_pres_last = MISSING;
+    float lfc_pres_final = MISSING;
+    float eql_pres_final = MISSING;
+    bool in_pos_area = (buoy_bot > 0);
 
     for (std::ptrdiff_t k = lyr_idx.kbot; k < lyr_idx.ktop + 1; ++k) {
 #ifndef NO_QC
@@ -98,50 +99,55 @@ void Parcel::find_lfc_el(const float pres_arr[], const float hght_arr[],
         const float htop = hght_arr[k];
         const float buoy_top = buoy_arr[k];
         const float lyr_top = (buoy_top + buoy_bot) / 2.0f;
-        // LFC condition
-        if ((lyr_bot <= 0) && (lyr_top > 0)) {
-            if (lfc_pres != MISSING) {
-                pos_buoy_last = pos_buoy;
-                lfc_pres_last = lfc_pres;
-                eql_pres_last = eql_pres;
-                pos_buoy = 0.0;
-            }
-            for (lfc_pres = pbot - 500; lfc_pres > ptop + 500;
-                 lfc_pres -= 100.0) {
-                const float buoy =
-                    interp_pressure(lfc_pres, pres_arr, buoy_arr, N);
-                if (buoy > 0) break;
-            }
+
+        if (!in_pos_area && (buoy_bot <= 0) && (buoy_top > 0)) {
+            pos_buoy = 0.0;
+            eql_pres = MISSING;
+            in_pos_area = true;
+
+            const float log_pbot = std::log10(pbot);
+            const float log_ptop = std::log10(ptop);
+            const float buoy_diff = buoy_top - buoy_bot;
+            const float log_pres_diff = log_ptop - log_pbot;
+            const float log_lfc_pres =
+                log_pbot - buoy_bot * (log_pres_diff / buoy_diff);
+            lfc_pres =
+                std::min(std::pow(10.0f, log_lfc_pres), this->lcl_pressure);
         }
 
-        // keep track of buoyancy so that we pick the max CAPE layer
-        const float condition = ((lfc_pres != MISSING) & (lyr_top > 0));
+        const float condition = ((in_pos_area) & (lyr_top > 0));
         pos_buoy += condition * lyr_top * (htop - hbot);
-        // EL condition
-        if ((lfc_pres != MISSING) && ((lyr_bot >= 0) && (lyr_top < 0))) {
-            for (eql_pres = pbot - 500; eql_pres > ptop + 500;
-                 eql_pres -= 100.0) {
-                const float buoy =
-                    interp_pressure(eql_pres, pres_arr, buoy_arr, N);
-                if (buoy < 0) break;
-            }
-            if (pos_buoy_last > pos_buoy) {
-                lfc_pres = lfc_pres_last;
-                eql_pres = eql_pres_last;
-                pos_buoy = pos_buoy_last;
+
+        if (in_pos_area && ((buoy_bot >= 0) && (buoy_top < 0))) {
+            in_pos_area = false;
+            const float log_pbot = std::log10(pbot);
+            const float log_ptop = std::log10(ptop);
+            const float buoy_diff = buoy_top - buoy_bot;
+            const float log_pres_diff = log_ptop - log_pbot;
+            const float log_eql_pres =
+                log_pbot - buoy_bot * (log_pres_diff / buoy_diff);
+            eql_pres = std::max(std::pow(10.0f, log_eql_pres), pres_arr[N - 1]);
+            if (pos_buoy > pos_buoy_max) {
+                pos_buoy_max = pos_buoy;
+                lfc_pres_final = lfc_pres;
+                eql_pres_final = eql_pres;
             }
         }
-        // If there is no EL, just use the last available level
-        if ((k == N - 1) && (lyr_top > 0)) eql_pres = pres_arr[N - 1];
-        // set loop variables
         pbot = ptop;
         hbot = htop;
         buoy_bot = buoy_top;
-        lyr_bot = lyr_top;
     }
-    if (pos_buoy > 0.0f) {
-        this->lfc_pressure = lfc_pres;
-        this->eql_pressure = eql_pres;
+    if (in_pos_area) {
+        eql_pres = pres_arr[N - 1];
+        if (pos_buoy > pos_buoy_max) {
+            pos_buoy_max = pos_buoy;
+            lfc_pres_final = lfc_pres;
+            eql_pres_final = eql_pres;
+        }
+    }
+    if (pos_buoy_max > 0.0f) {
+        this->lfc_pressure = lfc_pres_final;
+        this->eql_pressure = eql_pres_final;
     }
 }
 

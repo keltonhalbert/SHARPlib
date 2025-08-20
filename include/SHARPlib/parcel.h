@@ -322,10 +322,8 @@ struct Parcel {
         const LayerIndex dry_idx = get_layer_index(dry_lyr, pressure_arr, N);
         const LayerIndex sat_idx = get_layer_index(sat_lyr, pressure_arr, N);
 
-        // zero out any residual buoyancy from
-        // other parcels that may have been lifted
         for (std::ptrdiff_t k = 0; k < dry_idx.kbot; ++k) {
-            pcl_vtmpk_arr[k] = 0.0f;
+            pcl_vtmpk_arr[k] = MISSING;
         }
 
         // Virtual potential temperature (Theta-V)
