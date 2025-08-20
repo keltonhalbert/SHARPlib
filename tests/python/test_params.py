@@ -202,7 +202,9 @@ def test_stp_scp_ship():
         snd_data["pres"],
         snd_data["hght"]
     )
-    ebwd_lyr = layer.HeightLayer(eil_hght.bottom, 0.5*eql_hght)
+    depth = (eql_hght - eil_hght.bottom)*0.5
+    ebwd_lyr = layer.HeightLayer(
+        eil_hght.bottom, float(eil_hght.bottom + depth))
     ebwd_cmp = winds.wind_shear(
         ebwd_lyr,
         snd_data["hght"],
