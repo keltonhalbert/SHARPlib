@@ -314,23 +314,23 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="parcel_8cpp_source.html#l00148">148</a> of file <a class="el" href="parcel_8cpp_source.html">parcel.cpp</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  149</span>                                                                  {</div>
-<div class="line"><span class="lineno">  150</span>    <span class="keywordflow">if</span> (this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#ae4798e73dc979eb1bf00d7057ed7eea0">lcl_pressure</a> == <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>) <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  151</span>    <a class="code hl_function" href="structsharp_1_1Parcel.html#a8a311e09b1d46a829212da94cf181537">find_lfc_el</a>(pres_arr, hght_arr, buoy_arr, N);</div>
-<div class="line"><span class="lineno">  152</span>    <span class="keywordflow">if</span> ((this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#a55dcb9c777b42c5f35537730c044e004">lfc_pressure</a> != <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>) &amp;&amp; (this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#ac76710675fd2f495d52ac35d0d1de246">eql_pressure</a> != <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>)) {</div>
-<div class="line"><span class="lineno">  153</span>        PressureLayer lfc_el = {this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#a55dcb9c777b42c5f35537730c044e004">lfc_pressure</a>, this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#ac76710675fd2f495d52ac35d0d1de246">eql_pressure</a>};</div>
-<div class="line"><span class="lineno">  154</span>        PressureLayer lpl_lfc = {this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#acdce27acf6bd8a327993f5d4cf240906">pres</a>, this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#a55dcb9c777b42c5f35537730c044e004">lfc_pressure</a>};</div>
-<div class="line"><span class="lineno">  155</span>        HeightLayer lfc_el_ht =</div>
-<div class="line"><span class="lineno">  156</span>            <a class="code hl_function" href="namespacesharp.html#a31da980f398c9f6a5960ddf868101a94">pressure_layer_to_height</a>(lfc_el, pres_arr, hght_arr, N);</div>
-<div class="line"><span class="lineno">  157</span>        HeightLayer lpl_lfc_ht =</div>
-<div class="line"><span class="lineno">  158</span>            <a class="code hl_function" href="namespacesharp.html#a31da980f398c9f6a5960ddf868101a94">pressure_layer_to_height</a>(lpl_lfc, pres_arr, hght_arr, N);</div>
-<div class="line"><span class="lineno">  159</span> </div>
-<div class="line"><span class="lineno">  160</span>        this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#af2f4106c560b37ed8d13c3f272fa68a4">cinh</a> =</div>
-<div class="line"><span class="lineno">  161</span>            <a class="code hl_function" href="namespacesharp.html#a8ab599fbfe2b3793d7af8399c17d1327">integrate_layer_trapz</a>(lpl_lfc_ht, buoy_arr, hght_arr, N, -1);</div>
-<div class="line"><span class="lineno">  162</span>        this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#abe6f9e3ee98fde1d361814a5d6384b1a">cape</a> = <a class="code hl_function" href="namespacesharp.html#a8ab599fbfe2b3793d7af8399c17d1327">integrate_layer_trapz</a>(lfc_el_ht, buoy_arr, hght_arr, N, 1);</div>
-<div class="line"><span class="lineno">  163</span>    }</div>
-<div class="line"><span class="lineno">  164</span>}</div>
+<p class="definition">Definition at line <a class="el" href="parcel_8cpp_source.html#l00154">154</a> of file <a class="el" href="parcel_8cpp_source.html">parcel.cpp</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  155</span>                                                                  {</div>
+<div class="line"><span class="lineno">  156</span>    <span class="keywordflow">if</span> (this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#ae4798e73dc979eb1bf00d7057ed7eea0">lcl_pressure</a> == <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>) <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  157</span>    <a class="code hl_function" href="structsharp_1_1Parcel.html#a8a311e09b1d46a829212da94cf181537">find_lfc_el</a>(pres_arr, hght_arr, buoy_arr, N);</div>
+<div class="line"><span class="lineno">  158</span>    <span class="keywordflow">if</span> ((this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#a55dcb9c777b42c5f35537730c044e004">lfc_pressure</a> != <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>) &amp;&amp; (this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#ac76710675fd2f495d52ac35d0d1de246">eql_pressure</a> != <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>)) {</div>
+<div class="line"><span class="lineno">  159</span>        PressureLayer lfc_el = {this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#a55dcb9c777b42c5f35537730c044e004">lfc_pressure</a>, this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#ac76710675fd2f495d52ac35d0d1de246">eql_pressure</a>};</div>
+<div class="line"><span class="lineno">  160</span>        PressureLayer lpl_lfc = {this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#acdce27acf6bd8a327993f5d4cf240906">pres</a>, this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#a55dcb9c777b42c5f35537730c044e004">lfc_pressure</a>};</div>
+<div class="line"><span class="lineno">  161</span>        HeightLayer lfc_el_ht =</div>
+<div class="line"><span class="lineno">  162</span>            <a class="code hl_function" href="namespacesharp.html#a31da980f398c9f6a5960ddf868101a94">pressure_layer_to_height</a>(lfc_el, pres_arr, hght_arr, N);</div>
+<div class="line"><span class="lineno">  163</span>        HeightLayer lpl_lfc_ht =</div>
+<div class="line"><span class="lineno">  164</span>            <a class="code hl_function" href="namespacesharp.html#a31da980f398c9f6a5960ddf868101a94">pressure_layer_to_height</a>(lpl_lfc, pres_arr, hght_arr, N);</div>
+<div class="line"><span class="lineno">  165</span> </div>
+<div class="line"><span class="lineno">  166</span>        this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#af2f4106c560b37ed8d13c3f272fa68a4">cinh</a> =</div>
+<div class="line"><span class="lineno">  167</span>            <a class="code hl_function" href="namespacesharp.html#a8ab599fbfe2b3793d7af8399c17d1327">integrate_layer_trapz</a>(lpl_lfc_ht, buoy_arr, hght_arr, N, -1);</div>
+<div class="line"><span class="lineno">  168</span>        this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#abe6f9e3ee98fde1d361814a5d6384b1a">cape</a> = <a class="code hl_function" href="namespacesharp.html#a8ab599fbfe2b3793d7af8399c17d1327">integrate_layer_trapz</a>(lfc_el_ht, buoy_arr, hght_arr, N, 1);</div>
+<div class="line"><span class="lineno">  169</span>    }</div>
+<div class="line"><span class="lineno">  170</span>}</div>
 <div class="ttc" id="anamespacesharp_html_a31da980f398c9f6a5960ddf868101a94"><div class="ttname"><a href="namespacesharp.html#a31da980f398c9f6a5960ddf868101a94">sharp::pressure_layer_to_height</a></div><div class="ttdeci">HeightLayer pressure_layer_to_height(PressureLayer layer, const float pressure[], const float height[], const std::ptrdiff_t N, const bool toAGL=false)</div><div class="ttdoc">Converts a sharp::PressureLayer to a sharp::HeightLayer.</div><div class="ttdef"><b>Definition:</b> <a href="layer_8cpp_source.html#l00113">layer.cpp:113</a></div></div>
 <div class="ttc" id="anamespacesharp_html_a8ab599fbfe2b3793d7af8399c17d1327"><div class="ttname"><a href="namespacesharp.html#a8ab599fbfe2b3793d7af8399c17d1327">sharp::integrate_layer_trapz</a></div><div class="ttdeci">float integrate_layer_trapz(L layer, const float var_array[], const float coord_array[], const std::ptrdiff_t N, const float integ_sign=0, const bool weighted=false)</div><div class="ttdoc">Returns a trapezoidal integration of the given layer.</div><div class="ttdef"><b>Definition:</b> <a href="layer_8h_source.html#l00455">layer.h:455</a></div></div>
 <div class="ttc" id="anamespacesharp_html_af2ffcc858ff03be6e2ae2fe2ee20040d"><div class="ttname"><a href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">sharp::MISSING</a></div><div class="ttdeci">static constexpr float MISSING</div><div class="ttdef"><b>Definition:</b> <a href="constants_8h_source.html#l00036">constants.h:36</a></div></div>
@@ -412,75 +412,81 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="parcel_8cpp_source.html#l00076">76</a> of file <a class="el" href="parcel_8cpp_source.html">parcel.cpp</a>.</p>
 <div class="fragment"><div class="line"><span class="lineno">   77</span>                                                                       {</div>
-<div class="line"><span class="lineno">   78</span>    PressureLayer sat_lyr = {this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#ae4798e73dc979eb1bf00d7057ed7eea0">lcl_pressure</a>, pres_arr[N - 1]};</div>
-<div class="line"><span class="lineno">   79</span>    LayerIndex lyr_idx = <a class="code hl_function" href="namespacesharp.html#ac93f477dfa774c966b5da7521bd43ee6">get_layer_index</a>(sat_lyr, pres_arr, N);</div>
-<div class="line"><span class="lineno">   80</span> </div>
-<div class="line"><span class="lineno">   81</span>    <span class="keywordtype">float</span> lyr_bot = 0.0;</div>
+<div class="line"><span class="lineno">   78</span>    <span class="keywordflow">if</span> (this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#ae4798e73dc979eb1bf00d7057ed7eea0">lcl_pressure</a> &lt;= pres_arr[N - 1]) <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">   79</span>    PressureLayer sat_lyr = {this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#ae4798e73dc979eb1bf00d7057ed7eea0">lcl_pressure</a>, pres_arr[N - 1]};</div>
+<div class="line"><span class="lineno">   80</span>    LayerIndex lyr_idx = <a class="code hl_function" href="namespacesharp.html#ac93f477dfa774c966b5da7521bd43ee6">get_layer_index</a>(sat_lyr, pres_arr, N);</div>
+<div class="line"><span class="lineno">   81</span> </div>
 <div class="line"><span class="lineno">   82</span>    <span class="keywordtype">float</span> pos_buoy = 0.0;</div>
-<div class="line"><span class="lineno">   83</span>    <span class="keywordtype">float</span> pos_buoy_last = 0.0;</div>
+<div class="line"><span class="lineno">   83</span>    <span class="keywordtype">float</span> pos_buoy_max = 0.0;</div>
 <div class="line"><span class="lineno">   84</span>    <span class="keywordtype">float</span> pbot = sat_lyr.bottom;</div>
 <div class="line"><span class="lineno">   85</span>    <span class="keywordtype">float</span> buoy_bot = <a class="code hl_function" href="namespacesharp.html#a55e4f8ee4ff8a4a30d7b3f3d92a41c75">interp_pressure</a>(sat_lyr.bottom, pres_arr, buoy_arr, N);</div>
 <div class="line"><span class="lineno">   86</span>    <span class="keywordtype">float</span> hbot = <a class="code hl_function" href="namespacesharp.html#a55e4f8ee4ff8a4a30d7b3f3d92a41c75">interp_pressure</a>(sat_lyr.bottom, pres_arr, hght_arr, N);</div>
 <div class="line"><span class="lineno">   87</span>    <span class="comment">// set the LFC pressure to the LCL if the buoyancy is positive</span></div>
 <div class="line"><span class="lineno">   88</span>    <span class="keywordtype">float</span> lfc_pres = (buoy_bot &gt; 0) ? sat_lyr.bottom : <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>;</div>
 <div class="line"><span class="lineno">   89</span>    <span class="keywordtype">float</span> eql_pres = <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>;</div>
-<div class="line"><span class="lineno">   90</span>    <span class="keywordtype">float</span> lfc_pres_last = <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>;</div>
-<div class="line"><span class="lineno">   91</span>    <span class="keywordtype">float</span> eql_pres_last = <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>;</div>
-<div class="line"><span class="lineno">   92</span> </div>
-<div class="line"><span class="lineno">   93</span>    for (std::ptrdiff_t k = lyr_idx.kbot; k &lt; lyr_idx.ktop + 1; ++k) {</div>
-<div class="line"><span class="lineno">   94</span><span class="preprocessor">#ifndef NO_QC</span></div>
-<div class="line"><span class="lineno">   95</span>        <span class="keywordflow">if</span> (buoy_arr[k] == <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>) <span class="keywordflow">continue</span>;</div>
-<div class="line"><span class="lineno">   96</span><span class="preprocessor">#endif</span></div>
-<div class="line"><span class="lineno">   97</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> ptop = pres_arr[k];</div>
-<div class="line"><span class="lineno">   98</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> htop = hght_arr[k];</div>
-<div class="line"><span class="lineno">   99</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> buoy_top = buoy_arr[k];</div>
-<div class="line"><span class="lineno">  100</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> lyr_top = (buoy_top + buoy_bot) / 2.0f;</div>
-<div class="line"><span class="lineno">  101</span>        <span class="comment">// LFC condition</span></div>
-<div class="line"><span class="lineno">  102</span>        <span class="keywordflow">if</span> ((lyr_bot &lt;= 0) &amp;&amp; (lyr_top &gt; 0)) {</div>
-<div class="line"><span class="lineno">  103</span>            <span class="keywordflow">if</span> (lfc_pres != <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>) {</div>
-<div class="line"><span class="lineno">  104</span>                pos_buoy_last = pos_buoy;</div>
-<div class="line"><span class="lineno">  105</span>                lfc_pres_last = lfc_pres;</div>
-<div class="line"><span class="lineno">  106</span>                eql_pres_last = eql_pres;</div>
-<div class="line"><span class="lineno">  107</span>                pos_buoy = 0.0;</div>
-<div class="line"><span class="lineno">  108</span>            }</div>
-<div class="line"><span class="lineno">  109</span>            <span class="keywordflow">for</span> (lfc_pres = pbot - 500; lfc_pres &gt; ptop + 500;</div>
-<div class="line"><span class="lineno">  110</span>                 lfc_pres -= 100.0) {</div>
-<div class="line"><span class="lineno">  111</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> buoy =</div>
-<div class="line"><span class="lineno">  112</span>                    <a class="code hl_function" href="namespacesharp.html#a55e4f8ee4ff8a4a30d7b3f3d92a41c75">interp_pressure</a>(lfc_pres, pres_arr, buoy_arr, N);</div>
-<div class="line"><span class="lineno">  113</span>                <span class="keywordflow">if</span> (buoy &gt; 0) <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  114</span>            }</div>
-<div class="line"><span class="lineno">  115</span>        }</div>
-<div class="line"><span class="lineno">  116</span> </div>
-<div class="line"><span class="lineno">  117</span>        <span class="comment">// keep track of buoyancy so that we pick the max CAPE layer</span></div>
-<div class="line"><span class="lineno">  118</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> condition = ((lfc_pres != <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>) &amp; (lyr_top &gt; 0));</div>
+<div class="line"><span class="lineno">   90</span>    <span class="keywordtype">float</span> lfc_pres_final = <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>;</div>
+<div class="line"><span class="lineno">   91</span>    <span class="keywordtype">float</span> eql_pres_final = <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>;</div>
+<div class="line"><span class="lineno">   92</span>    <span class="keywordtype">bool</span> in_pos_area = (buoy_bot &gt; 0);</div>
+<div class="line"><span class="lineno">   93</span> </div>
+<div class="line"><span class="lineno">   94</span>    <span class="keywordflow">for</span> (std::ptrdiff_t k = lyr_idx.kbot; k &lt; lyr_idx.ktop + 1; ++k) {</div>
+<div class="line"><span class="lineno">   95</span><span class="preprocessor">#ifndef NO_QC</span></div>
+<div class="line"><span class="lineno">   96</span>        <span class="keywordflow">if</span> (buoy_arr[k] == <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>) <span class="keywordflow">continue</span>;</div>
+<div class="line"><span class="lineno">   97</span><span class="preprocessor">#endif</span></div>
+<div class="line"><span class="lineno">   98</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> ptop = pres_arr[k];</div>
+<div class="line"><span class="lineno">   99</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> htop = hght_arr[k];</div>
+<div class="line"><span class="lineno">  100</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> buoy_top = buoy_arr[k];</div>
+<div class="line"><span class="lineno">  101</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> lyr_top = (buoy_top + buoy_bot) / 2.0f;</div>
+<div class="line"><span class="lineno">  102</span> </div>
+<div class="line"><span class="lineno">  103</span>        <span class="keywordflow">if</span> (!in_pos_area &amp;&amp; (buoy_bot &lt;= 0) &amp;&amp; (buoy_top &gt; 0)) {</div>
+<div class="line"><span class="lineno">  104</span>            pos_buoy = 0.0;</div>
+<div class="line"><span class="lineno">  105</span>            eql_pres = <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>;</div>
+<div class="line"><span class="lineno">  106</span>            in_pos_area = <span class="keyword">true</span>;</div>
+<div class="line"><span class="lineno">  107</span> </div>
+<div class="line"><span class="lineno">  108</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> log_pbot = std::log10(pbot);</div>
+<div class="line"><span class="lineno">  109</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> log_ptop = std::log10(ptop);</div>
+<div class="line"><span class="lineno">  110</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> buoy_diff = buoy_top - buoy_bot;</div>
+<div class="line"><span class="lineno">  111</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> log_pres_diff = log_ptop - log_pbot;</div>
+<div class="line"><span class="lineno">  112</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> log_lfc_pres =</div>
+<div class="line"><span class="lineno">  113</span>                log_pbot - buoy_bot * (log_pres_diff / buoy_diff);</div>
+<div class="line"><span class="lineno">  114</span>            lfc_pres =</div>
+<div class="line"><span class="lineno">  115</span>                std::min(std::pow(10.0f, log_lfc_pres), this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#ae4798e73dc979eb1bf00d7057ed7eea0">lcl_pressure</a>);</div>
+<div class="line"><span class="lineno">  116</span>        }</div>
+<div class="line"><span class="lineno">  117</span> </div>
+<div class="line"><span class="lineno">  118</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> condition = ((in_pos_area) &amp; (lyr_top &gt; 0));</div>
 <div class="line"><span class="lineno">  119</span>        pos_buoy += condition * lyr_top * (htop - hbot);</div>
-<div class="line"><span class="lineno">  120</span>        <span class="comment">// EL condition</span></div>
-<div class="line"><span class="lineno">  121</span>        <span class="keywordflow">if</span> ((lfc_pres != <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>) &amp;&amp; ((lyr_bot &gt;= 0) &amp;&amp; (lyr_top &lt; 0))) {</div>
-<div class="line"><span class="lineno">  122</span>            <span class="keywordflow">for</span> (eql_pres = pbot - 500; eql_pres &gt; ptop + 500;</div>
-<div class="line"><span class="lineno">  123</span>                 eql_pres -= 100.0) {</div>
-<div class="line"><span class="lineno">  124</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> buoy =</div>
-<div class="line"><span class="lineno">  125</span>                    <a class="code hl_function" href="namespacesharp.html#a55e4f8ee4ff8a4a30d7b3f3d92a41c75">interp_pressure</a>(eql_pres, pres_arr, buoy_arr, N);</div>
-<div class="line"><span class="lineno">  126</span>                <span class="keywordflow">if</span> (buoy &lt; 0) <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  127</span>            }</div>
-<div class="line"><span class="lineno">  128</span>            <span class="keywordflow">if</span> (pos_buoy_last &gt; pos_buoy) {</div>
-<div class="line"><span class="lineno">  129</span>                lfc_pres = lfc_pres_last;</div>
-<div class="line"><span class="lineno">  130</span>                eql_pres = eql_pres_last;</div>
-<div class="line"><span class="lineno">  131</span>                pos_buoy = pos_buoy_last;</div>
-<div class="line"><span class="lineno">  132</span>            }</div>
-<div class="line"><span class="lineno">  133</span>        }</div>
-<div class="line"><span class="lineno">  134</span>        <span class="comment">// If there is no EL, just use the last available level</span></div>
-<div class="line"><span class="lineno">  135</span>        <span class="keywordflow">if</span> ((k == N - 1) &amp;&amp; (lyr_top &gt; 0)) eql_pres = pres_arr[N - 1];</div>
-<div class="line"><span class="lineno">  136</span>        <span class="comment">// set loop variables</span></div>
-<div class="line"><span class="lineno">  137</span>        pbot = ptop;</div>
-<div class="line"><span class="lineno">  138</span>        hbot = htop;</div>
-<div class="line"><span class="lineno">  139</span>        buoy_bot = buoy_top;</div>
-<div class="line"><span class="lineno">  140</span>        lyr_bot = lyr_top;</div>
-<div class="line"><span class="lineno">  141</span>    }</div>
-<div class="line"><span class="lineno">  142</span>    <span class="keywordflow">if</span> (pos_buoy &gt; 0.0f) {</div>
-<div class="line"><span class="lineno">  143</span>        this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#a55dcb9c777b42c5f35537730c044e004">lfc_pressure</a> = lfc_pres;</div>
-<div class="line"><span class="lineno">  144</span>        this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#ac76710675fd2f495d52ac35d0d1de246">eql_pressure</a> = eql_pres;</div>
-<div class="line"><span class="lineno">  145</span>    }</div>
-<div class="line"><span class="lineno">  146</span>}</div>
+<div class="line"><span class="lineno">  120</span> </div>
+<div class="line"><span class="lineno">  121</span>        <span class="keywordflow">if</span> (in_pos_area &amp;&amp; ((buoy_bot &gt;= 0) &amp;&amp; (buoy_top &lt; 0))) {</div>
+<div class="line"><span class="lineno">  122</span>            in_pos_area = <span class="keyword">false</span>;</div>
+<div class="line"><span class="lineno">  123</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> log_pbot = std::log10(pbot);</div>
+<div class="line"><span class="lineno">  124</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> log_ptop = std::log10(ptop);</div>
+<div class="line"><span class="lineno">  125</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> buoy_diff = buoy_top - buoy_bot;</div>
+<div class="line"><span class="lineno">  126</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> log_pres_diff = log_ptop - log_pbot;</div>
+<div class="line"><span class="lineno">  127</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> log_eql_pres =</div>
+<div class="line"><span class="lineno">  128</span>                log_pbot - buoy_bot * (log_pres_diff / buoy_diff);</div>
+<div class="line"><span class="lineno">  129</span>            eql_pres = std::max(std::pow(10.0f, log_eql_pres), pres_arr[N - 1]);</div>
+<div class="line"><span class="lineno">  130</span>            <span class="keywordflow">if</span> (pos_buoy &gt; pos_buoy_max) {</div>
+<div class="line"><span class="lineno">  131</span>                pos_buoy_max = pos_buoy;</div>
+<div class="line"><span class="lineno">  132</span>                lfc_pres_final = lfc_pres;</div>
+<div class="line"><span class="lineno">  133</span>                eql_pres_final = eql_pres;</div>
+<div class="line"><span class="lineno">  134</span>            }</div>
+<div class="line"><span class="lineno">  135</span>        }</div>
+<div class="line"><span class="lineno">  136</span>        pbot = ptop;</div>
+<div class="line"><span class="lineno">  137</span>        hbot = htop;</div>
+<div class="line"><span class="lineno">  138</span>        buoy_bot = buoy_top;</div>
+<div class="line"><span class="lineno">  139</span>    }</div>
+<div class="line"><span class="lineno">  140</span>    <span class="keywordflow">if</span> (in_pos_area) {</div>
+<div class="line"><span class="lineno">  141</span>        eql_pres = pres_arr[N - 1];</div>
+<div class="line"><span class="lineno">  142</span>        <span class="keywordflow">if</span> (pos_buoy &gt; pos_buoy_max) {</div>
+<div class="line"><span class="lineno">  143</span>            pos_buoy_max = pos_buoy;</div>
+<div class="line"><span class="lineno">  144</span>            lfc_pres_final = lfc_pres;</div>
+<div class="line"><span class="lineno">  145</span>            eql_pres_final = eql_pres;</div>
+<div class="line"><span class="lineno">  146</span>        }</div>
+<div class="line"><span class="lineno">  147</span>    }</div>
+<div class="line"><span class="lineno">  148</span>    <span class="keywordflow">if</span> (pos_buoy_max &gt; 0.0f) {</div>
+<div class="line"><span class="lineno">  149</span>        this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#a55dcb9c777b42c5f35537730c044e004">lfc_pressure</a> = lfc_pres_final;</div>
+<div class="line"><span class="lineno">  150</span>        this-&gt;<a class="code hl_variable" href="structsharp_1_1Parcel.html#ac76710675fd2f495d52ac35d0d1de246">eql_pressure</a> = eql_pres_final;</div>
+<div class="line"><span class="lineno">  151</span>    }</div>
+<div class="line"><span class="lineno">  152</span>}</div>
 <div class="ttc" id="anamespacesharp_html_a55e4f8ee4ff8a4a30d7b3f3d92a41c75"><div class="ttname"><a href="namespacesharp.html#a55e4f8ee4ff8a4a30d7b3f3d92a41c75">sharp::interp_pressure</a></div><div class="ttdeci">float interp_pressure(const float pressure_val, const float pressure_arr[], const float data_arr[], const std::ptrdiff_t N)</div><div class="ttdoc">Linearly interpolate a data field to a requested pressure level.</div><div class="ttdef"><b>Definition:</b> <a href="interp_8cpp_source.html#l00067">interp.cpp:67</a></div></div>
 <div class="ttc" id="anamespacesharp_html_ac93f477dfa774c966b5da7521bd43ee6"><div class="ttname"><a href="namespacesharp.html#ac93f477dfa774c966b5da7521bd43ee6">sharp::get_layer_index</a></div><div class="ttdeci">constexpr LayerIndex get_layer_index(L &amp;layer, const float coord[], const std::ptrdiff_t N, const Cb bottom_comp, const Ct top_comp)</div><div class="ttdoc">Returns the array indices corresponding to the given layer.</div><div class="ttdef"><b>Definition:</b> <a href="layer_8h_source.html#l00174">layer.h:174</a></div></div>
 </div><!-- fragment -->
@@ -588,47 +594,45 @@ template&lt;typename Lft &gt; </div>
 <div class="line"><span class="lineno">  322</span>        <span class="keyword">const</span> LayerIndex dry_idx = <a class="code hl_function" href="namespacesharp.html#ac93f477dfa774c966b5da7521bd43ee6">get_layer_index</a>(dry_lyr, pressure_arr, N);</div>
 <div class="line"><span class="lineno">  323</span>        <span class="keyword">const</span> LayerIndex sat_idx = <a class="code hl_function" href="namespacesharp.html#ac93f477dfa774c966b5da7521bd43ee6">get_layer_index</a>(sat_lyr, pressure_arr, N);</div>
 <div class="line"><span class="lineno">  324</span> </div>
-<div class="line"><span class="lineno">  325</span>        <span class="comment">// zero out any residual buoyancy from</span></div>
-<div class="line"><span class="lineno">  326</span>        <span class="comment">// other parcels that may have been lifted</span></div>
-<div class="line"><span class="lineno">  327</span>        <span class="keywordflow">for</span> (std::ptrdiff_t k = 0; k &lt; dry_idx.kbot; ++k) {</div>
-<div class="line"><span class="lineno">  328</span>            pcl_vtmpk_arr[k] = 0.0f;</div>
-<div class="line"><span class="lineno">  329</span>        }</div>
-<div class="line"><span class="lineno">  330</span> </div>
-<div class="line"><span class="lineno">  331</span>        <span class="comment">// Virtual potential temperature (Theta-V)</span></div>
-<div class="line"><span class="lineno">  332</span>        <span class="comment">// is conserved for a parcels dry ascent to the LCL</span></div>
-<div class="line"><span class="lineno">  333</span>        <span class="keywordflow">for</span> (std::ptrdiff_t k = dry_idx.kbot; k &lt; dry_idx.ktop + 1; ++k) {</div>
-<div class="line"><span class="lineno">  334</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> pcl_vtmp =</div>
-<div class="line"><span class="lineno">  335</span>                <a class="code hl_function" href="namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb">theta</a>(<a class="code hl_variable" href="namespacesharp.html#ab4bb52918c53f75e2175d67840111600">THETA_REF_PRESSURE</a>, thetav_lcl, pressure_arr[k]);</div>
-<div class="line"><span class="lineno">  336</span>            pcl_vtmpk_arr[k] = pcl_vtmp;</div>
-<div class="line"><span class="lineno">  337</span>        }</div>
-<div class="line"><span class="lineno">  338</span> </div>
-<div class="line"><span class="lineno">  339</span>        <span class="keywordtype">float</span> pres_bot = pres_lcl;</div>
-<div class="line"><span class="lineno">  340</span>        <span class="keywordtype">float</span> tmpk_bot = tmpk_lcl;</div>
-<div class="line"><span class="lineno">  341</span>        liftpcl.setup(pres_lcl, tmpk_lcl);</div>
-<div class="line"><span class="lineno">  342</span> </div>
-<div class="line"><span class="lineno">  343</span>        <span class="comment">// fill the array with the moist parcel buoyancy</span></div>
-<div class="line"><span class="lineno">  344</span>        <span class="keywordflow">for</span> (std::ptrdiff_t k = sat_idx.kbot; k &lt; N; ++k) {</div>
-<div class="line"><span class="lineno">  345</span>            <span class="comment">// compute above-lcl buoyancy here</span></div>
-<div class="line"><span class="lineno">  346</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> pcl_pres = pressure_arr[k];</div>
-<div class="line"><span class="lineno">  347</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> pcl_tmpk = liftpcl(pres_bot, tmpk_bot, pcl_pres);</div>
-<div class="line"><span class="lineno">  348</span> </div>
-<div class="line"><span class="lineno">  349</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (!Lft::lift_from_lcl) {</div>
-<div class="line"><span class="lineno">  350</span>                pres_bot = pcl_pres;</div>
-<div class="line"><span class="lineno">  351</span>                tmpk_bot = pcl_tmpk;</div>
-<div class="line"><span class="lineno">  352</span>            }</div>
-<div class="line"><span class="lineno">  353</span> </div>
-<div class="line"><span class="lineno">  354</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> pcl_vtmpk =</div>
-<div class="line"><span class="lineno">  355</span>                liftpcl.parcel_virtual_temperature(pcl_pres, pcl_tmpk);</div>
-<div class="line"><span class="lineno">  356</span>            pcl_vtmpk_arr[k] = pcl_vtmpk;</div>
-<div class="line"><span class="lineno">  357</span>        }</div>
-<div class="line"><span class="lineno">  358</span>    }</div>
+<div class="line"><span class="lineno">  325</span>        <span class="keywordflow">for</span> (std::ptrdiff_t k = 0; k &lt; dry_idx.kbot; ++k) {</div>
+<div class="line"><span class="lineno">  326</span>            pcl_vtmpk_arr[k] = <a class="code hl_variable" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">MISSING</a>;</div>
+<div class="line"><span class="lineno">  327</span>        }</div>
+<div class="line"><span class="lineno">  328</span> </div>
+<div class="line"><span class="lineno">  329</span>        <span class="comment">// Virtual potential temperature (Theta-V)</span></div>
+<div class="line"><span class="lineno">  330</span>        <span class="comment">// is conserved for a parcels dry ascent to the LCL</span></div>
+<div class="line"><span class="lineno">  331</span>        <span class="keywordflow">for</span> (std::ptrdiff_t k = dry_idx.kbot; k &lt; dry_idx.ktop + 1; ++k) {</div>
+<div class="line"><span class="lineno">  332</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> pcl_vtmp =</div>
+<div class="line"><span class="lineno">  333</span>                <a class="code hl_function" href="namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb">theta</a>(<a class="code hl_variable" href="namespacesharp.html#ab4bb52918c53f75e2175d67840111600">THETA_REF_PRESSURE</a>, thetav_lcl, pressure_arr[k]);</div>
+<div class="line"><span class="lineno">  334</span>            pcl_vtmpk_arr[k] = pcl_vtmp;</div>
+<div class="line"><span class="lineno">  335</span>        }</div>
+<div class="line"><span class="lineno">  336</span> </div>
+<div class="line"><span class="lineno">  337</span>        <span class="keywordtype">float</span> pres_bot = pres_lcl;</div>
+<div class="line"><span class="lineno">  338</span>        <span class="keywordtype">float</span> tmpk_bot = tmpk_lcl;</div>
+<div class="line"><span class="lineno">  339</span>        liftpcl.setup(pres_lcl, tmpk_lcl);</div>
+<div class="line"><span class="lineno">  340</span> </div>
+<div class="line"><span class="lineno">  341</span>        <span class="comment">// fill the array with the moist parcel buoyancy</span></div>
+<div class="line"><span class="lineno">  342</span>        <span class="keywordflow">for</span> (std::ptrdiff_t k = sat_idx.kbot; k &lt; N; ++k) {</div>
+<div class="line"><span class="lineno">  343</span>            <span class="comment">// compute above-lcl buoyancy here</span></div>
+<div class="line"><span class="lineno">  344</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> pcl_pres = pressure_arr[k];</div>
+<div class="line"><span class="lineno">  345</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> pcl_tmpk = liftpcl(pres_bot, tmpk_bot, pcl_pres);</div>
+<div class="line"><span class="lineno">  346</span> </div>
+<div class="line"><span class="lineno">  347</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (!Lft::lift_from_lcl) {</div>
+<div class="line"><span class="lineno">  348</span>                pres_bot = pcl_pres;</div>
+<div class="line"><span class="lineno">  349</span>                tmpk_bot = pcl_tmpk;</div>
+<div class="line"><span class="lineno">  350</span>            }</div>
+<div class="line"><span class="lineno">  351</span> </div>
+<div class="line"><span class="lineno">  352</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> pcl_vtmpk =</div>
+<div class="line"><span class="lineno">  353</span>                liftpcl.parcel_virtual_temperature(pcl_pres, pcl_tmpk);</div>
+<div class="line"><span class="lineno">  354</span>            pcl_vtmpk_arr[k] = pcl_vtmpk;</div>
+<div class="line"><span class="lineno">  355</span>        }</div>
+<div class="line"><span class="lineno">  356</span>    }</div>
 <div class="ttc" id="anamespacesharp_html_a46e2f332f68747fee1eb817f7bd3a00b"><div class="ttname"><a href="namespacesharp.html#a46e2f332f68747fee1eb817f7bd3a00b">sharp::virtual_temperature</a></div><div class="ttdeci">float virtual_temperature(float temperature, float rv, float rl=0.0f, float ri=0.0f)</div><div class="ttdoc">Compute the full virtual temperature.</div><div class="ttdef"><b>Definition:</b> <a href="thermo_8cpp_source.html#l00171">thermo.cpp:171</a></div></div>
 <div class="ttc" id="anamespacesharp_html_ab4bb52918c53f75e2175d67840111600"><div class="ttname"><a href="namespacesharp.html#ab4bb52918c53f75e2175d67840111600">sharp::THETA_REF_PRESSURE</a></div><div class="ttdeci">static constexpr float THETA_REF_PRESSURE</div><div class="ttdef"><b>Definition:</b> <a href="constants_8h_source.html#l00034">constants.h:34</a></div></div>
 <div class="ttc" id="anamespacesharp_html_ac38870166f07ac30aadbc46b81340cc4"><div class="ttname"><a href="namespacesharp.html#ac38870166f07ac30aadbc46b81340cc4">sharp::mixratio</a></div><div class="ttdeci">float mixratio(float q)</div><div class="ttdoc">Compute the water vapor mixing ratio from specific humidity.</div><div class="ttdef"><b>Definition:</b> <a href="thermo_8cpp_source.html#l00122">thermo.cpp:122</a></div></div>
 <div class="ttc" id="anamespacesharp_html_acfd0143ab72871c4aabc95c1140ee8fb"><div class="ttname"><a href="namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb">sharp::theta</a></div><div class="ttdeci">float theta(float pressure, float temperature, float ref_pressure=THETA_REF_PRESSURE)</div><div class="ttdoc">Compute the potential temperature.</div><div class="ttdef"><b>Definition:</b> <a href="thermo_8cpp_source.html#l00112">thermo.cpp:112</a></div></div>
 <div class="ttc" id="anamespacesharp_html_ae4385866921cd7286946d9ffdd65c25e"><div class="ttname"><a href="namespacesharp.html#ae4385866921cd7286946d9ffdd65c25e">sharp::drylift</a></div><div class="ttdeci">void drylift(float pressure, float temperature, float dewpoint, float &amp;pressure_at_lcl, float &amp;temperature_at_lcl)</div><div class="ttdoc">Lift a parcel dry adiabatically to its Lifted Condensation Level (LCL).</div><div class="ttdef"><b>Definition:</b> <a href="thermo_8cpp_source.html#l00365">thermo.cpp:365</a></div></div>
 </div><!-- fragment -->
-<p class="reference">References <a class="el" href="namespacesharp.html#ae4385866921cd7286946d9ffdd65c25e">sharp::drylift()</a>, <a class="el" href="namespacesharp.html#ac93f477dfa774c966b5da7521bd43ee6">sharp::get_layer_index()</a>, <a class="el" href="structsharp_1_1LayerIndex.html#a29cd85832f403659b88daab19abac1ca">sharp::LayerIndex::kbot</a>, <a class="el" href="structsharp_1_1LayerIndex.html#a849a04de93753261c91c58b590e60ee2">sharp::LayerIndex::ktop</a>, <a class="el" href="structsharp_1_1Parcel.html#ae4798e73dc979eb1bf00d7057ed7eea0">lcl_pressure</a>, <a class="el" href="namespacesharp.html#ac38870166f07ac30aadbc46b81340cc4">sharp::mixratio()</a>, <a class="el" href="structsharp_1_1Parcel.html#acdce27acf6bd8a327993f5d4cf240906">pres</a>, <a class="el" href="namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb">sharp::theta()</a>, <a class="el" href="namespacesharp.html#ab4bb52918c53f75e2175d67840111600">sharp::THETA_REF_PRESSURE</a>, and <a class="el" href="namespacesharp.html#a46e2f332f68747fee1eb817f7bd3a00b">sharp::virtual_temperature()</a>.</p>
+<p class="reference">References <a class="el" href="namespacesharp.html#ae4385866921cd7286946d9ffdd65c25e">sharp::drylift()</a>, <a class="el" href="namespacesharp.html#ac93f477dfa774c966b5da7521bd43ee6">sharp::get_layer_index()</a>, <a class="el" href="structsharp_1_1LayerIndex.html#a29cd85832f403659b88daab19abac1ca">sharp::LayerIndex::kbot</a>, <a class="el" href="structsharp_1_1LayerIndex.html#a849a04de93753261c91c58b590e60ee2">sharp::LayerIndex::ktop</a>, <a class="el" href="structsharp_1_1Parcel.html#ae4798e73dc979eb1bf00d7057ed7eea0">lcl_pressure</a>, <a class="el" href="namespacesharp.html#af2ffcc858ff03be6e2ae2fe2ee20040d">sharp::MISSING</a>, <a class="el" href="namespacesharp.html#ac38870166f07ac30aadbc46b81340cc4">sharp::mixratio()</a>, <a class="el" href="structsharp_1_1Parcel.html#acdce27acf6bd8a327993f5d4cf240906">pres</a>, <a class="el" href="namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb">sharp::theta()</a>, <a class="el" href="namespacesharp.html#ab4bb52918c53f75e2175d67840111600">sharp::THETA_REF_PRESSURE</a>, and <a class="el" href="namespacesharp.html#a46e2f332f68747fee1eb817f7bd3a00b">sharp::virtual_temperature()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="namespacesharp.html#a2e6b7cd4a3594a8f2c2050b0e4784cce">sharp::effective_inflow_layer()</a>, and <a class="el" href="structsharp_1_1Parcel.html#aa258d27992d22d8b80cb221e6e2a6c19">most_unstable_parcel()</a>.</p>
 <div class="dynheader">
@@ -722,26 +726,26 @@ template&lt;typename Lyr &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="structsharp_1_1Parcel.html" title="Data that defines a Parcel, its attributes, and derived quantities.">sharp::Parcel</a> with mixed-layer values </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="parcel_8h_source.html#l00438">438</a> of file <a class="el" href="parcel_8h_source.html">parcel.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  442</span>                                                                    {</div>
-<div class="line"><span class="lineno">  443</span>        <span class="keywordtype">float</span> mean_mixr, mean_thta, pcl_pres;</div>
-<div class="line"><span class="lineno">  444</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (Lyr::coord == <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">LayerCoordinate::pressure</a>) {</div>
-<div class="line"><span class="lineno">  445</span>            mean_mixr = <a class="code hl_function" href="namespacesharp.html#a298e2c96c389f2c5177d3626c908927e">layer_mean</a>(mix_layer, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, wv_mixratio, N);</div>
-<div class="line"><span class="lineno">  446</span>            mean_thta = <a class="code hl_function" href="namespacesharp.html#a298e2c96c389f2c5177d3626c908927e">layer_mean</a>(mix_layer, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, pot_temperature, N);</div>
-<div class="line"><span class="lineno">  447</span>            pcl_pres = mix_layer.bottom;</div>
-<div class="line"><span class="lineno">  448</span> </div>
-<div class="line"><span class="lineno">  449</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  450</span>            mean_mixr = <a class="code hl_function" href="namespacesharp.html#a298e2c96c389f2c5177d3626c908927e">layer_mean</a>(mix_layer, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ab435e227d5dd201e1768b2bcb2e0aa81">height</a>, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, wv_mixratio, N);</div>
-<div class="line"><span class="lineno">  451</span>            mean_thta =</div>
-<div class="line"><span class="lineno">  452</span>                <a class="code hl_function" href="namespacesharp.html#a298e2c96c389f2c5177d3626c908927e">layer_mean</a>(mix_layer, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ab435e227d5dd201e1768b2bcb2e0aa81">height</a>, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, pot_temperature, N);</div>
-<div class="line"><span class="lineno">  453</span>            pcl_pres =</div>
-<div class="line"><span class="lineno">  454</span>                <a class="code hl_function" href="namespacesharp.html#ae8240f026498ad2775633a8d0dcf100d">sharp::interp_height</a>(mix_layer.bottom, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ab435e227d5dd201e1768b2bcb2e0aa81">height</a>, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, N);</div>
-<div class="line"><span class="lineno">  455</span>        }</div>
-<div class="line"><span class="lineno">  456</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="structsharp_1_1Parcel.html#abd477130779ca88ce737770fb7a0b748">tmpk</a> = <a class="code hl_function" href="namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb">theta</a>(<a class="code hl_variable" href="namespacesharp.html#ab4bb52918c53f75e2175d67840111600">THETA_REF_PRESSURE</a>, mean_thta, pcl_pres);</div>
-<div class="line"><span class="lineno">  457</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="structsharp_1_1Parcel.html#aec26ccd19be00c0c3368b416bee1cd61">dwpk</a> = <a class="code hl_function" href="namespacesharp.html#a90a9ae3f1a154cecbcf65d7dbf19233f">temperature_at_mixratio</a>(mean_mixr, pcl_pres);</div>
-<div class="line"><span class="lineno">  458</span> </div>
-<div class="line"><span class="lineno">  459</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structsharp_1_1Parcel.html#a4141b5aa7889103f11e031be28545f4d">Parcel</a>(pcl_pres, <a class="code hl_variable" href="structsharp_1_1Parcel.html#abd477130779ca88ce737770fb7a0b748">tmpk</a>, <a class="code hl_variable" href="structsharp_1_1Parcel.html#aec26ccd19be00c0c3368b416bee1cd61">dwpk</a>, <a class="code hl_enumvalue" href="namespacesharp.html#a03664f85e552919899eefba1c4a7997fad01fd9b01e9dde8bd3dc247afbfb7218">LPL::ML</a>);</div>
-<div class="line"><span class="lineno">  460</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="parcel_8h_source.html#l00436">436</a> of file <a class="el" href="parcel_8h_source.html">parcel.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  440</span>                                                                    {</div>
+<div class="line"><span class="lineno">  441</span>        <span class="keywordtype">float</span> mean_mixr, mean_thta, pcl_pres;</div>
+<div class="line"><span class="lineno">  442</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (Lyr::coord == <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">LayerCoordinate::pressure</a>) {</div>
+<div class="line"><span class="lineno">  443</span>            mean_mixr = <a class="code hl_function" href="namespacesharp.html#a298e2c96c389f2c5177d3626c908927e">layer_mean</a>(mix_layer, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, wv_mixratio, N);</div>
+<div class="line"><span class="lineno">  444</span>            mean_thta = <a class="code hl_function" href="namespacesharp.html#a298e2c96c389f2c5177d3626c908927e">layer_mean</a>(mix_layer, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, pot_temperature, N);</div>
+<div class="line"><span class="lineno">  445</span>            pcl_pres = mix_layer.bottom;</div>
+<div class="line"><span class="lineno">  446</span> </div>
+<div class="line"><span class="lineno">  447</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  448</span>            mean_mixr = <a class="code hl_function" href="namespacesharp.html#a298e2c96c389f2c5177d3626c908927e">layer_mean</a>(mix_layer, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ab435e227d5dd201e1768b2bcb2e0aa81">height</a>, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, wv_mixratio, N);</div>
+<div class="line"><span class="lineno">  449</span>            mean_thta =</div>
+<div class="line"><span class="lineno">  450</span>                <a class="code hl_function" href="namespacesharp.html#a298e2c96c389f2c5177d3626c908927e">layer_mean</a>(mix_layer, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ab435e227d5dd201e1768b2bcb2e0aa81">height</a>, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, pot_temperature, N);</div>
+<div class="line"><span class="lineno">  451</span>            pcl_pres =</div>
+<div class="line"><span class="lineno">  452</span>                <a class="code hl_function" href="namespacesharp.html#ae8240f026498ad2775633a8d0dcf100d">sharp::interp_height</a>(mix_layer.bottom, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ab435e227d5dd201e1768b2bcb2e0aa81">height</a>, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, N);</div>
+<div class="line"><span class="lineno">  453</span>        }</div>
+<div class="line"><span class="lineno">  454</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="structsharp_1_1Parcel.html#abd477130779ca88ce737770fb7a0b748">tmpk</a> = <a class="code hl_function" href="namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb">theta</a>(<a class="code hl_variable" href="namespacesharp.html#ab4bb52918c53f75e2175d67840111600">THETA_REF_PRESSURE</a>, mean_thta, pcl_pres);</div>
+<div class="line"><span class="lineno">  455</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="structsharp_1_1Parcel.html#aec26ccd19be00c0c3368b416bee1cd61">dwpk</a> = <a class="code hl_function" href="namespacesharp.html#a90a9ae3f1a154cecbcf65d7dbf19233f">temperature_at_mixratio</a>(mean_mixr, pcl_pres);</div>
+<div class="line"><span class="lineno">  456</span> </div>
+<div class="line"><span class="lineno">  457</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structsharp_1_1Parcel.html#a4141b5aa7889103f11e031be28545f4d">Parcel</a>(pcl_pres, <a class="code hl_variable" href="structsharp_1_1Parcel.html#abd477130779ca88ce737770fb7a0b748">tmpk</a>, <a class="code hl_variable" href="structsharp_1_1Parcel.html#aec26ccd19be00c0c3368b416bee1cd61">dwpk</a>, <a class="code hl_enumvalue" href="namespacesharp.html#a03664f85e552919899eefba1c4a7997fad01fd9b01e9dde8bd3dc247afbfb7218">LPL::ML</a>);</div>
+<div class="line"><span class="lineno">  458</span>    }</div>
 <div class="ttc" id="anamespacesharp_html_a03664f85e552919899eefba1c4a7997fad01fd9b01e9dde8bd3dc247afbfb7218"><div class="ttname"><a href="namespacesharp.html#a03664f85e552919899eefba1c4a7997fad01fd9b01e9dde8bd3dc247afbfb7218">sharp::LPL::ML</a></div><div class="ttdeci">@ ML</div><div class="ttdoc">Mixed Layer Parcel.</div></div>
 <div class="ttc" id="anamespacesharp_html_a298e2c96c389f2c5177d3626c908927e"><div class="ttname"><a href="namespacesharp.html#a298e2c96c389f2c5177d3626c908927e">sharp::layer_mean</a></div><div class="ttdeci">float layer_mean(PressureLayer layer, const float pressure[], const float data_arr[], const std::ptrdiff_t N)</div><div class="ttdoc">Computes the mass-weighted mean value of a field over a given pressure layer.</div><div class="ttdef"><b>Definition:</b> <a href="layer_8cpp_source.html#l00132">layer.cpp:132</a></div></div>
 <div class="ttc" id="anamespacesharp_html_a5670844352aa7728286639ae3c43d351ab435e227d5dd201e1768b2bcb2e0aa81"><div class="ttname"><a href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ab435e227d5dd201e1768b2bcb2e0aa81">sharp::LayerCoordinate::height</a></div><div class="ttdeci">@ height</div><div class="ttdoc">Height coordinate.</div></div>
@@ -863,31 +867,31 @@ template&lt;typename Lyr , typename Lft &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The most unstable <a class="el" href="structsharp_1_1Parcel.html" title="Data that defines a Parcel, its attributes, and derived quantities.">sharp::Parcel</a> within the search layer </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="parcel_8h_source.html#l00486">486</a> of file <a class="el" href="parcel_8h_source.html">parcel.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  490</span>                                       {</div>
-<div class="line"><span class="lineno">  491</span>        LayerIndex lyr_idx;</div>
-<div class="line"><span class="lineno">  492</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (Lyr::coord == <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">LayerCoordinate::pressure</a>) {</div>
-<div class="line"><span class="lineno">  493</span>            lyr_idx = <a class="code hl_function" href="namespacesharp.html#ac93f477dfa774c966b5da7521bd43ee6">get_layer_index</a>(search_layer, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, N);</div>
-<div class="line"><span class="lineno">  494</span> </div>
-<div class="line"><span class="lineno">  495</span>        } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  496</span>            lyr_idx = <a class="code hl_function" href="namespacesharp.html#ac93f477dfa774c966b5da7521bd43ee6">get_layer_index</a>(search_layer, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ab435e227d5dd201e1768b2bcb2e0aa81">height</a>, N);</div>
-<div class="line"><span class="lineno">  497</span>        }</div>
-<div class="line"><span class="lineno">  498</span> </div>
-<div class="line"><span class="lineno">  499</span>        <a class="code hl_function" href="structsharp_1_1Parcel.html#a4141b5aa7889103f11e031be28545f4d">Parcel</a> max_parcel;</div>
-<div class="line"><span class="lineno">  500</span>        <span class="keywordflow">for</span> (std::ptrdiff_t idx = lyr_idx.kbot; idx &lt;= lyr_idx.ktop; ++idx) {</div>
-<div class="line"><span class="lineno">  501</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="structsharp_1_1Parcel.html#acdce27acf6bd8a327993f5d4cf240906">pres</a> = <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>[idx];</div>
-<div class="line"><span class="lineno">  502</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="structsharp_1_1Parcel.html#abd477130779ca88ce737770fb7a0b748">tmpk</a> = temperature[idx];</div>
-<div class="line"><span class="lineno">  503</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="structsharp_1_1Parcel.html#aec26ccd19be00c0c3368b416bee1cd61">dwpk</a> = dewpoint[idx];</div>
-<div class="line"><span class="lineno">  504</span>            <a class="code hl_function" href="structsharp_1_1Parcel.html#a4141b5aa7889103f11e031be28545f4d">Parcel</a> pcl(<a class="code hl_variable" href="structsharp_1_1Parcel.html#acdce27acf6bd8a327993f5d4cf240906">pres</a>, <a class="code hl_variable" href="structsharp_1_1Parcel.html#abd477130779ca88ce737770fb7a0b748">tmpk</a>, <a class="code hl_variable" href="structsharp_1_1Parcel.html#aec26ccd19be00c0c3368b416bee1cd61">dwpk</a>, <a class="code hl_enumvalue" href="namespacesharp.html#a03664f85e552919899eefba1c4a7997fae5919ba9cf2e803bdbc98334a7f64daa">LPL::MU</a>);</div>
-<div class="line"><span class="lineno">  505</span> </div>
-<div class="line"><span class="lineno">  506</span>            pcl.lift_parcel(lifter, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, pcl_virtemp, N);</div>
-<div class="line"><span class="lineno">  507</span>            <a class="code hl_function" href="namespacesharp.html#aae31e8a18568ec26222b603e629c5598">buoyancy</a>(pcl_virtemp, virtemp, buoy_arr, N);</div>
-<div class="line"><span class="lineno">  508</span>            pcl.cape_cinh(<a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ab435e227d5dd201e1768b2bcb2e0aa81">height</a>, buoy_arr, N);</div>
-<div class="line"><span class="lineno">  509</span>            <span class="keywordflow">if</span> (pcl.cape &gt; max_parcel.cape) max_parcel = pcl;</div>
-<div class="line"><span class="lineno">  510</span>        }</div>
-<div class="line"><span class="lineno">  511</span> </div>
-<div class="line"><span class="lineno">  512</span>        <span class="keywordflow">return</span> max_parcel;</div>
-<div class="line"><span class="lineno">  513</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="parcel_8h_source.html#l00484">484</a> of file <a class="el" href="parcel_8h_source.html">parcel.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  488</span>                                       {</div>
+<div class="line"><span class="lineno">  489</span>        LayerIndex lyr_idx;</div>
+<div class="line"><span class="lineno">  490</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (Lyr::coord == <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">LayerCoordinate::pressure</a>) {</div>
+<div class="line"><span class="lineno">  491</span>            lyr_idx = <a class="code hl_function" href="namespacesharp.html#ac93f477dfa774c966b5da7521bd43ee6">get_layer_index</a>(search_layer, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, N);</div>
+<div class="line"><span class="lineno">  492</span> </div>
+<div class="line"><span class="lineno">  493</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  494</span>            lyr_idx = <a class="code hl_function" href="namespacesharp.html#ac93f477dfa774c966b5da7521bd43ee6">get_layer_index</a>(search_layer, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ab435e227d5dd201e1768b2bcb2e0aa81">height</a>, N);</div>
+<div class="line"><span class="lineno">  495</span>        }</div>
+<div class="line"><span class="lineno">  496</span> </div>
+<div class="line"><span class="lineno">  497</span>        <a class="code hl_function" href="structsharp_1_1Parcel.html#a4141b5aa7889103f11e031be28545f4d">Parcel</a> max_parcel;</div>
+<div class="line"><span class="lineno">  498</span>        <span class="keywordflow">for</span> (std::ptrdiff_t idx = lyr_idx.kbot; idx &lt;= lyr_idx.ktop; ++idx) {</div>
+<div class="line"><span class="lineno">  499</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="structsharp_1_1Parcel.html#acdce27acf6bd8a327993f5d4cf240906">pres</a> = <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>[idx];</div>
+<div class="line"><span class="lineno">  500</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="structsharp_1_1Parcel.html#abd477130779ca88ce737770fb7a0b748">tmpk</a> = temperature[idx];</div>
+<div class="line"><span class="lineno">  501</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="structsharp_1_1Parcel.html#aec26ccd19be00c0c3368b416bee1cd61">dwpk</a> = dewpoint[idx];</div>
+<div class="line"><span class="lineno">  502</span>            <a class="code hl_function" href="structsharp_1_1Parcel.html#a4141b5aa7889103f11e031be28545f4d">Parcel</a> pcl(<a class="code hl_variable" href="structsharp_1_1Parcel.html#acdce27acf6bd8a327993f5d4cf240906">pres</a>, <a class="code hl_variable" href="structsharp_1_1Parcel.html#abd477130779ca88ce737770fb7a0b748">tmpk</a>, <a class="code hl_variable" href="structsharp_1_1Parcel.html#aec26ccd19be00c0c3368b416bee1cd61">dwpk</a>, <a class="code hl_enumvalue" href="namespacesharp.html#a03664f85e552919899eefba1c4a7997fae5919ba9cf2e803bdbc98334a7f64daa">LPL::MU</a>);</div>
+<div class="line"><span class="lineno">  503</span> </div>
+<div class="line"><span class="lineno">  504</span>            pcl.lift_parcel(lifter, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, pcl_virtemp, N);</div>
+<div class="line"><span class="lineno">  505</span>            <a class="code hl_function" href="namespacesharp.html#aae31e8a18568ec26222b603e629c5598">buoyancy</a>(pcl_virtemp, virtemp, buoy_arr, N);</div>
+<div class="line"><span class="lineno">  506</span>            pcl.cape_cinh(<a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, <a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ab435e227d5dd201e1768b2bcb2e0aa81">height</a>, buoy_arr, N);</div>
+<div class="line"><span class="lineno">  507</span>            <span class="keywordflow">if</span> (pcl.cape &gt; max_parcel.cape) max_parcel = pcl;</div>
+<div class="line"><span class="lineno">  508</span>        }</div>
+<div class="line"><span class="lineno">  509</span> </div>
+<div class="line"><span class="lineno">  510</span>        <span class="keywordflow">return</span> max_parcel;</div>
+<div class="line"><span class="lineno">  511</span>    }</div>
 <div class="ttc" id="anamespacesharp_html_a03664f85e552919899eefba1c4a7997fae5919ba9cf2e803bdbc98334a7f64daa"><div class="ttname"><a href="namespacesharp.html#a03664f85e552919899eefba1c4a7997fae5919ba9cf2e803bdbc98334a7f64daa">sharp::LPL::MU</a></div><div class="ttdeci">@ MU</div><div class="ttdoc">Most Unstable Parcel.</div></div>
 <div class="ttc" id="anamespacesharp_html_aae31e8a18568ec26222b603e629c5598"><div class="ttname"><a href="namespacesharp.html#aae31e8a18568ec26222b603e629c5598">sharp::buoyancy</a></div><div class="ttdeci">float buoyancy(const float pcl_temperature, const float env_temperature)</div><div class="ttdoc">compute buoyancy given parcel and environment temperatures</div><div class="ttdef"><b>Definition:</b> <a href="thermo_8cpp_source.html#l00520">thermo.cpp:520</a></div></div>
 </div><!-- fragment -->
@@ -954,10 +958,10 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="structsharp_1_1Parcel.html" title="Data that defines a Parcel, its attributes, and derived quantities.">sharp::Parcel</a> with surface values </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="parcel_8h_source.html#l00412">412</a> of file <a class="el" href="parcel_8h_source.html">parcel.h</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  414</span>                                                                       {</div>
-<div class="line"><span class="lineno">  415</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structsharp_1_1Parcel.html#a4141b5aa7889103f11e031be28545f4d">Parcel</a>(<a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, temperature, dewpoint, <a class="code hl_enumvalue" href="namespacesharp.html#a03664f85e552919899eefba1c4a7997faf3385210bc009d67471bd739689779de">LPL::SFC</a>);</div>
-<div class="line"><span class="lineno">  416</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="parcel_8h_source.html#l00410">410</a> of file <a class="el" href="parcel_8h_source.html">parcel.h</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  412</span>                                                                       {</div>
+<div class="line"><span class="lineno">  413</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="structsharp_1_1Parcel.html#a4141b5aa7889103f11e031be28545f4d">Parcel</a>(<a class="code hl_enumvalue" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">pressure</a>, temperature, dewpoint, <a class="code hl_enumvalue" href="namespacesharp.html#a03664f85e552919899eefba1c4a7997faf3385210bc009d67471bd739689779de">LPL::SFC</a>);</div>
+<div class="line"><span class="lineno">  414</span>    }</div>
 <div class="ttc" id="anamespacesharp_html_a03664f85e552919899eefba1c4a7997faf3385210bc009d67471bd739689779de"><div class="ttname"><a href="namespacesharp.html#a03664f85e552919899eefba1c4a7997faf3385210bc009d67471bd739689779de">sharp::LPL::SFC</a></div><div class="ttdeci">@ SFC</div><div class="ttdoc">Surface Based Parcel.</div></div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="structsharp_1_1Parcel.html#a4141b5aa7889103f11e031be28545f4d">Parcel()</a>, <a class="el" href="namespacesharp.html#a5670844352aa7728286639ae3c43d351ad99fad96a5d0a7cb2eb41341ea556093">sharp::pressure</a>, and <a class="el" href="namespacesharp.html#a03664f85e552919899eefba1c4a7997faf3385210bc009d67471bd739689779de">sharp::SFC</a>.</p>
