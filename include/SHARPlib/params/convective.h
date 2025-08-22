@@ -95,7 +95,10 @@ template <typename Lifter>
         }
     }
 
-    if (eff_pbot == MISSING) return {MISSING, MISSING};
+    if (eff_pbot == MISSING) {
+        if (mupcl) *mupcl = maxpcl;
+        return {MISSING, MISSING};
+    }
 
     for (std::ptrdiff_t k = eff_kbot + 1; k < N; ++k) {
 #ifndef NO_QC
@@ -115,8 +118,8 @@ template <typename Lifter>
         }
     }
 
-    if (eff_ptop == MISSING) return {MISSING, MISSING};
     if (mupcl) *mupcl = maxpcl;
+    if (eff_ptop == MISSING) return {MISSING, MISSING};
     return {eff_pbot, eff_ptop};
 }
 
