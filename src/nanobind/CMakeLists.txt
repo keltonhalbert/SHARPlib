@@ -30,3 +30,11 @@ if (MSVC) # For MSVC (cl) compiler
 endif()
 target_link_libraries(calc PRIVATE SHARPlib)
 install(TARGETS calc DESTINATION nwsspc/sharp)
+nanobind_add_stub(
+    calc_stub
+    INSTALL_TIME
+    MODULE calc
+    OUTPUT "nwsspc/sharp/calc.pyi" 
+    PYTHON_PATH "nwsspc/sharp"
+    MARKER_FILE "nwsspc/sharp/py.typed"
+)
