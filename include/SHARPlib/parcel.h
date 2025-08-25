@@ -269,7 +269,7 @@ struct Parcel {
     /**
      * \brief Parcel Convective Inhibition (J/kg) between the LFC and EL
      */
-    float cinh = 0.0;
+    float cinh = std::nanf("");
 
     /**
      * \brief The type of parcel this is
