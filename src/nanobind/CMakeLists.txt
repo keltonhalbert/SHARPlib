@@ -40,7 +40,7 @@ target_link_libraries(calc PRIVATE SHARPlib)
 install(TARGETS calc DESTINATION nwsspc/sharp)
 install(
     FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/calc.pyi"
-        "${CMAKE_CURRENT_SOURCE_DIR}/py.typed"
+        "${CMAKE_CURRENT_BINARY_DIR}/calc.pyi"
+        "${CMAKE_CURRENT_BINARY_DIR}/py.typed"
     DESTINATION "nwsspc/sharp"
 )
