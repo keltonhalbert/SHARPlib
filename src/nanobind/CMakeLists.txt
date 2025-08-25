@@ -22,6 +22,14 @@ include_directories(${CMAKE_SOURCE_DIR}/external/fmt/include)
 
 
 nanobind_add_module(calc LTO calc.cpp)
+nanobind_add_stub(
+    calc_stub
+    MODULE calc
+    OUTPUT "calc.pyi" 
+    PYTHON_PATH "$<TARGET_FILE_DIR:calc>"
+    MARKER_FILE "py.typed"
+    DEPENDS calc
+)
 if (MSVC) # For MSVC (cl) compiler
     # Add compile options for MSVC
     target_compile_options(calc PRIVATE
@@ -30,11 +38,9 @@ if (MSVC) # For MSVC (cl) compiler
 endif()
 target_link_libraries(calc PRIVATE SHARPlib)
 install(TARGETS calc DESTINATION nwsspc/sharp)
-nanobind_add_stub(
-    calc_stub
-    INSTALL_TIME
-    MODULE calc
-    OUTPUT "nwsspc/sharp/calc.pyi" 
-    PYTHON_PATH "nwsspc/sharp"
-    MARKER_FILE "nwsspc/sharp/py.typed"
+install(
+    FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/calc.pyi"
+        "${CMAKE_CURRENT_SOURCE_DIR}/py.typed"
+    DESTINATION "nwsspc/sharp"
 )
