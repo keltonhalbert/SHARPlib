@@ -257,7 +257,7 @@ float significant_tornado_parameter(Parcel pcl, float lcl_hght_agl,
                                     float storm_relative_helicity,
                                     float bulk_wind_difference) {
     float cinh_term, lcl_term, shear_term, srh_term, cape_term;
-    if (pcl.cape == MISSING) return MISSING;
+    if (std::isnan(pcl.cinh)) return 0.0;
 
     if (pcl.cinh >= -50.0)
         cinh_term = 1.0;
