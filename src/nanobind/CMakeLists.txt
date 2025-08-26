@@ -25,7 +25,8 @@ nanobind_add_module(calc LTO calc.cpp)
 nanobind_add_stub(
     calc_stub
     MODULE calc
-    OUTPUT "calc.pyi" 
+    RECURSIVE
+    OUTPUT "calc" 
     PYTHON_PATH "$<TARGET_FILE_DIR:calc>"
     MARKER_FILE "py.typed"
     DEPENDS calc
@@ -40,7 +41,11 @@ target_link_libraries(calc PRIVATE SHARPlib)
 install(TARGETS calc DESTINATION nwsspc/sharp)
 install(
     FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/calc.pyi"
         "${CMAKE_CURRENT_BINARY_DIR}/py.typed"
+    DESTINATION "nwsspc/sharp"
+)
+install(
+    DIRECTORY
+        "${CMAKE_CURRENT_BINARY_DIR}/calc/"
     DESTINATION "nwsspc/sharp"
 )
