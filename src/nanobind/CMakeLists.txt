@@ -20,32 +20,56 @@ include_directories(${Python3_INCLUDE_DIRS})
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/external/fmt/include)
 
-
 nanobind_add_module(calc LTO calc.cpp)
-nanobind_add_stub(
-    calc_stub
-    MODULE calc
-    RECURSIVE
-    OUTPUT "calc" 
-    PYTHON_PATH "$<TARGET_FILE_DIR:calc>"
-    MARKER_FILE "py.typed"
-    DEPENDS calc
-)
+target_link_libraries(calc PRIVATE SHARPlib)
 if (MSVC) # For MSVC (cl) compiler
     # Add compile options for MSVC
     target_compile_options(calc PRIVATE
         /utf-8        # Set source and execution character set to UTF-8
     )
 endif()
-target_link_libraries(calc PRIVATE SHARPlib)
+
+nanobind_add_stub(
+    calc_stub
+    RECURSIVE
+    MODULE calc
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/stubs" 
+    PYTHON_PATH "$<TARGET_FILE_DIR:calc>" 
+    MARKER_FILE "${CMAKE_CURRENT_BINARY_DIR}/py.typed"
+    DEPENDS calc
+)
+
+add_custom_command(
+    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/stubs_fixed.stamp"
+    COMMAND ${CMAKE_COMMAND}
+        # Pass the path to our stubs directory into the script
+        -D STUBS_DIR=${CMAKE_CURRENT_BINARY_DIR}/stubs
+        # Execute the script
+        -P "${CMAKE_SOURCE_DIR}/cmake/fix_nanobind_stubs.cmake"
+    DEPENDS calc_stub # Must run after stubs are generated
+    COMMENT "Restructuring generated stub files via external script"
+    VERBATIM
+)
+add_custom_target(
+    fix_stubs ALL
+    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/stubs_fixed.stamp"
+)
+
 install(TARGETS calc DESTINATION nwsspc/sharp)
+
 install(
-    FILES
+    FILES 
         "${CMAKE_CURRENT_BINARY_DIR}/py.typed"
-    DESTINATION "nwsspc/sharp"
+    DESTINATION "nwsspc/sharp" 
 )
 install(
-    DIRECTORY
-        "${CMAKE_CURRENT_BINARY_DIR}/calc/"
-    DESTINATION "nwsspc/sharp"
+    DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/stubs/"
+    DESTINATION "nwsspc/sharp/calc" 
+    PATTERN "calc.pyi" EXCLUDE
+)
+install(
+    FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/__init__.pyi"
+    DESTINATION
+        "nwsspc/sharp/calc"
 )
