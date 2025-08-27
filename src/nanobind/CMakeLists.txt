@@ -20,11 +20,11 @@ include_directories(${Python3_INCLUDE_DIRS})
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/external/fmt/include)
 
-nanobind_add_module(calc LTO calc.cpp)
-target_link_libraries(calc PRIVATE SHARPlib)
+nanobind_add_module(_calc LTO calc.cpp)
+target_link_libraries(_calc PRIVATE SHARPlib)
 if (MSVC) # For MSVC (cl) compiler
     # Add compile options for MSVC
-    target_compile_options(calc PRIVATE
+    target_compile_options(_calc PRIVATE
         /utf-8        # Set source and execution character set to UTF-8
     )
 endif()
@@ -32,35 +32,19 @@ endif()
 nanobind_add_stub(
     calc_stub
     RECURSIVE
-    MODULE calc
+    MODULE _calc
     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/stubs" 
-    PYTHON_PATH "$<TARGET_FILE_DIR:calc>" 
+    PYTHON_PATH "$<TARGET_FILE_DIR:_calc>" 
     MARKER_FILE "${CMAKE_CURRENT_BINARY_DIR}/py.typed"
-    DEPENDS calc
+    DEPENDS _calc
 )
 
-add_custom_command(
-    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/stubs_fixed.stamp"
-    COMMAND ${CMAKE_COMMAND}
-        # Pass the path to our stubs directory into the script
-        -D STUBS_DIR=${CMAKE_CURRENT_BINARY_DIR}/stubs
-        # Execute the script
-        -P "${CMAKE_SOURCE_DIR}/cmake/fix_nanobind_stubs.cmake"
-    DEPENDS calc_stub # Must run after stubs are generated
-    COMMENT "Restructuring generated stub files via external script"
-    VERBATIM
-)
-add_custom_target(
-    fix_stubs ALL
-    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/stubs_fixed.stamp"
-)
-
-install(TARGETS calc DESTINATION nwsspc/sharp)
+install(TARGETS _calc DESTINATION nwsspc/sharp/calc)
 
 install(
     FILES 
         "${CMAKE_CURRENT_BINARY_DIR}/py.typed"
-    DESTINATION "nwsspc/sharp" 
+    DESTINATION "nwsspc/sharp/calc" 
 )
 install(
     DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/stubs/"
@@ -70,6 +54,7 @@ install(
 install(
     FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/__init__.pyi"
+        "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py"
     DESTINATION
         "nwsspc/sharp/calc"
 )
