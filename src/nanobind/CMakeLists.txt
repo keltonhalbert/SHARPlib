@@ -39,6 +39,18 @@ nanobind_add_stub(
     DEPENDS _calc
 )
 
+add_custom_command(
+    TARGET calc_stub
+    POST_BUILD
+    COMMAND
+        "${Python_EXECUTABLE}" 
+        "${CMAKE_CURRENT_SOURCE_DIR}/fix_imports.py" 
+        "${CMAKE_CURRENT_BINARY_DIR}/stubs"
+    COMMENT
+        "Patching circular imports in generated stub files..."
+    VERBATIM
+)
+
 install(TARGETS _calc DESTINATION nwsspc/sharp/calc)
 
 install(
