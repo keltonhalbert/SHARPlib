@@ -9,6 +9,11 @@ from ._calc import (
     winds as winds,
 )
 
+try:
+    from ._version import __version__
+except ImportError:
+    __version__ = "0.0.0" 
+
 __all__ = [
     "constants",
     "interp",

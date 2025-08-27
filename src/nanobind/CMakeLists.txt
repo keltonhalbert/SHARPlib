@@ -49,12 +49,13 @@ install(
 install(
     DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/stubs/"
     DESTINATION "nwsspc/sharp/calc" 
-    PATTERN "calc.pyi" EXCLUDE
+    PATTERN "_calc.pyi" EXCLUDE
 )
 install(
     FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/__init__.pyi"
         "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py"
+        "${CMAKE_CURRENT_SOURCE_DIR}/_version.py"
     DESTINATION
         "nwsspc/sharp/calc"
 )
