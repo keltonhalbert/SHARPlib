@@ -195,8 +195,7 @@ Parameters:
 
                 nb::capsule owner(virtemp_arr,
                                   [](void* p) noexcept { delete[] (float*)p; });
-                return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                    virtemp_arr, {pressure.shape(0)}, owner);
+                return out_arr_t(virtemp_arr, {pressure.shape(0)}, owner);
             },
             nb::arg("lifter"), nb::arg("pressure"),
             R"pbdoc(
@@ -224,8 +223,7 @@ Returns:
 
                 nb::capsule owner(virtemp_arr,
                                   [](void* p) noexcept { delete[] (float*)p; });
-                return nb::ndarray<nb::numpy, float, nb::ndim<1>>(virtemp_arr,
-                                                                  {NZ}, owner);
+                return out_arr_t(virtemp_arr, {NZ}, owner);
             },
             nb::arg("lifter"), nb::arg("pressure"),
             R"pbdoc(

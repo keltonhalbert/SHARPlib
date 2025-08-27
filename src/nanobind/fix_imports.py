@@ -14,6 +14,7 @@ TYPE_HINT_REPLACEMENTS = {
 }
 
 IMPORT_REPLACEMENTS = {
+    "from numpy.typing import ArrayLike" : "import numpy\nfrom numpy.typing import ArrayLike, NDArray",
     "import _calc.constants": "from .. import constants",
     "import _calc.interp": "from .. import interp",
     "import _calc.layer": "from .. import layer",
@@ -21,6 +22,11 @@ IMPORT_REPLACEMENTS = {
     "import _calc.parcel": "from .. import parcel",
     "import _calc.thermo": "from .. import thermo",
     "import _calc.winds": "from .. import winds",
+}
+
+RETURN_TYPE_REPLACEMENTS = {
+    "-> Annotated[ArrayLike, dict(dtype='float32', shape=(None), order='C')]": "-> Annotated[NDArray[numpy.float32], dict(shape=(None), order='C')]",
+    "-> tuple[Annotated[ArrayLike, dict(dtype='float32', shape=(None), order='C')], Annotated[ArrayLike, dict(dtype='float32', shape=(None), order='C')]]": "-> tuple[Annotated[NDArray[numpy.float32], dict(shape=(None), order='C')], Annotated[NDArray[numpy.float32], dict(shape=(None), order='C')]]" 
 }
 
 def fix_stubs(file_path: Path):
@@ -35,6 +41,9 @@ def fix_stubs(file_path: Path):
         for bad_import, good_import in IMPORT_REPLACEMENTS.items():
             pattern = re.compile(f"^{re.escape(bad_import)}$", re.MULTILINE)
             modified_content = pattern.sub(good_import, modified_content)
+
+        for bad_type, good_type in RETURN_TYPE_REPLACEMENTS.items():
+            modified_content = modified_content.replace(bad_type, good_type)
 
         if original_content != modified_content:
             file_path.write_text(modified_content, encoding='utf-8')

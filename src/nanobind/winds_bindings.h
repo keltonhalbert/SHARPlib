@@ -180,24 +180,6 @@ Returns:
 
     m_wind.def(
         "vector_magnitude",
-        [](float u_comp, float v_comp) {
-            return sharp::vector_magnitude(u_comp, v_comp);
-        },
-        nb::arg("u_comp"), nb::arg("v_comp"),
-        R"pbdoc(
-Given the zonal (U) and meridional (V) components of a vector, 
-compute and return the magnitude (m/s) of the vector. 
-
-Parameters:
-    u_comp: U-wind component (m/s)
-    v_comp: V-wind component (m/s)
-
-Returns:
-    Wind speed (m/s)
-    )pbdoc");
-
-    m_wind.def(
-        "vector_magnitude",
         [](const_prof_arr_t u_comp_arr, const_prof_arr_t v_comp_arr) {
             auto u_comp = u_comp_arr.view();
             auto v_comp = v_comp_arr.view();
@@ -213,8 +195,7 @@ Returns:
             nb::capsule owner(wspd_arr,
                               [](void* p) noexcept { delete[] (float*)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                wspd_arr, {u_comp.shape(0)}, owner);
+            return out_arr_t(wspd_arr, {u_comp.shape(0)}, owner);
         },
         nb::arg("u_comp"), nb::arg("v_comp"),
         R"pbdoc(
@@ -259,8 +240,7 @@ Returns:
             nb::capsule owner(wdir_arr,
                               [](void* p) noexcept { delete[] (float*)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                wdir_arr, {u_comp.shape(0)}, owner);
+            return out_arr_t(wdir_arr, {u_comp.shape(0)}, owner);
         },
         nb::arg("u_comp"), nb::arg("v_comp"),
         R"pbdoc(
@@ -304,8 +284,7 @@ Returns:
             nb::capsule owner(uwin_arr,
                               [](void* p) noexcept { delete[] (float*)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                uwin_arr, {wind_speed.shape(0)}, owner);
+            return out_arr_t(uwin_arr, {wind_speed.shape(0)}, owner);
         },
         nb::arg("wind_speed"), nb::arg("wind_direction"),
         R"pbdoc(
@@ -348,8 +327,7 @@ Returns:
             nb::capsule owner(vwin_arr,
                               [](void* p) noexcept { delete[] (float*)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                vwin_arr, {wind_speed.shape(0)}, owner);
+            return out_arr_t(vwin_arr, {wind_speed.shape(0)}, owner);
         },
         nb::arg("wind_speed"), nb::arg("wind_direction"),
         R"pbdoc(
@@ -402,7 +380,8 @@ Returns:
 
     m_wind.def(
         "components_to_vector",
-        [](const_prof_arr_t u_comp_arr, const_prof_arr_t v_comp_arr) {
+        [](const_prof_arr_t u_comp_arr,
+           const_prof_arr_t v_comp_arr) -> std::tuple<out_arr_t, out_arr_t> {
             auto u_comp = u_comp_arr.view();
             auto v_comp = v_comp_arr.view();
 
@@ -419,12 +398,10 @@ Returns:
             nb::capsule owner_wdir(
                 wdir, [](void* p) noexcept { delete[] (float*)p; });
 
-            auto wspd_arr = nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                wspd, {u_comp.shape(0)}, owner_wspd);
-            auto wdir_arr = nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                wdir, {u_comp.shape(0)}, owner_wdir);
+            auto wspd_arr = out_arr_t(wspd, {u_comp.shape(0)}, owner_wspd);
+            auto wdir_arr = out_arr_t(wdir, {u_comp.shape(0)}, owner_wdir);
 
-            return nb::make_tuple(wspd_arr, wdir_arr);
+            return std::make_tuple(wspd_arr, wdir_arr);
         },
         nb::arg("u_comp"), nb::arg("v_comp"),
         R"pbdoc(
@@ -476,7 +453,8 @@ Returns:
 
     m_wind.def(
         "vector_to_components",
-        [](const_prof_arr_t wspd_arr, const_prof_arr_t wdir_arr) {
+        [](const_prof_arr_t wspd_arr,
+           const_prof_arr_t wdir_arr) -> std::tuple<out_arr_t, out_arr_t> {
             auto wspd = wspd_arr.view();
             auto wdir = wdir_arr.view();
 
@@ -493,12 +471,10 @@ Returns:
             nb::capsule owner_vwin(
                 v_comp, [](void* p) noexcept { delete[] (float*)p; });
 
-            auto uwin_arr = nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                u_comp, {wspd.shape(0)}, owner_uwin);
-            auto vwin_arr = nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                v_comp, {wdir.shape(0)}, owner_vwin);
+            auto uwin_arr = out_arr_t(u_comp, {wspd.shape(0)}, owner_uwin);
+            auto vwin_arr = out_arr_t(v_comp, {wdir.shape(0)}, owner_vwin);
 
-            return nb::make_tuple(uwin_arr, vwin_arr);
+            return std::make_tuple(uwin_arr, vwin_arr);
         },
         nb::arg("wspd"), nb::arg("wdir"),
         R"pbdoc(

@@ -14,4 +14,6 @@ using const_prof_arr_t =
 using prof_arr_t =
     nb::ndarray<float, nb::ndim<1>, nb::device::cpu, nb::c_contig>;
 
+using out_arr_t = nb::ndarray<nb::numpy, float, nb::ndim<1>, nb::c_contig>;
+
 #endif  // COMMON_SHARPLIB_TYPES

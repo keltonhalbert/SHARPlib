@@ -7,6 +7,8 @@
 
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/parcel.h>
+#include <tuple>
+#include "SHARPlib/layer.h"
 #include "sharplib_types.h"
 
 namespace nb = nanobind;
@@ -79,8 +81,7 @@ Returns:
             nb::capsule owner(wobf_arr,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                wobf_arr, {tmpk.shape(0)}, owner);
+            return out_arr_t(wobf_arr, {tmpk.shape(0)}, owner);
         },
         nb::arg("tmpk_arr"),
         R"pbdoc(
@@ -158,8 +159,7 @@ Returns:
             nb::capsule owner(lcl_tmpk_arr,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                lcl_tmpk_arr, {tmpk.shape(0)}, owner);
+            return out_arr_t(lcl_tmpk_arr, {tmpk.shape(0)}, owner);
         },
         nb::arg("tmpk_arr"), nb::arg("dwpk_arr"),
         R"pbdoc(
@@ -221,8 +221,7 @@ Returns:
             nb::capsule owner(vappres_arr,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                vappres_arr, {tmpk.shape(0)}, owner);
+            return out_arr_t(vappres_arr, {tmpk.shape(0)}, owner);
         },
         nb::arg("pres_arr"), nb::arg("tmpk_arr"),
         R"pbdoc(
@@ -287,8 +286,7 @@ Returns:
             nb::capsule owner(vappres_arr,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                vappres_arr, {tmpk.shape(0)}, owner);
+            return out_arr_t(vappres_arr, {tmpk.shape(0)}, owner);
         },
         nb::arg("pres_arr"), nb::arg("tmpk_arr"),
         R"pbdoc(
@@ -348,8 +346,7 @@ Returns:
             nb::capsule owner(dwpk_arr,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                dwpk_arr, {mixr.shape(0)}, owner);
+            return out_arr_t(dwpk_arr, {mixr.shape(0)}, owner);
         },
         nb::arg("mixr_arr"), nb::arg("pres_arr"),
         R"pbdoc(
@@ -400,8 +397,7 @@ Returns:
             nb::capsule owner(pres_arr,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                pres_arr, {tmpk.shape(0)}, owner);
+            return out_arr_t(pres_arr, {tmpk.shape(0)}, owner);
         },
         nb::arg("theta_arr"), nb::arg("tmpk_arr"),
         R"pbdoc(
@@ -450,8 +446,7 @@ Returns:
             nb::capsule owner(theta_arr,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                theta_arr, {tmpk.shape(0)}, owner);
+            return out_arr_t(theta_arr, {tmpk.shape(0)}, owner);
         },
         nb::arg("pres_arr"), nb::arg("tmpk_arr"),
         nb::arg("ref_pressure") = sharp::THETA_REF_PRESSURE,
@@ -508,8 +503,7 @@ Returns:
             nb::capsule owner(mixr_arr,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                mixr_arr, {spfh.shape(0)}, owner);
+            return out_arr_t(mixr_arr, {spfh.shape(0)}, owner);
         },
         nb::arg("spfh_arr"),
         R"pbdoc(
@@ -540,8 +534,7 @@ Returns:
             nb::capsule owner(mixr_arr,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                mixr_arr, {tmpk.shape(0)}, owner);
+            return out_arr_t(mixr_arr, {tmpk.shape(0)}, owner);
         },
         nb::arg("pres_arr"), nb::arg("tmpk_arr"),
         R"pbdoc(
@@ -589,8 +582,7 @@ Returns:
             nb::capsule owner(mixr_arr,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                mixr_arr, {tmpk.shape(0)}, owner);
+            return out_arr_t(mixr_arr, {tmpk.shape(0)}, owner);
         },
         nb::arg("pres_arr"), nb::arg("tmpk_arr"),
         R"pbdoc(
@@ -629,8 +621,7 @@ Returns:
             nb::capsule owner(spfh_arr,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                spfh_arr, {mixr.shape(0)}, owner);
+            return out_arr_t(spfh_arr, {mixr.shape(0)}, owner);
         },
         nb::arg("mixr_arr"),
         R"pbdoc(
@@ -682,8 +673,7 @@ Returns:
             nb::capsule owner(relh,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                relh, {tmpk.shape(0)}, owner);
+            return out_arr_t(relh, {tmpk.shape(0)}, owner);
         },
         nb::arg("pressure"), nb::arg("temperature"), nb::arg("dewpoint"),
         R"pbdoc(
@@ -789,8 +779,7 @@ Returns:
             nb::capsule owner(vtmp_arr,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                vtmp_arr, {tmpk.shape(0)}, owner);
+            return out_arr_t(vtmp_arr, {tmpk.shape(0)}, owner);
         },
         nb::arg("tmpk_arr"), nb::arg("rv_arr"), nb::arg("rl_arr") = nb::none(),
         nb::arg("ri_arr") = nb::none(),
@@ -861,8 +850,7 @@ Returns:
             nb::capsule owner(tmpk_out_arr,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                tmpk_out_arr, {tmpk.shape(0)}, owner);
+            return out_arr_t(tmpk_out_arr, {tmpk.shape(0)}, owner);
         },
         R"pbdoc(
 Compute the temperature of a parcel lifted moist adiabatically to a new level. 
@@ -888,12 +876,12 @@ Returns:
 
     m_therm.def(
         "drylift",
-        [](float pressure, float temperature, float dewpoint) {
+        [](float pressure, float temperature, float dewpoint) -> std::tuple<float, float> {
             float pressure_at_lcl, temperature_at_lcl;
             
             sharp::drylift(pressure, temperature, dewpoint, pressure_at_lcl, temperature_at_lcl);
 
-            return nb::make_tuple(pressure_at_lcl, temperature_at_lcl);
+            return std::make_tuple(pressure_at_lcl, temperature_at_lcl);
         },
         nb::arg("pressure"), nb::arg("temperature"), nb::arg("dewpoint"),
         R"pbdoc(
@@ -1010,8 +998,7 @@ Returns:
             nb::capsule owner(wb_out,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                wb_out, {tmpk.shape(0)}, owner);
+            return out_arr_t(wb_out, {tmpk.shape(0)}, owner);
         },
         nb::arg("lifter"), nb::arg("pressure"),
         nb::arg("temperature"), nb::arg("dewpoint"),
@@ -1060,8 +1047,7 @@ Returns:
             nb::capsule owner(wb_out,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                wb_out, {tmpk.shape(0)}, owner);
+            return out_arr_t(wb_out, {tmpk.shape(0)}, owner);
         },
         nb::arg("lifter"), nb::arg("pressure"),
         nb::arg("temperature"), nb::arg("dewpoint"),
@@ -1182,8 +1168,7 @@ Returns:
             nb::capsule owner(theta_wb,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                theta_wb, {tmpk.shape(0)}, owner);
+            return out_arr_t(theta_wb, {tmpk.shape(0)}, owner);
         },
         nb::arg("lifter"), nb::arg("pressure"),
         nb::arg("temperature"), nb::arg("dewpoint"),
@@ -1232,8 +1217,7 @@ Returns:
             nb::capsule owner(theta_wb,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                theta_wb, {tmpk.shape(0)}, owner);
+            return out_arr_t(theta_wb, {tmpk.shape(0)}, owner);
         },
         nb::arg("lifter"), nb::arg("pressure"),
         nb::arg("temperature"), nb::arg("dewpoint"),
@@ -1305,8 +1289,7 @@ Returns:
             nb::capsule owner(thetae,
                             [](void *p) noexcept { delete[] (float *)p; });
 
-            return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-                thetae, {tmpk.shape(0)}, owner);
+            return out_arr_t(thetae, {tmpk.shape(0)}, owner);
         },
         nb::arg("pressure"), nb::arg("temperature"), nb::arg("dewpoint"),
         R"pbdoc(
@@ -1388,7 +1371,7 @@ Returns:
             float depth, 
             const_prof_arr_t hght_arr, 
             const_prof_arr_t tmpk_arr
-        ) {
+        ) -> std::tuple<float, sharp::HeightLayer>{
             
             sharp::HeightLayer out_lyr = {0, 0};
             float max_lr = sharp::lapse_rate_max(
@@ -1400,7 +1383,7 @@ Returns:
                 &out_lyr
             );
 
-            return nb::make_tuple(max_lr, out_lyr);
+            return std::make_tuple(max_lr, out_lyr);
         },
         nb::arg("layer"), nb::arg("depth"),
         nb::arg("height"), nb::arg("temperature"),
@@ -1428,7 +1411,7 @@ Returns:
             const_prof_arr_t pres_arr,
             const_prof_arr_t hght_arr, 
             const_prof_arr_t tmpk_arr
-        ) {
+        ) -> std::tuple<float, sharp::PressureLayer>{
             
             sharp::PressureLayer out_lyr = {0, 0};
             float max_lr = sharp::lapse_rate_max(
@@ -1441,7 +1424,7 @@ Returns:
                 &out_lyr
             );
 
-            return nb::make_tuple(max_lr, out_lyr);
+            return std::make_tuple(max_lr, out_lyr);
         },
         nb::arg("layer"), nb::arg("depth"),
         nb::arg("pressure"), nb::arg("height"), nb::arg("temperature"),
@@ -1489,11 +1472,10 @@ Returns:
 
             sharp::buoyancy(pcl_tmpk.data(), env_tmpk.data(), buoy_arr, pcl_tmpk.size());
 
-        nb::capsule owner(buoy_arr,
-                        [](void *p) noexcept { delete[] (float *)p; });
+            nb::capsule owner(buoy_arr,
+                            [](void *p) noexcept { delete[] (float *)p; });
 
-        return nb::ndarray<nb::numpy, float, nb::ndim<1>>(
-            buoy_arr, {pcl_tmpk.size()}, owner);
+            return out_arr_t(buoy_arr, {pcl_tmpk.size()}, owner);
         },
         nb::arg("parcel_temperature"), nb::arg("environment_temperature"),
         R"pbdoc(
