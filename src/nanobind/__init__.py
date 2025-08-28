@@ -1,4 +1,3 @@
-
 from ._calc import (
     constants as constants,
     interp as interp,
@@ -23,3 +22,6 @@ __all__ = [
     "thermo",
     "winds",
 ]
+
+__doc__ = ._calc.__doc__
+
