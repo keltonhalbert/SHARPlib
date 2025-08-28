@@ -6,7 +6,6 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import sys, os
 import nwsspc.sharp.calc as sharplib 
 
 project = 'SHARPlib'
@@ -26,9 +25,11 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-autodoc_mock_imports = ["numpy", "nanobind"] 
-autodoc_docstring_signature = True
-napoleon_numpy_docstring = True
+autoclass_content = "init"
+autodoc_member_order = 'bysource'
+napoleon_numpy_docstring = False 
+napoleon_google_docstring = True
+napoleon_preprocess_types = True
 
 
 # -- Options for HTML output -------------------------------------------------
