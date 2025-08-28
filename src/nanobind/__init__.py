@@ -6,6 +6,7 @@ from ._calc import (
     parcel as parcel,
     thermo as thermo,
     winds as winds,
+    __doc__ as __doc__,
 )
 
 try:
@@ -22,6 +23,4 @@ __all__ = [
     "thermo",
     "winds",
 ]
-
-__doc__ = ._calc.__doc__
 
