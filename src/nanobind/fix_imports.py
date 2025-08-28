@@ -4,24 +4,24 @@ from pathlib import Path
 import sys
 
 TYPE_HINT_REPLACEMENTS = {
-    "_calc.constants.": "constants.",
-    "_calc.interp.": "interp.",
-    "_calc.layer.": "layer.",
-    "_calc.params.": "params.",
-    "_calc.parcel.": "parcel.",
-    "_calc.thermo.": "thermo.",
-    "_calc.winds.": "winds.",
+    "calc.constants.": "constants.",
+    "calc.interp.": "interp.",
+    "calc.layer.": "layer.",
+    "calc.params.": "params.",
+    "calc.parcel.": "parcel.",
+    "calc.thermo.": "thermo.",
+    "calc.winds.": "winds.",
 }
 
 IMPORT_REPLACEMENTS = {
     "from numpy.typing import ArrayLike" : "import numpy\nfrom numpy.typing import ArrayLike, NDArray",
-    "import _calc.constants": "from .. import constants",
-    "import _calc.interp": "from .. import interp",
-    "import _calc.layer": "from .. import layer",
-    "import _calc.params": "from .. import params",
-    "import _calc.parcel": "from .. import parcel",
-    "import _calc.thermo": "from .. import thermo",
-    "import _calc.winds": "from .. import winds",
+    "import calc.constants": "from .. import constants",
+    "import calc.interp": "from .. import interp",
+    "import calc.layer": "from .. import layer",
+    "import calc.params": "from .. import params",
+    "import calc.parcel": "from .. import parcel",
+    "import calc.thermo": "from .. import thermo",
+    "import calc.winds": "from .. import winds",
 }
 
 RETURN_TYPE_REPLACEMENTS = {

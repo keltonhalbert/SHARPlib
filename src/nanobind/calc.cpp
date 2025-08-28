@@ -11,7 +11,7 @@
 #include "params_bindings.h"
 
 // clang-format on
-NB_MODULE(_calc, m) {
+NB_MODULE(calc, m) {
     m.doc() =
         "Sounding and Hodograph Analysis and Research Program Library "
         "(SHARPlib)";
