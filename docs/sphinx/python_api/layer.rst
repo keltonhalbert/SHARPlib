@@ -1,5 +1,5 @@
-nwsspc.sharp.calc
-========================
+layer
+=====
 
 
 .. autoclass:: nwsspc.sharp.calc.layer.PressureLayer

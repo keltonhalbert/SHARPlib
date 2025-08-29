@@ -1,5 +1,5 @@
-nwsspc.sharp.calc
-========================
+thermo
+======
 
 
 .. autofunction:: nwsspc.sharp.calc.thermo.lapse_rate
