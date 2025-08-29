@@ -20,11 +20,11 @@ include_directories(${Python3_INCLUDE_DIRS})
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/external/fmt/include)
 
-nanobind_add_module(_calc LTO calc.cpp)
-target_link_libraries(_calc PRIVATE SHARPlib)
+nanobind_add_module(calc LTO calc.cpp)
+target_link_libraries(calc PRIVATE SHARPlib)
 if (MSVC) # For MSVC (cl) compiler
     # Add compile options for MSVC
-    target_compile_options(_calc PRIVATE
+    target_compile_options(calc PRIVATE
         /utf-8        # Set source and execution character set to UTF-8
     )
 endif()
@@ -32,11 +32,11 @@ endif()
 nanobind_add_stub(
     calc_stub
     RECURSIVE
-    MODULE _calc
+    MODULE calc
     OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/stubs" 
-    PYTHON_PATH "$<TARGET_FILE_DIR:_calc>" 
+    PYTHON_PATH "$<TARGET_FILE_DIR:calc>" 
     MARKER_FILE "${CMAKE_CURRENT_BINARY_DIR}/py.typed"
-    DEPENDS _calc
+    DEPENDS calc
 )
 
 add_custom_command(
@@ -51,23 +51,21 @@ add_custom_command(
     VERBATIM
 )
 
-install(TARGETS _calc DESTINATION nwsspc/sharp/calc)
+install(TARGETS calc DESTINATION nwsspc/sharp)
 
 install(
     FILES 
         "${CMAKE_CURRENT_BINARY_DIR}/py.typed"
-    DESTINATION "nwsspc/sharp/calc" 
+    DESTINATION "nwsspc/sharp" 
 )
 install(
     DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/stubs/"
     DESTINATION "nwsspc/sharp/calc" 
-    PATTERN "_calc.pyi" EXCLUDE
+    PATTERN "calc.pyi" EXCLUDE
 )
 install(
     FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/__init__.pyi"
-        "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py"
-        "${CMAKE_CURRENT_SOURCE_DIR}/_version.py"
     DESTINATION
         "nwsspc/sharp/calc"
 )
