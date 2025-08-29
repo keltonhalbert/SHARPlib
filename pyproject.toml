@@ -73,5 +73,10 @@ enable = []
 test-command = "pytest {project}/tests/python"
 test-requires = ["pytest", "pandas", "fastparquet"]
 
+[tool.basedpyright]
+reportMissingModuleSource = "none"
+reportUnknownVariableType = false 
+reportUnknownMemberType = "none"
+
 [tool.cibuildwheel.macos.environment]
 MACOSX_DEPLOYMENT_TARGET = "10.14"
