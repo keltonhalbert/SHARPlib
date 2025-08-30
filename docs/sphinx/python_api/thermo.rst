@@ -39,3 +39,34 @@ Dry Ascent
 * :py:func:`~lcl_temperature`
 * :py:func:`~theta`
 * :py:func:`~theta_level`
+
+.. ##############################################################
+.. ## INVISIBLE BLOCK TO GENERATE DOCS FOR THE LINKS ABOVE ##
+.. ##############################################################
+
+.. only:: html and not html
+
+   .. autosummary::
+      :toctree: generated/
+
+      mixratio
+      mixratio_ice
+      relative_humidity
+      specific_humidity
+      vapor_pressure
+      vapor_pressure_ice
+      virtual_temperature
+      adiabat
+      buoyancy
+      thetae
+      theta_wetbulb
+      wetbulb
+      wetlift
+      wobf
+      temperature_at_mixratio
+      lapse_rate
+      lapse_rate_max
+      drylift
+      lcl_temperature
+      theta
+      theta_level
