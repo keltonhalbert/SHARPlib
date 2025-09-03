@@ -33,9 +33,17 @@ nanobind_add_stub(
     calc_stub
     RECURSIVE
     MODULE calc
-    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/stubs" 
+    OUTPUT 
+        __init__.pyi 
+        interp.pyi 
+        layer.pyi
+        params.pyi 
+        parcel.pyi
+        thermo.pyi
+        winds.pyi
+    OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}/nwsspc/sharp" 
     PYTHON_PATH "$<TARGET_FILE_DIR:calc>" 
-    MARKER_FILE "${CMAKE_CURRENT_BINARY_DIR}/py.typed"
+    MARKER_FILE "${CMAKE_CURRENT_BINARY_DIR}/nwsspc/sharp/py.typed"
     DEPENDS calc
 )
 
@@ -45,27 +53,14 @@ add_custom_command(
     COMMAND
         "${Python_EXECUTABLE}" 
         "${CMAKE_CURRENT_SOURCE_DIR}/fix_imports.py" 
-        "${CMAKE_CURRENT_BINARY_DIR}/stubs"
+        "${CMAKE_CURRENT_BINARY_DIR}/nwsspc/sharp/calc/"
     COMMENT
         "Patching circular imports in generated stub files..."
     VERBATIM
 )
 
 install(TARGETS calc DESTINATION nwsspc/sharp)
-
 install(
-    FILES 
-        "${CMAKE_CURRENT_BINARY_DIR}/py.typed"
-    DESTINATION "nwsspc/sharp" 
-)
-install(
-    DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/stubs/"
-    DESTINATION "nwsspc/sharp/calc" 
-    PATTERN "calc.pyi" EXCLUDE
-)
-install(
-    FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/__init__.pyi"
-    DESTINATION
-        "nwsspc/sharp/calc"
+    DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/nwsspc/sharp"
+    DESTINATION "nwsspc/" 
 )
