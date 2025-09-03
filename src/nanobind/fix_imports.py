@@ -14,19 +14,13 @@ TYPE_HINT_REPLACEMENTS = {
 }
 
 IMPORT_REPLACEMENTS = {
-    "from numpy.typing import ArrayLike" : "import numpy\nfrom numpy.typing import ArrayLike, NDArray",
-    "import calc.constants": "from .. import constants",
-    "import calc.interp": "from .. import interp",
-    "import calc.layer": "from .. import layer",
-    "import calc.params": "from .. import params",
-    "import calc.parcel": "from .. import parcel",
-    "import calc.thermo": "from .. import thermo",
-    "import calc.winds": "from .. import winds",
-}
-
-RETURN_TYPE_REPLACEMENTS = {
-    "-> Annotated[ArrayLike, dict(dtype='float32', shape=(None), order='C')]": "-> Annotated[NDArray[numpy.float32], dict(shape=(None), order='C')]",
-    "-> tuple[Annotated[ArrayLike, dict(dtype='float32', shape=(None), order='C')], Annotated[ArrayLike, dict(dtype='float32', shape=(None), order='C')]]": "-> tuple[Annotated[NDArray[numpy.float32], dict(shape=(None), order='C')], Annotated[NDArray[numpy.float32], dict(shape=(None), order='C')]]" 
+    "import calc.constants": "import constants",
+    "import calc.interp": "import .interp",
+    "import calc.layer": "import .layer",
+    "import calc.params": "import .params",
+    "import calc.parcel": "import .parcel",
+    "import calc.thermo": "import .thermo",
+    "import calc.winds": "import .winds",
 }
 
 def fix_stubs(file_path: Path):
@@ -41,9 +35,6 @@ def fix_stubs(file_path: Path):
         for bad_import, good_import in IMPORT_REPLACEMENTS.items():
             pattern = re.compile(f"^{re.escape(bad_import)}$", re.MULTILINE)
             modified_content = pattern.sub(good_import, modified_content)
-
-        for bad_type, good_type in RETURN_TYPE_REPLACEMENTS.items():
-            modified_content = modified_content.replace(bad_type, good_type)
 
         if original_content != modified_content:
             file_path.write_text(modified_content, encoding='utf-8')
@@ -69,7 +60,7 @@ def main():
         
     print(f"Scanning for stub files in: {stubs_dir.resolve()}")
 
-    found_files = list(stubs_dir.glob("*/**/__init__.pyi"))
+    found_files = list(stubs_dir.glob("*.pyi"))
     if not found_files:
         print("Warning: No submodule '__init__.pyi' files were found to patch.")
         
