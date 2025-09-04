@@ -33,6 +33,7 @@ if (MSVC) # For MSVC (cl) compiler
 endif()
 set_target_properties(calc PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/nwsspc/sharp"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/nwsspc/sharp"
 )
 
 nanobind_add_stub(
