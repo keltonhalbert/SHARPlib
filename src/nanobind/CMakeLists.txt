@@ -34,7 +34,17 @@ endif()
 set_target_properties(calc PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/nwsspc/sharp"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/nwsspc/sharp"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/nwsspc/sharp" # add this too
 )
+
+# Also override per-config on MSVC
+foreach(cfg IN ITEMS Debug Release RelWithDebInfo MinSizeRel)
+    set_target_properties(calc PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY_${cfg} "${CMAKE_CURRENT_BINARY_DIR}/nwsspc/sharp"
+        RUNTIME_OUTPUT_DIRECTORY_${cfg} "${CMAKE_CURRENT_BINARY_DIR}/nwsspc/sharp"
+        ARCHIVE_OUTPUT_DIRECTORY_${cfg} "${CMAKE_CURRENT_BINARY_DIR}/nwsspc/sharp"
+    )
+endforeach()
 
 nanobind_add_stub(
     calc_stub
