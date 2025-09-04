@@ -57,4 +57,4 @@ docs/latex
 
 # Python
 __pycache__
-_version.py
+src/nanobind/_version.py
