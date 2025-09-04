@@ -26,8 +26,7 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 autoclass_content = "init"
-autodoc_member_order = 'bysource'
-autodoc_docstring_signature = False
+autodoc_docstring_signature = True
 
 napoleon_numpy_docstring = False 
 napoleon_google_docstring = True
@@ -40,4 +39,3 @@ napoleon_preprocess_types = True
 html_theme = 'alabaster'
 html_static_path = ['_static']
 
-autosummary_generate = True
