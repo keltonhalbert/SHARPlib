@@ -45,6 +45,11 @@ SHARPlib
 
    build_install_cpp.rst
    build_install_python.rst
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference:
+
    python_api/index.rst
 
 
