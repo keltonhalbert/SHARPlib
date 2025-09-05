@@ -40,6 +40,26 @@ thermo
    ------------
    Moist thermodunamic routines directly related to vertical ascent. 
 
+   .. autoclass:: nwsspc.sharp.calc.thermo.adiabat 
+
+      An enum class used to flag which type of parcel ascent is desired for nwsspc.sharp.calc.parcel.lifter_cm1
+
+      .. autoattribute:: pseudo_liq
+
+         Pseudoadiabatic liquid-only parcel ascent. 
+
+      .. autoattribute:: pseudo_ice 
+
+         Pseudoadiabatic liquid and ice based parcel ascent.
+
+      .. autoattribute:: adiab_liq
+
+         Adiabatic liquid-only parcel ascent.
+
+      .. autoattribute:: adiab_ice
+
+         Adiabatic liquid and ice based parcel ascent.
+
    .. autofunction:: nwsspc.sharp.calc.thermo.wobf
    .. autofunction:: nwsspc.sharp.calc.thermo.wetlift
 
