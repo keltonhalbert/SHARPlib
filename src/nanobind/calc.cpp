@@ -10,6 +10,8 @@
 #include "parcel_bindings.h"
 #include "params_bindings.h"
 
+#include <SHARPlib/version.h>
+
 // clang-format on
 NB_MODULE(calc, m) {
     m.doc() =
@@ -23,4 +25,8 @@ NB_MODULE(calc, m) {
     make_winds_bindings(m);
     make_parcel_bindings(m);
     make_params_bindings(m);
+
+    m.attr("__version__") = FULL_VERSION;
+    m.attr("__version_tuple__") = std::make_tuple(
+        PROJECT_VERSION_MAJOR, PROJECT_VERSION_MINOR, PROJECT_VERSION_PATCH);
 }
