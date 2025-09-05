@@ -51,6 +51,7 @@ SHARPlib
    :caption: Reference:
 
    python_api/index.rst
+   cpp_api/index.rst
 
 
 
