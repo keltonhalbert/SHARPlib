@@ -11,22 +11,30 @@ import nwsspc.sharp.calc as sharplib
 project = 'SHARPlib'
 copyright = '2025, Kelton Halbert'
 author = 'Kelton Halbert'
-release = '1.0.2'
+release = '1.0.3'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
     'sphinx.ext.napoleon',
 ]
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-autoclass_content = "init"
+autoclass_content = "both"
+autodoc_member_order = "bysource"
 autodoc_docstring_signature = True
+autodoc_typehints = "both"
+autodo_type_aliases = {
+    "PressureLayer": "nwsspc.sharp.calc.layer.PressureLayer",
+    "HeightLayer": "nwsspc.sharp.calc.layer.HeightLayer",
+    "LayerIndex": "nwsspc.sharp.calc.layer.LayerIndex",
+}
+autodoc_typehints_format = "short"
+autodoc_preserve_defauls = True
 
 napoleon_numpy_docstring = False 
 napoleon_google_docstring = True
