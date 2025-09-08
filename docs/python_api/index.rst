@@ -1,5 +1,5 @@
-Python API: nwsspc.sharp.calc 
-=============================
+Python API
+==========
 
 .. toctree::
    :maxdepth: 3
