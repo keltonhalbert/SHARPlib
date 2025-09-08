@@ -276,10 +276,10 @@ template <typename Lifter>
  * Given a sharp::PressureLayer to integrate over, compute the preciptable
  * water from the given pressure and mixing ratio arrays.
  *
- * \parameters  layer           (Pa)
- * \parameter   presssure       (Pa)
- * \parameter   mixing_ratio    (unitless)
- * \parameter   N               (length of arrays)
+ * \param   layer           (Pa)
+ * \param   presssure       (Pa)
+ * \param   mixing_ratio    (unitless)
+ * \param   N               (length of arrays)
  *
  * \return precipitable water (mm)
  */
