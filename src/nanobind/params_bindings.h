@@ -48,8 +48,8 @@ inline void make_params_bindings(nb::module_ m) {
 Computes the Effective Inflow Layer, or the layer of the atmosphere
 beliefed to be the primary source of inflow for supercell thunderstorms. 
 The Effective Inflow Layer, and its use in computing shear and storm 
-relative helicity, is described by Thompson et al. 2007:
-    https://www.spc.noaa.gov/publications/thompson/effective.pdf
+relative helicity, is described by Thompson et al. 2007: 
+https://www.spc.noaa.gov/publications/thompson/effective.pdf
 
 Standard/default values for cape_thresh and cinh_thresh have been 
 experimentally determined to be cape_thresh = 100 J/kg and 
@@ -96,7 +96,7 @@ Computes the Effective Inflow Layer, or the layer of the atmosphere
 beliefed to be the primary source of inflow for supercell thunderstorms. 
 The Effective Inflow Layer, and its use in computing shear and storm 
 relative helicity, is described by Thompson et al. 2007:
-    https://www.spc.noaa.gov/publications/thompson/effective.pdf
+https://www.spc.noaa.gov/publications/thompson/effective.pdf
 
 Standard/default values for cape_thresh and cinh_thresh have been 
 experimentally determined to be cape_thresh = 100 J/kg and 
@@ -136,7 +136,7 @@ Parameters:
         R"pbdoc(
 Estimates the supercell storm motion using the Bunkers et al. 2000 method 
 described in the following paper:
-    https://doi.org/10.1175/1520-0434(2000)015%3C0061:PSMUAN%3E2.0.CO;2
+https://doi.org/10.1175/1520-0434(2000)015%3C0061:PSMUAN%3E2.0.CO;2
         
 This does not use any of the updated methods described by Bunkers et al. 2014, 
 which uses Effective Inflow Layer metrics to get better estimates of storm 
@@ -174,7 +174,7 @@ Returns:
         R"pbdoc(
 Estimates supercell storm motion using the Bunkers et al. 2014 
 method described in the following paper:
-    http://dx.doi.org/10.15191/nwajom.2014.0211
+http://dx.doi.org/10.15191/nwajom.2014.0211
     
 This method is parcel based, using a mean-wind vector defined as the 
 pressure-weighted mean wind between the Effective Inflow Layer surface 
