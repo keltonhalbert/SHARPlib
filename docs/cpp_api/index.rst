@@ -1,10 +1,18 @@
 C++ API
 =======
 
-.. toctree::
-   :maxdepth: 2 
-   :caption: Contents 
+.. toctree:: 
+  :maxdepth: 1
+  :caption: Contents 
 
-   constants
+  constants
+
+.. toctree::
+   :maxdepth: 3 
+
    interp
    layer
+   params
+   parcel
+   thermo
+   winds

@@ -3,4 +3,5 @@ constants
 
 .. doxygenfile:: constants.h 
    :project: SHARPlib
-   :allow-dot-graphs:
+   :sections: briefdescription innernamespace var 
+

@@ -49,19 +49,28 @@ napoleon_preprocess_types = True
 breathe_projects = {
     "SHARPlib": "doxyxml/"
 }
+breathe_domain_by_extension = {"h": "cpp"}
 
 breathe_projects_source = {
     "SHARPlib" : (
-        "../include/SHARPlib", [
-            "constants.h", 
-            "interp.h",
-            "layer.h",
-            "parcel.h",
-            "thermo.h",
-            "winds.h",
-            "params/convective.h",
-            "params/fire.h",
-            "params/winter.h",
+        "../", [
+            "include/SHARPlib/constants.h", 
+            "include/SHARPlib/interp.h",
+            "include/SHARPlib/layer.h",
+            "include/SHARPlib/parcel.h",
+            "include/SHARPlib/thermo.h",
+            "include/SHARPlib/winds.h",
+            "include/SHARPlib/params/convective.h",
+            "include/SHARPlib/params/fire.h",
+            "include/SHARPlib/params/winter.h",
+            "src/SHARPlib/interp.cpp",
+            "src/SHARPlib/layer.cpp",
+            "src/SHARPlib/parcel.cpp",
+            "src/SHARPlib/thermo.cpp",
+            "src/SHARPlib/winds.cpp",
+            "src/SHARPlib/params/convective.cpp",
+            "src/SHARPlib/params/fire.cpp",
+            "src/SHARPlib/params/winter.cpp",
         ] 
     )
 }
