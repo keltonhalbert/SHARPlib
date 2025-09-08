@@ -149,7 +149,7 @@ template <typename _Fp>
                                     const std::ptrdiff_t N);
 
 /**
- * \athor Kelton Halbert - NWS Storm Prediction Center
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Find the pressure level of first occurrence of a given value
  *

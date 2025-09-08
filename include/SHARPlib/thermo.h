@@ -277,7 +277,7 @@ enum class adiabat : int {
  * extremely cold temperatures/low pressures. If you do not want or need this
  * behavior, you can pass in something like sharp::THETA_REF_PRESSURE instead.
  *
- * \oaram   pressure    (Pa)
+ * \param   pressure    (Pa)
  * \param   temperature (K)
  * \param   dewpoint    (K)
  *
