@@ -13,7 +13,7 @@ import sys, os
 sys.path.insert(0, os.path.abspath("../"))
 
 project = 'SHARPlib'
-copyright = '2025, Kelton Halbert'
+copyright = '2025, NOAA/NWS/NCEP Storm Prediction Center'
 author = 'Kelton Halbert'
 release = '1.1.0'
 
