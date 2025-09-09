@@ -7,15 +7,20 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 import nwsspc.sharp.calc as sharplib 
+import datetime
 import breathe
 import sys, os 
 
 sys.path.insert(0, os.path.abspath("../"))
 
+version_tuple = sharplib.__version_tuple__
+version = sharplib.__version__
+year = datetime.datetime.utcnow().year
+
 project = 'SHARPlib'
-copyright = '2025, NOAA/NWS/NCEP Storm Prediction Center'
+copyright = f'2024-{year}, NOAA/NWS/NCEP Storm Prediction Center'
 author = 'Kelton Halbert'
-release = '1.1.0'
+release = f'{version_tuple[0]}.{version_tuple[1]}.{version_tuple[2]}'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -24,11 +29,13 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.graphviz',
+    'sphinx.ext.intersphinx',
     'breathe',
 ]
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+add_function_parentheses = False
 
 autoclass_content = "both"
 autodoc_member_order = "bysource"
@@ -80,6 +87,53 @@ breathe_default_project = "SHARPlib"
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'alabaster'
+html_theme = "pydata_sphinx_theme"
 html_static_path = ['_static']
 
+html_theme_options = {
+    "logo": {
+        "text": "SHARPlib",
+        "image_light": "_static/logo.png",
+        "image_dark": "_static/logo.png",
+    },
+    "collapse_navigation": True,
+    'external_links': [
+        {'name': 'Release Notes', 'url': 'https://github.com/keltonhalbert/SHARPlib/releases'},
+    ],
+    'icon_links': [
+        {
+            'name': 'GitHub',
+            'url': 'https://github.com/keltonhalbert/SHARPlib',
+            'icon': 'fa-brands fa-github',
+            'type': 'fontawesome',
+        },
+        {
+            'name': 'Bluesky',
+            'url': 'https://bsky.app/profile/stormscale.io',
+            'icon': 'fa-brands fa-bluesky',
+            'type': 'fontawesome',
+        },
+    ],
+    'use_edit_page_button': False,
+    'navbar_align': 'left',
+    #'navbar_start': ['navbar-logo', 'version-switcher'],
+    'navbar_start': ['navbar-logo'],
+    'navbar_center': ['navbar-nav'],
+    'header_links_before_dropdown': 6,
+    'navbar_persistent': ['search-button'],
+    'navbar_end': ['navbar-icon-links', 'theme-switcher'],
+}
+
+
+html_title = f"{project} v{version} Manual"
+html_last_updated_fmt = '%b %d, %Y'
+html_context = {"default_mode": "dark"}
+html_use_modindex = True
+html_copy_source = False
+html_domain_indices = False
+html_file_suffix = '.html'
+
+
+intersphinx_mapping = {
+    'numpy': ('https://numpy.org/doc/stable/', None),
+}
