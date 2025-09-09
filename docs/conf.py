@@ -92,7 +92,7 @@ html_static_path = ['_static']
 
 html_theme_options = {
     "logo": {
-        "text": "SHARPlib",
+        "text": f"SHARPlib {release}",
         "image_light": "_static/logo.png",
         "image_dark": "_static/logo.png",
     },

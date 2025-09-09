@@ -39,22 +39,6 @@ SHARPlib
 
 **Sounding and Hodograph Analysis and Research Program (SHARP)** C++ library for conducting analysis of atmospheric sounding profiles. Based on the NSHARP routines written by John Hart and Rich Thompson at the NWS Storm Prediction Center in Norman, Oklahoma.
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-   build_install_cpp.rst
-   build_install_python.rst
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Reference:
-
-   python_api/index.rst
-   cpp_api/index.rst
-
-
-
 .. _about_sharplib:
 
 About SHARPlib
@@ -68,3 +52,17 @@ SHARPpy sought to open source these computations and visualizations in order to 
 * The computational library component wasn't very generalizable, in large part because I wrote the code while taking an OOP class, and everything became a nail to the object hammer.
 
 SHARPlib seeks to take the successes of SHARPpy, while having the benefit of more experience and hindsight. It is most analogous to the ``sharppy.sharptab`` import, but written in C++ for performance and wrapped for Python/Numpy using `nanobind <https://github.com/wjakob/nanobind>`_. It is separate from any visualization software and dependencies, generalized to be more composable where appropriate, and optimised for performance.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   build_install_cpp.rst
+   build_install_python.rst
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference:
+
+   python_api/index.rst
+   cpp_api/index.rst
