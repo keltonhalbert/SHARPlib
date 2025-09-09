@@ -24,6 +24,28 @@ Parcels
 -------
 Parcel creation, parcel ascent, and integrated CAPE/CINH.
 
+.. autoclass:: nwsspc.sharp.calc.parcel.LPL
+
+   .. autoattribute:: SFC
+
+      A tag for surface-based parcels. 
+
+   .. autoattribute:: FCST
+
+      A tag for forecast parcels.
+
+   .. autoattribute:: MU
+
+      A tag for most-unstable parcels. 
+
+   .. autoattribute:: ML
+
+      A tag for mixed-layer parcels.
+
+   .. autoattribute:: USR
+
+      A tag for user-defined parcels.
+
 .. autoclass:: nwsspc.sharp.calc.parcel.Parcel 
 
    .. autoproperty:: nwsspc.sharp.calc.parcel.Parcel.pres

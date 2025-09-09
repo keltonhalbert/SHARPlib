@@ -42,8 +42,8 @@ autodo_type_aliases = {
 autodoc_typehints_format = "short"
 autodoc_preserve_defauls = True
 
-napoleon_numpy_docstring = False 
-napoleon_google_docstring = True
+napoleon_numpy_docstring = True 
+napoleon_google_docstring = False
 napoleon_preprocess_types = True
 
 breathe_projects = {

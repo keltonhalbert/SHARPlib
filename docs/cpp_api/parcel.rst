@@ -11,5 +11,6 @@ Parcel Lifters
 
 Parcels
 -------
+.. doxygenenum:: sharp::LPL
 .. doxygenstruct:: sharp::Parcel 
    :members:
