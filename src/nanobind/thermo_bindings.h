@@ -58,10 +58,14 @@ It was shown by Robert Davies-Jones (2007) that the Wobus function has
 a slight dependence on pressure, which results in errors of up to 1.2
 Kelvin in the temperature of a lifted parcel. 
 
-Parameters:
-    temperature: The air temperature (Kelvin)
+Parameters
+----------
+temperature : float 
+    The air temperature (Kelvin)
 
-Returns:
+Returns
+-------
+float
     The Wobus function temperature (Kelvin)
 
                 )pbdoc");
@@ -112,10 +116,14 @@ It was shown by Robert Davies-Jones (2007) that the Wobus function has
 a slight dependence on pressure, which results in errors of up to 1.2
 Kelvin in the temperature of a lifted parcel. 
 
-Parameters:
-    tmpk_arr: The 1D array of air temperatures (Kelvin)
+Parameters
+----------
+tmpk_arr : numpy.ndarray[dtype=float32] 
+    The 1D array of air temperatures (Kelvin)
 
-Returns:
+Returns
+-------
+numpy.ndarray[dtype=float32]
     The 1D array of Wobus function temperatures (Kelvin)
 
             )pbdoc");
@@ -130,11 +138,16 @@ The LCL temperature is computed as in Bolton (1980) eq 15, and is
 considered to be within a 10th of a degree of the more exact 
 iterative formula.
 
-Parameters:
-    temperature: The air temperature (Kelvin)
-    dewpoint: The dewpoint temperature (Kelvin)
+Parameters
+----------
+temperature : float 
+    The air temperature (Kelvin)
+dewpoint : float 
+    The dewpoint temperature (Kelvin)
 
-Returns:
+Returns
+-------
+float
     The LCL temperature (Kelvin)
 
             )pbdoc");
@@ -171,11 +184,16 @@ The LCL temperatures are computed as in Bolton (1980) eq 15, and is
 considered to be within a 10th of a degree of the more exact 
 iterative formula.
 
-Parameters:
-    tmpk_arr: The 1D air temperature array (Kelvin)
-    dwpk_arr: The 1D dewpoint temperature array (Kelvin)
+Parameters
+----------
+tmpk_arr : numpy.ndarray[dtype=float32]
+    The 1D air temperature array (Kelvin)
+dwpk_arr : numpy.ndarray[dtype=float32]
+    The 1D dewpoint temperature array (Kelvin)
 
-Returns:
+Returns
+-------
+numpy.ndarray[dtype=float32]
     The 1D array of LCL temperatures (Kelvin)
 
         )pbdoc");
@@ -194,11 +212,16 @@ pressures, and is consistent with how vapor pressure is treated in CM1.
 This function uses the formulation by Bolton (1980), and is
 accurate to within 0.3% for the temperature range of -35C <= T <= 35C.
 
-Parameters:
-    pressure: The air pressure (Pa)
-    temperature: The air temperature (K) or dewpoint temperature (K)
+Parameters
+----------
+pressure : float 
+    The air pressure (Pa)
+temperature : float 
+    The air temperature (K) or dewpoint temperature (K)
 
-Returns: 
+Returns
+-------
+float
     The vapor pressure (Pa) given dewpoint temperature, or the 
     saturation vapor pressure given the air temperature. 
     )pbdoc");
@@ -236,11 +259,16 @@ pressures, and is consistent with how vapor pressure is treated in CM1.
 This function uses the formulation by Bolton (1980), and is
 accurate to within 0.3% for the temperature range of -35C <= T <= 35C.
 
-Parameters:
-    pres_arr: The 1D array of air pressure (Pa)
-    tmpk_arr: The 1D array of air temperature (K) or dewpoint temperature (K)
+Parameters
+----------
+pres_arr : numpy.ndarray[dtype=float32] 
+    The 1D array of air pressure (Pa)
+tmpk_arr : numpy.ndarray[dtype=float32]
+    The 1D array of air temperature (K) or dewpoint temperature (K)
 
-Returns: 
+Returns
+-------
+numpy.ndarray[dtype=float32]
     The 1D array of vapor pressure (Pa) given dewpoint temperature, or the 
     saturation vapor pressure given the air temperature. 
     )pbdoc");
@@ -259,11 +287,16 @@ pressures, and is consistent with how vapor pressure is treated in CM1.
 This function uses the formulation by Bolton (1980), and is
 accurate to within 0.3% for the temperature range of -35C <= T <= 35C.
 
-Parameters:
-    pressure: The air pressure (Pa)
-    temperature: The air temperature (K) or dewpoint temperature (K)
+Parameters
+----------
+pressure : float 
+    The air pressure (Pa)
+temperature : float 
+    The air temperature (K) or dewpoint temperature (K)
 
-Returns: 
+Returns
+-------
+float
     The vapor pressure (Pa) given dewpoint temperature, or the 
     saturation vapor pressure given the air temperature. 
     )pbdoc");
@@ -301,11 +334,16 @@ pressures, and is consistent with how vapor pressure is treated in CM1.
 This function uses the formulation by Bolton (1980), and is
 accurate to within 0.3% for the temperature range of -35C <= T <= 35C.
 
-Parameters:
-    pres_arr: The 1D array of air pressure (Pa)
-    tmpk_arr: The 1D array of air temperature (K) or dewpoint temperature (K)
+Parameters
+----------
+pres_arr : numpy.ndarray[dtype=float32] 
+    The 1D array of air pressure (Pa)
+tmpk_arr : numpy.ndarray[dtype=float32]
+    The 1D array of air temperature (K) or dewpoint temperature (K)
 
-Returns: 
+Returns
+-------
+numpy.ndarray[dtype=float32]
     The 1D array of vapor pressure (Pa) given dewpoint temperature, or the 
     saturation vapor pressure given the air temperature. 
     )pbdoc");
@@ -320,11 +358,16 @@ from mixing ratio.
 The routine is implemented as in Bolton (1980) eq 11, and is considered to be 
 accurate to 0.03 K for -35C <= T <= 35C. 
 
-Parameters:
-    wv_mixratio: The water vapor mixing ratio (kg/kg)
-    pressure: The air pressure (Pa)
+Parameters
+----------
+wv_mixratio : float 
+    The water vapor mixing ratio (kg/kg)
+pressure : float 
+    The air pressure (Pa)
 
-Returns:
+Returns
+-------
+float
     The temperature (K) of an air parcel at a given mixing ratio and pressure.
     )pbdoc");
 
@@ -357,11 +400,16 @@ from mixing ratio.
 The routine is implemented as in Bolton (1980) eq 11, and is considered to be 
 accurate to 0.03 K for -35C <= T <= 35C. 
 
-Parameters:
-    mixr_arr: The 1D array of water vapor mixing ratio (kg/kg)
-    pres_arr: The 1D array of air pressure (Pa)
+Parameters
+----------
+mixr_arr : numpy.ndarray[dtype=float32] 
+    The 1D array of water vapor mixing ratio (kg/kg)
+pres_arr : numpy.ndarray[dtype=float32]
+    The 1D array of air pressure (Pa)
 
-Returns:
+Returns
+-------
+numpy.ndarray[dtype=float32]
     The 1D array of temperature (K) of an air parcel at a given mixing ratio and pressure.
 
     )pbdoc");
@@ -372,11 +420,16 @@ Returns:
 Computes the pressure level (Pa) of a parcel given the potential temperature (K) and air 
 temperature (K).
 
-Params:
-    potential_temperature: The potential temperature, or theta (K)
-    temperature: The air temperature (K)
+Parameters
+----------
+potential_temperature : float 
+    The potential temperature, or theta (K)
+temperature : float 
+    The air temperature (K)
 
-Returns:
+Returns
+-------
+float
     The pressure level (Pa) corresponding to the potential temperature and air temperature.
     )pbdoc");
 
@@ -404,11 +457,16 @@ Returns:
 Computes the pressure level (Pa) of a parcel given the potential temperature (K) and air 
 temperature (K).
 
-Params:
-    theta_arr: The 1D array of potential temperature, or theta (K)
-    tmpk_arr: The 1D array of air temperature (K)
+Parameters
+----------
+theta_arr : numpy.ndarray[dtype=float32] 
+    The 1D array of potential temperature, or theta (K)
+tmpk_arr : numpy.ndarray[dtype=float32]
+    The 1D array of air temperature (K)
 
-Returns:
+Returns
+-------
+numpy.ndarray[dtype=float32]
     The 1D pressure level (Pa) corresponding to the potential temperature and air temperature.
 
     )pbdoc");
@@ -419,12 +477,18 @@ Returns:
 Computes the potential temperature (K), or theta, given the air pressure (Pa), air temperature (K),
 and a reference pressure (default value is 100000 Pa).
 
-Parameters:
-    pressure: The air pressure (Pa)
-    temperature: The air temperature (K)
-    ref_pressure (optional): The reference pressure (default 100000.0 Pa)
+Parameters
+----------
+pressure : float 
+    The air pressure (Pa)
+temperature : float 
+    The air temperature (K)
+ref_pressure : float, optional 
+    The reference pressure (default 100000.0 Pa)
 
-Returns:
+Returns
+-------
+float
     The potential temperature (K), or theta
     )pbdoc");
 
@@ -454,12 +518,18 @@ Returns:
 Computes the potential temperature (K), or theta, given the air pressure (Pa), air temperature (K),
 and a reference pressure (default value is 100000 Pa).
 
-Parameters:
-    pressure: The 1D array of air pressure (Pa)
-    temperature: The 1D array of air temperature (K)
-    ref_pressure (optional): The reference pressure (default 100000.0 Pa)
+Parameters
+----------
+pressure : numpy.ndarray[dtype=float32]
+    The 1D array of air pressure (Pa)
+temperature : numpy.ndarray[dtype=float32]
+    The 1D array of air temperature (K)
+ref_pressure : float, optional
+    The reference pressure (default 100000.0 Pa)
 
-Returns:
+Returns
+-------
+numpy.ndarray[dtype=float32]
     The 1D array of potential temperature (K), or theta
     )pbdoc");
 
@@ -468,10 +538,14 @@ Returns:
         R"pbdoc(
 Compute the water vapor mixing ratio (kg/kg) from specific humidity (kg/kg).
 
-Parameters:
-    q: The specific humidity (kg/kg)
+Parameters
+----------
+q : float 
+    The specific humidity (kg/kg)
 
-Returns:
+Returns
+-------
+float
     The water vapor mixing ratio (kg/kg)
     )pbdoc");
 
@@ -482,11 +556,16 @@ Compute the water vapor mixing ratio (kg/kg) from the air pressure (Pa) and temp
 If given the air temperature, this is the saturation mixing ratio. If given the dewpoint 
 temperature, tis is the mixing ratio. 
 
-Parameters:
-    pressure: The air pressure (Pa)
-    temperature: The air temperature (K)
+Parameters
+----------
+pressure : float
+    The air pressure (Pa)
+temperature : float 
+    The air temperature (K)
 
-Returns:
+Returns
+-------
+float
     The water vapor mixing ratio (kg/kg)
     )pbdoc");
 
@@ -509,10 +588,14 @@ Returns:
         R"pbdoc(
 Compute the water vapor mixing ratio (kg/kg) from the specific humidity (kg/kg).
 
-Parameters:
-    spfh_arr: The 1D array of specific humidity (kg/kg)
+Parameters
+----------
+spfh_arr : numpy.ndarray[dtype=float32] 
+    The 1D array of specific humidity (kg/kg)
 
-Returns:
+Returns
+-------
+numpy.ndarray[dtype=float32]
     The 1D array of water vapor mixing ratio (kg/kg)
 
     )pbdoc");
@@ -542,11 +625,16 @@ Compute the water vapor mixing ratio (kg/kg) from the air pressure (Pa) and temp
 If given the air temperature, this is the saturation mixing ratio. If given the dewpoint 
 temperature, this is the mixing ratio. 
 
-Parameters:
-    pres_arr: The 1D array of air pressure (Pa)
-    tmpk_arr: The 1D array of air temperature (K)
+Parameters
+----------
+pres_arr : numpy.ndarray[dtype=float32] 
+    The 1D array of air pressure (Pa)
+tmpk_arr : numpy.ndarray[dtype=float32]
+    The 1D array of air temperature (K)
 
-Returns:
+Returns
+-------
+numpy.ndarray[dtype=float32]
     The 1D array of water vapor mixing ratio (kg/kg)
 
     )pbdoc");
@@ -558,10 +646,16 @@ Compute the ice water mixing ratio (kg/kg) from the air pressure (Pa) and temper
 If given the air temperatuer, this is the saturation mixing ratio. If given the dewpoint 
 temperature, this is the mixing ratio. 
 
-Parameters:
-    pressure: The air pressure (Pa)
-    temperature: The air temperature (K)
-Returns:
+Parameters
+----------
+pressure : float 
+    The air pressure (Pa)
+temperature : float 
+    The air temperature (K)
+
+Returns
+-------
+float
     The ice water mixing ratio (kg/kg)
     )pbdoc");
 
@@ -590,10 +684,16 @@ Compute the ice water mixing ratio (kg/kg) from the air pressure (Pa) and temper
 If given the air temperatuer, this is the saturation mixing ratio. If given the dewpoint 
 temperature, this is the mixing ratio. 
 
-Parameters:
-    pres_arr: The 1D array of air pressure (Pa)
-    tmpl_arr: The 1D array of air temperature (K)
-Returns:
+Parameters
+----------
+pres_arr : numpy.ndarray[dtype=float32]
+    The 1D array of air pressure (Pa)
+tmpl_arr : numpy.ndarray[dtype=float32] 
+    The 1D array of air temperature (K)
+
+Returns
+-------
+numpy.ndarray[dtype=float32]
     The ice water mixing ratio (kg/kg)
 
     )pbdoc");
@@ -602,10 +702,14 @@ Returns:
         R"pbdoc(
 Compute the specific humidity (kg/kg) from a mixing ratio (kg/kg).
 
-Parameters:
-    rv: The water vapor mixing ratio (kg/kg)
+Parameters
+----------
+rv : float 
+    The water vapor mixing ratio (kg/kg)
 
-Returns:
+Returns
+-------
+float
     The specific humidity (kg/kg)
     )pbdoc");
 
@@ -627,8 +731,15 @@ Returns:
         R"pbdoc(
 Compute the specific humidity (kg/kg) from a mixing ratio (kg/kg).
 
-Parameters:
-    mixr_arr: The 1D array of water vapor mixing ratios (kg/kg)
+Parameters
+----------
+mixr_arr : numpy.ndarray[dtype=float32]
+    The 1D array of water vapor mixing ratios (kg/kg)
+
+Returns
+-------
+numpy.ndarray[dtype=float32]
+    1D NumPy array of specific humidity (unitless)
     )pbdoc");
 
     m_therm.def(
@@ -642,12 +753,18 @@ vapor pressure at extremely low pressures and temperatures. If you do not
 want or need this behavior, you can pass the THETA_REF_PRESSURE constant
 in place of an air pressure.
 
-Parameters:
-    pressure: the ambient air pressure (Pa)
-    temperature: the ambient air temperature (K)
-    dewpoint: the ambient dewpoint temperature (K)
+Parameters
+----------
+pressure : float 
+    the ambient air pressure (Pa)
+temperature : float 
+    the ambient air temperature (K)
+dewpoint : float 
+    the ambient dewpoint temperature (K)
 
-Returns:
+Returns
+-------
+float
     Relative Humidity (fraction, unitless)
     )pbdoc"
     );
@@ -683,12 +800,18 @@ vapor pressure at extremely low pressures and temperatures. If you do not
 want or need this behavior, you canpass in an array of THETA_REF_PRESSURE
 in place of air pressure.
 
-Paramters:
-    pressure: 1D NumPy array of ambient air pressure Pa)
-    temperature: 1D NumPy array of ambient air temperature (K)
-    dewpoint: 1D NumPy array of ambient dewpoint temperature (K)
+Parameters
+----------
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient air pressure Pa)
+temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of ambient air temperature (K)
+dewpoint : numpy.ndarray[dtype=float32]
+    1D NumPy array of ambient dewpoint temperature (K)
 
-Returns:
+Returns
+-------
+numpy.ndarray[dtype=float32]
     1D NumPy array of relative humidity values (fraction, unitless)
     )pbdoc"
 
@@ -704,13 +827,20 @@ liquid water mixing ratio (kg/kg), and the ice water mixing ratios
 (kg/kg). The liquid and ice water mixing ratios have default values 
 of zero, if unspecified. 
 
-Parameters:
-    temperature: The dry-bulb temperature (K)
-    rv: The water vapor mixing ratio (kg/kg)
-    rl: The liquid water mixing ratio (kg/kg) 
-    ri: The ice water mixing ratio (kg/kg)
+Parameters
+----------
+temperature : float 
+    The dry-bulb temperature (K)
+rv : float 
+    The water vapor mixing ratio (kg/kg)
+rl : float 
+    The liquid water mixing ratio (kg/kg) 
+ri : float 
+    The ice water mixing ratio (kg/kg)
 
-Returns:
+Returns
+-------
+float
     The virtual temperature (K)
     )pbdoc");
 
@@ -790,13 +920,20 @@ liquid water mixing ratio (kg/kg), and the ice water mixing ratios
 (kg/kg). The liquid and ice water mixing ratios have default values 
 of zero, if unspecified. 
 
-Parameters:
-    tmpk_arr: The 1D array of dry-bulb temperature (K)
-    rv_arr: The 1D array of water vapor mixing ratio (kg/kg)
-    rl_arr: (optional) The 1D array of liquid water mixing ratio (kg/kg) 
-    ri_arr: (optional) The 1D array of ice water mixing ratio (kg/kg)
+Parameters
+----------
+tmpk_arr : numpy.ndarray[dtype=float32] 
+    The 1D array of dry-bulb temperature (K)
+rv_arr : numpy.ndarray[dtype=float32] 
+    The 1D array of water vapor mixing ratio (kg/kg)
+rl_arr : numpy.ndarray[dtype=float32], optional 
+    The 1D array of liquid water mixing ratio (kg/kg) 
+ri_arr : numpy.ndarray[dtype=float32], optional 
+    The 1D array of ice water mixing ratio (kg/kg)
 
-Returns:
+Returns
+-------
+numpy.ndarray[dtype=float32]
     The 1D array of virtual temperature (K)
 
     )pbdoc");
@@ -818,12 +955,18 @@ Robert Davies-Jones (2007) that the WObus function has a slight dependence on
 pressure, which results in errors of up to 1.2 K in the temperature of a lifted 
 parcel. 
 
-Parameters:
-    pressure: The air pressure (Pa)
-    temperature: The saturated air temperature (K)
-    lifted_pressure: The new pressure level to lift to (Pa)
+Parameters
+----------
+pressure : float 
+    The air pressure (Pa)
+temperature : float 
+    The saturated air temperature (K)
+lifted_pressure : float 
+    The new pressure level to lift to (Pa)
 
-Returns:
+Returns
+-------
+float
     The new temperature (K) when lifted moist adiabatically to the new pressure level
         )pbdoc");
 
@@ -864,12 +1007,18 @@ Robert Davies-Jones (2007) that the WObus function has a slight dependence on
 pressure, which results in errors of up to 1.2 K in the temperature of a lifted 
 parcel. 
 
-Parameters:
-    pressure: The 1D array of air pressures (Pa)
-    temperature: The 1D array of saturated air temperatures (K)
-    lifted_pressure: The 1D array of new pressure levels to lift to (Pa)
+Parameters
+----------
+pressure : numpy.ndarray[dtype=float32] 
+    The 1D array of air pressures (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    The 1D array of saturated air temperatures (K)
+lifted_pressure : numpy.ndarray[dtype=float32]
+    The 1D array of new pressure levels to lift to (Pa)
 
-Returns:
+Returns
+-------
+numpy.ndarray[dtype=float32]
     The 1D array of new temperatures (K) when lifted moist adiabatically to the new pressure levels
 
         )pbdoc");
@@ -893,12 +1042,18 @@ and temperature (K).
 The LCL temperature is computed using an approximation. See the 
 lcl_temperature function documentation for more information.
 
-Parameters:
-    pressure: Parcel starting pressure (Pa)
-    temperature: Parcel starting temperature (K)
-    dewpoint: Parcel starting dewpoint temperature (K)
+Parameters
+----------
+pressure : float 
+    Parcel starting pressure (Pa)
+temperature : float 
+    Parcel starting temperature (K)
+dewpoint : float 
+    Parcel starting dewpoint temperature (K)
 
-Returns:
+Returns
+-------
+tuple[float, float]
     A tuple of (lcl_pres, lcl_temperature)
     )pbdoc"
     );
@@ -929,13 +1084,20 @@ After the parcel has reached the LCL, the lifter passed to the function
 lowers the parcel to its initial pressure level along a moist adiabat or 
 pseudoadiabat. 
 
-Parameters:
-    lifter: a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-    pressure: The ambient pressure (Pa)
-    temperature: The ambient temperature (K)
-    dewpoint: The ambient dewpoint temperature (K)
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+pressure : float 
+    The ambient pressure (Pa)
+temperature : float 
+    The ambient temperature (K)
+dewpoint : float 
+    The ambient dewpoint temperature (K)
 
-Returns:
+Returns
+-------
+float
     The wetbulb temperature (K)
     )pbdoc"
     );
@@ -966,13 +1128,20 @@ After the parcel has reached the LCL, the lifter passed to the function
 lowers the parcel to its initial pressure level along a moist adiabat or 
 pseudoadiabat. 
 
-Parameters:
-    lifter: a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-    pressure: The ambient pressure (Pa)
-    temperature: The ambient temperature (K)
-    dewpoint: The ambient dewpoint temperature (K)
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
+    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+pressure : float 
+    The ambient pressure (Pa)
+temperature : float 
+    The ambient temperature (K)
+dewpoint : float 
+    The ambient dewpoint temperature (K)
 
-Returns:
+Returns
+-------
+float
     The wetbulb temperature (K)
     )pbdoc"
     );
@@ -1015,13 +1184,20 @@ After the parcel has reached the LCL, the lifter passed to the function
 lowers the parcel to its initial pressure level along a moist adiabat or 
 pseudoadiabat. 
 
-Parameters:
-    lifter: a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-    pressure: 1D NumPy array of ambient pressures (Pa)
-    temperature: 1D NumPy array of ambient temperatureds (K)
-    dewpoint: 1D NumPy array of ambient dewpoint temperatures (K)
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient pressures (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient temperatureds (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient dewpoint temperatures (K)
 
-Returns:
+Returns
+-------
+numpy.ndarray[dtype=float32]
     1D NumPy array of wetbulb temperatures (K)
     )pbdoc"
     );
@@ -1064,13 +1240,20 @@ After the parcel has reached the LCL, the lifter passed to the function
 lowers the parcel to its initial pressure level along a moist adiabat or 
 pseudoadiabat. 
 
-Parameters:
-    lifter: a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-    pressure: 1D NumPy array of ambient pressures (Pa)
-    temperature: 1D NumPy array of ambient temperatureds (K)
-    dewpoint: 1D NumPy array of ambient dewpoint temperatures (K)
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
+    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient pressures (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient temperatureds (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient dewpoint temperatures (K)
 
-Returns:
+Returns
+-------
+numpy.ndarray[dtype=float32]
     1D NumPy array of wetbulb temperatures (K)
     )pbdoc"
     );
@@ -1100,13 +1283,20 @@ After the parcel has reached the LCL, the lifted passed to the function
 lowers the parcel to the standard parcel reference pressure level 
 (1000 hPa) along a moist adiabat.
 
-Parameters:
-    lifter: a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-    pressure: the ambient air pressure (Pa)
-    temperature: the ambient air temperature (K)
-    dewpoint: the ambient dewpoint temperature
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+pressure : float 
+    the ambient air pressure (Pa)
+temperature : float 
+    the ambient air temperature (K)
+dewpoint : float 
+    the ambient dewpoint temperature
 
-Returns:
+Returns
+-------
+float
     The wet-bulb potential temperature (K)
     )pbdoc"
     );
@@ -1136,13 +1326,20 @@ After the parcel has reached the LCL, the lifted passed to the function
 lowers the parcel to the standard parcel reference pressure level 
 (1000 hPa) along a moist adiabat.
 
-Parameters:
-    lifter: a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-    pressure: the ambient air pressure (Pa)
-    temperature: the ambient air temperature (K)
-    dewpoint: the ambient dewpoint temperature
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
+    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+pressure : float 
+    the ambient air pressure (Pa)
+temperature : float 
+    the ambient air temperature (K)
+dewpoint : float 
+    the ambient dewpoint temperature
 
-Returns:
+Returns
+-------
+float
     The wet-bulb potential temperature (K)
     )pbdoc"
     );
@@ -1185,13 +1382,20 @@ After the parcel has reached the LCL, the lifted passed to the function
 lowers the parcel to the standard parcel reference pressure level 
 (1000 hPa) along a moist adiabat.
 
-Parameters:
-    lifter: a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-    pressure: 1D NumPy array of ambient air pressure (Pa)
-    temperature: 1D NumPy array of ambient air temperature (K)
-    dewpoint: 1D NumPy array of ambient dewpoint temperature
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient air pressure (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient air temperature (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient dewpoint temperature
 
-Returns:
+Returns
+-------
+numpy.ndarray[dtype=float32]
     1D NumPy array of wet-bulb potential temperatures (K)
     )pbdoc"
     );
@@ -1234,13 +1438,20 @@ After the parcel has reached the LCL, the lifted passed to the function
 lowers the parcel to the standard parcel reference pressure level 
 (1000 hPa) along a moist adiabat.
 
-Parameters:
-    lifter: a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-    pressure: 1D NumPy array of ambient air pressure (Pa)
-    temperature: 1D NumPy array of ambient air temperature (K)
-    dewpoint: 1D NumPy array of ambient dewpoint temperature
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
+    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient air pressure (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient air temperature (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient dewpoint temperature
 
-Returns:
+Returns
+-------
+numpy.ndarray[dtype=float32]
     1D NumPy array of wet-bulb potential temperatures (K)
     )pbdoc"
     );
@@ -1256,15 +1467,24 @@ The equivalent potential temperature is computed as in Bolton 1980.
 It was found in Davies-Jones 2009 to be the most accurate non-iterative 
 formulation of theta-e.
 
- Bolton 1980: https://doi.org/10.1175/1520-0493(1980)108%3C1046:TCOEPT%3E2.0.CO;2
- Davies-Jones 2009: https://doi.org/10.1175/2009MWR2774.1
+References
+----------
+Bolton 1980: https://doi.org/10.1175/1520-0493(1980)108%3C1046:TCOEPT%3E2.0.CO;2
 
-Parameters:
-    pressure: the ambient air pressure (Pa)
-    temperature: the ambient air temperature (K)
-    dewpoint: the dewpoint temperature (K)
+Davies-Jones 2009: https://doi.org/10.1175/2009MWR2774.1
 
-Returns:
+Parameters
+----------
+pressure : float 
+    the ambient air pressure (Pa)
+temperature : float 
+    the ambient air temperature (K)
+dewpoint : float 
+    the dewpoint temperature (K)
+
+Returns
+-------
+float
     The equivalent potential temperature (K)
     )pbdoc"
     );
@@ -1299,15 +1519,24 @@ The equivalent potential temperature is computed as in Bolton 1980.
 It was found in Davies-Jones 2009 to be the most accurate non-iterative 
 formulation of theta-e.
 
- Bolton 1980: https://doi.org/10.1175/1520-0493(1980)108%3C1046:TCOEPT%3E2.0.CO;2
- Davies-Jones 2009: https://doi.org/10.1175/2009MWR2774.1
+References 
+----------
+Bolton 1980: https://doi.org/10.1175/1520-0493(1980)108%3C1046:TCOEPT%3E2.0.CO;2
 
-Parameters:
-    pressure: 1D NumPy array of ambient air pressure (Pa)
-    temperature: 1D NumPy array of ambient air temperature (K)
-    dewpoint: 1D NumPy array of dewpoint temperature (K)
+Davies-Jones 2009: https://doi.org/10.1175/2009MWR2774.1
 
-Returns:
+Parameters
+----------
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient air pressure (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient air temperature (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    1D NumPy array of dewpoint temperature (K)
+
+Returns
+-------
+numpy.ndarray[dtype=float32]
     1D NumPy array of equivalent potential temperature (K)
     )pbdoc"
     );
@@ -1328,12 +1557,18 @@ Computes the lapse rate over a given HeightLayer (meters AGL).
 This routine handles converting the height AGL to MSL by adding
 the surface height value to the HeightLayer.
 
-Parameters:
-    layer_agl: a HeightLayer (meters AGL) to compute the lapse rate over
-    height: 1D NumPy array of height values (meters)
-    temperature: 1D NumPy array of temperature values (K)
+Parameters
+----------
+layer_agl : nwsspc.sharp.calc.layer.HeightLayer 
+    a HeightLayer (meters AGL) to compute the lapse rate over
+height : numpy.ndarray[dtype=float32] 
+    1D NumPy array of height values (meters)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of temperature values (K)
 
-Returns:
+Returns
+-------
+float
     The temperature lapse rate (K)
     )pbdoc"
     );
@@ -1353,13 +1588,20 @@ Returns:
         R"pbdoc(
 Computes the lapse rate over a given PressureLayer (Pa).
 
-Parameters:
-    layer: a PressureLayer (Pa) to compute the lapse rate over
-    pressure: 1D NumPy array of pressure values (Pa)
-    height: 1D NumPy array of height values (meters)
-    temperature: 1D NumPy array of temperature values (K)
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.PressureLayer 
+    a PressureLayer (Pa) to compute the lapse rate over
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    1D NumPy array of height values (meters)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of temperature values (K)
 
-Returns:
+Returns
+-------
+float
     The temperature lapse rate (K)
     )pbdoc"
     );
@@ -1392,13 +1634,20 @@ Given a layer of the atmosphere (e.g. 2 - 6 km), find the maximum
 lapse rate over the provided depth (e.g. 2 km) within that given layer. 
 Returns the maximum lapse rate, as well as the layer it was found in. 
 
-Parameters:
-    layer: a HeightLayer to search for the maximum lapse lapse_rate (meters AGL) 
-    depth: the depth used to compute a lapse rate within a layer (meters)
-    height: 1D NumPy array of height values (meters)
-    temperature: 1D NumPy array of temperature values (K)
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.HeightLayer 
+    a HeightLayer to search for the maximum lapse lapse_rate (meters AGL) 
+depth : float 
+    the depth used to compute a lapse rate within a layer (meters)
+height : numpy.ndarray[dtype=float32] 
+    1D NumPy array of height values (meters)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of temperature values (K)
 
-Returns:
+Returns
+-------
+tuple[float, nwsspc.sharp.calc.layer.HeightLayer]
     A tuple containing the maximum lapse rate and the layer it was found in
     )pbdoc"
     );
@@ -1433,14 +1682,22 @@ Given a layer of the atmosphere (e.g. 800 hPa - 500 hPa), find the maximum
 lapse rate over the provided depth (e.g. 100 hPa) within that given layer. 
 Returns the maximum lapse rate, as well as the layer it was found in. 
 
-Parameters:
-    layer: a PressureLayer to search for the maximum lapse lapse_rate (Pa) 
-    depth: the depth used to compute a lapse rate within a layer (Pa)
-    pressure: 1D NumPy array of pressure values (Pa)
-    height: 1D NumPy array of height values (meters)
-    temperature: 1D NumPy array of temperature values (K)
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.PressureLayer 
+    a PressureLayer to search for the maximum lapse lapse_rate (Pa) 
+depth : float 
+    the depth used to compute a lapse rate within a layer (Pa)
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    1D NumPy array of height values (meters)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of temperature values (K)
 
-Returns:
+Returns
+-------
+tuple[float, nwsspc.sharp.calc.layer.PressureLayer]
     A tuple containing the maximum lapse rate and the layer it was found in
     )pbdoc"
     );
@@ -1455,11 +1712,16 @@ Returns:
         R"pbdoc(
 Compute buoyancy given parcel & environment temperatures.
 
-Parameters:
-    parcel_temperature: parcel temperature (K)
-    environment_temperature: environment temperature (K)
+Parameters
+----------
+parcel_temperature : float 
+    parcel temperature (K)
+environment_temperature : float 
+    environment temperature (K)
 
-Returns:
+Returns
+-------
+float
     Buoyancy (m/s^2)
     )pbdoc"
     );
@@ -1481,11 +1743,16 @@ Returns:
         R"pbdoc(
 Compute buoyancy given arrays of parcel & environment temperatures.
 
-Parameters:
-    parcel_temperature: 1D NumPy array of parcel temperatures (K)
-    environment_temperature: 1D NumPy array of environment temperatures (K)
+Parameters
+----------
+parcel_temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of parcel temperatures (K)
+environment_temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of environment temperatures (K)
 
-Returns:
+Returns
+-------
+numpy.ndarray[dtype=float32]
     1D NumPy array of buoyancy values (m/s^2)
     )pbdoc"
     );

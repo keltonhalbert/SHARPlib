@@ -86,11 +86,15 @@ will truncate the layer to the coordinate range of data provided
 by coord[] in an attempt to gracefully continue and produce a result. 
 This will modify the value of the given PressureLayer.
 
-Parameters:
-    layer: PressureLayer
-    pressure: 1D NumPy array of pressures
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.PressureLayer
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressures
 
-Returns:
+Returns
+-------
+nwsspc.sharp.calc.layer.LayerIndex
     A LayerIndex with {kbot, ktop}.
             )pbdoc");
 
@@ -114,11 +118,15 @@ will truncate the layer to the coordinate range of data provided
 by coord[] in an attempt to gracefully continue and produce a result. 
 This will modify the value of the given HeightLayer.
 
-Parameters:
-    layer: HeightLayer
-    height: 1D NumPy array of heights
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.HeightLayer
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of heights
 
-Returns:
+Returns
+-------
+nwsspc.sharp.calc.layer.LayerIndex
     A LayerIndex with {kbot, ktop}.
         )pbdoc");
 
@@ -138,11 +146,19 @@ the station height to the HeightLayer. If for some strange reason
 you provide a HeightLayer that is out of the bounds of height[], then
 the bottom and top of the output layer will be set to MISSING.
 
-Parameters:
-    layer: HeightLayer
-    pressure: 1D NumPy array of pressure
-    height: 1D NumPy array of heights
-    isAGL: Whether or not the station height needs to be added for interpolation (default: False) 
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.HeightLayer
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of heights
+isAGL : bool 
+    Whether or not the station height needs to be added for interpolation (default: False) 
+
+Returns
+-------
+nwsspc.sharp.calc.layer.PressureLayer
 
     )pbdoc");
 
@@ -162,11 +178,19 @@ the station height from the returned HeightLayer. If for some strange reason
 you provide a PressureLayer that is out of the bounds of pressure[], then 
 the bottom and top of the output layer will be set to MISSING. 
 
-Parameters:
-    layer: PressureLayer
-    pressure: 1D NumPy array of pressure 
-    height: 1D NumPy array of heights
-    toAGL: Whether or not to subtract the station height from the HeightLayer (default: False)
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.PressureLayer
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure 
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of heights
+toAGL : bool
+    Whether or not to subtract the station height from the HeightLayer (default: False)
+
+Returns 
+-------
+nwsspc.sharp.calc.layer.HeightLayer
 
     )pbdoc");
 
@@ -185,13 +209,18 @@ Parameters:
 Returns the minimum value of the data array within the given HeightLayer. The 
 function bounds checks the layer by calling get_layer_index. 
 
-Parameters:
-    layer: HeightLayer 
-    height: 1D NumPy array of heights 
-    data: 1D array of data 
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.HeightLayer 
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of heights 
+data : numpy.ndarray[dtype=float32]
+    1D array of data 
 
-Returns:
-    tuple: (min_value, level_of_min)
+Returns
+-------
+tuple[float, float]
+    (min_value, level_of_min)
 
     )pbdoc");
 
@@ -210,13 +239,18 @@ Returns:
 Returns the minimum value of the data array within the given PressureLayer. The 
 function bounds checks the layer by calling get_layer_index. 
 
-Parameters:
-    layer: PressureLayer 
-    pressure: 1D NumPy array of pressure 
-    data: 1D array of data 
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.PressureLayer 
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of pressure 
+data : numpy.ndarray[dtype=float32] 
+    1D array of data 
 
-Returns:
-    tuple: (min_value, level_of_min)
+Returns
+-------
+tuple[float, float]
+    (min_value, level_of_min)
     )pbdoc");
 
     m_layer.def(
@@ -235,13 +269,18 @@ Returns the maximum value observed within the given data array over
 the given HeightLayer. The function bounds checks the layer by calling 
 get_layer_index. 
 
-Parameters:
-    layer: HeightLayer 
-    height: 1D NumPy array of height values 
-    data: 1D NumPy array of data values
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.HeightLayer 
+height : numpy.ndarray[dtype=float32] 
+    1D NumPy array of height values 
+data : numpy.ndarray[dtype=float32] 
+    1D NumPy array of data values
 
-Returns:
-    tuple: (max_value, level_of_max)
+Returns
+-------
+tuple[float, float]
+    (max_value, level_of_max)
 
     )pbdoc");
 
@@ -260,13 +299,18 @@ Returns:
 Returns the maximum value observed within the given data array over the given 
 PressureLayer. The function bounds checks the layer by calling get_layer_index. 
 
-Parameters:
-    layer: PressureLayer 
-    pressure: 1D NumPy array of pressure values 
-    data: 1D NumPy array of data values
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.PressureLayer 
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure values 
+data : numpy.ndarray[dtype=float32] 
+    1D NumPy array of data values
 
-Returns:
-    tuple: (max_value, level_of_max)
+Returns
+-------
+tuple[float, float]
+    (max_value, level_of_max)
 
     )pbdoc");
 
@@ -282,10 +326,17 @@ Returns:
 Computes the pressure-weighted mean value of a field over 
 a given PressureLayer. 
 
-Parameters:
-    layer: PressureLayer 
-    pressure: 1D NumPy array of pressure values 
-    data: 1D NumPy array of data values
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.PressureLayer 
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of pressure values 
+data : numpy.ndarray[dtype=float32] 
+    1D NumPy array of data values
+
+Returns
+-------
+float
 
     )pbdoc");
 
@@ -302,12 +353,21 @@ Parameters:
 Computes the pressure-weighted mean value of a field over 
 a given HeightLayer. 
 
-Parameters:
-    layer: HeightLayer 
-    height: 1D NumPy array of height values
-    pressure: 1D NumPy array of pressure values 
-    data: 1D NumPy array of data values
-    isAGL: Whether or not the surface station height should be added to the HeightLayer (default: False)
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.HeightLayer 
+height : numpy.ndarray[dtype=float32] 
+    1D NumPy array of height values
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure values 
+data : numpy.ndarray[dtype=float32]
+    1D NumPy array of data values
+isAGL : bool
+    Whether or not the surface station height should be added to the HeightLayer (default: False)
+
+Returns
+-------
+float
 
     )pbdoc");
 
@@ -328,13 +388,21 @@ determines whether this is a weighted average or not. The sign
 of the integration may be passed as well, i.e. integrating only 
 positive or negative area, by passing a 1, 0, or -1 to integ_sign. 
 
-Parameters:
-    layer: HeightLayer 
-    data: 1D NumPy array of data values 
-    height: 1D NumPy array of height values 
-    integ_sign: The sign of the area to integrate (-1: negative; 1: positive; 0: both; default: 0)
-    weighted: Boolean determining whether or not the integration is weighted by the coordinate array 
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.HeightLayer 
+data : numpy.ndarray[dtype=float32] 
+    1D NumPy array of data values 
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of height values 
+integ_sign : int 
+    The sign of the area to integrate (-1: negative; 1: positive; 0: both; default: 0)
+weighted : bool 
+    Boolean determining whether or not the integration is weighted by the coordinate array 
 
+Returns
+-------
+float
     )pbdoc");
 
     m_layer.def(
@@ -355,12 +423,21 @@ determines whether this is a weighted average or not. The sign
 of the integration may be passed as well, i.e. integrating only 
 positive or negative area, by passing a 1, 0, or -1 to integ_sign. 
 
-Parameters:
-    layer: PressureLayer
-    data: 1D NumPy array of data values
-    pressure: 1D NumPy array of pressure values 
-    integ_sign: The sign of the area to integrate (-1: negative; 1: positive; 0: both; default: 0)
-    weighted: Boolean determining whether or not the integration is weighted by the coordinate array
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.PressureLayer
+data : numpy.ndarray[dtype=float32] 
+    1D NumPy array of data values
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of pressure values 
+integ_sign : int 
+    The sign of the area to integrate (-1: negative; 1: positive; 0: both; default: 0)
+weighted : bool 
+    Boolean determining whether or not the integration is weighted by the coordinate array
+
+Returns 
+-------
+float
 
     )pbdoc");
 }

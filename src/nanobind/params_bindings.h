@@ -57,15 +57,33 @@ cinh_thresh = -250.0 J/kg. If an empty parcel object is passed via the
 'mupcl' kwarg, the Most Unstable parcel found during the EIL search will 
 be returned. 
 
-Parameters:
-    lifter: An instantiated lifter_cm1() or lifter_wobus()
-    pressure: A 1D NumPy array of pressure values (Pa)
-    height: A 1D NumPy array of height values (Pa)
-    temperature: A 1D NumPy array of temperature values (K)
-    dewpoint: A 1D NumPy array of dewpoint values (K)
-    virtemp: A 1D NumPy array of virtual temperature values (K)
+References 
+----------
+Thompson et al. 2007: https://www.spc.noaa.gov/publications/thompson/effective.pdf
 
+Parameters 
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+pressure : numpy.ndarray[dtype=float32]
+    A 1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of height values (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of temperature values (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of dewpoint values (K)
+virtemp : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of virtual temperature values (K)
+cape_thresh : float, default = 100.0
+    The CAPE threshold used to compute the Effective Inflow Layer 
+cinh_thresh : float, default = -250.0 
+    The CINH threshold used to compute the Effective Inflow Layer
+muplc : None or nwsspc.sharp.calc.parcel.Parcel, optional
 
+Returns 
+-------
+nwsspc.sharp.calc.layer.PressureLayer
+    The Effective Inflow Layer
     )pbdoc");
 
     m_params.def(
@@ -104,15 +122,33 @@ cinh_thresh = -250.0 J/kg. If an empty parcel object is passed via the
 'mupcl' kwarg, the Most Unstable parcel found during the EIL search will 
 be returned. 
 
-Parameters:
-    lifter: An instantiated lifter_cm1() or lifter_wobus()
-    pressure: A 1D NumPy array of pressure values (Pa)
-    height: A 1D NumPy array of height values (Pa)
-    temperature: A 1D NumPy array of temperature values (K)
-    dewpoint: A 1D NumPy array of dewpoint values (K)
-    virtemp: A 1D NumPy array of virtual temperature values (K)
+References 
+----------
+Thompson et al. 2007: https://www.spc.noaa.gov/publications/thompson/effective.pdf
 
+Parameters 
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
+pressure : numpy.ndarray[dtype=float32]
+    A 1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of height values (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of temperature values (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of dewpoint values (K)
+virtemp : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of virtual temperature values (K)
+cape_thresh : float, default = 100.0
+    The CAPE threshold used to compute the Effective Inflow Layer 
+cinh_thresh : float, default = -250.0 
+    The CINH threshold used to compute the Effective Inflow Layer
+muplc : None or nwsspc.sharp.calc.parcel.Parcel, optional
 
+Returns 
+-------
+nwsspc.sharp.calc.layer.PressureLayer
+    The Effective Inflow Layer
     )pbdoc");
 
     m_params.def(
@@ -142,17 +178,33 @@ This does not use any of the updated methods described by Bunkers et al. 2014,
 which uses Effective Inflow Layer metrics to get better estimates of storm 
 motion, especially when considering elevated convection. 
 
-Params:
-    pressure: 1D NumPy array of pressure values (Pa)
-    height: 1D NumPy array of height values (meters)
-    u_wind: 1D NumPy array of U wind component values (m/s)
-    v_wind: 1D NumPy array of V wind compnent values (m/s)
-    mean_wind_layer_agl: HeightLayer (AGL) for computing the mean wind 
-    wind_shear_layer_agl: HeightLayer (AGL) for computing wind_shear
-    leftMover: Whether to compute left mover supercell motion (default: False)
-    pressureWeighted: Whether to use the pressure weighted mean wind (default: False)
+References 
+----------
 
-Returns:
+Buners et al. 2000: https://doi.org/10.1175/1520-0434(2000)015%3C0061:PSMUAN%3E2.0.CO;2
+
+Parameters 
+----------
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    1D NumPy array of height values (meters)
+u_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of U wind component values (m/s)
+v_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of V wind compnent values (m/s)
+mean_wind_layer_agl : nwsspc.sharp.calc.layer.HeightLayer 
+    HeightLayer (AGL) for computing the mean wind 
+wind_shear_layer_agl : nwsspc.sharp.calc.layer.HeightLayer 
+    HeightLayer (AGL) for computing wind_shear
+leftMover : bool 
+    Whether to compute left mover supercell motion (default: False)
+pressureWeighted : bool 
+    Whether to use the pressure weighted mean wind (default: False)
+
+Returns
+-------
+nwsspc.sharp.calc.winds.WindComponents
     U, V wind components of storm motion (m/s)
     )pbdoc");
 
@@ -190,16 +242,30 @@ to be precomputed and passed to this routine. These are expensive
 operations that are presumed to be computed at some other point 
 in the analysis pipeline. 
 
-Parameters:
-    pressure: 1D NumPy array of pressure values (Pa)
-    height: 1D NumPy array of height values (meters)
-    u_wind: 1D NumPy array of U wind component values (m/s)
-    v_wind: 1D NumPy array of V wind component values (m/s)
-    eff_infl_lyr: Effective Inflow Layer PressureLayer
-    mupcl: Most Unstable Parcel 
-    leftMover: Whether or not to compute left moving supercell motion (default: False)
+References
+----------
+Bunkers et al. 2014: http://dx.doi.org/10.15191/nwajom.2014.0211
 
-Returns:
+Parameters 
+----------
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of height values (meters)
+u_wind : numpy.ndarray[dtype=float32] 
+    1D NumPy array of U wind component values (m/s)
+v_wind : numpy.ndarray[dtype=float32] 
+    1D NumPy array of V wind component values (m/s)
+eff_infl_lyr : nwsspc.sharp.calc.layer.PressureLayer 
+    Effective Inflow Layer PressureLayer
+mupcl : nwsspc.sharp.calc.parcel.Parcel 
+    Most Unstable Parcel 
+leftMover : bool 
+    Whether or not to compute left moving supercell motion (default: False)
+
+Returns
+-------
+nwsspc.sharp.calc.winds.WindComponents
     U, V wind components of storm motion (m/s)
 
     )pbdoc");
@@ -209,11 +275,25 @@ Returns:
                  R"pbdoc(
 Computes the Energy Helicity Index.
 
-Parameters:
-    cape: Convective Available Potential Energy (J/kg)
-    helicity: Storm Relative Helicity (m^2 / s^2 a.k.a J/kg)
+EHI is a composite parameter based on the premise that 
+storm rotation shoudl be maximized when CAPE is large 
+and SRH is large. Typically, the layers used for helicity 
+are either 0-1 km AGL or 0-3 km AGL.
+ 
+References 
+----------
+https://doi.org/10.1175/1520-0434(2003)18%3C530:RSATFP%3E2.0.CO;2
 
-Returns:
+Parameters 
+----------
+CAPE : float 
+    Convective Available Potential Energy (J/kg)
+helicity : float 
+    Storm Relative Helicity (m^2 / s^2 a.k.a J/kg)
+
+Returns
+-------
+float
     Energy Helicity Index (umitless)
     )pbdoc");
 
@@ -224,14 +304,38 @@ Returns:
                  R"pbdoc(
 Computes the Significant Tornado Parameter.
 
-References:
-    Thompson et al 2012: https://www.spc.noaa.gov/publications/thompson/waf-env.pdf
 
-Parameters:
-    pcl: For effective-layer STP, a mixed-layer parcel, and for fixed-layer STP, a surface-based parcel 
-    lcl_hght_agl: The parcel LCL height in meters
-    storm_relative_helicity: For effecitve-layer STP, effecitve SRH, and for fixed-layer, 0-1 km SRH (m^2 / s^2)
-    bulk_wind_difference: For effective-layer STP, effecitve BWD, and for fixed-layer STP, 0-6 km BWD (m/s)
+The Significant Tornado Parameter is used to diagnose environments
+where tornadoes are favored. STP traditionally comes in two flavors:
+fixed-layer, and effective-layer. Fixed-layer STP expects surface-based
+CAPE, the surface-based LCL, 0-1 km storm-relative helicity, the
+0-6 km bulk wind difference, and the surface-based CINH. For the
+effective inflow layer based STP, use 100mb mixed-layer CAPE,
+100mb mixed-layer LCL height AGL, effective-layer srh, the
+effective layer bulk wind difference, and the 100mb mixed-layer
+CINH. NOTE: The effective bulk wind difference is the shear between
+the bottom of the effective inflow layer and 50% of the height of the
+equilibrium level of the most unstable parcel.
+
+References
+----------
+Thompson et al 2012: https://www.spc.noaa.gov/publications/thompson/waf-env.pdf
+
+Parameters 
+----------
+pcl : nwsspc.sharp.calc.parcel.Parcel 
+    For effective-layer STP, a mixed-layer parcel, and for fixed-layer STP, a surface-based parcel 
+lcl_hght_agl : float 
+    The parcel LCL height in meters
+storm_relative_helicity : float 
+    For effecitve-layer STP, effecitve SRH, and for fixed-layer, 0-1 km SRH (m^2 / s^2)
+bulk_wind_difference : float 
+    For effective-layer STP, effecitve BWD, and for fixed-layer STP, 0-6 km BWD (m/s)
+
+Returns
+-------
+float 
+    The Significant Tornado Parameter
     )pbdoc");
 
     m_params.def("supercell_composite_parameter",
@@ -240,18 +344,40 @@ Parameters:
                  R"pbdoc(
 Computes the Supercell Composite Parameter. 
 
-References:
-    Thompson et al 2003: https://www.spc.noaa.gov/publications/thompson/ruc_waf.pdf
-    Thompson et al 2007: https://www.spc.noaa.gov/publications/thompson/effective.pdf
-    Thompson et al 2012: https://www.spc.noaa.gov/publications/thompson/waf-env.pdf
+The supercell composite parameter is used to diagnose environments
+where supercells are favored. Requires computing most unstable
+CAPE, effective layer storm relative helicity, and effective
+bulk shear. Effective bulk shear is the vector difference between
+the winds at the bottom of the effective inflow layer, and 50% of
+the equilibrium level height. It is similar to the 0-6 km shear
+vector, but allows for elevated supercell thunderstorms.
+
+The left-moving supercell composite parameter can be computed by
+providing effective SRH calculated using the bunkers left-moving
+storm motion, and will return negative values.
+
+References
+----------
+Thompson et al 2003: https://www.spc.noaa.gov/publications/thompson/ruc_waf.pdf
+
+Thompson et al 2007: https://www.spc.noaa.gov/publications/thompson/effective.pdf
+
+Thompson et al 2012: https://www.spc.noaa.gov/publications/thompson/waf-env.pdf
+
         
 
-Parameters:
-    mu_cape: The CAPE of the Most Unstable Parcel (J/kg)
-    eff_srh: Effecive inflow layer Storm Relative Helicity (m^2/s^2) 
-    eff_shear: Effective layer shear (m/s)
+Parameters 
+----------
+mu_cape : float 
+    The CAPE of the Most Unstable Parcel (J/kg)
+eff_srh : float 
+    Effecive inflow layer Storm Relative Helicity (m^2/s^2) 
+eff_shear : float 
+    Effective layer shear (m/s)
 
-Returns:
+Returns
+-------
+float
     Supercell Composite Parameter (unitless)
     )pbdoc");
 
@@ -295,14 +421,22 @@ greater than 1.00 indicate a favorable environment for SIG hail. Values greater
 than 4 are considered very high. In practice, maximum contour values of 1.5-2.0 
 or higher will typically be present when SIG hail is going to be reported. 
 
-Parameters:
-    mu_pcl: A precomputed Most Unstable parcel
-    lapse_rate_700_500mb: The 700-500 mb lapse rate (K/km)
-    tmpk_500mb: The 500mb temperature (K)
-    freezing_level_agl: The height of the freezing level (AGL, meters)
-    shear_0_6km: The 0-6 km shear vector magnitude (m/s)
+Parameters 
+----------
+mu_pcl : nwsspc.sharp.calc.parcel.Parcel 
+    A precomputed Most Unstable parcel
+lapse_rate_700_500mb : float
+    The 700-500 mb lapse rate (K/km)
+tmpk_500mb : float 
+    The 500mb temperature (K)
+freezing_level_agl : float 
+    The height of the freezing level (AGL, meters)
+shear_0_6km : float
+    The 0-6 km shear vector magnitude (m/s)
 
-Returns:
+Returns
+-------
+float
     The significant hail parameter
     )pbdoc");
 
@@ -319,12 +453,18 @@ Returns:
 Given a PressureLayer to integrate over, compute the precipitable water 
 from the given pressure and mixing ratio arrays.
 
-Parameters:
-    layer: a PressureLayer over which to integrate (Pa)
-    pres: 1D NumPy array of presssure values (Pa)
-    mixr: 1D NumPy array of water vapor mixing ratio values (unitless)
+Parameters 
+----------
+layer : nwsspc.sharp.calc.layer.PressureLayer 
+    a PressureLayer over which to integrate (Pa)
+pres : numpy.ndarray[dtype=float32] 
+    1D NumPy array of presssure values (Pa)
+mixr : numpy.ndarray[dtype=float32] 
+    1D NumPy array of water vapor mixing ratio values (unitless)
 
-Returns:
+Returns
+-------
+float
     Precipitable water content (mm)
     )pbdoc");
 
@@ -340,11 +480,16 @@ Search for and return the PressureLayer of the lowest altitude
 dendritic growth zone. If none is found, the top and bottom of the 
 PressureLayer are set to MISSING. 
 
-Parameters:
-    pressure: 1D NumPy array of pressure values (Pa)
-    temperature: 1D NumPy array of temperature values (K)
+Parameters 
+----------
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of pressure values (Pa)
+temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of temperature values (K)
 
-Return:
+Returns 
+-------
+nwsspc.sharp.calc.layer.PressureLayer
     The PressureLayer containing the dendritic growth zone
     )pbdoc");
 
@@ -360,11 +505,15 @@ Search for and return the PressureLayer of the lowest altitude
 hail growth zone. If none is found, the top and bottom of the 
 PressureLayer are set to MISSING. 
 
-Parameters:
-    pressure: 1D NumPy array of pressure values (Pa)
-    temperature: 1D NumPy array of temperature values (K)
+Parameters 
+----------
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure values (Pa)
+temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of temperature values (K)
 
-Return:
+Returns 
+nwsspc.sharp.calc.layer.PressureLayer
     The PressureLayer containing the hail growth zone
     )pbdoc");
 }
