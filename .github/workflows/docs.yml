@@ -53,7 +53,7 @@ jobs:
       - name: Sphinx Build
         run: |
           cd docs; doxygen Doxyfile
-          sphinx-build . _build
+          sphinx-build -M html . _build
 
       - name: Upload to GH Pages
         uses: peaceiris/actions-gh-pages@v4 
