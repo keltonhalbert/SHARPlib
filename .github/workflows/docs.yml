@@ -1,0 +1,30 @@
+name: documentation
+
+on:
+  push:
+    branches: ["develop", "sphinx"]
+  release:
+    types:
+      - published
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+          fetch-tags: 'true'
+          fetch-depth: 0
+      - name: Python Setup
+        uses: actions/setup-python@v5
+      - name: Install dependencies 
+        run: |
+          pip install sphinx pydata-sphinx-theme breathe numpy sharplib
+      - name: Sphinx Build
+        run: |
+          sphinx-build docs _build
