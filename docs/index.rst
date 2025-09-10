@@ -48,21 +48,16 @@ Since the 1990s, the National Weather Service (NWS) Storm Prediction Center (SPC
 SHARPpy sought to open source these computations and visualizations in order to facilitate reproducible open science, provide a cross-platform means of visualizing sounding data, and internally simplify the number of SHARP derivatives with unique code bases. While many of the goals were met by SHARPpy, it struggled in a few key areas:
 
 * Pure python is not a performant solution when post-processing gridded data, particularly when dealing with parcel lifting routines.
-* Maintaining an interactive data visualization application complete with live access data feeds along with a core computational library was challenging.
+* Maintaining an interactive data visualization application, complete with live access data feeds, and with a core computational library, was challenging.
 * The computational library component wasn't very generalizable, in large part because I wrote the code while taking an OOP class, and everything became a nail to the object hammer.
 
-SHARPlib seeks to take the successes of SHARPpy, while having the benefit of more experience and hindsight. It is most analogous to the ``sharppy.sharptab`` import, but written in C++ for performance and wrapped for Python/Numpy using `nanobind <https://github.com/wjakob/nanobind>`_. It is separate from any visualization software and dependencies, generalized to be more composable where appropriate, and optimised for performance.
+SHARPlib seeks to continue with and improve upon the successes of SHARPpy, while having the benefit of more experience and hindsight. It is most analogous to the ``sharppy.sharptab`` import, but written in C++ for performance and wrapped for Python/Numpy using `nanobind <https://github.com/wjakob/nanobind>`_. It is separate from any visualization software and dependencies, generalized to be more composable where appropriate, and optimised for performance.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :hidden:
 
-   build_install_cpp.rst
-   build_install_python.rst
+   user_guide/index
+   reference/index
+   faq
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Reference:
-
-   python_api/index.rst
-   cpp_api/index.rst

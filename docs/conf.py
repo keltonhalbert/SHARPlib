@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.abspath("../"))
 
 version_tuple = sharplib.__version_tuple__
 version = sharplib.__version__
-year = datetime.datetime.utcnow().year
+year = datetime.datetime.now(datetime.UTC)
 
 project = 'SHARPlib'
 copyright = f'2024-{year}, NOAA/NWS/NCEP Storm Prediction Center'
@@ -33,6 +33,7 @@ extensions = [
     'breathe',
 ]
 
+html_static_path = ['_static']
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 add_function_parentheses = False
@@ -88,7 +89,6 @@ breathe_default_project = "SHARPlib"
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "pydata_sphinx_theme"
-html_static_path = ['_static']
 
 html_theme_options = {
     "logo": {
@@ -98,6 +98,7 @@ html_theme_options = {
     },
     "collapse_navigation": True,
     'external_links': [
+        {'name': 'Examples', 'url': 'https://github.com/keltonhalbert/SHARPlib/tree/main/examples/Python'},
         {'name': 'Release Notes', 'url': 'https://github.com/keltonhalbert/SHARPlib/releases'},
     ],
     'icon_links': [
