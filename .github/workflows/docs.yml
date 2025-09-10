@@ -52,7 +52,7 @@ jobs:
           pip install sphinx pydata-sphinx-theme breathe numpy .
 
       - name: Get Documentation Version 
-        id: version_check # Give this step an ID to reference its outputs
+        id: version_check 
         run: |
           python -c "
           import os
@@ -70,21 +70,17 @@ jobs:
               f.write(f'doc_ver={doc_ver}\\n')
           "
 
-      - name: Use the version environment variable
-        env:
-          DOC_VER: ${{ steps.version_check.outputs.doc_ver }}
-        run: |
-          echo "The DOC_VER environment variable is now set to: $DOC_VER"
-
       - name: Sphinx Build
         run: |
           cd docs; doxygen Doxyfile
           sphinx-build -M html . _build
 
       - name: Upload to GH Pages
+        env:
+          DOC_VER: ${{ steps.version_check.outputs.doc_ver }}
         uses: peaceiris/actions-gh-pages@v4 
         with: 
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
-          #destination_dir: ./${{ env.DOC_VERSION }}
+          destination_dir: ./${{ env.DOC_VER }}
 
