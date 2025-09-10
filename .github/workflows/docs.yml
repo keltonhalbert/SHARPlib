@@ -6,11 +6,8 @@ env:
 on:
   push:
     branches: ["develop", "sphinx"]
-  release:
-    types:
-      - published
-  tags:
-    - v[0-9]+.[0-9]+.[0-9]+
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
 
 permissions:
   contents: write
