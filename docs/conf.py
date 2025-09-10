@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.abspath("../"))
 
 version_tuple = sharplib.__version_tuple__
 version = sharplib.__version__
-year = datetime.datetime.now(datetime.UTC)
+year = datetime.datetime.now(datetime.UTC).year
 
 project = 'SHARPlib'
 copyright = f'2024-{year}, NOAA/NWS/NCEP Storm Prediction Center'
