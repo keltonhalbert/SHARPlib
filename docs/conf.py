@@ -30,6 +30,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.graphviz',
     'sphinx.ext.intersphinx',
+    'sphinx.ext.githubpages',
     'breathe',
 ]
 
