@@ -32,7 +32,6 @@ jobs:
 
       - name: Submodules and Dependencies
         run: |
-          git config --global --add safe.directory ${{ github.workspace }} 
           git submodule update --init --recursive
         shell: bash
 
