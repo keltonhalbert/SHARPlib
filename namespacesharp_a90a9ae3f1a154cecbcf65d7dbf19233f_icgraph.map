@@ -1,4 +1,0 @@
-<map id="sharp::temperature_at_mixratio" name="sharp::temperature_at_mixratio">
-<area shape="rect" id="node1" title="Compute the temperature at a given water vapor mixing ratio and pressure level." alt="" coords="207,5,353,45"/>
-<area shape="rect" id="node2" href="$structsharp_1_1Parcel.html#a1bf670e79f35a1ce8c904b7ead32ccbe" title="Construct and return a mixed&#45;layer Parcel." alt="" coords="5,5,159,45"/>
-</map>

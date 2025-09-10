@@ -1,4 +1,0 @@
-<map id="sharp::mixratio" name="sharp::mixratio">
-<area shape="rect" id="node1" title="Compute the water vapor mixing ratio." alt="" coords="5,5,127,31"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#a3e31a1a145fc25f07d6326481993b2c2" title="Compute the vapor pressure over liquid water." alt="" coords="175,5,341,31"/>
-</map>

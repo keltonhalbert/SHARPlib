@@ -1,4 +1,0 @@
-<map id="sharp::buoyancy" name="sharp::buoyancy">
-<area shape="rect" id="node1" title="Compute buoyancy given arrays of parcel &amp; environment temperatures." alt="" coords="5,5,135,31"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#aae31e8a18568ec26222b603e629c5598" title="compute buoyancy given parcel and environment temperatures" alt="" coords="183,5,312,31"/>
-</map>

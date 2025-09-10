@@ -1,8 +1,0 @@
-<map id="thermo.h" name="thermo.h">
-<area shape="rect" id="node1" title="Routines used to compute thermodynamic attributes of vertical sounding profiles." alt="" coords="191,5,272,31"/>
-<area shape="rect" id="node2" href="$convective_8cpp.html" title="Routines used to computed derived sounding parameters from vertical atmospheric profiles." alt="" coords="89,225,209,251"/>
-<area shape="rect" id="node3" href="$convective_8h.html" title="Routines used to computed derived sounding parameters from vertical atmospheric profiles." alt="" coords="5,152,111,177"/>
-<area shape="rect" id="node4" href="$parcel_8cpp.html" title="Routines used for parcel lifting and integration." alt="" coords="187,152,276,177"/>
-<area shape="rect" id="node5" href="$parcel_8h.html" title="Routines used for parcel lifting and integration." alt="" coords="115,79,190,104"/>
-<area shape="rect" id="node6" href="$thermo_8cpp.html" title="Thermodynamic routines that do not directly involve parcel based ascent." alt="" coords="351,79,447,104"/>
-</map>

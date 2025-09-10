@@ -1,5 +1,0 @@
-<map id="sharp::find_first_pressure" name="sharp::find_first_pressure">
-<area shape="rect" id="node1" title="Find the pressure level of first occurrence of a given value." alt="" coords="216,35,401,60"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#ae179ed56eaa16f22b4bf3583c0c4d5c2" title="Get the layer encompassing the lowest dendritic growth zone (&#45;12 to &#45;17 C)" alt="" coords="5,5,168,31"/>
-<area shape="rect" id="node3" href="$namespacesharp.html#aa20009e7c666c469ae2ee0e4febb5226" title="Get the layer encompassing the lowest hail growth zone (&#45;10 to &#45;30 C)" alt="" coords="15,55,158,95"/>
-</map>

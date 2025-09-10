@@ -1,5 +1,0 @@
-<map id="sharp::lifter_wobus::parcel_virtual_temperature" name="sharp::lifter_wobus::parcel_virtual_temperature">
-<area shape="rect" id="node1" title="Computes the virtual temperature of the parcel." alt="" coords="5,23,212,63"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#ac38870166f07ac30aadbc46b81340cc4" title="Compute the water vapor mixing ratio from specific humidity." alt="" coords="297,5,419,31"/>
-<area shape="rect" id="node3" href="$namespacesharp.html#a46e2f332f68747fee1eb817f7bd3a00b" title="Compute the full virtual temperature." alt="" coords="260,55,456,80"/>
-</map>

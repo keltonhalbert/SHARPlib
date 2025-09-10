@@ -1,4 +1,0 @@
-<map id="sharp::mixratio_ice" name="sharp::mixratio_ice">
-<area shape="rect" id="node1" title="Compute the ice water mixing ratio." alt="" coords="5,5,152,31"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#aaf448e4ec9a4f7ac7edc9b960f656fd8" title="Compute the vapor pressure over ice." alt="" coords="200,5,392,31"/>
-</map>

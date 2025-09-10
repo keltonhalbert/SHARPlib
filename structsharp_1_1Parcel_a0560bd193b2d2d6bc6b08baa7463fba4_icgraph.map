@@ -1,5 +1,0 @@
-<map id="sharp::Parcel::cape_cinh" name="sharp::Parcel::cape_cinh">
-<area shape="rect" id="node1" title="Compute CAPE and CINH for a previously lifted sharp::Parcel." alt="" coords="223,45,401,70"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#a2e6b7cd4a3594a8f2c2050b0e4784cce" title="Computes the Effective Inflow Layer for a given atmospheric sounding." alt="" coords="5,5,175,45"/>
-<area shape="rect" id="node3" href="$structsharp_1_1Parcel.html#aa258d27992d22d8b80cb221e6e2a6c19" title="Construct and return a most&#45;unstable Parcel." alt="" coords="17,69,163,109"/>
-</map>

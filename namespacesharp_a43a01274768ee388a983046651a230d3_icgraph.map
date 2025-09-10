@@ -1,5 +1,0 @@
-<map id="sharp::lapse_rate" name="sharp::lapse_rate">
-<area shape="rect" id="node1" title="compute the lapse rate over the given sharp::HeightLayer (AGL)" alt="" coords="224,31,359,56"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#aa4e86da659bfca2eae1f0baddb84a303" title="compute the lapse rate over the given sharp::PressureLayer" alt="" coords="23,5,158,31"/>
-<area shape="rect" id="node3" href="$namespacesharp.html#abd0d1a28608e145c455ace03e787e33b" title="Find the maximum lapse rate within a specified layer/depth (AGL)." alt="" coords="5,55,176,80"/>
-</map>

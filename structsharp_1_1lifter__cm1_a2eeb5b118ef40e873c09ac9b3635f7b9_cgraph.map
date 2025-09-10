@@ -1,9 +1,0 @@
-<map id="sharp::lifter_cm1::operator()" name="sharp::lifter_cm1::operator()">
-<area shape="rect" id="node1" title="Overloads operator() to call sharp::moist_adiabat_cm1." alt="" coords="5,47,144,87"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#aa258841692c25171d3f3b2e8b1f52079" title="Compute the temperature of a parcel lifted moist adiabatically to a new level." alt="" coords="192,55,387,80"/>
-<area shape="rect" id="node3" href="$namespacesharp.html#a7494c22424745a8847092b64195fb9ae" title=" " alt="" coords="435,29,577,55"/>
-<area shape="rect" id="node7" href="$namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb" title="Compute the potential temperature." alt="" coords="456,79,556,104"/>
-<area shape="rect" id="node4" href="$namespacesharp.html#ac38870166f07ac30aadbc46b81340cc4" title="Compute the water vapor mixing ratio from specific humidity." alt="" coords="638,5,759,31"/>
-<area shape="rect" id="node5" href="$namespacesharp.html#a0ebcad18ef9939ff56f23d49c35dd04c" title="Compute the ice water mixing ratio." alt="" coords="625,55,772,80"/>
-<area shape="rect" id="node6" href="$namespacesharp.html#aaf448e4ec9a4f7ac7edc9b960f656fd8" title="Compute the vapor pressure over ice." alt="" coords="820,55,1012,80"/>
-</map>

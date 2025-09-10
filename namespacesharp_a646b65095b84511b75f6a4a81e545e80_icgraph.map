@@ -1,5 +1,0 @@
-<map id="sharp::layer_minmax" name="sharp::layer_minmax">
-<area shape="rect" id="node1" title="Template for min/max value over sharp::PressureLayer or sharp::HeightLayer." alt="" coords="188,31,348,56"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#a6170e3f412ab95b3ba8d9a93ae55dc67" title="Returns the maximim value in the given layer." alt="" coords="5,5,140,31"/>
-<area shape="rect" id="node3" href="$namespacesharp.html#a01a9880c937f63e551893797253da4f7" title="Returns the minimum value in the given layer." alt="" coords="7,55,138,80"/>
-</map>

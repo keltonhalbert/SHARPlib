@@ -1,9 +1,0 @@
-<map id="sharp::thetae" name="sharp::thetae">
-<area shape="rect" id="node1" title="Compute the equivalent potential temperature." alt="" coords="5,129,113,155"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#ae4385866921cd7286946d9ffdd65c25e" title="Lift a parcel dry adiabatically to its Lifted Condensation Level (LCL)." alt="" coords="193,53,297,79"/>
-<area shape="rect" id="node4" href="$namespacesharp.html#acfd0143ab72871c4aabc95c1140ee8fb" title="Compute the potential temperature." alt="" coords="411,104,511,129"/>
-<area shape="rect" id="node6" href="$namespacesharp.html#ac38870166f07ac30aadbc46b81340cc4" title="Compute the water vapor mixing ratio from specific humidity." alt="" coords="184,155,305,180"/>
-<area shape="rect" id="node7" href="$namespacesharp.html#a3e31a1a145fc25f07d6326481993b2c2" title="Compute the vapor pressure over liquid water." alt="" coords="161,204,328,229"/>
-<area shape="rect" id="node3" href="$namespacesharp.html#af016701e4a46d5c04d26c0a09c0aad38" title="Compute the temperature of the LCL." alt="" coords="376,5,545,31"/>
-<area shape="rect" id="node5" href="$namespacesharp.html#ab50b565bcba73d207dc1433dee5b03c9" title="Comute the pressure level given potential temperature and temperature." alt="" coords="391,55,530,80"/>
-</map>

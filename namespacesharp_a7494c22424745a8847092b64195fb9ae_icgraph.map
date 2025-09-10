@@ -1,5 +1,0 @@
-<map id="sharp::_solve_cm1" name="sharp::_solve_cm1">
-<area shape="rect" id="node1" title=" " alt="" coords="435,13,577,38"/>
-<area shape="rect" id="node2" href="$namespacesharp.html#aa258841692c25171d3f3b2e8b1f52079" title="Compute the temperature of a parcel lifted moist adiabatically to a new level." alt="" coords="192,13,387,38"/>
-<area shape="rect" id="node3" href="$structsharp_1_1lifter__cm1.html#a2eeb5b118ef40e873c09ac9b3635f7b9" title="Overloads operator() to call sharp::moist_adiabat_cm1." alt="" coords="5,5,144,45"/>
-</map>
