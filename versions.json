@@ -1,1 +1,12 @@
-{"versions": ["latest", "dev"], "latest": "dev", "prereleases": []}
+[
+    {
+        "version": "latest",
+        "url": "https://keltonhalbert.github.io/SHARPlib/latest",
+        "is_latest": true
+    },
+    {
+        "name": "dev",
+        "version": "dev",
+        "url": "https://keltonhalbert.github.io/SHARPlib/dev"
+    }
+]
