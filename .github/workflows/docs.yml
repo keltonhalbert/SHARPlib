@@ -1,7 +1,8 @@
 name: documentation
 
 env:
-  DOXY_VER: "1.9.6" 
+  DOXY_VER: "1.9.6"
+  DOC_VER: "dev"
 
 on:
   push:
@@ -50,6 +51,31 @@ jobs:
         run: |
           pip install sphinx pydata-sphinx-theme breathe numpy .
 
+      - name: Get Documentation Version 
+        id: version_check # Give this step an ID to reference its outputs
+        run: |
+          python -c "
+          import os
+          import nwsspc.sharp.calc as sharplib
+          
+          version = sharplib.__version__
+          print(f'Detected version: {version}')
+          
+          if 'dev' in version:
+              doc_ver = 'dev'
+          else:
+              doc_ver = version
+          
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f'doc_ver={doc_ver}\\n')
+          "
+
+      - name: Use the version environment variable
+        env:
+          DOC_VER: ${{ steps.version_check.outputs.doc_ver }}
+        run: |
+          echo "The DOC_VER environment variable is now set to: $DOC_VER"
+
       - name: Sphinx Build
         run: |
           cd docs; doxygen Doxyfile
@@ -60,4 +86,5 @@ jobs:
         with: 
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
+          #destination_dir: ./${{ env.DOC_VERSION }}
 
