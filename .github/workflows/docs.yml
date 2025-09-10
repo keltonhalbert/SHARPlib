@@ -1,5 +1,8 @@
 name: documentation
 
+env:
+  DOXY_VER: "1.9.6" 
+
 on:
   push:
     branches: ["develop", "sphinx"]
@@ -20,20 +23,36 @@ jobs:
           submodules: 'true'
           fetch-tags: 'true'
           fetch-depth: 0
+
       - name: Change submodule URLs to HTTPS 
         run: |
           git submodule foreach '
             git config submodule.$name.url https://github.com/$urlPath
           '
+        shell: bash
+
       - name: Submodules and Dependencies
         run: |
           git config --global --add safe.directory ${{ github.workspace }} 
           git submodule update --init --recursive
+        shell: bash
+
       - name: Python Setup
         uses: actions/setup-python@v5
-      - name: Install dependencies 
+
+      - name: Install Doxygen 
+        run: |
+          transformed_version=$(echo "$DOXY_VER" | tr '.' '_')
+          wget https://github.com/doxygen/doxygen/releases/download/Release_${transformed_version}/doxygen-$DOXY_VER.linux.bin.tar.gz
+          tar -xzf doxygen-$DOXY_VER.linux.bin.tar.gz
+          sudo mv doxygen-$DOXY_VER/bin/doxygen /usr/local/bin/doxygen
+        shell: bash
+
+      - name: Install Python Dependencies 
         run: |
           pip install sphinx pydata-sphinx-theme breathe numpy .
+
       - name: Sphinx Build
         run: |
-          sphinx-build docs _build
+          cd docs; doxygen Doxyfile
+          sphinx-build . _build
