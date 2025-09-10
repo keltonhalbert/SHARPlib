@@ -64,7 +64,7 @@ jobs:
           if 'dev' in version:
               doc_ver = 'dev'
           else:
-              doc_ver = version
+              doc_ver = fv"{version}"
           
           with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
               f.write(f'doc_ver={doc_ver}\\n')

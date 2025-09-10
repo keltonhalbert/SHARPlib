@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.abspath("../"))
 version_tuple = sharplib.__version_tuple__
 version = sharplib.__version__
 year = datetime.datetime.now(datetime.UTC).year
+doc_version = os.environ.get('DOC_VERSION', 'dev' if 'dev' in version else version).lstrip('v')
 
 project = 'SHARPlib'
 copyright = f'2024-{year}, NOAA/NWS/NCEP Storm Prediction Center'
@@ -93,7 +94,7 @@ html_theme = "pydata_sphinx_theme"
 
 html_theme_options = {
     "logo": {
-        "text": f"SHARPlib {release}",
+        "text": f"SHARPlib",
         "image_light": "_static/logo.png",
         "image_dark": "_static/logo.png",
     },
@@ -118,12 +119,15 @@ html_theme_options = {
     ],
     'use_edit_page_button': False,
     'navbar_align': 'left',
-    #'navbar_start': ['navbar-logo', 'version-switcher'],
-    'navbar_start': ['navbar-logo'],
+    'navbar_start': ['navbar-logo', 'version-switcher'],
     'navbar_center': ['navbar-nav'],
     'header_links_before_dropdown': 6,
     'navbar_persistent': ['search-button'],
     'navbar_end': ['navbar-icon-links', 'theme-switcher'],
+    'switcher': {
+        'json_url': 'https://keltonhalbert.github.io/SHARPlib/versions.json',
+        'version_match': doc_version
+    },
 }
 
 
