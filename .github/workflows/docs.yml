@@ -20,6 +20,15 @@ jobs:
           submodules: 'true'
           fetch-tags: 'true'
           fetch-depth: 0
+      - name: Change submodule URLs to HTTPS 
+        run: |
+          git submodule foreach '
+            git config submodule.$name.url https://github.com/$urlPath
+          '
+      - name: Submodules and Dependencies
+        run: |
+          git config --global --add safe.directory ${{ github.workspace }} 
+          git submodule update --init --recursive
       - name: Python Setup
         uses: actions/setup-python@v5
       - name: Install dependencies 
