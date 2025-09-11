@@ -24,6 +24,7 @@ def load_parquet(filename):
     hght = snd_df["hght"].to_numpy().astype('float32')
     tmpk = snd_df["tmpc"].to_numpy().astype('float32')+273.15
     dwpk = snd_df["dwpc"].to_numpy().astype('float32')+273.15
+    relh = snd_df["relh"].to_numpy().astype('float32')
     wdir = snd_df["wdir"].to_numpy().astype('float32')
     wspd = snd_df["wspd"].to_numpy().astype('float32')
     uwin = snd_df["uwin"].to_numpy().astype('float32')
@@ -41,6 +42,7 @@ def load_parquet(filename):
     return {
         "pres": pres, "hght": hght,
         "tmpk": tmpk, "mixr": mixr,
+        "relh": relh,
         "vtmp": vtmp, "dwpk": dwpk,
         "wdir": wdir, "wspd": wspd,
         "uwin": uwin, "vwin": vwin
@@ -308,3 +310,18 @@ def test_dgz():
     dgz = params.dendritic_layer(snd_data["pres"], snd_data["tmpk"])
     assert (dgz.bottom == 49598)
     assert (dgz.top == 46032)
+
+def test_fwwi():
+    fwwi = params.fosberg_fire_index(
+        308, 
+        0.00001,
+        13.5
+    )
+    assert (fwwi == 100.0)
+
+    tmpk = np.array([308, 308, 308], dtype='float32')
+    relh = np.array([0.00001, 0.00001, 0.00001], dtype='float32')
+    wspd = np.array([13.5, 13.5, 13.5], dtype='float32')
+
+    fwwi = params.fosberg_fire_index(tmpk, relh, wspd)
+    assert (fwwi == np.array([100.0, 100.0, 100.0], dtype='float32')).all()

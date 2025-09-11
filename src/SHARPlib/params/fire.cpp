@@ -20,25 +20,26 @@ namespace sharp {
 
 float equilibrium_moisture_content(float temperature, float rel_humidity) {
 #ifndef NO_QC
-    if ((temperature == MISSING) || (rel_humidity)) {
+    if ((temperature == MISSING) || (rel_humidity == MISSING)) {
         return MISSING;
     }
 #endif
 
-    float emc;
-    if (rel_humidity < 0.1) {
-        emc = 0.03229f + 0.281073f * (rel_humidity * 100.0f) -
-              0.000578f * (100.0f * rel_humidity) * temperature;
+    rel_humidity = rel_humidity * 100;
+    temperature = (temperature - ZEROCNK) * (9.f / 5.f) + 32.f;
 
-    } else if ((rel_humidity <= 0.1f) && (rel_humidity <= 0.5f)) {
-        emc = 2.22749f + 0.160107f * (rel_humidity * 100.0f) -
-              0.01478f * temperature;
+    float emc;
+    if (rel_humidity < 10.f) {
+        emc = 0.03229f + (0.281073f * rel_humidity) -
+              (0.000578f * rel_humidity * temperature);
+
+    } else if ((rel_humidity >= 10.f) && (rel_humidity <= 50.f)) {
+        emc = 2.22749f + (0.160107f * rel_humidity) - (0.01478f * temperature);
 
     } else {
-        emc = 21.0606f +
-              0.005565f * ((rel_humidity * 100.0f) * (rel_humidity * 100.0f)) -
-              0.00035f * (100.0f * rel_humidity) * temperature -
-              0.483199f * (100.0f * rel_humidity);
+        emc = 21.0606f + (0.005565f * (rel_humidity * rel_humidity)) -
+              (0.00035f * rel_humidity * temperature) -
+              (0.483199f * rel_humidity);
     }
 
     return emc / 100.0f;
@@ -52,13 +53,18 @@ float fosberg_fire_index(float temperature, float rel_humidity,
         return MISSING;
     }
 #endif
+    // m/s to mph
+    wind_speed = wind_speed * 2.237;
     float emc =
         equilibrium_moisture_content(temperature, rel_humidity) * 100.0f;
-    emc = emc / 30.0f;
-    float eta = 1.0f - 2.0f * (emc) + 1.5f * (std::pow(emc, 2)) -
-                0.5f * (std::pow(emc, 3));
 
-    return eta * std::sqrt(1.0f + std::pow(wind_speed, 2)) / 0.3002f;
+    emc = emc / 30.0f;
+    const float eta = 1.0f - (2.0f * emc) + (1.5f * (std::pow(emc, 2))) -
+                      (0.5f * (std::pow(emc, 3)));
+
+    const float fwwi =
+        eta * std::sqrt(1.0f + std::pow(wind_speed, 2)) / 0.3002f;
+    return std::min(fwwi, 100.f);
 }
 
 }  // namespace sharp
