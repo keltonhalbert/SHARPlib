@@ -330,6 +330,10 @@ The method is based on observations that MCS motion is a function of
 1) the advection of existing cells by the mean wind and 
 2) the propagation of new convection relative to existing storms.
 
+References
+----------
+Corfidi et al. 2003: https://www.spc.noaa.gov/publications/corfidi/mcs2003.pdf
+
 Parameters 
 ----------
 pressure : numpy.ndarray[dtype=float32]
