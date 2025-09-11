@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>thermo &#8212; SHARPlib v1.0.3-dev40+g5730965 Manual</title>
+    <title>thermo &#8212; SHARPlib v1.0.3-dev42+gb3b5617 Manual</title>
   
   
   
@@ -56,7 +56,7 @@
     <link rel="prev" title="parcel" href="parcel.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.0.3-dev40+g5730965" />
+  <meta name="docsearch:version" content="1.0.3-dev42+gb3b5617" />
     <meta name="docbuild:last-update" content="Sep 11, 2025"/>
   </head>
   
@@ -919,6 +919,31 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6thetaeEfff">
+<span id="_CPPv3N5sharp6thetaeEfff"></span><span id="_CPPv2N5sharp6thetaeEfff"></span><span id="sharp::thetae__float.float.float"></span><span class="target" id="namespacesharp_1ab06f16aa1caac3136e863db8cd61e2e9"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">thetae</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp6thetaeEfff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the equivalent potential temperature. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>John Hart - NSSFC KCMO / NWSSPC OUN</p>
+</dd>
+</dl>
+</p>
+<p>Compute the equivalent potential temperature (K) given the pressure (Pa), temperature (K), and dewpoint (K). The equivalent potential temperature is computed as in Bolton 1980. It was found in Davies-Jones 2009 that this is the most accurate non-iterative formulation of ThetaE.</p>
+<p>Bolton 1980: <a class="reference external" href="https://doi.org/10.1175/1520-0493(1980)108%3C1046:TCOEPT%3E2.0.CO;2">https://doi.org/10.1175/1520-0493(1980)108%3C1046:TCOEPT%3E2.0.CO;2</a> Davies-Jones 2009: <a class="reference external" href="https://doi.org/10.1175/2009MWR2774.1">https://doi.org/10.1175/2009MWR2774.1</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>dewpoint</strong> – (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>equivalent_potential_temperature (K) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I0EN5sharp7wetbulbEf3Lftfff">
 <span id="_CPPv3I0EN5sharp7wetbulbE3Lftfff"></span><span id="_CPPv2I0EN5sharp7wetbulbE3Lftfff"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Lft</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacesharp_1accda9c75278f1a32978bbfd662492822"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">wetbulb</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5sharp7wetbulbEf3Lftfff" title="sharp::wetbulb::Lft"><span class="n"><span class="pre">Lft</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lifter</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5sharp7wetbulbEf3Lftfff" title="Link to this definition">#</a><br /></dt>
 <dd><p>Compute the wetbulb temperature. </p>
@@ -1214,6 +1239,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp19virtual_temperatureEffff"><code class="docutils literal notranslate"><span class="pre">virtual_temperature()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp8buoyancyEKfKf"><code class="docutils literal notranslate"><span class="pre">buoyancy()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp8buoyancyEA_KfA_KfA_fNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">buoyancy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6thetaeEfff"><code class="docutils literal notranslate"><span class="pre">thetae()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN5sharp7wetbulbEf3Lftfff"><code class="docutils literal notranslate"><span class="pre">wetbulb()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp7wetbulbE12lifter_wobusfff"><code class="docutils literal notranslate"><span class="pre">wetbulb()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp7wetbulbE10lifter_cm1fff"><code class="docutils literal notranslate"><span class="pre">wetbulb()</span></code></a></li>
