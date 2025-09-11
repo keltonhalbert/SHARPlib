@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>params &#8212; SHARPlib v1.0.3-dev39+g9235d53 Manual</title>
+    <title>params &#8212; SHARPlib v1.0.3-dev40+g5730965 Manual</title>
   
   
   
@@ -56,7 +56,7 @@
     <link rel="prev" title="layer" href="layer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.0.3-dev39+g9235d53" />
+  <meta name="docsearch:version" content="1.0.3-dev40+g5730965" />
     <meta name="docbuild:last-update" content="Sep 11, 2025"/>
   </head>
   
@@ -804,6 +804,102 @@ from the given pressure and mixing ratio arrays.</p>
 </dd></dl>
 
 </section>
+<section id="fire">
+<h2>Fire<a class="headerlink" href="#fire" title="Link to this heading">#</a></h2>
+<p>Fire-weather parameters</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.params.equilibrium_moisture_content">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.params.</span></span><span class="sig-name descname"><span class="pre">equilibrium_moisture_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel_humidity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.params.equilibrium_moisture_content" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.params.</span></span><span class="sig-name descname"><span class="pre">equilibrium_moisture_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">rel_humidity:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">equilibrium_moisture_content(temperature:</span> <span class="pre">float,</span> <span class="pre">rel_humidity:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the equilibrium moisture content for fuel
+as in Simard (1968).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The air temperature (K)</p></li>
+<li><p><strong>rel_humidity</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Relative Humidity (fraction)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Equilibrium Moisture Content (fraction)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">equilibrium_moisture_content(temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">rel_humidity:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the equilibrium moisture content for fuel
+as in Simard (1968).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The air temperature (K)</p></li>
+<li><p><strong>rel_humidity</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – Relative Humidity (fraction)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Equilibrium Moisture Content (fraction)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.params.fosberg_fire_index">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.params.</span></span><span class="sig-name descname"><span class="pre">fosberg_fire_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel_humidity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.params.fosberg_fire_index" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.params.</span></span><span class="sig-name descname"><span class="pre">fosberg_fire_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">rel_humidity:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">wind_speed:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">fosberg_fire_index(temperature:</span> <span class="pre">float,</span> <span class="pre">rel_humidity:</span> <span class="pre">float,</span> <span class="pre">wind_speed:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the Fosberg Fire-Weather Index (FWWI) as in Fosberg (1978).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The air temperature (K)</p></li>
+<li><p><strong>rel_humidity</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The relative humidity (fraction)</p></li>
+<li><p><strong>wind_speed</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Wind speed (m/s)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Fosberg Fire-Weather Index</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">fosberg_fire_index(temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">rel_humidity:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">wind_speed:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the Fosberg Fire-Weather Index (FWWI) as in Fosberg (1978).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The air temperature (K)</p></li>
+<li><p><strong>rel_humidity</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The relative humidity (fraction)</p></li>
+<li><p><strong>wind_speed</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – Wind speed (m/s)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Fosberg Fire-Weather Index</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="winter">
 <h2>Winter<a class="headerlink" href="#winter" title="Link to this heading">#</a></h2>
 <p>Winter-weather parameters.</p>
@@ -888,6 +984,11 @@ PressureLayer are set to MISSING.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.significant_hail_parameter"><code class="docutils literal notranslate"><span class="pre">significant_hail_parameter</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.hail_growth_layer"><code class="docutils literal notranslate"><span class="pre">hail_growth_layer</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.precipitable_water"><code class="docutils literal notranslate"><span class="pre">precipitable_water</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fire">Fire</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.equilibrium_moisture_content"><code class="docutils literal notranslate"><span class="pre">equilibrium_moisture_content</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.fosberg_fire_index"><code class="docutils literal notranslate"><span class="pre">fosberg_fire_index</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#winter">Winter</a><ul class="nav section-nav flex-column">
