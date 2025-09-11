@@ -3,6 +3,7 @@
 
 // clang-format off
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/pair.h>
 
 // clang-format on
 #include <SHARPlib/layer.h>
@@ -269,6 +270,55 @@ Returns
 nwsspc.sharp.calc.winds.WindComponents
     U, V wind components of storm motion (m/s)
 
+    )pbdoc");
+
+    m_params.def(
+        "mcs_motion_corfidi",
+        [](const_prof_arr_t pressure, const_prof_arr_t height,
+           const_prof_arr_t u_wind, const_prof_arr_t v_wind)
+            -> std::pair<sharp::WindComponents, sharp::WindComponents> {
+            auto pres = pressure.view();
+            auto hght = height.view();
+            auto uwin = u_wind.view();
+            auto vwin = v_wind.view();
+
+            if ((pres.shape(0) != hght.shape(0)) ||
+                (pres.shape(0) != uwin.shape(0)) ||
+                (pres.shape(0) != vwin.shape(0))) {
+                throw nb::buffer_error(
+                    "pressure, height, u_wind, and v_wind must have the "
+                    "same sizes!");
+            }
+
+            return sharp::mcs_motion_corfidi(pres.data(), hght.data(),
+                                             uwin.data(), vwin.data(),
+                                             pressure.size());
+        },
+        nb::arg("pressure"), nb::arg("height"), nb::arg("u_wind"),
+        nb::arg("v_wind"), R"pbdoc(
+Compute the Corfidi upshear and downshear MCS motion vectors.
+
+Estimates the mesoscale convective system (MCS) motion vectors for upshear 
+and downshear propagating convective systems as in Corfidi et al. 2003.
+The method is based on observations that MCS motion is a function of 
+1) the advection of existing cells by the mean wind and 
+2) the propagation of new convection relative to existing storms.
+
+Parameters 
+----------
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of height values (meters)
+u_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of u-wind components (m/s)
+v_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of v-wind components (m/s)
+
+Returns 
+-------
+tuple[nwsspc.sharp.calc.winds.WindComponents, nwsspc.sharp.calc.winds.WindComponents]
+    (upshear, downshear)
     )pbdoc");
 
     m_params.def("energy_helicity_index", &sharp::energy_helicity_index,
