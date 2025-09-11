@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>params &#8212; SHARPlib v1.0.3-dev42+gb3b5617 Manual</title>
+    <title>params &#8212; SHARPlib v1.0.3-dev43+gfa6ff73 Manual</title>
   
   
   
@@ -56,7 +56,7 @@
     <link rel="prev" title="layer" href="layer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.0.3-dev42+gb3b5617" />
+  <meta name="docsearch:version" content="1.0.3-dev43+gfa6ff73" />
     <meta name="docbuild:last-update" content="Sep 11, 2025"/>
   </head>
   
@@ -618,6 +618,35 @@ in the analysis pipeline.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.params.mcs_motion_corfidi">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.params.</span></span><span class="sig-name descname"><span class="pre">mcs_motion_corfidi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">u_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">v_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="winds.html#nwsspc.sharp.calc.winds.WindComponents" title="nwsspc.sharp.calc.winds.WindComponents"><span class="pre">nwsspc.sharp.calc.winds.WindComponents</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="winds.html#nwsspc.sharp.calc.winds.WindComponents" title="nwsspc.sharp.calc.winds.WindComponents"><span class="pre">nwsspc.sharp.calc.winds.WindComponents</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.params.mcs_motion_corfidi" title="Link to this definition">#</a></dt>
+<dd><p>Compute the Corfidi upshear and downshear MCS motion vectors.</p>
+<p>Estimates the mesoscale convective system (MCS) motion vectors for upshear
+and downshear propagating convective systems as in Corfidi et al. 2003.
+The method is based on observations that MCS motion is a function of
+1) the advection of existing cells by the mean wind and
+2) the propagation of new convection relative to existing storms.</p>
+<p class="rubric">References</p>
+<p>Corfidi et al. 2003: <a class="reference external" href="https://www.spc.noaa.gov/publications/corfidi/mcs2003.pdf">https://www.spc.noaa.gov/publications/corfidi/mcs2003.pdf</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure values (Pa)</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of height values (meters)</p></li>
+<li><p><strong>u_wind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of u-wind components (m/s)</p></li>
+<li><p><strong>v_wind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of v-wind components (m/s)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(upshear, downshear)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple[nwsspc.sharp.calc.winds.WindComponents</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.winds.WindComponents]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.params.energy_helicity_index">
 <span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.params.</span></span><span class="sig-name descname"><span class="pre">energy_helicity_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">helicity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.params.energy_helicity_index" title="Link to this definition">#</a></dt>
 <dd><p>Computes the Energy Helicity Index.</p>
@@ -978,6 +1007,7 @@ PressureLayer are set to MISSING.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#convective">Convective</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.effective_inflow_layer"><code class="docutils literal notranslate"><span class="pre">effective_inflow_layer</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.storm_motion_bunkers"><code class="docutils literal notranslate"><span class="pre">storm_motion_bunkers</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.mcs_motion_corfidi"><code class="docutils literal notranslate"><span class="pre">mcs_motion_corfidi</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.energy_helicity_index"><code class="docutils literal notranslate"><span class="pre">energy_helicity_index</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.significant_tornado_parameter"><code class="docutils literal notranslate"><span class="pre">significant_tornado_parameter</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.supercell_composite_parameter"><code class="docutils literal notranslate"><span class="pre">supercell_composite_parameter</span></code></a></li>

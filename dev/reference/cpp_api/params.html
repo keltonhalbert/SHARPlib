@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>params &#8212; SHARPlib v1.0.3-dev42+gb3b5617 Manual</title>
+    <title>params &#8212; SHARPlib v1.0.3-dev43+gfa6ff73 Manual</title>
   
   
   
@@ -56,7 +56,7 @@
     <link rel="prev" title="layer" href="layer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.0.3-dev42+gb3b5617" />
+  <meta name="docsearch:version" content="1.0.3-dev43+gfa6ff73" />
     <meta name="docbuild:last-update" content="Sep 11, 2025"/>
   </head>
   
@@ -566,6 +566,33 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp18mcs_motion_corfidiEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE">
+<span id="_CPPv3N5sharp18mcs_motion_corfidiEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp18mcs_motion_corfidiEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE"></span><span id="sharp::mcs_motion_corfidi__floatCA.floatCA.floatCA.floatCA.std::ptrdiff_tC"></span><span class="target" id="namespacesharp_1a46632c91185e36c020a3870f863fa698"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="winds.html#_CPPv4N5sharp14WindComponentsE" title="sharp::WindComponents"><span class="n"><span class="pre">WindComponents</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="winds.html#_CPPv4N5sharp14WindComponentsE" title="sharp::WindComponents"><span class="n"><span class="pre">WindComponents</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">mcs_motion_corfidi</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">u_wind</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">v_wind</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp18mcs_motion_corfidiEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the Corfidi upshear and downshear MCS motion vectors. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Estimates mesoscale convective system (MCS) motion vectors for upshear and downshear propagating convective systems as in Corfidi et al. 2003. The method is based on observations that MCS motion is a function of 1) the advection of existing cells by the mean wind and 2) the propagation of new convection relative to existing storms.</p>
+<p><a class="reference external" href="https://www.spc.noaa.gov/publications/corfidi/mcs2003.pdf">https://www.spc.noaa.gov/publications/corfidi/mcs2003.pdf</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>height</strong> – (meters) </p></li>
+<li><p><strong>u_wind</strong> – (m/s) </p></li>
+<li><p><strong>v_wind</strong> – (m/s) </p></li>
+<li><p><strong>N</strong> – (length of arrays)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>{upshear, downshear} </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp21energy_helicity_indexEff">
 <span id="_CPPv3N5sharp21energy_helicity_indexEff"></span><span id="_CPPv2N5sharp21energy_helicity_indexEff"></span><span id="sharp::energy_helicity_index__float.float"></span><span class="target" id="namespacesharp_1ab89a7e3555a52f0fd9f4086d5aba7037"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">energy_helicity_index</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cape</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">helicity</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp21energy_helicity_indexEff" title="Link to this definition">#</a><br /></dt>
 <dd><p>Compute the Energy Helicity Index. </p>
@@ -856,6 +883,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp22effective_inflow_layerERN5sharp10lifter_cm1EA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel"><code class="docutils literal notranslate"><span class="pre">effective_inflow_layer()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp20storm_motion_bunkersEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE11HeightLayer11HeightLayerKbKb"><code class="docutils literal notranslate"><span class="pre">storm_motion_bunkers()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp20storm_motion_bunkersEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE13PressureLayerRK6ParcelKb"><code class="docutils literal notranslate"><span class="pre">storm_motion_bunkers()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp18mcs_motion_corfidiEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">mcs_motion_corfidi()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp21energy_helicity_indexEff"><code class="docutils literal notranslate"><span class="pre">energy_helicity_index()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp29supercell_composite_parameterEfff"><code class="docutils literal notranslate"><span class="pre">supercell_composite_parameter()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp29significant_tornado_parameterE6Parcelfff"><code class="docutils literal notranslate"><span class="pre">significant_tornado_parameter()</span></code></a></li>
