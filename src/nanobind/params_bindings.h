@@ -29,6 +29,13 @@ inline void make_params_bindings(nb::module_ m) {
            const_prof_arr_t height, const_prof_arr_t temperature,
            const_prof_arr_t dewpoint, const_prof_arr_t virtemp,
            float cape_thresh, float cinh_thresh, sharp::Parcel* mupcl) {
+            if ((pressure.shape(0) != height.shape(0)) ||
+                (pressure.shape(0) != temperature.shape(0)) ||
+                (pressure.shape(0) != dewpoint.shape(0)) ||
+                (pressure.shape(0) != virtemp.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
             float* pcl_vtmp = new float[height.size()];
             float* pcl_buoy = new float[height.size()];
 
@@ -94,6 +101,13 @@ nwsspc.sharp.calc.layer.PressureLayer
            const_prof_arr_t height, const_prof_arr_t temperature,
            const_prof_arr_t dewpoint, const_prof_arr_t virtemp,
            float cape_thresh, float cinh_thresh, sharp::Parcel* mupcl) {
+            if ((pressure.shape(0) != height.shape(0)) ||
+                (pressure.shape(0) != temperature.shape(0)) ||
+                (pressure.shape(0) != dewpoint.shape(0)) ||
+                (pressure.shape(0) != virtemp.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
             float* pcl_vtmp = new float[height.size()];
             float* pcl_buoy = new float[height.size()];
 
@@ -160,6 +174,12 @@ nwsspc.sharp.calc.layer.PressureLayer
            sharp::HeightLayer mean_wind_layer_agl,
            sharp::HeightLayer wind_shear_layer_agl, const bool leftMover,
            const bool pressureWeighted) {
+            if ((pressure.shape(0) != height.shape(0)) ||
+                (pressure.shape(0) != u_wind.shape(0)) ||
+                (pressure.shape(0) != v_wind.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
             sharp::WindComponents storm_mtn = sharp::storm_motion_bunkers(
                 pressure.data(), height.data(), u_wind.data(), v_wind.data(),
                 height.size(), mean_wind_layer_agl, wind_shear_layer_agl,
@@ -216,6 +236,12 @@ nwsspc.sharp.calc.winds.WindComponents
            const_prof_arr_t u_wind, const_prof_arr_t v_wind,
            sharp::PressureLayer eff_infl_lyr, sharp::Parcel& mupcl,
            const bool leftMover) {
+            if ((pressure.shape(0) != height.shape(0)) ||
+                (pressure.shape(0) != u_wind.shape(0)) ||
+                (pressure.shape(0) != v_wind.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
             sharp::WindComponents storm_mtn = sharp::storm_motion_bunkers(
                 pressure.data(), height.data(), u_wind.data(), v_wind.data(),
                 height.size(), eff_infl_lyr, mupcl, leftMover);
@@ -495,6 +521,10 @@ float
         "precipitable_water",
         [](sharp::PressureLayer& layer, const_prof_arr_t pres,
            const_prof_arr_t mixr) {
+            if ((pres.shape(0) != mixr.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
             return sharp::precipitable_water(layer, pres.data(), mixr.data(),
                                              pres.size());
         },
@@ -522,6 +552,10 @@ float
     m_params.def(
         "hail_growth_layer",
         [](const_prof_arr_t pres, const_prof_arr_t tmpk) {
+            if ((pres.shape(0) != tmpk.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
             return sharp::hail_growth_layer(pres.data(), tmpk.data(),
                                             pres.size());
         },
@@ -546,6 +580,10 @@ nwsspc.sharp.calc.layer.PressureLayer
     m_params.def(
         "dendritic_layer",
         [](const_prof_arr_t pres, const_prof_arr_t tmpk) {
+            if ((pres.shape(0) != tmpk.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
             return sharp::dendritic_layer(pres.data(), tmpk.data(),
                                           pres.size());
         },
