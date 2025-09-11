@@ -14,6 +14,7 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/params/fire.h>
 
+#include <algorithm>
 #include <cmath>
 
 namespace sharp {
