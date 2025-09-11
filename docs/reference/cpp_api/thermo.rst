@@ -30,6 +30,7 @@ Moist Variables
 .. doxygenfunction:: sharp::virtual_temperature
 .. doxygenfunction:: sharp::buoyancy(const float, const float)
 .. doxygenfunction:: sharp::buoyancy(const float[], const float[], float[], std::ptrdiff_t)
+.. doxygenfunction:: sharp::thetae
 .. doxygenfunction:: sharp::wetbulb(Lft, float, float, float)
 .. doxygenfunction:: sharp::wetbulb(lifter_wobus, float, float, float)
 .. doxygenfunction:: sharp::wetbulb(lifter_cm1, float, float, float)
