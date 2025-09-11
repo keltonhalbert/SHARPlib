@@ -119,6 +119,20 @@ def test_bunkers_motion_nonparcel():
     assert (storm_mtn.v == pytest.approx(5.7385511))
 
 
+def test_corfidi_vectors():
+    upshear, downshear = params.mcs_motion_corfidi(
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["uwin"],
+        snd_data["vwin"]
+    )
+
+    assert (upshear.u == pytest.approx(12.7017, abs=1e-3))
+    assert (upshear.v == pytest.approx(2.99329, abs=1e-3))
+    assert (downshear.u == pytest.approx(23.2054, abs=1e-3))
+    assert (downshear.v == pytest.approx(16.10519, abs=1e-3))
+
+
 def test_bunkers_motion():
     # parcel based Bunkers motion
     mupcl = parcel.Parcel()

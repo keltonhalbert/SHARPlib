@@ -20,6 +20,8 @@
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
 
+#include <utility>
+
 namespace sharp {
 
 PressureLayer effective_inflow_layer(
@@ -120,6 +122,35 @@ WindComponents storm_motion_bunkers(
     HeightLayer mw_layer = {eil_hght.bottom, htop};
     return storm_motion_bunkers(pressure, height, u_wind, v_wind, N, mw_layer,
                                 shr_layer, leftMover, true);
+}
+
+[[nodiscard]] std::pair<WindComponents, WindComponents> mcs_motion_corfidi(
+    const float pressure[], const float height[], const float u_wind[],
+    const float v_wind[], const std::ptrdiff_t N) {
+    const float pres_sfc = pressure[0];
+
+    WindComponents cloud_layer_mean;
+    if (pres_sfc < 85000.0f) {
+        cloud_layer_mean =
+            mean_wind({pres_sfc, 30000.0}, pressure, u_wind, v_wind, N, false);
+    } else {
+        cloud_layer_mean =
+            mean_wind({85000.0, 30000.0}, pressure, u_wind, v_wind, N, false);
+    }
+
+    HeightLayer low_layer = {0, 1500.0};  // agl
+    PressureLayer low_layer_pres =
+        height_layer_to_pressure(low_layer, pressure, height, N, true);
+
+    WindComponents low_level_mean =
+        mean_wind(low_layer_pres, pressure, u_wind, v_wind, N, false);
+
+    WindComponents upshear = {cloud_layer_mean.u - low_level_mean.u,
+                              cloud_layer_mean.v - low_level_mean.v};
+    WindComponents downshear = {cloud_layer_mean.u + upshear.u,
+                                cloud_layer_mean.v + upshear.v};
+
+    return std::make_pair(upshear, downshear);
 }
 
 float entrainment_cape(const float pressure[], const float height[],

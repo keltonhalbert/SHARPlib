@@ -20,6 +20,9 @@
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
 
+#include <cstddef>
+#include <utility>
+
 namespace sharp {
 
 /**
@@ -193,6 +196,31 @@ template <typename Lifter>
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const std::ptrdiff_t N, PressureLayer eff_infl_lyr,
     const Parcel& mupcl, const bool leftMover = false);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Compute the Corfidi upshear and downshear MCS motion vectors.
+ *
+ * Estimates mesoscale convective system (MCS) motion vectors for upshear
+ * and downshear propagating convective systems as in Corfidi et al. 2003.
+ * The method is based on observations that MCS motion is a function of
+ * 1) the advection of existing cells by the mean wind and
+ * 2) the propagation of new convection relative to existing storms.
+ *
+ * https://www.spc.noaa.gov/publications/corfidi/mcs2003.pdf
+ *
+ * \param   pressure    (Pa)
+ * \param   height      (meters)
+ * \param   u_wind      (m/s)
+ * \param   v_wind      (m/s)
+ * \param   N           (length of arrays)
+ *
+ * \return {upshear, downshear}
+ */
+[[nodiscard]] std::pair<WindComponents, WindComponents> mcs_motion_corfidi(
+    const float pressure[], const float height[], const float u_wind[],
+    const float v_wind[], const std::ptrdiff_t N);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
