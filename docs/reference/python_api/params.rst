@@ -16,6 +16,13 @@ params
    .. autofunction:: nwsspc.sharp.calc.params.hail_growth_layer
    .. autofunction:: nwsspc.sharp.calc.params.precipitable_water
 
+   Fire
+   ---- 
+   Fire-weather parameters
+
+   .. autofunction:: nwsspc.sharp.calc.params.equilibrium_moisture_content
+   .. autofunction:: nwsspc.sharp.calc.params.fosberg_fire_index
+
    Winter
    ------
    Winter-weather parameters.

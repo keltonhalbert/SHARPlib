@@ -25,7 +25,7 @@ namespace sharp {
  * Simard (1968).
  *
  * \param temperature   (K)
- * \param rel_humidity  (K)
+ * \param rel_humidity  (fraction)
  *
  * \return EMC (fraction)
  */

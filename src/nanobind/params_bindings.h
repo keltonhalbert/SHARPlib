@@ -10,6 +10,7 @@
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/winds.h>
 
+#include "SHARPlib/params/fire.h"
 #include "SHARPlib/params/winter.h"
 #include "sharplib_types.h"
 
@@ -469,6 +470,30 @@ float
     )pbdoc");
 
     m_params.def(
+        "hail_growth_layer",
+        [](const_prof_arr_t pres, const_prof_arr_t tmpk) {
+            return sharp::hail_growth_layer(pres.data(), tmpk.data(),
+                                            pres.size());
+        },
+        nb::arg("pressure"), nb::arg("temperature"),
+        R"pbdoc(
+Search for and return the PressureLayer of the lowest altitude 
+hail growth zone. If none is found, the top and bottom of the 
+PressureLayer are set to MISSING. 
+
+Parameters 
+----------
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure values (Pa)
+temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of temperature values (K)
+
+Returns 
+nwsspc.sharp.calc.layer.PressureLayer
+    The PressureLayer containing the hail growth zone
+    )pbdoc");
+
+    m_params.def(
         "dendritic_layer",
         [](const_prof_arr_t pres, const_prof_arr_t tmpk) {
             return sharp::dendritic_layer(pres.data(), tmpk.data(),
@@ -493,28 +518,125 @@ nwsspc.sharp.calc.layer.PressureLayer
     The PressureLayer containing the dendritic growth zone
     )pbdoc");
 
+    m_params.def("equilibrium_moisture_content",
+                 &sharp::equilibrium_moisture_content, nb::arg("temperature"),
+                 nb::arg("rel_humidity"),
+                 R"pbdoc(
+Compute the equilibrium moisture content for fuel 
+as in Simard (1968).
+
+Parameters
+----------
+temperature : float 
+    The air temperature (K)
+rel_humidity : float 
+    Relative Humidity (fraction)
+
+Returns 
+-------
+float 
+    Equilibrium Moisture Content (fraction)
+    )pbdoc");
+
     m_params.def(
-        "hail_growth_layer",
-        [](const_prof_arr_t pres, const_prof_arr_t tmpk) {
-            return sharp::hail_growth_layer(pres.data(), tmpk.data(),
-                                            pres.size());
+        "equilibrium_moisture_content",
+        [](const_prof_arr_t temperature, const_prof_arr_t rel_humidity) {
+            auto tmpk = temperature.view();
+            auto relh = rel_humidity.view();
+            if ((tmpk.shape(0) != relh.shape(0))) {
+                throw nb::buffer_error(
+                    "temperature and rel_humidity must have the same size!");
+            }
+
+            float* emc_arr = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                emc_arr[k] =
+                    sharp::equilibrium_moisture_content(tmpk(k), relh(k));
+            }
+
+            nb::capsule owner(emc_arr,
+                              [](void* p) noexcept { delete[] (float*)p; });
+            return out_arr_t(emc_arr, {tmpk.shape(0)}, owner);
         },
-        nb::arg("pressure"), nb::arg("temperature"),
+        nb::arg("temperature"), nb::arg("rel_humidity"),
         R"pbdoc(
-Search for and return the PressureLayer of the lowest altitude 
-hail growth zone. If none is found, the top and bottom of the 
-PressureLayer are set to MISSING. 
+Compute the equilibrium moisture content for fuel 
+as in Simard (1968).
+
+Parameters
+----------
+temperature : numpy.ndarray[dtype=float32] 
+    The air temperature (K)
+rel_humidity : numpy.ndarray[dtype=float32]
+    Relative Humidity (fraction)
+
+Returns 
+-------
+numpy.ndarray[dtype=float32]
+    Equilibrium Moisture Content (fraction)
+    )pbdoc");
+
+    m_params.def("fosberg_fire_index", &sharp::fosberg_fire_index,
+                 nb::arg("temperature"), nb::arg("rel_humidity"),
+                 nb::arg("wind_speed"),
+                 R"pbdoc(
+Compute the Fosberg Fire-Weather Index (FWWI) as in Fosberg (1978).
 
 Parameters 
 ----------
-pressure : numpy.ndarray[dtype=float32]
-    1D NumPy array of pressure values (Pa)
-temperature : numpy.ndarray[dtype=float32]
-    1D NumPy array of temperature values (K)
+temperature : float 
+    The air temperature (K)
+rel_humidity : float 
+    The relative humidity (fraction)
+wind_speed : float 
+    Wind speed (m/s)
 
 Returns 
-nwsspc.sharp.calc.layer.PressureLayer
-    The PressureLayer containing the hail growth zone
+-------
+float 
+    Fosberg Fire-Weather Index
+    )pbdoc");
+
+    m_params.def(
+        "fosberg_fire_index",
+        [](const_prof_arr_t temperature, const_prof_arr_t rel_humidity,
+           const_prof_arr_t wind_speed) {
+            auto tmpk = temperature.view();
+            auto relh = rel_humidity.view();
+            auto wspd = wind_speed.view();
+            if ((tmpk.shape(0) != relh.shape(0)) ||
+                (tmpk.shape(0) != wspd.shape(0))) {
+                throw nb::buffer_error(
+                    "temperature, rel_humidity, and wind_speed must have the "
+                    "same sizes!");
+            }
+
+            float* fwwi = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                fwwi[k] = sharp::fosberg_fire_index(tmpk(k), relh(k), wspd(k));
+            }
+
+            nb::capsule owner(fwwi,
+                              [](void* p) noexcept { delete[] (float*)p; });
+            return out_arr_t(fwwi, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("temperature"), nb::arg("rel_humidity"), nb::arg("wind_speed"),
+        R"pbdoc(
+Compute the Fosberg Fire-Weather Index (FWWI) as in Fosberg (1978).
+
+Parameters 
+----------
+temperature : numpy.ndarray[dtype=float32]
+    The air temperature (K)
+rel_humidity : numpy.ndarray[dtype=float32]
+    The relative humidity (fraction)
+wind_speed : numpy.ndarray[dtype=float32]
+    Wind speed (m/s)
+
+Returns 
+-------
+numpy.ndarray[dtype=float32]
+    Fosberg Fire-Weather Index
     )pbdoc");
 }
 
