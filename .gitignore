@@ -52,8 +52,8 @@ build
 .cache
 
 # Ignore built docs
-docs/html
-docs/latex
+docs/_build
+docs/doxyxml
 
 # Python
 __pycache__

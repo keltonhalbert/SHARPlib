@@ -83,6 +83,24 @@ struct lifter_wobus {
     }
 };
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief A functor that calls the CM1 moist adiabat solver
+
+ * This functor is used to wrap the CM1 moist adiabat function
+ * for parcel lifting routines. Functors - classes with their
+ * operator() overloaded - are used so that functions can be
+ * passed to templates in a way that the compiler can still
+ * optimize, rather than using function pointers or lambdas.
+ *
+ * Specifically, this functor is designed to be passed as a template
+ * argument to sharp::Parcel::lift_parcel, so that the method of computing
+ * moist adiabats can be changed without changing the overall parcel
+ * lifting code. The reason this is awesome is that the compiler
+ * can still optimize and inline this code, while the user can configure
+ * the parcel lifting algorithm to their specifications.
+ */
 struct lifter_cm1 {
    private:
     /**

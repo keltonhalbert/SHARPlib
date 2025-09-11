@@ -54,12 +54,18 @@ lifter does not require this, however, so this function does nothing.
              R"pbdoc(
 Overloads the call operator in order to facilitate parcel lifting. 
 
-Parameters:
-    pres: Parcel pressure (Pa)
-    tmpk: Parcel temperature (K)
-    new_pres: Final level of parcel after lift (Pa)
+Parameters
+----------
+pres : float 
+    Parcel pressure (Pa)
+tmpk : float 
+    Parcel temperature (K)
+new_pres : float 
+    Final level of parcel after lift (Pa)
 
-Returns:
+Returns
+-------
+float
     The temperature of the lifted parcel (K)
              )pbdoc")
         .def("parcel_virtual_temperature",
@@ -67,11 +73,16 @@ Returns:
              nb::arg("tmpk"), R"pbdoc(
 Computes the virtual temperature of the parcel (after saturation).
 
-Parameters:
-    pres: Parcel pressure (Pa)
-    tmpk: Parcel temperature (K)
+Parameters
+----------
+pres : float 
+    Parcel pressure (Pa)
+tmpk : float 
+    Parcel temperature (K)
 
-Returns:
+Returns
+-------
+float
     The virtual temperature of the parcel (K)
              )pbdoc");
 
@@ -103,9 +114,16 @@ adiabatic parcel ascent, and zeroes out the vapor,
 liquid, and ice mixing ratio from previous parcel 
 ascents. 
 
-Parameters:
-    lcl_pres: The LCL pressure (Pa)
-    lcl_tmpk: The LCL temperature (K)
+Parameters
+----------
+lcl_pres : float 
+    The LCL pressure (Pa)
+lcl_tmpk : float 
+    The LCL temperature (K)
+
+Returns
+-------
+None
              )pbdoc")
         .def("__call__", &sharp::lifter_cm1::operator(), nb::is_operator(),
              nb::arg("pres"), nb::arg("tmpk"), nb::arg("new_pres"),
@@ -113,12 +131,18 @@ Parameters:
 Lifts a parcel moist adiabatically/pseudoadiabatically using
 sharp::moist_adiabat_cm1.
 
-Parameters:
-    pres: Parcel pressure (Pa)
-    tmpk: Parcel temperature (K)
-    new_pres: Final level of parcel after lift (Pa)
+Parameters
+----------
+pres : float 
+    Parcel pressure (Pa)
+tmpk : float 
+    Parcel temperature (K)
+new_pres : float 
+    Final level of parcel after lift (Pa)
 
-Returns:
+Returns
+-------
+float
     The temperature of the lifted parcel (K)
              )pbdoc")
 
@@ -127,11 +151,16 @@ Returns:
              nb::arg("tmpk"), R"pbdoc(
 Computes the virtual temperature of the parcel (after saturation).
 
-Parameters:
-    pres: Parcel pressure (Pa)
-    tmpk: Parcel temperature (K)
+Parameters
+----------
+pres : float 
+    Parcel pressure (Pa)
+tmpk : float 
+    Parcel temperature (K)
 
-Returns:
+Returns
+-------
+float
     The virtual temperature of the parcel (K)
              )pbdoc");
 
@@ -178,11 +207,16 @@ Parcel Convective Inhibition (J/kg) between the LFC and EL
             nb::arg("lpl"), R"pbdoc(
 Constructor for a Parcel
 
-Parameters:
-    pressure: Parcel initial pressure (Pa)
-    temperature: Parcel initial temperature (K)
-    dewpoint: Parcel initial dewpoint (K)
-    lpl: Parcel Lifted Parcel Level (LPL) definition
+Parameters
+----------
+pressure : float 
+    Parcel initial pressure (Pa)
+temperature : float 
+    Parcel initial temperature (K)
+dewpoint : float 
+    Parcel initial dewpoint (K)
+lpl : nwsspc.sharp.calc.parcel.LPL 
+    Parcel Lifted Parcel Level (LPL) definition
         )pbdoc")
         .def(
             "lift_parcel",
@@ -205,11 +239,16 @@ the top of the profile. The moist adiabat used is determined
 by the type of lifting functor passed to the function (i.e.
 lifter_wobus or lifter_cm1).
 
-Parameters:
-    lifter: An instantiated lifter_wobus functor
-    pressure: 1D NumPy array of Pressure levels for lifting (Pa)
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+    An instantiated lifter_wobus functor
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of Pressure levels for lifting (Pa)
 
-Returns:
+Returns
+-------
+numpy.ndarray[dtype=float32]
     A 1D NumPy array of parcel virtual temperature values (K)
         )pbdoc")
         .def(
@@ -233,11 +272,16 @@ the top of the profile. The moist adiabat used is determined
 by the type of lifting functor passed to the function (i.e.
 lifter_wobus or lifter_cm1).
 
-Parameters:
-    lifter: An instantiated lifter_cm1 functor
-    pressure: 1D NumPy array of Pressure levels for lifting (Pa)
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
+    An instantiated lifter_cm1 functor
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of Pressure levels for lifting (Pa)
 
-Returns:
+Returns
+-------
+numpy.ndarray[dtype=float32]
     A 1D NumPy array of parcel virtual temperature values (K)
         )pbdoc")
         .def(
@@ -252,12 +296,21 @@ Returns:
 Searches the buoyancy array for the LFC and EL combination that results
 in the maximum amount of CAPE in the given profile. The buoyancy array 
 is typically computed by calling Parcel.lift_parcel. Once the LFC and 
-EL are found, the value are set in Parcel.lfc_pres and Parcel.eql_pres.
+EL are found, the value are set in Parcel.lfc_pres and Parcel.eql_pres
+via the provided parcel.
 
-Parameters:
-    pressure: 1D NumPy array of pressure values (Pa)
-    height: 1D NumPy array of height values (meters)
-    Buoyancy: 1D NumPy array of buoyancy values (m/s^2)
+Parameters
+----------
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of height values (meters)
+buoyancy : numpy.ndarray[dtype=float32] 
+    1D NumPy array of buoyancy values (m/s^2)
+
+Returns
+-------
+None
         )pbdoc")
         .def(
             "cape_cinh",
@@ -273,12 +326,21 @@ Assuming that Parcel.lift_parcel has been called, cape_cinh
 will integrate the area between the LFC and EL to compute CAPE,
 and integrate the area between the LPL and LCL to compute CINH.
 
-The results are stored in Parcel.cape and Parcel.cinh
+The results are stored in Parcel.cape and Parcel.cinh via the 
+provided parcel.
 
-Parameters:
-    pres: 1D NumPy array of pressure values (Pa)
-    hght: 1D NumPy array of height values (Pa)
-    buoy: 1D NumPy array of buoyancy values (m/s^2)
+Parameters
+----------
+pres : numpy.ndarray[dtype=float32] 
+    1D NumPy array of pressure values (Pa)
+hght : numpy.ndarray[dtype=float32] 
+    1D NumPy array of height values (Pa)
+buoyancy : numpy.ndarray[dtype=float32] 
+    1D NumPy array of buoyancy values (m/s^2)
+
+Returns
+-------
+None
         )pbdoc")
         .def_static("surface_parcel", &sharp::Parcel::surface_parcel,
                     nb::arg("pressure"), nb::arg("temperature"),
@@ -286,12 +348,18 @@ Parameters:
 Given input values of surface pressure, temperature, and dewpoint 
 temperature, construct and return a Surface Based Parcel.
 
-Parameters:
-    pressure: Surface pressure (Pa)
-    temperature: Surface temperature (K)
-    dewpoint: Surface dewpoint (K)
+Parameters
+----------
+pressure : float 
+    Surface pressure (Pa)
+temperature : float 
+    Surface temperature (K)
+dewpoint : float 
+    Surface dewpoint (K)
 
-Returns:
+Returns
+-------
+nwsspc.sharp.calc.parcel.Parcel
     Parcel with surface values
                     )pbdoc")
         .def_static(
@@ -310,13 +378,20 @@ Returns:
 Given input arrays of pressure, potential temperature, and water vapor mixing ratio, as well as a 
 defined PressureLayer, compute and return a mixed-layer Parcel.
 
-Parameters:
-    mix_layer: PressureLayer over which to compute a mixed-layer parcel 
-    pressure: 1D NumPy array of profile pressure values (Pa)
-    potential_temperature: 1D NumPy array of profile potential temperature (K)
-    mixing_ratio: 1D NumPy array of profile water vapor mixing ratio (unitless)
+Parameters
+----------
+mix_layer : nwsspc.sharp.calc.layer.PressureLayer 
+    PressureLayer over which to compute a mixed-layer parcel 
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile pressure values (Pa)
+potential_temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile potential temperature (K)
+mixing_ratio : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile water vapor mixing ratio (unitless)
 
-Returns:
+Returns
+-------
+nwsspc.sharp.calc.parcel.Parcel
     Parcel with mixed layer values
 
 )pbdoc")
@@ -336,14 +411,22 @@ Returns:
 Given input arrays of pressure, potential temperature, and water vapor mixing ratio, as well as a 
 defined PressureLayer, compute and return a mixed-layer Parcel.
 
-Parameters:
-    mix_layer: HeightLayer over which to compute a mixed-layer parcel 
-    pressure: 1D NumPy array of profile pressure values (Pa)
-    height: 1D NumPy array of profile height values (meters)
-    potential_temperature: 1D NumPy array of profile potential temperature (K)
-    mixing_ratio: 1D NumPy array of profile water vapor mixing ratio (unitless)
+Parameters
+----------
+mix_layer : nwsspc.sharp.calc.layer.HeightLayer 
+    HeightLayer over which to compute a mixed-layer parcel 
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile height values (meters)
+potential_temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile potential temperature (K)
+mixing_ratio : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile water vapor mixing ratio (unitless)
 
-Returns:
+Returns
+-------
+nwsspc.sharp.calc.parcel.Parcel
     Parcel with mixed layer values
         )pbdoc")
         .def_static(
@@ -374,16 +457,26 @@ Given input arrays of pressure, height, temperature, virtual temperature,
 and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
 parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
 
-Parameters:
-    layer: PressureLayer for which to search for the Most Unstable Parcel
-    lifter: Parcel lifting routine to use for moist ascent
-    pressure: 1D NumPy array of profile pressure values (Pa)
-    height: 1D NumPy array of profile height values (meters)
-    temperature: 1D NumPy array of profile temperature values (K)
-    virtual_temperature: 1D NumPy array of profile virtual temperature values (K)
-    dewpoint: 1D NumPy array of profile dewpoint values (K)
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.PressureLayer 
+    PressureLayer for which to search for the Most Unstable Parcel
+lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
+    Parcel lifting routine to use for moist ascent
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile height values (meters)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile temperature values (K)
+virtual_temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile virtual temperature values (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile dewpoint values (K)
 
-Returns:
+Returns
+-------
+nwsspc.sharp.calc.parcel.Parcel
     Parcel with most-unstable values
         )pbdoc")
         .def_static(
@@ -415,16 +508,26 @@ Given input arrays of pressure, height, temperature, virtual temperature,
 and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
 parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
 
-Parameters:
-    layer: HeightLayer for which to search for the Most Unstable Parcel
-    lifter: Parcel lifting routine to use for moist ascent
-    pressure: 1D NumPy array of profile pressure values (Pa)
-    height: 1D NumPy array of profile height values (meters)
-    temperature: 1D NumPy array of profile temperature values (K)
-    virtual_temperature: 1D NumPy array of profile virtual temperature values (K)
-    dewpoint: 1D NumPy array of profile dewpoint values (K)
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.HeightLayer 
+    HeightLayer for which to search for the Most Unstable Parcel
+lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
+    Parcel lifting routine to use for moist ascent
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile height values (meters)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile temperature values (K)
+virtual_temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile virtual temperature values (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile dewpoint values (K)
 
-Returns:
+Returns
+-------
+nwsspc.sharp.calc.parcel.Parcel
     Parcel with most-unstable values
         )pbdoc")
         .def_static(
@@ -456,17 +559,26 @@ Given input arrays of pressure, height, temperature, virtual temperature,
 and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
 parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
 
-Parameters:
-    layer: PressureLayer for which to search for the Most Unstable Parcel
-    lifter: Parcel lifting routine to use for moist ascent
-    pressure: 1D NumPy array of profile pressure values (Pa)
-    height: 1D NumPy array of profile height values (meters)
-    temperature: 1D NumPy array of profile temperature values (K)
-    virtual_temperature: 1D NumPy array of profile virtual temperature values (K)
-    dewpoint: 1D NumPy array of profile dewpoint values (K)
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.PressureLayer 
+    PressureLayer for which to search for the Most Unstable Parcel
+lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+    Parcel lifting routine to use for moist ascent
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile height values (meters)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile temperature values (K)
+virtual_temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile virtual temperature values (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile dewpoint values (K)
 
-Returns:
-    Parcel with most-unstable values
+Returns
+-------
+nwsspc.sharp.calc.parcel.Parcel
         )pbdoc")
         .def_static(
             "most_unstable_parcel",
@@ -497,16 +609,26 @@ Given input arrays of pressure, height, temperature, virtual temperature,
 and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
 parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
 
-Parameters:
-    layer: HeightLayer for which to search for the Most Unstable Parcel
-    lifter: Parcel lifting routine to use for moist ascent
-    pressure: 1D NumPy array of profile pressure values (Pa)
-    height: 1D NumPy array of profile height values (meters)
-    temperature: 1D NumPy array of profile temperature values (K)
-    virtual_temperature: 1D NumPy array of profile virtual temperature values (K)
-    dewpoint: 1D NumPy array of profile dewpoint values (K)
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.HeightLayer 
+    HeightLayer for which to search for the Most Unstable Parcel
+lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+    Parcel lifting routine to use for moist ascent
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile height values (meters)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile temperature values (K)
+virtual_temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile virtual temperature values (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile dewpoint values (K)
 
-Returns:
+Returns
+-------
+nwsspc.sharp.calc.parcel.Parcel
     Parcel with most-unstable values
         )pbdoc");
 }
