@@ -85,5 +85,5 @@ jobs:
         with: 
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
-          destination_dir: ./${{ stepd.version_check.outputs.doc_ver }}
+          destination_dir: ./${{ steps.version_check.outputs.doc_ver }}
 
