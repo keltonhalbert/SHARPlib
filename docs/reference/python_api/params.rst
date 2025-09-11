@@ -9,6 +9,7 @@ params
 
    .. autofunction:: nwsspc.sharp.calc.params.effective_inflow_layer
    .. autofunction:: nwsspc.sharp.calc.params.storm_motion_bunkers
+   .. autofunction:: nwsspc.sharp.calc.params.mcs_motion_corfidi
    .. autofunction:: nwsspc.sharp.calc.params.energy_helicity_index
    .. autofunction:: nwsspc.sharp.calc.params.significant_tornado_parameter
    .. autofunction:: nwsspc.sharp.calc.params.supercell_composite_parameter
