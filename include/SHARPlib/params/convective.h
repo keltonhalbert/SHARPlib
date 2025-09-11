@@ -203,7 +203,7 @@ template <typename Lifter>
  * \brief Compute the Corfidi upshear and downshear MCS motion vectors.
  *
  * Estimates mesoscale convective system (MCS) motion vectors for upshear
- * and downshear propegating convective systems as in Corfidi et al. 2003.
+ * and downshear propagating convective systems as in Corfidi et al. 2003.
  * The method is based on observations that MCS motion is a function of
  * 1) the advection of existing cells by the mean wind and
  * 2) the propagation of new convection relative to existing storms.
