@@ -87,3 +87,72 @@ jobs:
           publish_dir: ./docs/_build/html
           destination_dir: ./${{ steps.version_check.outputs.doc_ver }}
 
+  update_versions:
+    name: Update JSON and Symlink
+    needs: build_and_deploy
+    if: needs.build_and_deploy.outputs.doc_ver != 'dev'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4 
+        with:
+          ref: "gh-pages"
+      
+      - name: Setup Python 
+        uses: actions/setup-python@v5
+
+      - name: Update Vertions
+        env: 
+          BASE_URL: "https://keltonhalbert.github.io/SHARPlib"
+        run: |
+          python << EOF
+          import json
+          from pathlib import Path
+          import os
+
+          version_dirs = [p for p in Path().glob('v[0-9]*') if p.is_dir()]
+          version_dirs.sort()
+          latest_version_str = version_dirs[-1].name if version_dirs else 'dev'
+          print(f"Latest deployed version found: {latest_version_str}")
+
+          versions_file = Path('versions.json')
+          try:
+              with open(versions_file) as f:
+                  data = json.load(f)
+          except FileNotFoundError:
+              data = [
+                  { "version": "dev", "url": f"{os.environ['BASE_URL']}/dev" },
+              ]
+
+          found_versions = {item['version'] for item in data}
+          for ver_dir in version_dirs:
+              ver_str = ver_dir.name
+              if ver_str not in found_versions:
+                  print(f"Adding new version '{ver_str}' to versions.json")
+                  data.append({"version": ver_str, "url": f"{os.environ['BASE_URL']}/{ver_str}"})
+
+          for item in data:
+              item['is_latest'] = (item['version'] == latest_version_str)
+
+          with open(versions_file, 'w') as f:
+              json.dump(data, f, indent=4)
+          print("versions.json has been updated.")
+
+          latest_link = Path('latest')
+          latest_link.unlink(missing_ok=True) 
+          latest_link.symlink_to(latest_version_str, target_is_directory=True)
+          print(f"'latest' symlink now points to '{latest_version_str}'.")
+          EOF
+
+      - name: Commit and Push changes
+        run: |
+          git config user.name $GITHUB_ACTOR
+          git config user.email $GITHUB_ACTOR@users.noreply.github.com"
+          git add versions.json latest
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "docs: Update latest version to point to new release"
+            git push
+          fi
+
