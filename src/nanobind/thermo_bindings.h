@@ -943,6 +943,7 @@ numpy.ndarray[dtype=float32]
 
     m_therm.def("wetlift", &sharp::wetlift, nb::arg("pressure"),
         nb::arg("temperature"), nb::arg("lifted_pressure"),
+        nb::arg("converge") = 0.001f,
         R"pbdoc(
 Compute the temperature of a parcel lifted moist adiabatically to a new level. 
 
@@ -963,6 +964,8 @@ temperature : float
     The saturated air temperature (K)
 lifted_pressure : float 
     The new pressure level to lift to (Pa)
+converge : float 
+    The iterative convergence criteria (K; default = 0.001)
 
 Returns
 -------

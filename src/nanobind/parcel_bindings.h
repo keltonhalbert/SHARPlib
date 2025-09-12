@@ -43,6 +43,9 @@ configure the parcel lifting algorithm to their specifications.
                        R"pbdoc(
 A static flag that helps the parcel lifting functions know where to lift from.
 )pbdoc")
+        .def_rw("converge", &sharp::lifter_wobus::converge, R"pbdoc(
+The iterative convergence criteria (K)
+             )pbdoc")
         .def("setup", &sharp::lifter_wobus::setup, nb::arg("lcl_pres"),
              nb::arg("lcl_tmpk"), R"pbdoc(
 Some parcel lifters require setup in order to handle adiabatic ascent

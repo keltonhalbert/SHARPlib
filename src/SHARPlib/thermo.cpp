@@ -214,7 +214,8 @@ float saturated_lift(float pressure, float theta_sat, float converge) {
     return t2 - eor;
 }
 
-float wetlift(float pressure, float temperature, float lifted_pressure) {
+float wetlift(float pressure, float temperature, float lifted_pressure,
+              float converge) {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING) ||
         (lifted_pressure == MISSING)) {
@@ -231,7 +232,7 @@ float wetlift(float pressure, float temperature, float lifted_pressure) {
     const float pcl_thetaw = pcl_theta - woth + wott;
     // get the temperature that crosses the moist adiabat at
     // this pressure level
-    return saturated_lift(lifted_pressure, pcl_thetaw);
+    return saturated_lift(lifted_pressure, pcl_thetaw, converge);
 }
 
 float _solve_cm1(float& pcl_pres_next, float& pcl_pi_next, float& pcl_t_next,
