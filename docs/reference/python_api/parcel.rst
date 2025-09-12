@@ -46,6 +46,10 @@ Parcel creation, parcel ascent, and integrated CAPE/CINH.
 
       A tag for user-defined parcels.
 
+   .. autoattribute:: DOWN
+
+      A tag for downdraft parcels.
+
 .. autoclass:: nwsspc.sharp.calc.parcel.Parcel 
 
    .. autoproperty:: nwsspc.sharp.calc.parcel.Parcel.pres
@@ -62,6 +66,7 @@ Parcel creation, parcel ascent, and integrated CAPE/CINH.
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.surface_parcel
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.mixed_layer_parcel
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.most_unstable_parcel
+   .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.downdraft_parcel
    
    Parcel Operations 
    -----------------

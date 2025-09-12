@@ -633,7 +633,44 @@ Returns
 -------
 nwsspc.sharp.calc.parcel.Parcel
     Parcel with most-unstable values
-        )pbdoc");
+        )pbdoc")
+        .def_static(
+            "downdraft_parcel",
+            [](sharp::PressureLayer& search_layer, const_prof_arr_t pressure,
+               const_prof_arr_t temperature, const_prof_arr_t dewpoint,
+               const_prof_arr_t thetae, const float mean_depth) {},
+            nb::arg("search_layer"), nb::arg("pressure"),
+            nb::arg("temperature"), nb::arg("dewpoint"), nb::arg("thetae"),
+            nb::arg("mean_depth") = 10000.0f,
+            R"pbdoc(
+Define a downdraft parcel. 
+
+Defines a downdraft parcel within a given search layer. 
+The downdraft parcel is defined as the minimum layer-mean 
+equivalent potential temperature (Theta-E) within the 
+search layer. Typical values are to search within the lowest
+400 hPa of the profile, and a mean depth of 100 hPa. 
+
+Parameters 
+----------
+search_layer : nwsspc.sharp.calc.layer.PressureLayer 
+    The layer over which to search for the downdraft parcel 
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure (Pa)
+temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of temperature (K)
+dewpoint : numpy.ndarray[dtype=float32]
+    1D NumPy array of dewpoint (K)
+thetae : numpy.ndarray[dtype=float32]
+    1D NumPy array of thetae (K)
+mean_depth : float
+    The layer depth for calculating mean thetae.
+
+Returns 
+-------
+nwsspc.sharp.calc.parcel.Parcel 
+    Downdraft Parcel
+    )pbdoc");
 }
 
 #endif

@@ -6,7 +6,7 @@
  *   Email: kelton.halbert@noaa.gov  \n
  * \date   2022-11-09
  *
- * Written for the NWS Storm Predidiction Center \n
+ * Written for the NWS Storm Prediction Center \n
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
@@ -238,6 +238,11 @@ enum class LPL : int {
      * \brief User-defined Parcel
      */
     USR = 5,  // user-defined
+
+    /**
+     * \brief Downdraft Parcel
+     */
+    DOWN = 6,
     END,
 };
 
@@ -529,6 +534,57 @@ struct Parcel {
         }
 
         return max_parcel;
+    }
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Define a downdraft parcel.
+     *
+     * Defines a downdraft parcel within a given search layer.
+     * The downdraft parcel is defined as the mimumim layer-mean
+     * equivalent potential temperature (Theta-E) within the
+     * search layer. Typical values are to search within the lowest
+     * 400 hPa of the profile, and a mean depth of 100 hPa.
+     *
+     * \param   search_layer    sharp::PressureLayer to search
+     * \param   pressure        (Pa)
+     * \param   temperature     (K)
+     * \param   dewpoint        (K)
+     * \param   thetae          (K)
+     * \param   N               (length of arrays)
+     * \param   mean_depth      (Pa)
+     *
+     * \return  the sharp::Parcel defining a downdraft parcel.
+     */
+    static Parcel downdraft_parcel(sharp::PressureLayer& search_layer,
+                                   const float pressure[],
+                                   const float temperature[],
+                                   const float dewpoint[], const float thetae[],
+                                   const std::ptrdiff_t N,
+                                   const float mean_depth = 10000.0f) {
+        const sharp::LayerIndex lyr_idx =
+            sharp::get_layer_index(search_layer, pressure, N);
+
+        float min_thetae = 99999.0;
+        float pres_of_min = sharp::MISSING;
+
+        for (std::ptrdiff_t k = lyr_idx.ktop; k >= 0; --k) {
+            sharp::PressureLayer mn_lyr = {pressure[k],
+                                           pressure[k] - mean_depth};
+            float mean_thetae = sharp::layer_mean(mn_lyr, pressure, thetae, N);
+            if (mean_thetae < min_thetae) {
+                min_thetae = mean_thetae;
+                pres_of_min = mn_lyr.bottom - (mean_depth / 2.0f);
+            }
+        }
+
+        float pcl_t =
+            sharp::interp_pressure(pres_of_min, pressure, temperature, N);
+        float pcl_td =
+            sharp::interp_pressure(pres_of_min, pressure, dewpoint, N);
+
+        return Parcel(pres_of_min, pcl_t, pcl_td, LPL::DOWN);
     }
 };
 
