@@ -47,6 +47,11 @@ struct lifter_wobus {
     static constexpr bool lift_from_lcl = true;
 
     /**
+     * \brief The iterative convergence criteria (K)
+     */
+    float converge = 0.001f;
+
+    /**
      * \brief Perform the setup step for the parcel lifter.
      *
      * Some parcel lifters require setup in order to handle
@@ -67,7 +72,7 @@ struct lifter_wobus {
      */
     [[nodiscard]] inline float operator()(const float pres, const float tmpk,
                                           const float new_pres) const {
-        return wetlift(pres, tmpk, new_pres);
+        return wetlift(pres, tmpk, new_pres, converge);
     }
 
     /**
@@ -102,7 +107,23 @@ struct lifter_wobus {
  * the parcel lifting algorithm to their specifications.
  */
 struct lifter_cm1 {
-   private:
+    static constexpr bool lift_from_lcl = false;
+
+    /**
+     * \brief The type of moist adiabat to use, as defined by sharp::adiabat
+     */
+    adiabat ma_type = adiabat::pseudo_liq;
+
+    /**
+     * \brief The pressure increment (Pa) to use for the iterative solver
+     */
+    float pressure_incr = 500.0f;
+
+    /**
+     * \brief The iterative convergence criteria (K)
+     */
+    float converge = 0.001f;
+
     /**
      * \brief Used to keep track of mixing ratio for conserved/adiabatic lifting
      */
@@ -122,24 +143,6 @@ struct lifter_cm1 {
      * \brief Ice water mixing ratio variable updated during parcel lifts
      */
     float ri = MISSING;
-
-   public:
-    static constexpr bool lift_from_lcl = false;
-
-    /**
-     * \brief The type of moist adiabat to use, as defined by sharp::adiabat
-     */
-    adiabat ma_type = adiabat::pseudo_liq;
-
-    /**
-     * \brief The pressure increment (Pa) to use for the iterative solver
-     */
-    float pressure_incr = 500.0f;
-
-    /**
-     * \brief The iterative convergence criteria (K)
-     */
-    float converge = 0.001f;
 
     /**
      * \brief perform the necessary setup for parcel ascent.
