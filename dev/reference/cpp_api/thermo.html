@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>thermo &#8212; SHARPlib v1.0.3-dev43+gfa6ff73 Manual</title>
+    <title>thermo &#8212; SHARPlib v1.0.3-dev44+gd9260ba Manual</title>
   
   
   
@@ -56,8 +56,8 @@
     <link rel="prev" title="parcel" href="parcel.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.0.3-dev43+gfa6ff73" />
-    <meta name="docbuild:last-update" content="Sep 11, 2025"/>
+  <meta name="docsearch:version" content="1.0.3-dev44+gd9260ba" />
+    <meta name="docbuild:last-update" content="Sep 12, 2025"/>
   </head>
   
   
@@ -1081,8 +1081,8 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5sharp7wetliftEfff">
-<span id="_CPPv3N5sharp7wetliftEfff"></span><span id="_CPPv2N5sharp7wetliftEfff"></span><span id="sharp::wetlift__float.float.float"></span><span class="target" id="namespacesharp_1ad4014313c60a66a321e4050a2a07058e"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">wetlift</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lifted_pressure</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp7wetliftEfff" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp7wetliftEffff">
+<span id="_CPPv3N5sharp7wetliftEffff"></span><span id="_CPPv2N5sharp7wetliftEffff"></span><span id="sharp::wetlift__float.float.float.float"></span><span class="target" id="namespacesharp_1af50c69b629718ef1260e8448af645843"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">wetlift</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lifted_pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">converge</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.001f</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp7wetliftEffff" title="Link to this definition">#</a><br /></dt>
 <dd><p>Compute the temperature of a parcel lifted moist adiabatically to a new level. </p>
 <p><dl class="simple">
 <dt><strong>Author</strong></dt><dd><p>John Hart - NSSFC KCMO / NWSSPC OUN</p>
@@ -1090,13 +1090,14 @@
 </dl>
 </p>
 <p>With a given parcel defined by a pressure and temperature (in Pascals and Kelvin), lift it moist adiabatically to a new pressure level (in Pascals) and return the temperture of the parcel at that level.</p>
-<p>This function relies on the Wobus Function ( <a class="reference internal" href="#namespacesharp_1ab535b8214969a50771219a275ebb7f4d"><span class="std std-ref">sharp::wobf</span></a> ), and it was shown by Robert Davies-Jones (2007) that the Wobus function has a slight dependence on pressure, which results in errors of up to 1.2 Kelvin in the temperature of a lifted parcel.</p>
+<p>This function relies on the Wobus Function ( <a class="reference internal" href="#namespacesharp_1ab535b8214969a50771219a275ebb7f4d"><span class="std std-ref">sharp::wobf</span></a> ), and it was shown by Robert Davies-Jones (2007) that the Wobus function has a slight dependence on pressure, which results in errors of up to 1.2 Kelvin in the temperature of a lifted parcel. This function also takes an optional argument that defines the iterative convergence criteria for the solver (default: 0.001 K).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pressure</strong> – (Pa) </p></li>
 <li><p><strong>temperature</strong> – (K) </p></li>
-<li><p><strong>lifted_pressure</strong> – (Pa)</p></li>
+<li><p><strong>lifted_pressure</strong> – (Pa) </p></li>
+<li><p><strong>converge</strong> – (K)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1258,7 +1259,7 @@
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp4wobfEf"><code class="docutils literal notranslate"><span class="pre">wobf()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp7wetliftEfff"><code class="docutils literal notranslate"><span class="pre">wetlift()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp7wetliftEffff"><code class="docutils literal notranslate"><span class="pre">wetlift()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp14saturated_liftEfff"><code class="docutils literal notranslate"><span class="pre">saturated_lift()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp17moist_adiabat_cm1EfffRfRfRfRfff7adiabat"><code class="docutils literal notranslate"><span class="pre">moist_adiabat_cm1()</span></code></a></li>
 </ul>
