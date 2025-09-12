@@ -291,6 +291,11 @@ numpy.ndarray[dtype=float32]
             "find_lfc_el",
             [](sharp::Parcel& pcl, const_prof_arr_t pres, const_prof_arr_t hght,
                const_prof_arr_t buoy) {
+                if ((pres.shape(0) != hght.shape(0)) ||
+                    (pres.shape(0) != buoy.shape(0))) {
+                    throw nb::buffer_error(
+                        "All input arrays must have the same size!");
+                }
                 pcl.find_lfc_el(pres.data(), hght.data(), buoy.data(),
                                 buoy.size());
             },
@@ -319,6 +324,11 @@ None
             "cape_cinh",
             [](sharp::Parcel& pcl, const_prof_arr_t pres, const_prof_arr_t hght,
                const_prof_arr_t buoy) {
+                if ((pres.shape(0) != hght.shape(0)) ||
+                    (pres.shape(0) != buoy.shape(0))) {
+                    throw nb::buffer_error(
+                        "All input arrays must have the same size!");
+                }
                 pcl.cape_cinh(pres.data(), hght.data(), buoy.data(),
                               buoy.size());
                 return std::make_tuple(pcl.cape, pcl.cinh);
@@ -370,6 +380,11 @@ nwsspc.sharp.calc.parcel.Parcel
             [](sharp::PressureLayer& mix_layer, const_prof_arr_t pressure,
                const_prof_arr_t potential_temperature,
                const_prof_arr_t mixing_ratio) {
+                if ((pressure.shape(0) != potential_temperature.shape(0)) ||
+                    (pressure.shape(0) != mixing_ratio.shape(0))) {
+                    throw nb::buffer_error(
+                        "All input arrays must have the same size!");
+                }
                 return sharp::Parcel::mixed_layer_parcel(
                     mix_layer, pressure.data(), nullptr,
                     potential_temperature.data(), mixing_ratio.data(),
@@ -403,6 +418,12 @@ nwsspc.sharp.calc.parcel.Parcel
             [](sharp::HeightLayer& mix_layer, const_prof_arr_t pressure,
                const_prof_arr_t height, const_prof_arr_t potential_temperature,
                const_prof_arr_t mixing_ratio) {
+                if ((pressure.shape(0) != potential_temperature.shape(0)) ||
+                    (pressure.shape(0) != mixing_ratio.shape(0)) ||
+                    (pressure.shape(0) != height.shape(0))) {
+                    throw nb::buffer_error(
+                        "All input arrays must have the same size!");
+                }
                 return sharp::Parcel::mixed_layer_parcel(
                     mix_layer, pressure.data(), height.data(),
                     potential_temperature.data(), mixing_ratio.data(),
@@ -438,6 +459,13 @@ nwsspc.sharp.calc.parcel.Parcel
                const_prof_arr_t pressure, const_prof_arr_t height,
                const_prof_arr_t temperature, const_prof_arr_t virtemp,
                const_prof_arr_t dewpoint) {
+                if ((pressure.shape(0) != temperature.shape(0)) ||
+                    (pressure.shape(0) != dewpoint.shape(0)) ||
+                    (pressure.shape(0) != height.shape(0)) ||
+                    (pressure.shape(0) != virtemp.shape(0))) {
+                    throw nb::buffer_error(
+                        "All input arrays must have the same size!");
+                }
                 const std::ptrdiff_t NZ = height.size();
                 float* pcl_virtemp_arr = new float[NZ];
                 float* pcl_buoy_arr = new float[NZ];
@@ -488,6 +516,13 @@ nwsspc.sharp.calc.parcel.Parcel
                const_prof_arr_t pressure, const_prof_arr_t height,
                const_prof_arr_t temperature, const_prof_arr_t virtemp,
                const_prof_arr_t dewpoint) {
+                if ((pressure.shape(0) != temperature.shape(0)) ||
+                    (pressure.shape(0) != dewpoint.shape(0)) ||
+                    (pressure.shape(0) != height.shape(0)) ||
+                    (pressure.shape(0) != virtemp.shape(0))) {
+                    throw nb::buffer_error(
+                        "All input arrays must have the same size!");
+                }
                 const std::ptrdiff_t NZ = height.size();
 
                 float* pcl_virtemp_arr = new float[NZ];
@@ -539,6 +574,13 @@ nwsspc.sharp.calc.parcel.Parcel
                const_prof_arr_t pressure, const_prof_arr_t height,
                const_prof_arr_t temperature, const_prof_arr_t virtemp,
                const_prof_arr_t dewpoint) {
+                if ((pressure.shape(0) != temperature.shape(0)) ||
+                    (pressure.shape(0) != dewpoint.shape(0)) ||
+                    (pressure.shape(0) != height.shape(0)) ||
+                    (pressure.shape(0) != virtemp.shape(0))) {
+                    throw nb::buffer_error(
+                        "All input arrays must have the same size!");
+                }
                 const std::ptrdiff_t NZ = height.size();
 
                 float* pcl_virtemp_arr = new float[NZ];
@@ -589,6 +631,13 @@ nwsspc.sharp.calc.parcel.Parcel
                const_prof_arr_t pressure, const_prof_arr_t height,
                const_prof_arr_t temperature, const_prof_arr_t virtemp,
                const_prof_arr_t dewpoint) {
+                if ((pressure.shape(0) != temperature.shape(0)) ||
+                    (pressure.shape(0) != dewpoint.shape(0)) ||
+                    (pressure.shape(0) != height.shape(0)) ||
+                    (pressure.shape(0) != virtemp.shape(0))) {
+                    throw nb::buffer_error(
+                        "All input arrays must have the same size!");
+                }
                 const std::ptrdiff_t NZ = height.size();
 
                 float* pcl_virtemp_arr = new float[NZ];
@@ -638,7 +687,17 @@ nwsspc.sharp.calc.parcel.Parcel
             "downdraft_parcel",
             [](sharp::PressureLayer& search_layer, const_prof_arr_t pressure,
                const_prof_arr_t temperature, const_prof_arr_t dewpoint,
-               const_prof_arr_t thetae, const float mean_depth) {},
+               const_prof_arr_t thetae, const float mean_depth) {
+                if ((pressure.shape(0) != temperature.shape(0)) ||
+                    (pressure.shape(0) != dewpoint.shape(0)) ||
+                    (pressure.shape(0) != thetae.shape(0))) {
+                    throw nb::buffer_error(
+                        "All input arrays must have the same size!");
+                }
+                return sharp::Parcel::downdraft_parcel(
+                    search_layer, pressure.data(), temperature.data(),
+                    dewpoint.data(), thetae.data(), pressure.shape(0));
+            },
             nb::arg("search_layer"), nb::arg("pressure"),
             nb::arg("temperature"), nb::arg("dewpoint"), nb::arg("thetae"),
             nb::arg("mean_depth") = 10000.0f,
