@@ -845,7 +845,8 @@ tuple[float, float]
                 }
                 return sharp::DowndraftParcel::min_thetae(
                     search_layer, pressure.data(), temperature.data(),
-                    dewpoint.data(), thetae.data(), pressure.shape(0));
+                    dewpoint.data(), thetae.data(), pressure.shape(0),
+                    mean_depth);
             },
             nb::arg("search_layer"), nb::arg("pressure"),
             nb::arg("temperature"), nb::arg("dewpoint"), nb::arg("thetae"),

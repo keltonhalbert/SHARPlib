@@ -600,7 +600,7 @@ struct DowndraftParcel {
             get_layer_index(downdraft_layer, pressure_arr, N);
 
         // temperature is MISSING outside of the downdraft layer
-        for (std::ptrdiff_t k = downdraft_idx.ktop; k < N; ++k) {
+        for (std::ptrdiff_t k = downdraft_idx.ktop + 1; k < N; ++k) {
             pcl_tmpk_arr[k] = MISSING;
         }
 
@@ -667,7 +667,7 @@ struct DowndraftParcel {
         float min_thetae = 99999.0;
         float pres_of_min = sharp::MISSING;
 
-        for (std::ptrdiff_t k = lyr_idx.ktop; k >= 0; --k) {
+        for (std::ptrdiff_t k = lyr_idx.ktop; k >= lyr_idx.kbot; --k) {
             sharp::PressureLayer mn_lyr = {pressure[k],
                                            pressure[k] - mean_depth};
             float mean_thetae = sharp::layer_mean(mn_lyr, pressure, thetae, N);
