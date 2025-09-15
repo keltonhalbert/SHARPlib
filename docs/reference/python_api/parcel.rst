@@ -46,9 +46,6 @@ Parcel creation, parcel ascent, and integrated CAPE/CINH.
 
       A tag for user-defined parcels.
 
-   .. autoattribute:: DOWN
-
-      A tag for downdraft parcels.
 
 .. autoclass:: nwsspc.sharp.calc.parcel.Parcel 
 
@@ -74,3 +71,19 @@ Parcel creation, parcel ascent, and integrated CAPE/CINH.
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.lower_parcel
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.find_lfc_el
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.cape_cinh
+
+.. autoclass:: nwsspc.sharp.calc.parcel.DowndraftParcel
+
+   .. autoproperty:: nwsspc.sharp.calc.parcel.DowndraftParcel.pres
+   .. autoproperty:: nwsspc.sharp.calc.parcel.DowndraftParcel.tmpk
+   .. autoproperty:: nwsspc.sharp.calc.parcel.DowndraftParcel.dwpk
+   .. autoproperty:: nwsspc.sharp.calc.parcel.DowndraftParcel.cape
+   .. autoproperty:: nwsspc.sharp.calc.parcel.DowndraftParcel.cinh
+
+   Parcel Definitions
+   ------------------
+   .. autofunction:: nwsspc.sharp.calc.parcel.DowndraftParcel.min_thetae
+
+   Parcel Operations
+   -----------------
+   .. autofunction:: nwsspc.sharp.calc.parcel.DowndraftParcel.lower_parcel

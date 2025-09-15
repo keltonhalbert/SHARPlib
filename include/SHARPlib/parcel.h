@@ -239,11 +239,6 @@ enum class LPL : int {
      * \brief User-defined Parcel
      */
     USR = 5,  // user-defined
-
-    /**
-     * \brief Downdraft Parcel
-     */
-    DOWN = 6,
     END,
 };
 
@@ -379,53 +374,6 @@ struct Parcel {
             const float pcl_vtmpk =
                 liftpcl.parcel_virtual_temperature(pcl_pres, pcl_tmpk);
             pcl_vtmpk_arr[k] = pcl_vtmpk;
-        }
-    }
-
-    /**
-     * \author Kelton Halbert - NWS Storm Prediction Center
-     *
-     * \brief Lowers a saturated sharp::Parcel
-     *
-     * Lowers a saturated sharp::Parcel moist adiabatically from its
-     * sharp::LPL to the surface. The moist adiabat used is determined
-     * bu the type of lifting functor passed to the function (i.e.
-     * sharp::lifter_wobus or sharp::lifter_cm1).
-     *
-     * Unlike sharp::lift_parcel, the virtual temperature correction
-     * is not used for downdraft parcels.
-     *
-     * \param   liftpcl         Parcel lifting function/functor
-     * \param   pressure_arr    Array of env pressure (Pa)
-     * \param   pcl_tmpk_arr    The array to fill with parcel temperature (K)
-     * \param   N               The length of the arrays
-     */
-    template <typename Lft>
-    void lower_parcel(Lft& liftpcl, const float pressure_arr[],
-                      float pcl_tmpk_arr[], const std::ptrdiff_t N) {
-        if (this->source != LPL::DOWN) {
-            throw std::logic_error(
-                "LogicError: Cannot call sharp::lower_parcel unless "
-                "using a downdraft parcel tagged with sharp::LPL::DOWN. "
-                "It is recommend you use sharp::downdraft_parcel.");
-        }
-        PressureLayer downdraft_layer = {pressure_arr[0], this->pres};
-        LayerIndex downdraft_idx =
-            get_layer_index(downdraft_layer, pressure_arr, N);
-
-        // temperature is MISSING outside of the downdraft layer
-        for (std::ptrdiff_t k = downdraft_idx.ktop; k < N; ++k) {
-            pcl_tmpk_arr[k] = MISSING;
-        }
-
-        pcl_tmpk_arr[downdraft_idx.ktop] =
-            wetbulb(liftpcl, this->pres, this->tmpk, this->dwpk);
-
-        liftpcl.setup(this->pres, pcl_tmpk_arr[downdraft_idx.ktop]);
-
-        for (std::ptrdiff_t k = downdraft_idx.ktop - 1; k >= 0; --k) {
-            pcl_tmpk_arr[k] = liftpcl(pressure_arr[k + 1], pcl_tmpk_arr[k + 1],
-                                      pressure_arr[k]);
         }
     }
 
@@ -583,6 +531,90 @@ struct Parcel {
 
         return max_parcel;
     }
+};
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Data that defines a DowndraftParcel, its attributes, and derived
+ * quantities.
+ *
+ * Contains information about a DowndraftParcel's starting level and
+ * thermodynamic attributes, as well as paramaters computed
+ * using the parcel.
+ */
+struct DowndraftParcel {
+    /**
+     * \brief Parcel starting pressure (Pa)
+     */
+    float pres = MISSING;
+
+    /**
+     * \brief Parcel starting temperature (K)
+     */
+    float tmpk = MISSING;
+
+    /**
+     * \brief Parcel starting dewpoint (K)
+     */
+    float dwpk = MISSING;
+
+    /**
+     * \brief Parcel Convective Available Potential Energy (J/kg) between
+     * the LFC and EL
+     */
+    float cape = 0.0;
+
+    /**
+     * \brief Parcel Convective Inhibition (J/kg) between the LFC and EL
+     */
+    float cinh = std::nanf("");
+
+    DowndraftParcel();
+    DowndraftParcel(const float pressure, const float temperature,
+                    const float dewpoint);
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Lowers a saturated sharp::Parcel
+     *
+     * Lowers a saturated sharp::Parcel moist adiabatically from its
+     * sharp::LPL to the surface. The moist adiabat used is determined
+     * bu the type of lifting functor passed to the function (i.e.
+     * sharp::lifter_wobus or sharp::lifter_cm1).
+     *
+     * Unlike sharp::lift_parcel, the virtual temperature correction
+     * is not used for downdraft parcels.
+     *
+     * \param   liftpcl         Parcel lifting function/functor
+     * \param   pressure_arr    Array of env pressure (Pa)
+     * \param   pcl_tmpk_arr    The array to fill with parcel temperature
+     * (K)
+     * \param   N               The length of the arrays
+     */
+    template <typename Lft>
+    void lower_parcel(Lft& liftpcl, const float pressure_arr[],
+                      float pcl_tmpk_arr[], const std::ptrdiff_t N) {
+        PressureLayer downdraft_layer = {pressure_arr[0], this->pres};
+        LayerIndex downdraft_idx =
+            get_layer_index(downdraft_layer, pressure_arr, N);
+
+        // temperature is MISSING outside of the downdraft layer
+        for (std::ptrdiff_t k = downdraft_idx.ktop; k < N; ++k) {
+            pcl_tmpk_arr[k] = MISSING;
+        }
+
+        pcl_tmpk_arr[downdraft_idx.ktop] =
+            wetbulb(liftpcl, this->pres, this->tmpk, this->dwpk);
+
+        liftpcl.setup(this->pres, pcl_tmpk_arr[downdraft_idx.ktop]);
+
+        for (std::ptrdiff_t k = downdraft_idx.ktop - 1; k >= 0; --k) {
+            pcl_tmpk_arr[k] = liftpcl(pressure_arr[k + 1], pcl_tmpk_arr[k + 1],
+                                      pressure_arr[k]);
+        }
+    }
 
     /**
      * \author Kelton Halbert - NWS Storm Prediction Center
@@ -605,12 +637,10 @@ struct Parcel {
      *
      * \return  the sharp::Parcel defining a downdraft parcel.
      */
-    static Parcel downdraft_parcel(sharp::PressureLayer& search_layer,
-                                   const float pressure[],
-                                   const float temperature[],
-                                   const float dewpoint[], const float thetae[],
-                                   const std::ptrdiff_t N,
-                                   const float mean_depth = 10000.0f) {
+    static DowndraftParcel min_thetae(
+        sharp::PressureLayer& search_layer, const float pressure[],
+        const float temperature[], const float dewpoint[], const float thetae[],
+        const std::ptrdiff_t N, const float mean_depth = 10000.0f) {
         const sharp::LayerIndex lyr_idx =
             sharp::get_layer_index(search_layer, pressure, N);
 
@@ -632,10 +662,9 @@ struct Parcel {
         float pcl_td =
             sharp::interp_pressure(pres_of_min, pressure, dewpoint, N);
 
-        return Parcel(pres_of_min, pcl_t, pcl_td, LPL::DOWN);
+        return DowndraftParcel(pres_of_min, pcl_t, pcl_td);
     }
 };
-
 }  // end namespace sharp
 
 #endif  // SHARP_PARCEL_H

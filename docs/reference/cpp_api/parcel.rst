@@ -14,3 +14,6 @@ Parcels
 .. doxygenenum:: sharp::LPL
 .. doxygenstruct:: sharp::Parcel 
    :members:
+
+.. docygenstruct:: sharp::DowndraftParcel
+   :members:
