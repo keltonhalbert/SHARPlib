@@ -225,14 +225,8 @@ def test_downdraft_parcel():
     pcl_t_wobf = dcape_pcl.lower_parcel(wobus, snd_data["pres"])
     pcl_t_cm1_pseudo_liq = dcape_pcl.lower_parcel(cm1, snd_data["pres"])
 
-    if (np.any(np.isnan(pcl_t_cm1_pseudo_liq))):
-        print(f"pcl_t: {pcl_t_cm1_pseudo_liq}")
-
     pcl_buoy_wobf = thermo.buoyancy(pcl_t_wobf, snd_data["tmpk"])
     pcl_buoy_cm1 = thermo.buoyancy(pcl_t_cm1_pseudo_liq, snd_data["tmpk"])
-
-    if (np.any(np.isnan(pcl_buoy_cm1))):
-        print(f"pcl_t: {pcl_buoy_cm1}")
 
     dcape_wobf, dcinh_wobf = dcape_pcl.cape_cinh(snd_data["pres"], snd_data["hght"], pcl_buoy_wobf)
     dcape_cm1, dcinh_cm1 = dcape_pcl.cape_cinh(snd_data["pres"], snd_data["hght"], pcl_buoy_cm1)
