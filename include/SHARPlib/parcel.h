@@ -414,7 +414,7 @@ struct Parcel {
             get_layer_index(downdraft_layer, pressure_arr, N);
 
         // temperature is MISSING outside of the downdraft layer
-        for (std::ptrdiff_t k = downdraft_idx.ktop; k < N - 1; ++k) {
+        for (std::ptrdiff_t k = downdraft_idx.ktop; k < N; ++k) {
             pcl_tmpk_arr[k] = MISSING;
         }
 
