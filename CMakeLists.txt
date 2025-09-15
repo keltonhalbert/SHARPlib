@@ -62,8 +62,8 @@ else() # For GCC/Clang
 
     # Add debug and release specific options
     target_compile_options(SHARPlib PRIVATE
-        $<$<CONFIG:Debug>:-g -O3 -ftree-vectorize -funroll-loops> # Debug: Enable debug info, optimizations, vectorization
-        $<$<CONFIG:Release>:-O3 -ftree-vectorize -funroll-loops -fPIC> # Release: Optimize, vectorize, generate PIC
+        $<$<CONFIG:Debug>:-g -O3 -fno-tree-vectorize -funroll-loops> # Debug: Enable debug info, optimizations, vectorization
+        $<$<CONFIG:Release>:-O3 -fno-tree-vectorize -funroll-loops -fPIC> # Release: Optimize, vectorize, generate PIC
     )
 endif()
 
