@@ -19,7 +19,6 @@
 #include <SHARPlib/thermo.h>
 
 #include <cstddef>
-#include <stdexcept>
 
 namespace sharp {
 
