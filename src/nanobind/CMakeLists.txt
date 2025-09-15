@@ -30,6 +30,8 @@ if (MSVC) # For MSVC (cl) compiler
         /utf-8        # Set source and execution character set to UTF-8
     )
 endif()
+target_compile_options(calc PRIVATE -fsanitize=address)
+target_link_options(calc PRIVATE -fsanitize=address)
 set_target_properties(calc PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/nwsspc/sharp"
 )
