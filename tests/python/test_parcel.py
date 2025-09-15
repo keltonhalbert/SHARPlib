@@ -233,5 +233,7 @@ def test_downdraft_parcel():
 
     assert (dcape_wobf == pytest.approx(-1453, abs=2))
     assert (dcinh_wobf == 0.0)
+    print(pcl_t_cm1_pseudo_liq)
+    print(pcl_buoy_cm1)
     assert (dcape_cm1 == pytest.approx(-1425, abs=2))
     assert (dcinh_cm1 == 0.0)
