@@ -385,8 +385,8 @@ struct Parcel {
      * Searches the buoyancy array for the LFC and EL combination that
      * results in the most CAPE in the given profile. The buoyancy array is
      * typically computed by calling sharp::Parcel::lift_parcel. Once the LFC
-     * and EL are found, the values are set in sharp::Parcel.lfc_pres and
-     * sharp::Parcel.eql_pres.
+     * and EL are found, the values are set in sharp::Parcel::lfc_pres and
+     * sharp::Parcel::eql_pres.
      *
      * \param   pres_arr    The pressure coordinate array (Pa)
      * \param   hght_arr    The height coordinate array (meters)
@@ -615,6 +615,27 @@ struct DowndraftParcel {
                                       pressure_arr[k]);
         }
     }
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Compute CAPE and CINH for a previously lowered
+     * sharp::DowndraftParcel.
+     *
+     * Assuming that sharp::DowndraftParcel::lower_parcel has been called,
+     * cape_cinh will integrate the area between the LPL and the surface to
+     * compute downdraft CAPE and downdraft CINH.
+     *
+     * The results are set in sharp::DowndraftParcel::cape and
+     * sharp::DowndraftParcel::cinh.
+     *
+     * \param   pres_arr    Array of pressure   (Pa)
+     * \param   hght_arr    Array of height     (meters)
+     * \param   buoy_arr    Array of buoyancy   (m/s^2)
+     * \param   N           Length of arrays
+     */
+    void cape_cinh(const float pres_arr[], const float hght_arr[],
+                   const float buoy_arr[], const ptrdiff_t N);
 
     /**
      * \author Kelton Halbert - NWS Storm Prediction Center

@@ -63,15 +63,6 @@ template Parcel Parcel::mixed_layer_parcel<HeightLayer>(
     const float pot_temperature[], const float wv_mixratio[],
     const std::ptrdiff_t N);
 
-DowndraftParcel::DowndraftParcel() {}
-
-DowndraftParcel::DowndraftParcel(const float pressure, const float temperature,
-                                 const float dewpoint) {
-    this->pres = pressure;
-    this->tmpk = temperature;
-    this->dwpk = dewpoint;
-}
-
 template void Parcel::lift_parcel<lifter_wobus>(lifter_wobus& liftpcl,
                                                 const float pressure_arr[],
                                                 float pcl_vtmpk_arr[],
@@ -81,14 +72,6 @@ template void Parcel::lift_parcel<lifter_cm1>(lifter_cm1& liftpcl,
                                               const float pressure_arr[],
                                               float pcl_vtmpk_arr[],
                                               const std::ptrdiff_t N);
-
-template void DowndraftParcel::lower_parcel<lifter_wobus>(
-    lifter_wobus& liftpcl, const float pressure_arr[], float pcl_tmpk_arr[],
-    const std::ptrdiff_t N);
-
-template void DowndraftParcel::lower_parcel<lifter_cm1>(
-    lifter_cm1& liftpcl, const float pressure_arr[], float pcl_tmpk_arr[],
-    const std::ptrdiff_t N);
 
 void Parcel::find_lfc_el(const float pres_arr[], const float hght_arr[],
                          const float buoy_arr[], const std::ptrdiff_t N) {
@@ -184,6 +167,40 @@ void Parcel::cape_cinh(const float pres_arr[], const float hght_arr[],
             integrate_layer_trapz(lpl_lfc_ht, buoy_arr, hght_arr, N, -1);
         this->cape = integrate_layer_trapz(lfc_el_ht, buoy_arr, hght_arr, N, 1);
     }
+}
+
+DowndraftParcel::DowndraftParcel() {}
+
+DowndraftParcel::DowndraftParcel(const float pressure, const float temperature,
+                                 const float dewpoint) {
+    this->pres = pressure;
+    this->tmpk = temperature;
+    this->dwpk = dewpoint;
+}
+
+template void DowndraftParcel::lower_parcel<lifter_wobus>(
+    lifter_wobus& liftpcl, const float pressure_arr[], float pcl_tmpk_arr[],
+    const std::ptrdiff_t N);
+
+template void DowndraftParcel::lower_parcel<lifter_cm1>(
+    lifter_cm1& liftpcl, const float pressure_arr[], float pcl_tmpk_arr[],
+    const std::ptrdiff_t N);
+
+void DowndraftParcel::cape_cinh(const float pres_arr[], const float hght_arr[],
+                                const float buoy_arr[], const ptrdiff_t N) {
+    if ((this->pres == MISSING) || (this->tmpk == MISSING) ||
+        (this->dwpk == MISSING)) {
+        return;
+    }
+
+    sharp::PressureLayer dcape_lyr = {pres_arr[0], this->pres};
+    sharp::HeightLayer dcape_hght_lyr =
+        pressure_layer_to_height(dcape_lyr, pres_arr, hght_arr, N);
+
+    this->cinh =
+        integrate_layer_trapz(dcape_hght_lyr, buoy_arr, hght_arr, N, 1);
+    this->cape =
+        integrate_layer_trapz(dcape_hght_lyr, buoy_arr, hght_arr, N, -1);
 }
 
 }  // end namespace sharp

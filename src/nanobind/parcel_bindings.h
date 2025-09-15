@@ -31,11 +31,12 @@ the compiler can still optimize, rather than using function pointers
 or lambdas. 
 
 Specifically, this functor is designed to be passed as a template 
-argument to Parcel::lift_parcel, so that the method of computing 
-moist adiabats can be changed without changing the overall parcel 
-lifting code. The reason this is awesome is that the compiler 
-can still optimize and inline this code, while the user can 
-configure the parcel lifting algorithm to their specifications. 
+argument to nwsspc.sharp.calc.parcel.Parcel.lift_parcel, so that 
+the method of computing moist adiabats can be changed without 
+changing the overall parcel lifting code. The reason this is awesome 
+is that the compiler can still optimize and inline this code, while 
+the user can configure the parcel lifting algorithm to their 
+specifications. 
 
 )pbdoc")
         .def(nb::init<>())
@@ -102,7 +103,7 @@ it is an iterative solver. This results in major performance improvements while
 maintaining accuracy.
                    )pbdoc")
         .def_rw("ma_type", &sharp::lifter_cm1::ma_type, R"pbdoc(
-The type of moist adiabat to use, defined by sharp::adiabat
+The type of moist adiabat to use, defined by nwsspc.sharp.calc.thermo.adiabat
             )pbdoc")
         .def_rw("pressure_incr", &sharp::lifter_cm1::pressure_incr, R"pbdoc(
 The pressure increment (Pa) to use for the iterative solver. 
@@ -132,7 +133,7 @@ None
              nb::arg("pres"), nb::arg("tmpk"), nb::arg("new_pres"),
              R"pbdoc(
 Lifts a parcel moist adiabatically/pseudoadiabatically using
-sharp::moist_adiabat_cm1.
+nwsspc.sharp.calc.thermo.moist_adiabat_cm1.
 
 Parameters
 ----------
@@ -303,9 +304,10 @@ numpy.ndarray[dtype=float32]
             R"pbdoc(
 Searches the buoyancy array for the LFC and EL combination that results
 in the maximum amount of CAPE in the given profile. The buoyancy array 
-is typically computed by calling Parcel.lift_parcel. Once the LFC and 
-EL are found, the value are set in Parcel.lfc_pres and Parcel.eql_pres
-via the provided parcel.
+is typically computed by calling nwsspc.sharp.calc.parcel.Parcel.lift_parcel. 
+Once the LFC and EL are found, the value are set in 
+nwsspc.sharp.calc.parcel.Parcel.lfc_pres and 
+nwsspc.sharp.calc.parcel.Parcel.eql_pres via the provided parcel.
 
 Parameters
 ----------
@@ -318,7 +320,8 @@ buoyancy : numpy.ndarray[dtype=float32]
 
 Returns
 -------
-None
+tuple[float, float]
+    (CAPE, CINH)
         )pbdoc")
         .def(
             "cape_cinh",
@@ -335,12 +338,13 @@ None
             },
             nb::arg("pres"), nb::arg("hght"), nb::arg("buoy"),
             R"pbdoc(
-Assuming that Parcel.lift_parcel has been called, cape_cinh
-will integrate the area between the LFC and EL to compute CAPE,
-and integrate the area between the LPL and LCL to compute CINH.
+Assuming that nwsspc.sharp.calc.parcel.Parcel.lift_parcel has 
+been called, cape_cinh will integrate the area between the LFC 
+and EL to compute CAPE, and integrate the area between the LPL 
+and LCL to compute CINH.
 
-The results are stored in Parcel.cape and Parcel.cinh via the 
-provided parcel.
+The results are stored in nwsspc.sharp.calc.parcel.Parcel.cape 
+and nwsspc.sharp.calc.parcel.Parcel.cinh via the provided parcel.
 
 Parameters
 ----------
@@ -353,7 +357,8 @@ buoyancy : numpy.ndarray[dtype=float32]
 
 Returns
 -------
-None
+tuple[float, float]
+    (CAPE, CINH)
         )pbdoc")
         .def_static("surface_parcel", &sharp::Parcel::surface_parcel,
                     nb::arg("pressure"), nb::arg("temperature"),
@@ -393,8 +398,9 @@ nwsspc.sharp.calc.parcel.Parcel
             nb::arg("mix_layer"), nb::arg("pressure"),
             nb::arg("potential_temperature"), nb::arg("mixing_ratio"),
             R"pbdoc(
-Given input arrays of pressure, potential temperature, and water vapor mixing ratio, as well as a 
-defined PressureLayer, compute and return a mixed-layer Parcel.
+Given input arrays of pressure, potential temperature, 
+and water vapor mixing ratio, as well as a defined PressureLayer, 
+compute and return a mixed-layer Parcel.
 
 Parameters
 ----------
@@ -432,8 +438,9 @@ nwsspc.sharp.calc.parcel.Parcel
             nb::arg("mix_layer"), nb::arg("pressure"), nb::arg("height"),
             nb::arg("potential_temperature"), nb::arg("mixing_ratio"),
             R"pbdoc(
-Given input arrays of pressure, potential temperature, and water vapor mixing ratio, as well as a 
-defined PressureLayer, compute and return a mixed-layer Parcel.
+Given input arrays of pressure, potential temperature, and water 
+vapor mixing ratio, as well as a defined PressureLayer, compute 
+and return a mixed-layer Parcel.
 
 Parameters
 ----------
@@ -788,6 +795,42 @@ Returns
 -------
 numpy.ndarray[dtype=float32]
     A 1D NumPy array of parcel temperature values (K)
+        )pbdoc")
+        .def(
+            "cape_cinh",
+            [](sharp::DowndraftParcel& pcl, const_prof_arr_t pres,
+               const_prof_arr_t hght, const_prof_arr_t buoy) {
+                if ((pres.shape(0) != hght.shape(0)) ||
+                    (pres.shape(0) != buoy.shape(0))) {
+                    throw nb::buffer_error(
+                        "All input arrays must have the same size!");
+                }
+                pcl.cape_cinh(pres.data(), hght.data(), buoy.data(),
+                              buoy.size());
+                return std::make_tuple(pcl.cape, pcl.cinh);
+            },
+            nb::arg("pres"), nb::arg("hght"), nb::arg("buoy"),
+            R"pbdoc(
+Assuming that nwsspc.sharp.calc.parcel.DowndraftParcel.lift_parcel 
+has been called, cape_cinh will integrate the area between the LPL
+and the surface to compute downdraft CAPE and downdraft CINH.
+
+The results are stored in nwsspc.sharp.calc.parcel.DowndraftParcel.cape 
+and nwsspc.sharp.calc.parcel.DowndraftParcel.cinh via the provided parcel.
+
+Parameters
+----------
+pres : numpy.ndarray[dtype=float32] 
+    1D NumPy array of pressure values (Pa)
+hght : numpy.ndarray[dtype=float32] 
+    1D NumPy array of height values (Pa)
+buoyancy : numpy.ndarray[dtype=float32] 
+    1D NumPy array of buoyancy values (m/s^2)
+
+Returns
+-------
+tuple[float, float]
+    (DCAPE, DCINH)
         )pbdoc")
         .def_static(
             "min_thetae",
