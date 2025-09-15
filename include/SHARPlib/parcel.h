@@ -609,7 +609,8 @@ struct DowndraftParcel {
 
         liftpcl.setup(this->pres, pcl_tmpk_arr[downdraft_idx.ktop]);
 
-        for (std::ptrdiff_t k = downdraft_idx.ktop - 1; k >= 0; --k) {
+        for (std::ptrdiff_t k = downdraft_idx.ktop - 1; k >= downdraft_idx.kbot;
+             --k) {
             pcl_tmpk_arr[k] = liftpcl(pressure_arr[k + 1], pcl_tmpk_arr[k + 1],
                                       pressure_arr[k]);
         }
