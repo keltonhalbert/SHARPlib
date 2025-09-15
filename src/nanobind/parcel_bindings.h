@@ -288,6 +288,76 @@ numpy.ndarray[dtype=float32]
     A 1D NumPy array of parcel virtual temperature values (K)
         )pbdoc")
         .def(
+            "lower_parcel",
+            [](sharp::Parcel& pcl, sharp::lifter_wobus& lifter,
+               const_prof_arr_t pressure) {
+                const std::ptrdiff_t NZ = pressure.size();
+                float* tmpk_arr = new float[NZ];
+
+                pcl.lower_parcel(lifter, pressure.data(), tmpk_arr, NZ);
+
+                nb::capsule owner(tmpk_arr,
+                                  [](void* p) noexcept { delete[] (float*)p; });
+                return out_arr_t(tmpk_arr, {pressure.shape(0)}, owner);
+            },
+            nb::arg("lifter"), nb::arg("pressure"),
+            R"pbdoc(
+Lowers a saturated nwsspc.sharp.calc.parcel.Parcel moist adiabatically 
+from its LPL to the surface. The moist adiabat used is determined
+by the type of lifting functor passed to the function (i.e.
+lifter_wobus or lifter_cm1).
+
+Unlike nwsspc.sharp.calc.parcel.Parcel.lift_parcel, the virtual 
+temperature correction is not used for downdraft parcels.
+
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+    An instantiated lifter_wobus functor
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of Pressure levels for lifting (Pa)
+
+Returns
+-------
+numpy.ndarray[dtype=float32]
+    A 1D NumPy array of parcel temperature values (K)
+        )pbdoc")
+        .def(
+            "lower_parcel",
+            [](sharp::Parcel& pcl, sharp::lifter_cm1& lifter,
+               const_prof_arr_t pressure) {
+                const std::ptrdiff_t NZ = pressure.size();
+                float* tmpk_arr = new float[NZ];
+
+                pcl.lower_parcel(lifter, pressure.data(), tmpk_arr, NZ);
+
+                nb::capsule owner(tmpk_arr,
+                                  [](void* p) noexcept { delete[] (float*)p; });
+                return out_arr_t(tmpk_arr, {pressure.shape(0)}, owner);
+            },
+            nb::arg("lifter"), nb::arg("pressure"),
+            R"pbdoc(
+Lowers a saturated nwsspc.sharp.calc.parcel.Parcel moist adiabatically 
+from its LPL to the surface. The moist adiabat used is determined
+by the type of lifting functor passed to the function (i.e.
+lifter_wobus or lifter_cm1).
+
+Unlike nwsspc.sharp.calc.parcel.Parcel.lift_parcel, the virtual 
+temperature correction is not used for downdraft parcels.
+
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_cm1
+    An instantiated lifter_cm1 functor
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of Pressure levels for lifting (Pa)
+
+Returns
+-------
+numpy.ndarray[dtype=float32]
+    A 1D NumPy array of parcel temperature values (K)
+        )pbdoc")
+        .def(
             "find_lfc_el",
             [](sharp::Parcel& pcl, const_prof_arr_t pres, const_prof_arr_t hght,
                const_prof_arr_t buoy) {

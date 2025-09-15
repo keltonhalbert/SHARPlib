@@ -71,5 +71,6 @@ Parcel creation, parcel ascent, and integrated CAPE/CINH.
    Parcel Operations 
    -----------------
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.lift_parcel
+   .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.lower_parcel
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.find_lfc_el
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.cape_cinh

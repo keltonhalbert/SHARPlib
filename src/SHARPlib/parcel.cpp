@@ -73,6 +73,16 @@ template void Parcel::lift_parcel<lifter_cm1>(lifter_cm1& liftpcl,
                                               float pcl_vtmpk_arr[],
                                               const std::ptrdiff_t N);
 
+template void Parcel::lower_parcel<lifter_wobus>(lifter_wobus& liftpcl,
+                                                 const float pressure_arr[],
+                                                 float pcl_tmpk_arr[],
+                                                 const std::ptrdiff_t N);
+
+template void Parcel::lower_parcel<lifter_cm1>(lifter_cm1& liftpcl,
+                                               const float pressure_arr[],
+                                               float pcl_tmpk_arr[],
+                                               const std::ptrdiff_t N);
+
 void Parcel::find_lfc_el(const float pres_arr[], const float hght_arr[],
                          const float buoy_arr[], const std::ptrdiff_t N) {
     if (this->lcl_pressure <= pres_arr[N - 1]) return;
