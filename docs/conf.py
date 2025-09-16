@@ -93,6 +93,7 @@ breathe_default_project = "SHARPlib"
 html_theme = "pydata_sphinx_theme"
 
 html_theme_options = {
+    "show_toc_level": 2,
     "logo": {
         "text": f"SHARPlib",
         "image_light": "_static/logo.png",
