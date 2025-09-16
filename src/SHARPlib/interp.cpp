@@ -41,7 +41,7 @@ float interp_height(const float height_val, const float height_arr[],
         if (data_arr[idx_bot] != MISSING) break;
     }
 
-    for (; idx_top < N; ++idx_top) {
+    for (; idx_top < N - 1; ++idx_top) {
         if (data_arr[idx_top] != MISSING) break;
     }
 
@@ -86,7 +86,7 @@ float interp_pressure(const float pressure_val, const float pressure_arr[],
         if (data_arr[idx_bot] != MISSING) break;
     }
 
-    for (; idx_top < N; ++idx_top) {
+    for (; idx_top < N - 1; ++idx_top) {
         if (data_arr[idx_top] != MISSING) break;
     }
 

@@ -6,7 +6,7 @@
  *   Email: kelton.halbert@noaa.gov  \n
  * \date   2022-11-09
  *
- * Written for the NWS Storm Predidiction Center \n
+ * Written for the NWS Storm Prediction Center \n
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
@@ -384,8 +384,8 @@ struct Parcel {
      * Searches the buoyancy array for the LFC and EL combination that
      * results in the most CAPE in the given profile. The buoyancy array is
      * typically computed by calling sharp::Parcel::lift_parcel. Once the LFC
-     * and EL are found, the values are set in sharp::Parcel.lfc_pres and
-     * sharp::Parcel.eql_pres.
+     * and EL are found, the values are set in sharp::Parcel::lfc_pres and
+     * sharp::Parcel::eql_pres.
      *
      * \param   pres_arr    The pressure coordinate array (Pa)
      * \param   hght_arr    The height coordinate array (meters)
@@ -532,6 +532,162 @@ struct Parcel {
     }
 };
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Data that defines a DowndraftParcel, its attributes, and derived
+ * quantities.
+ *
+ * Contains information about a DowndraftParcel's starting level and
+ * thermodynamic attributes, as well as paramaters computed
+ * using the parcel.
+ */
+struct DowndraftParcel {
+    /**
+     * \brief Parcel starting pressure (Pa)
+     */
+    float pres = MISSING;
+
+    /**
+     * \brief Parcel starting temperature (K)
+     */
+    float tmpk = MISSING;
+
+    /**
+     * \brief Parcel starting dewpoint (K)
+     */
+    float dwpk = MISSING;
+
+    /**
+     * \brief Parcel Convective Available Potential Energy (J/kg) between
+     * the LFC and EL
+     */
+    float cape = 0.0;
+
+    /**
+     * \brief Parcel Convective Inhibition (J/kg) between the LFC and EL
+     */
+    float cinh = std::nanf("");
+
+    DowndraftParcel();
+    DowndraftParcel(const float pressure, const float temperature,
+                    const float dewpoint);
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Lowers a saturated sharp::Parcel
+     *
+     * Lowers a saturated sharp::Parcel moist adiabatically from its
+     * sharp::LPL to the surface. The moist adiabat used is determined
+     * bu the type of lifting functor passed to the function (i.e.
+     * sharp::lifter_wobus or sharp::lifter_cm1).
+     *
+     * Unlike sharp::lift_parcel, the virtual temperature correction
+     * is not used for downdraft parcels.
+     *
+     * \param   liftpcl         Parcel lifting function/functor
+     * \param   pressure_arr    Array of env pressure (Pa)
+     * \param   pcl_tmpk_arr    The array to fill with parcel temperature
+     * (K)
+     * \param   N               The length of the arrays
+     */
+    template <typename Lft>
+    void lower_parcel(Lft& liftpcl, const float pressure_arr[],
+                      float pcl_tmpk_arr[], const std::ptrdiff_t N) {
+        PressureLayer downdraft_layer = {pressure_arr[0], this->pres};
+        LayerIndex downdraft_idx =
+            get_layer_index(downdraft_layer, pressure_arr, N);
+
+        // temperature is MISSING outside of the downdraft layer
+        for (std::ptrdiff_t k = N - 1; k > downdraft_idx.ktop; --k) {
+            pcl_tmpk_arr[k] = MISSING;
+        }
+
+        float wbt_pcl = wetbulb(liftpcl, this->pres, this->tmpk, this->dwpk);
+        liftpcl.setup(this->pres, wbt_pcl);
+
+        pcl_tmpk_arr[downdraft_idx.ktop] =
+            liftpcl(this->pres, wbt_pcl, pressure_arr[downdraft_idx.ktop]);
+
+        for (std::ptrdiff_t k = downdraft_idx.ktop - 1; k >= downdraft_idx.kbot;
+             --k) {
+            pcl_tmpk_arr[k] = liftpcl(pressure_arr[k + 1], pcl_tmpk_arr[k + 1],
+                                      pressure_arr[k]);
+        }
+    }
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Compute CAPE and CINH for a previously lowered
+     * sharp::DowndraftParcel.
+     *
+     * Assuming that sharp::DowndraftParcel::lower_parcel has been called,
+     * cape_cinh will integrate the area between the LPL and the surface to
+     * compute downdraft CAPE and downdraft CINH.
+     *
+     * The results are set in sharp::DowndraftParcel::cape and
+     * sharp::DowndraftParcel::cinh.
+     *
+     * \param   pres_arr    Array of pressure   (Pa)
+     * \param   hght_arr    Array of height     (meters)
+     * \param   buoy_arr    Array of buoyancy   (m/s^2)
+     * \param   N           Length of arrays
+     */
+    void cape_cinh(const float pres_arr[], const float hght_arr[],
+                   const float buoy_arr[], const ptrdiff_t N);
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Define a downdraft parcel.
+     *
+     * Defines a downdraft parcel within a given search layer.
+     * The downdraft parcel is defined as the mimumim layer-mean
+     * equivalent potential temperature (Theta-E) within the
+     * search layer. Typical values are to search within the lowest
+     * 400 hPa of the profile, and a mean depth of 100 hPa.
+     *
+     * \param   search_layer    sharp::PressureLayer to search
+     * \param   pressure        (Pa)
+     * \param   temperature     (K)
+     * \param   dewpoint        (K)
+     * \param   thetae          (K)
+     * \param   N               (length of arrays)
+     * \param   mean_depth      (Pa)
+     *
+     * \return  the sharp::Parcel defining a downdraft parcel.
+     */
+    static DowndraftParcel min_thetae(
+        sharp::PressureLayer& search_layer, const float pressure[],
+        const float temperature[], const float dewpoint[], const float thetae[],
+        const std::ptrdiff_t N, const float mean_depth = 10000.0f) {
+        const sharp::LayerIndex lyr_idx =
+            sharp::get_layer_index(search_layer, pressure, N);
+
+        float min_thetae = 99999.0;
+        float pres_of_min = sharp::MISSING;
+        float half_depth = mean_depth / 2.0f;
+
+        for (std::ptrdiff_t k = lyr_idx.ktop; k >= lyr_idx.kbot; --k) {
+            sharp::PressureLayer mn_lyr = {pressure[k] + half_depth,
+                                           pressure[k] - half_depth};
+            float mean_thetae = sharp::layer_mean(mn_lyr, pressure, thetae, N);
+            if (mean_thetae < min_thetae) {
+                min_thetae = mean_thetae;
+                pres_of_min = mn_lyr.bottom - (mean_depth / 2.0f);
+            }
+        }
+
+        float pcl_t =
+            sharp::interp_pressure(pres_of_min, pressure, temperature, N);
+        float pcl_td =
+            sharp::interp_pressure(pres_of_min, pressure, dewpoint, N);
+
+        return DowndraftParcel(pres_of_min, pcl_t, pcl_td);
+    }
+};
 }  // end namespace sharp
 
 #endif  // SHARP_PARCEL_H

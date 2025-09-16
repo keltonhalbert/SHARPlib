@@ -17,10 +17,10 @@ def load_parquet(filename):
     snd_df = snd_df[snd_df["relh"].notna()]
     snd_df = snd_df[snd_df["pres"] >= 50.0]
 
-    pres = snd_df["pres"].to_numpy().astype('float32')*100.0
+    pres = snd_df["pres"].to_numpy().astype('float32')*np.float32(100.0)
     hght = snd_df["hght"].to_numpy().astype('float32')
-    tmpk = snd_df["tmpc"].to_numpy().astype('float32')+273.15
-    dwpk = snd_df["dwpc"].to_numpy().astype('float32')+273.15
+    tmpk = snd_df["tmpc"].to_numpy().astype('float32')+np.float32(273.15)
+    dwpk = snd_df["dwpc"].to_numpy().astype('float32')+np.float32(273.15)
     wdir = snd_df["wdir"].to_numpy().astype('float32')
     wspd = snd_df["wspd"].to_numpy().astype('float32')
     uwin = snd_df["uwin"].to_numpy().astype('float32')
@@ -29,16 +29,19 @@ def load_parquet(filename):
     # turn into height above ground level
     hght -= hght[0]
 
-    # TO-DO - need a better interface to the API for doing this
-    # uwin = np.empty(wspd.shape, dtype="float32")
-    # vwin = np.empty(wspd.shape, dtype="float32")
     mixr = thermo.mixratio(pres, dwpk)
     vtmp = thermo.virtual_temperature(tmpk, mixr)
+    thetae = thermo.thetae(
+        pres,
+        tmpk,
+        dwpk
+    )
 
     return {
         "pres": pres, "hght": hght,
         "tmpk": tmpk, "mixr": mixr,
         "vtmp": vtmp, "dwpk": dwpk,
+        "thetae": thetae,
         "wdir": wdir, "wspd": wspd,
         "uwin": uwin, "vwin": vwin
     }
@@ -200,3 +203,35 @@ def test_most_unstable_parcel():
     assert (pcl.cinh == pytest.approx(-36.4, abs=5e-1))
     assert (pcl.lfc_pressure == pytest.approx(71482, abs=1e0))
     assert (pcl.eql_pressure == pytest.approx(18969, abs=1e0))
+
+def test_downdraft_parcel():
+    wobus = parcel.lifter_wobus()
+    cm1 = parcel.lifter_cm1()
+    cm1.ma_type = thermo.adiabat.pseudo_liq
+
+    search_layer = layer.PressureLayer(
+        snd_data["pres"][0], 
+        snd_data["pres"][0] - 40000.0
+    )
+
+    dcape_pcl = parcel.DowndraftParcel.min_thetae(
+        search_layer,
+        snd_data["pres"],
+        snd_data["tmpk"],
+        snd_data["dwpk"],
+        snd_data["thetae"]
+    )
+
+    pcl_t_wobf = dcape_pcl.lower_parcel(wobus, snd_data["pres"])
+    pcl_t_cm1_pseudo_liq = dcape_pcl.lower_parcel(cm1, snd_data["pres"])
+
+    pcl_buoy_wobf = thermo.buoyancy(pcl_t_wobf, snd_data["tmpk"])
+    pcl_buoy_cm1 = thermo.buoyancy(pcl_t_cm1_pseudo_liq, snd_data["tmpk"])
+
+    dcape_wobf, dcinh_wobf = dcape_pcl.cape_cinh(snd_data["pres"], snd_data["hght"], pcl_buoy_wobf)
+    dcape_cm1, dcinh_cm1 = dcape_pcl.cape_cinh(snd_data["pres"], snd_data["hght"], pcl_buoy_cm1)
+
+    assert (dcape_wobf == pytest.approx(-1450.5, abs=2))
+    assert (dcinh_wobf == 0.0)
+    assert (dcape_cm1 == pytest.approx(-1422.1, abs=2))
+    assert (dcinh_cm1 == 0.0)
