@@ -60,12 +60,14 @@ Parcel creation, parcel ascent, and integrated CAPE/CINH.
 
    Parcel Definitions
    ------------------
+
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.surface_parcel
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.mixed_layer_parcel
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.most_unstable_parcel
    
    Parcel Operations 
    -----------------
+
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.lift_parcel
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.find_lfc_el
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.cape_cinh
@@ -80,9 +82,11 @@ Parcel creation, parcel ascent, and integrated CAPE/CINH.
 
    Parcel Definitions
    ------------------
+
    .. autofunction:: nwsspc.sharp.calc.parcel.DowndraftParcel.min_thetae
 
    Parcel Operations
    -----------------
+
    .. autofunction:: nwsspc.sharp.calc.parcel.DowndraftParcel.lower_parcel
    .. autofunction:: nwsspc.sharp.calc.parcel.DowndraftParcel.cape_cinh
