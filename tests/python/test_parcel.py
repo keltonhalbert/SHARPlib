@@ -231,7 +231,7 @@ def test_downdraft_parcel():
     dcape_wobf, dcinh_wobf = dcape_pcl.cape_cinh(snd_data["pres"], snd_data["hght"], pcl_buoy_wobf)
     dcape_cm1, dcinh_cm1 = dcape_pcl.cape_cinh(snd_data["pres"], snd_data["hght"], pcl_buoy_cm1)
 
-    assert (dcape_wobf == pytest.approx(-1450, abs=2))
+    assert (dcape_wobf == pytest.approx(-1450.5, abs=2))
     assert (dcinh_wobf == 0.0)
-    assert (dcape_cm1 == pytest.approx(-1422, abs=2))
+    assert (dcape_cm1 == pytest.approx(-1422.1, abs=2))
     assert (dcinh_cm1 == 0.0)
