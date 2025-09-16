@@ -544,28 +544,29 @@ struct Parcel {
  */
 struct DowndraftParcel {
     /**
-     * \brief Parcel starting pressure (Pa)
+     * \brief DowndraftParcel starting pressure (Pa)
      */
     float pres = MISSING;
 
     /**
-     * \brief Parcel starting temperature (K)
+     * \brief DowndraftParcel starting temperature (K)
      */
     float tmpk = MISSING;
 
     /**
-     * \brief Parcel starting dewpoint (K)
+     * \brief DowndraftParcel starting dewpoint (K)
      */
     float dwpk = MISSING;
 
     /**
-     * \brief Parcel Convective Available Potential Energy (J/kg) between
-     * the LFC and EL
+     * \brief DowndraftParcel Convective Available Potential Energy (J/kg)
+     * between the LFC and EL
      */
     float cape = 0.0;
 
     /**
-     * \brief Parcel Convective Inhibition (J/kg) between the LFC and EL
+     * \brief Downdraft Parcel Convective Inhibition (J/kg) between the LFC and
+     * EL
      */
     float cinh = std::nanf("");
 
