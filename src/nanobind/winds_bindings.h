@@ -475,7 +475,7 @@ nwsspc.sharp.calc.winds.WindVector
             float* wspd = new float[u_comp.shape(0)];
             float* wdir = new float[v_comp.shape(0)];
 
-            for (size_t k = 0; k <= u_comp.shape(0); ++k) {
+            for (size_t k = 0; k < u_comp.shape(0); ++k) {
                 wspd[k] = sharp::vector_magnitude(u_comp(k), v_comp(k));
                 wdir[k] = sharp::vector_angle(u_comp(k), v_comp(k));
             }
@@ -563,7 +563,7 @@ nwsspc.sharp.calc.winds.WindComponents
             float* u_comp = new float[wspd.shape(0)];
             float* v_comp = new float[wspd.shape(0)];
 
-            for (size_t k = 0; k <= wspd.shape(0); ++k) {
+            for (size_t k = 0; k < wspd.shape(0); ++k) {
                 u_comp[k] = sharp::u_component(wspd(k), wdir(k));
                 v_comp[k] = sharp::v_component(wspd(k), wdir(k));
             }
