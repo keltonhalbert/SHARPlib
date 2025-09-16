@@ -811,7 +811,7 @@ numpy.ndarray[dtype=float32]
             },
             nb::arg("pres"), nb::arg("hght"), nb::arg("buoy"),
             R"pbdoc(
-Assuming that nwsspc.sharp.calc.parcel.DowndraftParcel.lift_parcel 
+Assuming that nwsspc.sharp.calc.parcel.DowndraftParcel.lower_parcel 
 has been called, cape_cinh will integrate the area between the LPL
 and the surface to compute downdraft CAPE and downdraft CINH.
 
