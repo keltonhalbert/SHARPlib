@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>parcel &#8212; SHARPlib v1.0.3-dev48+g9ed2f8a Manual</title>
+    <title>parcel &#8212; SHARPlib v1.0.3-dev49+gb9dcb3a Manual</title>
   
   
   
@@ -56,7 +56,7 @@
     <link rel="prev" title="params" href="params.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.0.3-dev48+g9ed2f8a" />
+  <meta name="docsearch:version" content="1.0.3-dev49+gb9dcb3a" />
     <meta name="docbuild:last-update" content="Sep 16, 2025"/>
   </head>
   
@@ -1135,7 +1135,7 @@ temperature correction is not used for downdraft parcels.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.parcel.DowndraftParcel.DowndraftParcel.cape_cinh">
 <span class="sig-name descname"><span class="pre">cape_cinh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self,</span> <span class="pre">pres:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">hght:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">buoy:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.parcel.DowndraftParcel.DowndraftParcel.cape_cinh" title="Link to this definition">#</a></dt>
-<dd><p>Assuming that nwsspc.sharp.calc.parcel.DowndraftParcel.lift_parcel
+<dd><p>Assuming that nwsspc.sharp.calc.parcel.DowndraftParcel.lower_parcel
 has been called, cape_cinh will integrate the area between the LPL
 and the surface to compute downdraft CAPE and downdraft CINH.</p>
 <p>The results are stored in nwsspc.sharp.calc.parcel.DowndraftParcel.cape
