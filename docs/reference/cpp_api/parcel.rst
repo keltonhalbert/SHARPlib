@@ -15,5 +15,5 @@ Parcels
 .. doxygenstruct:: sharp::Parcel 
    :members:
 
-.. doxygenstruct:: sharp::DowndraftParcel
+.. doxygenstruct:: sharp::DowndraftParcel 
    :members:
