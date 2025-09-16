@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>parcel &#8212; SHARPlib v1.0.3-dev45+g0414d6b Manual</title>
+    <title>parcel &#8212; SHARPlib v1.0.3-dev46+gb97de7a Manual</title>
   
   
   
@@ -56,7 +56,7 @@
     <link rel="prev" title="params" href="params.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.0.3-dev45+g0414d6b" />
+  <meta name="docsearch:version" content="1.0.3-dev46+gb97de7a" />
     <meta name="docbuild:last-update" content="Sep 16, 2025"/>
   </head>
   
@@ -468,11 +468,12 @@ are used so that functions can be passed to templates in a way that
 the compiler can still optimize, rather than using function pointers
 or lambdas.</p>
 <p>Specifically, this functor is designed to be passed as a template
-argument to Parcel::lift_parcel, so that the method of computing
-moist adiabats can be changed without changing the overall parcel
-lifting code. The reason this is awesome is that the compiler
-can still optimize and inline this code, while the user can
-configure the parcel lifting algorithm to their specifications.</p>
+argument to nwsspc.sharp.calc.parcel.Parcel.lift_parcel, so that
+the method of computing moist adiabats can be changed without
+changing the overall parcel lifting code. The reason this is awesome
+is that the compiler can still optimize and inline this code, while
+the user can configure the parcel lifting algorithm to their
+specifications.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.parcel.lifter_wobus.lifter_wobus.__call__">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pres</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmpk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_pres</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.parcel.lifter_wobus.lifter_wobus.__call__" title="Link to this definition">#</a></dt>
@@ -530,7 +531,7 @@ parcel ascent.</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.parcel.lifter_cm1.ma_type">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ma_type</span></span><a class="headerlink" href="#nwsspc.sharp.calc.parcel.lifter_cm1.ma_type" title="Link to this definition">#</a></dt>
-<dd><p>The type of moist adiabat to use, defined by sharp::adiabat</p>
+<dd><p>The type of moist adiabat to use, defined by nwsspc.sharp.calc.thermo.adiabat</p>
 </dd></dl>
 
 <dl class="py property">
@@ -543,7 +544,7 @@ parcel ascent.</p>
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.parcel.lifter_cm1.lifter_cm1.__call__">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pres</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmpk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_pres</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.parcel.lifter_cm1.lifter_cm1.__call__" title="Link to this definition">#</a></dt>
 <dd><p>Lifts a parcel moist adiabatically/pseudoadiabatically using
-sharp::moist_adiabat_cm1.</p>
+nwsspc.sharp.calc.thermo.moist_adiabat_cm1.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -727,8 +728,9 @@ temperature, construct and return a Surface Based Parcel.</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">mixed_layer_parcel(mix_layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">potential_temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">mixing_ratio:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">nwsspc.sharp.calc.parcel.Parcel</span></code></p></li>
 </ol>
-<p>Given input arrays of pressure, potential temperature, and water vapor mixing ratio, as well as a
-defined PressureLayer, compute and return a mixed-layer Parcel.</p>
+<p>Given input arrays of pressure, potential temperature,
+and water vapor mixing ratio, as well as a defined PressureLayer,
+compute and return a mixed-layer Parcel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -748,8 +750,9 @@ defined PressureLayer, compute and return a mixed-layer Parcel.</p>
 <ol class="arabic simple" start="2">
 <li><p><code class="docutils literal notranslate"><span class="pre">mixed_layer_parcel(mix_layer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">potential_temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">mixing_ratio:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">nwsspc.sharp.calc.parcel.Parcel</span></code></p></li>
 </ol>
-<p>Given input arrays of pressure, potential temperature, and water vapor mixing ratio, as well as a
-defined PressureLayer, compute and return a mixed-layer Parcel.</p>
+<p>Given input arrays of pressure, potential temperature, and water
+vapor mixing ratio, as well as a defined PressureLayer, compute
+and return a mixed-layer Parcel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -938,9 +941,10 @@ lifter_wobus or lifter_cm1).</p>
 <span class="sig-name descname"><span class="pre">find_lfc_el</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">buoyancy:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.parcel.Parcel.Parcel.find_lfc_el" title="Link to this definition">#</a></dt>
 <dd><p>Searches the buoyancy array for the LFC and EL combination that results
 in the maximum amount of CAPE in the given profile. The buoyancy array
-is typically computed by calling Parcel.lift_parcel. Once the LFC and
-EL are found, the value are set in Parcel.lfc_pres and Parcel.eql_pres
-via the provided parcel.</p>
+is typically computed by calling nwsspc.sharp.calc.parcel.Parcel.lift_parcel.
+Once the LFC and EL are found, the value are set in
+nwsspc.sharp.calc.parcel.Parcel.lfc_pres and
+nwsspc.sharp.calc.parcel.Parcel.eql_pres via the provided parcel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -949,8 +953,11 @@ via the provided parcel.</p>
 <li><p><strong>buoyancy</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of buoyancy values (m/s^2)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(CAPE, CINH)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple[float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float]</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -958,11 +965,12 @@ via the provided parcel.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.parcel.Parcel.Parcel.cape_cinh">
 <span class="sig-name descname"><span class="pre">cape_cinh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self,</span> <span class="pre">pres:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">hght:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">buoy:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.parcel.Parcel.Parcel.cape_cinh" title="Link to this definition">#</a></dt>
-<dd><p>Assuming that Parcel.lift_parcel has been called, cape_cinh
-will integrate the area between the LFC and EL to compute CAPE,
-and integrate the area between the LPL and LCL to compute CINH.</p>
-<p>The results are stored in Parcel.cape and Parcel.cinh via the
-provided parcel.</p>
+<dd><p>Assuming that nwsspc.sharp.calc.parcel.Parcel.lift_parcel has
+been called, cape_cinh will integrate the area between the LFC
+and EL to compute CAPE, and integrate the area between the LPL
+and LCL to compute CINH.</p>
+<p>The results are stored in nwsspc.sharp.calc.parcel.Parcel.cape
+and nwsspc.sharp.calc.parcel.Parcel.cinh via the provided parcel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -971,8 +979,180 @@ provided parcel.</p>
 <li><p><strong>buoyancy</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of buoyancy values (m/s^2)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(CAPE, CINH)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple[float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.parcel.DowndraftParcel">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.parcel.</span></span><span class="sig-name descname"><span class="pre">DowndraftParcel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nwsspc.sharp.calc.parcel.DowndraftParcel" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.parcel.</span></span><span class="sig-name descname"><span class="pre">DowndraftParcel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Contains information about a DowndraftParcel’s starting level and
+thermodynamic attributes, as well as derived computations,
+methods for constructing a parcel, and parcel descent routines.</p>
+<p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">__init__(self)</span> <span class="pre">-&gt;</span> <span class="pre">None</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">__init__(self,</span> <span class="pre">pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">dewpoint:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">None</span></code></p></li>
+</ol>
+<p>Constructor for a DowndraftParcel</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – DowndraftParcel initial pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – DowndraftParcel initial temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – DowndraftParcel initial dewpoint (K)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.parcel.DowndraftParcel.pres">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pres</span></span><a class="headerlink" href="#nwsspc.sharp.calc.parcel.DowndraftParcel.pres" title="Link to this definition">#</a></dt>
+<dd><p>DowndraftParcel starting pressure (Pa)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.parcel.DowndraftParcel.tmpk">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tmpk</span></span><a class="headerlink" href="#nwsspc.sharp.calc.parcel.DowndraftParcel.tmpk" title="Link to this definition">#</a></dt>
+<dd><p>DowndraftParcel starting temperature (K)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.parcel.DowndraftParcel.dwpk">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dwpk</span></span><a class="headerlink" href="#nwsspc.sharp.calc.parcel.DowndraftParcel.dwpk" title="Link to this definition">#</a></dt>
+<dd><p>DowndraftParcel starting dewpoint (K)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.parcel.DowndraftParcel.cape">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cape</span></span><a class="headerlink" href="#nwsspc.sharp.calc.parcel.DowndraftParcel.cape" title="Link to this definition">#</a></dt>
+<dd><p>DowndraftParcel Convective Available Potential Energy (J/kg)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.parcel.DowndraftParcel.cinh">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cinh</span></span><a class="headerlink" href="#nwsspc.sharp.calc.parcel.DowndraftParcel.cinh" title="Link to this definition">#</a></dt>
+<dd><p>DowndraftParcel Convective Inhibition (J/kg)</p>
+</dd></dl>
+
+<section id="id1">
+<h3>Parcel Definitions<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.parcel.DowndraftParcel.DowndraftParcel.min_thetae">
+<span class="sig-name descname"><span class="pre">min_thetae</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">search_layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">thetae:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">mean_depth:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">10000.0</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nwsspc.sharp.calc.parcel.DowndraftParcel" title="nwsspc.sharp.calc.parcel.DowndraftParcel"><span class="pre">nwsspc.sharp.calc.parcel.DowndraftParcel</span></a></span></span><a class="headerlink" href="#nwsspc.sharp.calc.parcel.DowndraftParcel.DowndraftParcel.min_thetae" title="Link to this definition">#</a></dt>
+<dd><p>Define a downdraft parcel.</p>
+<p>Defines a downdraft parcel within a given search layer.
+The downdraft parcel is defined as the minimum layer-mean
+equivalent potential temperature (Theta-E) within the
+search layer. Typical values are to search within the lowest
+400 hPa of the profile, and a mean depth of 100 hPa.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>search_layer</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a>) – The layer over which to search for the downdraft parcel</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of dewpoint (K)</p></li>
+<li><p><strong>thetae</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of thetae (K)</p></li>
+<li><p><strong>mean_depth</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The layer depth for calculating mean thetae.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Downdraft Parcel</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#nwsspc.sharp.calc.parcel.DowndraftParcel" title="nwsspc.sharp.calc.parcel.DowndraftParcel"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.DowndraftParcel</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="id2">
+<h3>Parcel Operations<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.parcel.DowndraftParcel.DowndraftParcel.lower_parcel">
+<span class="sig-name descname"><span class="pre">lower_parcel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self,</span> <span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.parcel.DowndraftParcel.DowndraftParcel.lower_parcel" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">lower_parcel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self,</span> <span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lower_parcel(self,</span> <span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Lowers a saturated nwsspc.sharp.calc.parcel.DowndraftParcel moist
+adiabatically from its LPL to the surface. The moist adiabat used
+is determined by the type of lifting functor passed to the function
+(i.e. lifter_wobus or lifter_cm1).</p>
+<p>Unlike nwsspc.sharp.calc.parcel.Parcel.lift_parcel, the virtual
+temperature correction is not used for downdraft parcels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.parcel.lifter_wobus" title="nwsspc.sharp.calc.parcel.lifter_wobus"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus</span></code></a>) – An instantiated lifter_wobus functor</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of Pressure levels for lifting (Pa)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A 1D NumPy array of parcel temperature values (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">lower_parcel(self,</span> <span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Lowers a saturated nwsspc.sharp.calc.parcel.DowndraftParcel moist
+adiabatically from its LPL to the surface. The moist adiabat used
+is determined by the type of lifting functor passed to the function
+(i.e. lifter_wobus or lifter_cm1).</p>
+<p>Unlike nwsspc.sharp.calc.parcel.Parcel.lift_parcel, the virtual
+temperature correction is not used for downdraft parcels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.parcel.lifter_cm1" title="nwsspc.sharp.calc.parcel.lifter_cm1"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1</span></code></a>) – An instantiated lifter_cm1 functor</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of Pressure levels for lifting (Pa)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A 1D NumPy array of parcel temperature values (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.parcel.DowndraftParcel.DowndraftParcel.cape_cinh">
+<span class="sig-name descname"><span class="pre">cape_cinh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self,</span> <span class="pre">pres:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">hght:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">buoy:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.parcel.DowndraftParcel.DowndraftParcel.cape_cinh" title="Link to this definition">#</a></dt>
+<dd><p>Assuming that nwsspc.sharp.calc.parcel.DowndraftParcel.lift_parcel
+has been called, cape_cinh will integrate the area between the LPL
+and the surface to compute downdraft CAPE and downdraft CINH.</p>
+<p>The results are stored in nwsspc.sharp.calc.parcel.DowndraftParcel.cape
+and nwsspc.sharp.calc.parcel.DowndraftParcel.cinh via the provided parcel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pres</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure values (Pa)</p></li>
+<li><p><strong>hght</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of height values (Pa)</p></li>
+<li><p><strong>buoyancy</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of buoyancy values (m/s^2)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(DCAPE, DCINH)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple[float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float]</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1070,6 +1250,17 @@ provided parcel.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.parcel.Parcel.Parcel.lift_parcel"><code class="docutils literal notranslate"><span class="pre">Parcel.lift_parcel</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.parcel.Parcel.Parcel.find_lfc_el"><code class="docutils literal notranslate"><span class="pre">Parcel.find_lfc_el</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.parcel.Parcel.Parcel.cape_cinh"><code class="docutils literal notranslate"><span class="pre">Parcel.cape_cinh</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.parcel.DowndraftParcel"><code class="docutils literal notranslate"><span class="pre">DowndraftParcel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.parcel.DowndraftParcel.pres"><code class="docutils literal notranslate"><span class="pre">DowndraftParcel.pres</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.parcel.DowndraftParcel.tmpk"><code class="docutils literal notranslate"><span class="pre">DowndraftParcel.tmpk</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.parcel.DowndraftParcel.dwpk"><code class="docutils literal notranslate"><span class="pre">DowndraftParcel.dwpk</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.parcel.DowndraftParcel.cape"><code class="docutils literal notranslate"><span class="pre">DowndraftParcel.cape</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.parcel.DowndraftParcel.cinh"><code class="docutils literal notranslate"><span class="pre">DowndraftParcel.cinh</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.parcel.DowndraftParcel.DowndraftParcel.min_thetae"><code class="docutils literal notranslate"><span class="pre">DowndraftParcel.min_thetae</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.parcel.DowndraftParcel.DowndraftParcel.lower_parcel"><code class="docutils literal notranslate"><span class="pre">DowndraftParcel.lower_parcel</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.parcel.DowndraftParcel.DowndraftParcel.cape_cinh"><code class="docutils literal notranslate"><span class="pre">DowndraftParcel.cape_cinh</span></code></a></li>
 </ul>
 </li>
 </ul>
