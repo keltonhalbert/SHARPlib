@@ -75,14 +75,6 @@ manylinux-aarch64-image = "manylinux_2_28"
 test-command = "pytest {project}/tests/python"
 test-requires = ["pytest", "pandas", "fastparquet"]
 
-[[tool.cibuildwheel.overrides]]
-select = "*-manylinux_2_28_*"
-before-build = "dnf install -y gcc-toolset-12-gcc-c++"
-
-[tool.cibuildwheel.overrides.environment]
-CC = "/opt/rh/gcc-toolset-12/root/usr/bin/gcc"
-CXX = "/opt/rh/gcc-toolset-12/root/usr/bin/g++"
-
 [tool.basedpyright]
 reportMissingModuleSource = "none"
 reportUnknownVariableType = false 

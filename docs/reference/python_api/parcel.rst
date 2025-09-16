@@ -63,7 +63,6 @@ Parcel creation, parcel ascent, and integrated CAPE/CINH.
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.surface_parcel
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.mixed_layer_parcel
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.most_unstable_parcel
-   .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.downdraft_parcel
    
    Parcel Operations 
    -----------------
