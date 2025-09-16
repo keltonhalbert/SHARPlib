@@ -658,7 +658,7 @@ struct DowndraftParcel {
      * \param   N               (length of arrays)
      * \param   mean_depth      (Pa)
      *
-     * \return  the sharp::Parcel defining a downdraft parcel.
+     * \return  the sharp::DowndraftParcel defining a downdraft parcel.
      */
     static DowndraftParcel min_thetae(
         sharp::PressureLayer& search_layer, const float pressure[],
