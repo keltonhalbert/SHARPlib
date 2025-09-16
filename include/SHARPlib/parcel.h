@@ -565,7 +565,7 @@ struct DowndraftParcel {
     float cape = 0.0;
 
     /**
-     * \brief Downdraft Parcel Convective Inhibition (J/kg) between the LFC and
+     * \brief DowndraftParcel Convective Inhibition (J/kg) between the LFC and
      * EL
      */
     float cinh = std::nanf("");
