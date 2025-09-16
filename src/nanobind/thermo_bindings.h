@@ -1163,7 +1163,7 @@ float
             
             float* wb_out = new float[pres.shape(0)];
 
-            for (size_t k = 0; k <= pres.shape(0); ++k) {
+            for (size_t k = 0; k < pres.shape(0); ++k) {
                 wb_out[k] = sharp::wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
             }
             
@@ -1219,7 +1219,7 @@ numpy.ndarray[dtype=float32]
             
             float* wb_out = new float[pres.shape(0)];
 
-            for (size_t k = 0; k <= pres.shape(0); ++k) {
+            for (size_t k = 0; k < pres.shape(0); ++k) {
                 wb_out[k] = sharp::wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
             }
             
