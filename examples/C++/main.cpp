@@ -208,6 +208,10 @@ int main() {
             ml_lyr, prof->pres.get(), prof->hght.get(), prof->theta.get(),
             prof->mixr.get(), prof->NZ);
 
+        sharp::DowndraftParcel dcape_pcl = sharp::DowndraftParcel::min_thetae(
+            mu_lyr, prof->pres.get(), prof->tmpk.get(), prof->dwpk.get(),
+            prof->theta_e.get(), prof->NZ);
+
         // lift the parcel to get its virtual temperature,
         // compute the buoyancy, and then integrate to get
         // the CAPE/CINH
@@ -225,6 +229,12 @@ int main() {
         ml_pcl.cape_cinh(prof->pres.get(), prof->hght.get(),
                          prof->pcl_buoy.get(), prof->NZ);
 
+        dcape_pcl.lower_parcel(lifter, prof->pres.get(), prof->pcl_vtmp.get(),
+                               prof->NZ);
+        sharp::buoyancy(prof->pcl_vtmp.get(), prof->tmpk.get(),
+                        prof->pcl_buoy.get(), prof->NZ);
+        dcape_pcl.cape_cinh(prof->pres.get(), prof->hght.get(),
+                            prof->pcl_buoy.get(), prof->NZ);
         auto end_time = std::chrono::system_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(
                             end_time - start_time)
@@ -250,5 +260,9 @@ int main() {
         std::cout << "EL PRES: " << ml_pcl.eql_pressure << "\t";
         std::cout << "CAPE: " << ml_pcl.cape << "\t";
         std::cout << "CINH: " << ml_pcl.cinh << std::endl;
+
+        std::cout << "DCAPE PCL\t";
+        std::cout << "CAPE: " << dcape_pcl.cape << "\t";
+        std::cout << "CINH: " << dcape_pcl.cinh << std::endl;
     }
 }
