@@ -600,14 +600,15 @@ struct DowndraftParcel {
             get_layer_index(downdraft_layer, pressure_arr, N);
 
         // temperature is MISSING outside of the downdraft layer
-        for (std::ptrdiff_t k = downdraft_idx.ktop + 1; k < N; ++k) {
+        for (std::ptrdiff_t k = N - 1; k > downdraft_idx.ktop; --k) {
             pcl_tmpk_arr[k] = MISSING;
         }
 
-        pcl_tmpk_arr[downdraft_idx.ktop] =
-            wetbulb(liftpcl, this->pres, this->tmpk, this->dwpk);
+        float wbt_pcl = wetbulb(liftpcl, this->pres, this->tmpk, this->dwpk);
+        liftpcl.setup(this->pres, wbt_pcl);
 
-        liftpcl.setup(this->pres, pcl_tmpk_arr[downdraft_idx.ktop]);
+        pcl_tmpk_arr[downdraft_idx.ktop] =
+            liftpcl(this->pres, wbt_pcl, pressure_arr[downdraft_idx.ktop]);
 
         for (std::ptrdiff_t k = downdraft_idx.ktop - 1; k >= downdraft_idx.kbot;
              --k) {
@@ -667,10 +668,11 @@ struct DowndraftParcel {
 
         float min_thetae = 99999.0;
         float pres_of_min = sharp::MISSING;
+        float half_depth = mean_depth / 2.0f;
 
         for (std::ptrdiff_t k = lyr_idx.ktop; k >= lyr_idx.kbot; --k) {
-            sharp::PressureLayer mn_lyr = {pressure[k],
-                                           pressure[k] - mean_depth};
+            sharp::PressureLayer mn_lyr = {pressure[k] + half_depth,
+                                           pressure[k] - half_depth};
             float mean_thetae = sharp::layer_mean(mn_lyr, pressure, thetae, N);
             if (mean_thetae < min_thetae) {
                 min_thetae = mean_thetae;
