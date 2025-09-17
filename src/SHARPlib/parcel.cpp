@@ -195,8 +195,7 @@ float Parcel::maximum_parcel_level(const float pres_arr[],
     }
 
     if (!mpl_candidate_found) {
-        this->mpl_pressure = pres_arr[mpl_idx.ktop];
-        return this->mpl_pressure;
+        return MISSING;
     }
 
     const float remaining_energy = this->cape + integrated;
@@ -204,37 +203,23 @@ float Parcel::maximum_parcel_level(const float pres_arr[],
     const float pres_bottom = pres_arr[k];
     const float hght_bottom = hght_arr[k];
     const float buoy_bottom = buoy_arr[k];
-    const float pres_top = pres_arr[k + 1];
-    const float hght_top = hght_arr[k + 1];
-    const float buoy_top = buoy_arr[k + 1];
 
-    const float hght_delta = hght_top - hght_bottom;
-    if (std::abs(hght_delta) < 1e-6) {
-        this->mpl_pressure = pres_arr[k];
-        return pres_arr[k];
+    float mpl_pres = MISSING;
+    for (float pres_top = pres_bottom - 100.0f; pres_top >= pres_arr[N - 1];
+         pres_top -= 100.0f) {
+        const float hght_top = interp_pressure(pres_top, pres_arr, hght_arr, N);
+        const float buoy_top = interp_pressure(pres_top, pres_arr, buoy_arr, N);
+
+        const float layer_energy = _integ_trapz(buoy_top, buoy_bottom, hght_top,
+                                                hght_bottom, weights, false);
+
+        if (remaining_energy + layer_energy <= 0.0f) {
+            mpl_pres = pres_top;
+            break;
+        }
     }
 
-    const float m = (buoy_top - buoy_bottom) / hght_delta;
-
-    const float a = m;
-    const float b = 2.0f * buoy_bottom;
-    const float c = 2.0f * remaining_energy;
-
-    const float discriminant = b * b - 4.0f * a * c;
-    if (discriminant < 0) {
-        this->mpl_pressure = pres_arr[k];
-        return pres_arr[k];
-    }
-    const float delta_h = (-b + std::sqrt(discriminant)) / (2.0f * a);
-    const float travel_fraction = delta_h / hght_delta;
-
-    const float log_p_bottom = std::log(pres_bottom);
-    const float log_p_top = std::log(pres_top);
-
-    const float log_mpl_p =
-        log_p_bottom + travel_fraction * (log_p_top - log_p_bottom);
-
-    this->mpl_pressure = std::exp(log_mpl_p);
+    this->mpl_pressure = mpl_pres;
     return this->mpl_pressure;
 }
 

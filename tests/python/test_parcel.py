@@ -108,6 +108,8 @@ def test_surface_parcel():
     vtmpk = pcl.lift_parcel(lifter, snd_data["pres"])
     buoy = thermo.buoyancy(vtmpk, snd_data["vtmp"])
     cape, cinh = pcl.cape_cinh(snd_data["pres"], snd_data["hght"], buoy)
+    mpl = pcl.maximum_parcel_level(snd_data["pres"], snd_data["hght"], buoy);
+    print(mpl)
 
     assert (cape == pytest.approx(3353.6, abs=1e-1))
     assert (cinh == pytest.approx(-34.5697, abs=1e-1))
