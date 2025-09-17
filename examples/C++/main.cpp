@@ -177,7 +177,6 @@ void read_sounding(std::unique_ptr<Profile>& prof, std::string filename) {
 int main() {
     std::string snd_file1 =
         "../../data/test_snds/20160524_2302_EF3_37.57_-100.13_108_613967.snd";
-    std::string snd_file2 = "../../data/test_snds/hires-SPC.txt";
     std::unique_ptr<Profile> prof;
     read_sounding(prof, snd_file1);
 
@@ -221,6 +220,8 @@ int main() {
                         prof->pcl_buoy.get(), prof->NZ);
         sfc_pcl.cape_cinh(prof->pres.get(), prof->hght.get(),
                           prof->pcl_buoy.get(), prof->NZ);
+        sfc_pcl.maximum_parcel_level(prof->pres.get(), prof->hght.get(),
+                                     prof->pcl_buoy.get(), prof->NZ);
 
         ml_pcl.lift_parcel(lifter, prof->pres.get(), prof->pcl_vtmp.get(),
                            prof->NZ);
@@ -228,6 +229,15 @@ int main() {
                         prof->pcl_buoy.get(), prof->NZ);
         ml_pcl.cape_cinh(prof->pres.get(), prof->hght.get(),
                          prof->pcl_buoy.get(), prof->NZ);
+        ml_pcl.maximum_parcel_level(prof->pres.get(), prof->hght.get(),
+                                    prof->pcl_buoy.get(), prof->NZ);
+
+        mu_pcl.lift_parcel(lifter, prof->pres.get(), prof->pcl_vtmp.get(),
+                           prof->NZ);
+        sharp::buoyancy(prof->pcl_vtmp.get(), prof->vtmp.get(),
+                        prof->pcl_buoy.get(), prof->NZ);
+        mu_pcl.maximum_parcel_level(prof->pres.get(), prof->hght.get(),
+                                    prof->pcl_buoy.get(), prof->NZ);
 
         dcape_pcl.lower_parcel(lifter, prof->pres.get(), prof->pcl_vtmp.get(),
                                prof->NZ);
@@ -246,18 +256,21 @@ int main() {
         std::cout << "SFC PCL\t";
         std::cout << "LFC PRES: " << sfc_pcl.lfc_pressure << "\t";
         std::cout << "EL PRES: " << sfc_pcl.eql_pressure << "\t";
+        std::cout << "MPL PRES: " << sfc_pcl.mpl_pressure << "\t";
         std::cout << "CAPE: " << sfc_pcl.cape << "\t";
         std::cout << "CINH: " << sfc_pcl.cinh << std::endl;
 
         std::cout << "MU PCL\t";
         std::cout << "LFC PRES: " << mu_pcl.lfc_pressure << "\t";
         std::cout << "EL PRES: " << mu_pcl.eql_pressure << "\t";
+        std::cout << "MPL PRES: " << mu_pcl.mpl_pressure << "\t";
         std::cout << "CAPE: " << mu_pcl.cape << "\t";
         std::cout << "CINH: " << mu_pcl.cinh << std::endl;
 
         std::cout << "ML PCL\t";
         std::cout << "LFC PRES: " << ml_pcl.lfc_pressure << "\t";
         std::cout << "EL PRES: " << ml_pcl.eql_pressure << "\t";
+        std::cout << "MPL PRES: " << ml_pcl.mpl_pressure << "\t";
         std::cout << "CAPE: " << ml_pcl.cape << "\t";
         std::cout << "CINH: " << ml_pcl.cinh << std::endl;
 
