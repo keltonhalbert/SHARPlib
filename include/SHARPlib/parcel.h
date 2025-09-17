@@ -408,9 +408,18 @@ struct Parcel {
      * The Maximum Parcel Level (MPL) is the level a parcel would reach
      * if it expended all of its integrated positive buoyancy past the
      * Eqilibrium Level. It is found by integrating negatively buoyant
-     * area above the Equilibrium Level until the integrated buoyancy is
-     * equal to the Convective Available Potential Energy betwee the
-     * Level of Free Convection and the Equilibrium Level.
+     * area above the Equilibrium Level until the integrated negative
+     * buoyancy is equal in magnitude to the Convective Available
+     * Potential Energy betwee the Level of Free Convection and the
+     * Equilibrium Level.
+     *
+     * For valid calculations, sharp::Parcel::cape_cinh must be
+     * called first, or sharp::Parcel::cape and
+     * sharp::Parcel::eql_pressure must be set. Otherwise,
+     * sharp::MISSING is returned.
+     *
+     * In addition to being returned, the result is stored inside of
+     * sharp::Parcel::mpl_pressure.
      *
      * \param   pres_arr
      * \param   hght_arr
