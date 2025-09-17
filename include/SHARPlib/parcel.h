@@ -282,6 +282,11 @@ struct Parcel {
     float eql_pressure = MISSING;
 
     /**
+     * \brief Pressure at the Maximum Parcel Level (MPL) (Pa)
+     */
+    float mpl_pressure = MISSING;
+
+    /**
      * \brief Parcel Convective Available Potential Energy (J/kg) between the
      * LFC and EL
      */
@@ -394,6 +399,28 @@ struct Parcel {
      */
     void find_lfc_el(const float pres_arr[], const float hght_arr[],
                      const float buoy_arr[], const std::ptrdiff_t N);
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Find the pressure of the Maximum Parcel Level (MPL).
+     *
+     * The Maximum Parcel Level (MPL) is the level a parcel would reach
+     * if it expended all of its integrated positive buoyancy past the
+     * Eqilibrium Level. It is found by integrating negatively buoyant
+     * area above the Equilibrium Level until the integrated buoyancy is
+     * equal to the Convective Available Potential Energy betwee the
+     * Level of Free Convection and the Equilibrium Level.
+     *
+     * \param   pres_arr
+     * \param   hght_arr
+     * \param   buoy_arr
+     * \param   N
+     *
+     * \return  Maximum Parcel Level (MPL) Pressure (Pa)
+     */
+    float maximum_parcel_level(const float pres_arr[], const float hght_arr[],
+                               const float buoy_arr[], const std::ptrdiff_t N);
 
     /**
      * \author Kelton Halbert - NWS Storm Prediction Center

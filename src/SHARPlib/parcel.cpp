@@ -16,6 +16,9 @@
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/thermo.h>
 
+#include <cstddef>
+#include <valarray>
+
 namespace sharp {
 
 Parcel::Parcel() {}
@@ -149,6 +152,20 @@ void Parcel::find_lfc_el(const float pres_arr[], const float hght_arr[],
         this->lfc_pressure = lfc_pres_final;
         this->eql_pressure = eql_pres_final;
     }
+}
+float Parcel::maximum_parcel_level(const float pres_arr[],
+                                   const float hght_arr[],
+                                   const float buoy_arr[],
+                                   const std::ptrdiff_t N) {
+    if (this->cape == 0) return MISSING;
+    if (this->eql_pressure == MISSING) return MISSING;
+
+    sharp::PressureLayer mpl_search = {this->eql_pressure, pres_arr[N - 1]};
+    sharp::LayerIndex mpl_idx = get_layer_index(mpl_search, pres_arr, N);
+
+    // perform MPL search
+
+    return sharp::MISSING;
 }
 
 void Parcel::cape_cinh(const float pres_arr[], const float hght_arr[],
