@@ -370,7 +370,7 @@ Parameters
 pres : numpy.ndarray[dtype=float32] 
     1D NumPy array of pressure values (Pa)
 hght : numpy.ndarray[dtype=float32] 
-    1D NumPy array of height values (Pa)
+    1D NumPy array of height values (meters)
 buoyancy : numpy.ndarray[dtype=float32] 
     1D NumPy array of buoyancy values (m/s^2)
 
@@ -407,7 +407,7 @@ Parameters
 pres : numpy.ndarray[dtype=float32] 
     1D NumPy array of pressure values (Pa)
 hght : numpy.ndarray[dtype=float32] 
-    1D NumPy array of height values (Pa)
+    1D NumPy array of height values (meters)
 buoyancy : numpy.ndarray[dtype=float32] 
     1D NumPy array of buoyancy values (m/s^2)
 
@@ -879,7 +879,7 @@ Parameters
 pres : numpy.ndarray[dtype=float32] 
     1D NumPy array of pressure values (Pa)
 hght : numpy.ndarray[dtype=float32] 
-    1D NumPy array of height values (Pa)
+    1D NumPy array of height values (meters)
 buoyancy : numpy.ndarray[dtype=float32] 
     1D NumPy array of buoyancy values (m/s^2)
 
