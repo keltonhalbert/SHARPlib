@@ -55,6 +55,7 @@ Parcel creation, parcel ascent, and integrated CAPE/CINH.
    .. autoproperty:: nwsspc.sharp.calc.parcel.Parcel.lcl_pressure
    .. autoproperty:: nwsspc.sharp.calc.parcel.Parcel.lfc_pressure
    .. autoproperty:: nwsspc.sharp.calc.parcel.Parcel.eql_pressure
+   .. autoproperty:: nwsspc.sharp.calc.parcel.Parcel.mpl_pressure
    .. autoproperty:: nwsspc.sharp.calc.parcel.Parcel.cape
    .. autoproperty:: nwsspc.sharp.calc.parcel.Parcel.cinh
 
@@ -70,6 +71,7 @@ Parcel creation, parcel ascent, and integrated CAPE/CINH.
 
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.lift_parcel
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.find_lfc_el
+   .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.maximum_parcel_level
    .. autofunction:: nwsspc.sharp.calc.parcel.Parcel.cape_cinh
 
 .. autoclass:: nwsspc.sharp.calc.parcel.DowndraftParcel
