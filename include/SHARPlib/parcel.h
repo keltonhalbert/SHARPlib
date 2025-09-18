@@ -426,10 +426,10 @@ struct Parcel {
      * In addition to being returned, the result is stored inside of
      * sharp::Parcel::mpl_pressure.
      *
-     * \param   pres_arr
-     * \param   hght_arr
-     * \param   buoy_arr
-     * \param   N
+     * \param   pres_arr    Array of pressure   (Pa)
+     * \param   hght_arr    Array of height     (meters)
+     * \param   buoy_arr    Array of buoyancy   (m/s^2)
+     * \param   N           Lengh of arrays
      *
      * \return  Maximum Parcel Level (MPL) Pressure (Pa)
      */
