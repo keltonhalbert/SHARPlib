@@ -415,8 +415,13 @@ struct Parcel {
      *
      * For valid calculations, sharp::Parcel::cape_cinh must be
      * called first, or sharp::Parcel::cape and
-     * sharp::Parcel::eql_pressure must be set. Otherwise,
-     * sharp::MISSING is returned.
+     * sharp::Parcel::eql_pressure must be set.
+     *
+     * A value of sharp::MISSING is returned if:
+     * - CAPE is 0
+     * - sharp::Parcel::eql_pressure is sharp::MISSING
+     * - No valid MPL candidate is found within the profile.
+     *     - In this scenario, it likely exceeds the top of the available data.
      *
      * In addition to being returned, the result is stored inside of
      * sharp::Parcel::mpl_pressure.

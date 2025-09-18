@@ -350,8 +350,13 @@ Equilibrium Level.
 
 For valid calculations, nwsspc.sharp.calc.parcel.Parcel.cape_cinh 
 must be called first, or nwsspc.sharp.calc.parcel.Parcel.cape and 
-nwsspc.sharp.calc.parcel.Parcel.eql_pressure must be set. Otherwise,
-nwsspc.sharp.calc.constants.MISSING is returned.
+nwsspc.sharp.calc.parcel.Parcel.eql_pressure must be set. 
+
+A values of nwsspc.sharp.calc.constants.MISSING is returned if:
+  * CAPE is 0 
+  * nwsspc.sharp.calc.parce.Parcel.eql_pressure is MISSING
+  * No valid MPL candidate is found within the profile
+    * In this scenario, it likely exceeds the top of the available data
 
 In addition to being returned, the result is stored inside of 
 nwsspc.sharp.calc.parcel.Parcel.mpl_pressure.
