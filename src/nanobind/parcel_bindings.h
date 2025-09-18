@@ -302,6 +302,7 @@ numpy.ndarray[dtype=float32]
                 }
                 pcl.find_lfc_el(pres.data(), hght.data(), buoy.data(),
                                 buoy.size());
+                return std::make_tuple(pcl.lfc_pressure, pcl.eql_pressure);
             },
             nb::arg("pressure"), nb::arg("height"), nb::arg("buoyancy"),
             R"pbdoc(
@@ -324,7 +325,7 @@ buoyancy : numpy.ndarray[dtype=float32]
 Returns
 -------
 tuple[float, float]
-    (CAPE, CINH)
+    (LFC_PRES, EL_PRES)
         )pbdoc")
         .def(
             "maximum_parcel_level",
