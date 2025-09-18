@@ -198,6 +198,9 @@ Pressure at the Level of Free Convection (Pa)
         .def_rw("eql_pressure", &sharp::Parcel::eql_pressure, R"pbdoc(
 Pressure at the parcel Equilibrium Level
                 )pbdoc")
+        .def_rw("mpl_pressure", &sharp::Parcel::mpl_pressure, R"pbdoc(
+Pressure at the Maximum Parcel Level
+                )pbdoc")
         .def_rw("cape", &sharp::Parcel::cape, R"pbdoc(
 Parcel Convective Available Potential Energy (J/kg) between the LFC and EL
                 )pbdoc")
@@ -299,6 +302,7 @@ numpy.ndarray[dtype=float32]
                 }
                 pcl.find_lfc_el(pres.data(), hght.data(), buoy.data(),
                                 buoy.size());
+                return std::make_tuple(pcl.lfc_pressure, pcl.eql_pressure);
             },
             nb::arg("pressure"), nb::arg("height"), nb::arg("buoyancy"),
             R"pbdoc(
@@ -321,7 +325,59 @@ buoyancy : numpy.ndarray[dtype=float32]
 Returns
 -------
 tuple[float, float]
-    (CAPE, CINH)
+    (LFC_PRES, EL_PRES)
+        )pbdoc")
+        .def(
+            "maximum_parcel_level",
+            [](sharp::Parcel& pcl, const_prof_arr_t pres, const_prof_arr_t hght,
+               const_prof_arr_t buoy) {
+                if ((pres.shape(0) != hght.shape(0)) ||
+                    (pres.shape(0) != buoy.shape(0))) {
+                    throw nb::buffer_error(
+                        "All input arrays must have the same size!");
+                }
+
+                return pcl.maximum_parcel_level(pres.data(), hght.data(),
+                                                buoy.data(), pres.shape(0));
+            },
+            nb::arg("pressure"), nb::arg("height"), nb::arg("buoyancy"),
+            R"pbdoc(
+Find the pressure of the Maximum Parcel Level (MPL).
+
+The Maximum Parcel Level (MPL) is the level a parcel woud reach 
+if it expended all of its integrated positive buoyancy past the 
+Equilibrium Level. It is found by integrating negatively buoyant 
+area above the Equilibrium Level until the integrated negative 
+buoyancy is equal in magnitude to the Convective Available 
+Potential Energy between the Level of Free Convection and the 
+Equilibrium Level. 
+
+For valid calculations, nwsspc.sharp.calc.parcel.Parcel.cape_cinh 
+must be called first, or nwsspc.sharp.calc.parcel.Parcel.cape and 
+nwsspc.sharp.calc.parcel.Parcel.eql_pressure must be set. 
+
+A values of nwsspc.sharp.calc.constants.MISSING is returned if:
+  * CAPE is 0 
+  * nwsspc.sharp.calc.parce.Parcel.eql_pressure is MISSING
+  * No valid MPL candidate is found within the profile
+    * In this scenario, it likely exceeds the top of the available data
+
+In addition to being returned, the result is stored inside of 
+nwsspc.sharp.calc.parcel.Parcel.mpl_pressure.
+
+Parameters
+----------
+pres : numpy.ndarray[dtype=float32] 
+    1D NumPy array of pressure values (Pa)
+hght : numpy.ndarray[dtype=float32] 
+    1D NumPy array of height values (Pa)
+buoyancy : numpy.ndarray[dtype=float32] 
+    1D NumPy array of buoyancy values (m/s^2)
+
+Returns 
+-------
+float 
+    The pressure of the Maximum Parcel Level (Pa)
         )pbdoc")
         .def(
             "cape_cinh",
