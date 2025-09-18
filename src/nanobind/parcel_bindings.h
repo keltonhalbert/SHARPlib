@@ -198,6 +198,9 @@ Pressure at the Level of Free Convection (Pa)
         .def_rw("eql_pressure", &sharp::Parcel::eql_pressure, R"pbdoc(
 Pressure at the parcel Equilibrium Level
                 )pbdoc")
+        .def_rw("mpl_pressure", &sharp::Parcel::mpl_pressure, R"pbdoc(
+Pressure at the Maximum Parcel Level
+                )pbdoc")
         .def_rw("cape", &sharp::Parcel::cape, R"pbdoc(
 Parcel Convective Available Potential Energy (J/kg) between the LFC and EL
                 )pbdoc")
