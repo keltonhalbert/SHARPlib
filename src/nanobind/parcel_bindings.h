@@ -360,7 +360,7 @@ A values of nwsspc.sharp.calc.constants.MISSING is returned if:
   * CAPE is 0 
   * nwsspc.sharp.calc.parce.Parcel.eql_pressure is MISSING
   * No valid MPL candidate is found within the profile
-    * In this scenario, it likely exceeds the top of the available data
+    In this scenario, it likely exceeds the top of the available data
 
 In addition to being returned, the result is stored inside of 
 nwsspc.sharp.calc.parcel.Parcel.mpl_pressure.
