@@ -17,8 +17,6 @@
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/thermo.h>
 
-#include <cstddef>
-
 namespace sharp {
 
 Parcel::Parcel() {}
