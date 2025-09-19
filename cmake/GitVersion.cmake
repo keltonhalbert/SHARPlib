@@ -61,11 +61,18 @@ function(get_version_from_git)
         set(PRE_RELEASE_TAG_PART "dev")
     endif()
 
-    # 4. Apply the "next version" logic, same as setuptools-scm
+    # 4. Apply the "next version" logic
     if(COMMIT_COUNT GREATER 0)
-        math(EXPR PROJECT_VERSION_PATCH "${PROJECT_VERSION_PATCH} + 1")
+        # If we are on a commit after a tag, this is a development build.
         set(PRE_RELEASE "dev${COMMIT_COUNT}")
+
+        # ONLY increment the patch number if the base tag was a FINAL release
+        # (i.e., it did not have a pre-release part like "-alpha.0").
+        if(NOT PRE_RELEASE_TAG_PART)
+            math(EXPR PROJECT_VERSION_PATCH "${PROJECT_VERSION_PATCH} + 1")
+        endif()
     else()
+        # If we are exactly on a tag, use its pre-release component.
         set(PRE_RELEASE "${PRE_RELEASE_TAG_PART}")
     endif()
 
