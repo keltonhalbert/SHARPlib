@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>parcel &#8212; SHARPlib v1.0.3-dev60+gd39936d Manual</title>
+    <title>parcel &#8212; SHARPlib v1.0.3-dev61+g3c344f5 Manual</title>
   
   
   
@@ -56,8 +56,8 @@
     <link rel="prev" title="params" href="params.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.0.3-dev60+gd39936d" />
-    <meta name="docbuild:last-update" content="Sep 18, 2025"/>
+  <meta name="docsearch:version" content="1.0.3-dev61+g3c344f5" />
+    <meta name="docbuild:last-update" content="Sep 19, 2025"/>
   </head>
   
   
@@ -722,6 +722,7 @@
 </dl>
 </p>
 <p>Searches the buoyancy array for the LFC and EL combination that results in the most CAPE in the given profile. The buoyancy array is typically computed by calling <a class="reference internal" href="#structsharp_1_1Parcel_1a9523de2b8b4c28ca49fba3013f94cb06"><span class="std std-ref">sharp::Parcel::lift_parcel</span></a>. Once the LFC and EL are found, the values are set in sharp::Parcel::lfc_pres and sharp::Parcel::eql_pres.</p>
+<p>The value of sharp::Parcel::eql_pres is <a class="reference internal" href="constants.html#namespacesharp_1af2ffcc858ff03be6e2ae2fe2ee20040d"><span class="std std-ref">sharp::MISSING</span></a> if there there is no qualifying level found within the data bounds (e.g. incomplete data, or an EL above the available data). Any calls to <a class="reference internal" href="#structsharp_1_1Parcel_1a0560bd193b2d2d6bc6b08baa7463fba4"><span class="std std-ref">sharp::Parcel::cape_cinh</span></a> will still compute CAPE without the presence of an EL, using the best-available data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -780,6 +781,7 @@
 </dl>
 </p>
 <p>Assuming that <a class="reference internal" href="#structsharp_1_1Parcel_1a9523de2b8b4c28ca49fba3013f94cb06"><span class="std std-ref">sharp::Parcel::lift_parcel</span></a> has been called, cape_cinh will integrate the area between the LFC and EL to compute CAPE, and integrate the area between the LPL and LCL to compute CINH.</p>
+<p>If <a class="reference internal" href="#structsharp_1_1Parcel_1ac76710675fd2f495d52ac35d0d1de246"><span class="std std-ref">sharp::Parcel::eql_pressure</span></a> is <a class="reference internal" href="constants.html#namespacesharp_1af2ffcc858ff03be6e2ae2fe2ee20040d"><span class="std std-ref">sharp::MISSING</span></a>, but the <a class="reference internal" href="#structsharp_1_1Parcel_1a55dcb9c777b42c5f35537730c044e004"><span class="std std-ref">sharp::Parcel::lfc_pressure</span></a> is defined, the routine will compute CAPE with the available data despite the lack of a defined equilibrium level. This is useful for incomplete profile data, or pressure-level data where the EL is above the top pressure value.</p>
 <p>The results are set in pcl-&gt;cape and pcl-&gt;cinh.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

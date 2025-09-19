@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>parcel &#8212; SHARPlib v1.0.3-dev60+gd39936d Manual</title>
+    <title>parcel &#8212; SHARPlib v1.0.3-dev61+g3c344f5 Manual</title>
   
   
   
@@ -56,8 +56,8 @@
     <link rel="prev" title="params" href="params.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.0.3-dev60+gd39936d" />
-    <meta name="docbuild:last-update" content="Sep 18, 2025"/>
+  <meta name="docsearch:version" content="1.0.3-dev61+g3c344f5" />
+    <meta name="docbuild:last-update" content="Sep 19, 2025"/>
   </head>
   
   
@@ -951,6 +951,11 @@ is typically computed by calling nwsspc.sharp.calc.parcel.Parcel.lift_parcel.
 Once the LFC and EL are found, the value are set in
 nwsspc.sharp.calc.parcel.Parcel.lfc_pres and
 nwsspc.sharp.calc.parcel.Parcel.eql_pres via the provided parcel.</p>
+<p>The value of eql_pres is MISSING if there is no qualifying level
+found within the data bounds (e.g. incomplete data, or EL above
+the available data). Any calls to nwsspc.sharp.calc.parcel.Parcel.cape_cinh
+will still compute CAPE without the presence of an EL, using the best-available
+data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1017,6 +1022,11 @@ nwsspc.sharp.calc.parcel.Parcel.mpl_pressure.</p>
 been called, cape_cinh will integrate the area between the LFC
 and EL to compute CAPE, and integrate the area between the LPL
 and LCL to compute CINH.</p>
+<p>If eql_pressure is MISSING, but lfc_pressure is defined, the
+routine will compute CAPE with the available data despite the
+lack of a defined equilibrium level. This is useful for
+incomplete profile data, or pressure-level data where the EL
+is above the top pressure value.</p>
 <p>The results are stored in nwsspc.sharp.calc.parcel.Parcel.cape
 and nwsspc.sharp.calc.parcel.Parcel.cinh via the provided parcel.</p>
 <dl class="field-list simple">
