@@ -313,6 +313,12 @@ Once the LFC and EL are found, the value are set in
 nwsspc.sharp.calc.parcel.Parcel.lfc_pres and 
 nwsspc.sharp.calc.parcel.Parcel.eql_pres via the provided parcel.
 
+The value of eql_pres is MISSING if there is no qualifying level 
+found within the data bounds (e.g. incomplete data, or EL above 
+the available data). Any calls to nwsspc.sharp.calc.parcel.Parcel.cape_cinh 
+will still compute CAPE without the presence of an EL, using the best-available
+data. 
+
 Parameters
 ----------
 pressure : numpy.ndarray[dtype=float32] 
@@ -398,6 +404,12 @@ Assuming that nwsspc.sharp.calc.parcel.Parcel.lift_parcel has
 been called, cape_cinh will integrate the area between the LFC 
 and EL to compute CAPE, and integrate the area between the LPL 
 and LCL to compute CINH.
+
+If eql_pressure is MISSING, but lfc_pressure is defined, the 
+routine will compute CAPE with the available data despite the 
+lack of a defined equilibrium level. This is useful for 
+incomplete profile data, or pressure-level data where the EL 
+is above the top pressure value.
 
 The results are stored in nwsspc.sharp.calc.parcel.Parcel.cape 
 and nwsspc.sharp.calc.parcel.Parcel.cinh via the provided parcel.
