@@ -392,6 +392,12 @@ struct Parcel {
      * and EL are found, the values are set in sharp::Parcel::lfc_pres and
      * sharp::Parcel::eql_pres.
      *
+     * The value of sharp::Parcel::eql_pres is sharp::MISSING if there there
+     * is no qualifying level found within the data bounds (e.g. incomplete
+     * data, or an EL above the available data). Any calls to
+     * sharp::Parcel::cape_cinh will still compute CAPE without the presence of
+     * an EL, using the best-available data.
+     *
      * \param   pres_arr    The pressure coordinate array (Pa)
      * \param   hght_arr    The height coordinate array (meters)
      * \param   buoy_arr    The profile buoyancy array (m/s^2)
@@ -444,6 +450,13 @@ struct Parcel {
      * Assuming that sharp::Parcel::lift_parcel has been called, cape_cinh
      * will integrate the area between the LFC and EL to compute CAPE,
      * and integrate the area between the LPL and LCL to compute CINH.
+     *
+     * If sharp::Parcel::eql_pressure is sharp::MISSING, but the
+     * sharp::Parcel::lfc_pressure is defined, the routine will
+     * compute CAPE with the available data despite the lack of
+     * a defined equilibrium level. This is useful for incomplete
+     * profile data, or pressure-level data where the EL is above
+     * the top pressure value.
      *
      * The results are set in pcl->cape and pcl->cinh.
      *

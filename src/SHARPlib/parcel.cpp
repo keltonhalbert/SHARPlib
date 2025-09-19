@@ -139,7 +139,7 @@ void Parcel::find_lfc_el(const float pres_arr[], const float hght_arr[],
         buoy_bot = buoy_top;
     }
     if (in_pos_area) {
-        eql_pres = pres_arr[N - 1];
+        eql_pres = MISSING;
         if (pos_buoy > pos_buoy_max) {
             pos_buoy_max = pos_buoy;
             lfc_pres_final = lfc_pres;
@@ -225,8 +225,13 @@ void Parcel::cape_cinh(const float pres_arr[], const float hght_arr[],
                        const float buoy_arr[], const ptrdiff_t N) {
     if (this->lcl_pressure == MISSING) return;
     find_lfc_el(pres_arr, hght_arr, buoy_arr, N);
-    if ((this->lfc_pressure != MISSING) && (this->eql_pressure != MISSING)) {
-        PressureLayer lfc_el = {this->lfc_pressure, this->eql_pressure};
+    if (this->lfc_pressure != MISSING) {
+        PressureLayer lfc_el = {MISSING, MISSING};
+        if (this->eql_pressure == MISSING) {
+            lfc_el = {this->lfc_pressure, pres_arr[N - 1]};
+        } else {
+            lfc_el = {this->lfc_pressure, this->eql_pressure};
+        }
         PressureLayer lpl_lfc = {this->pres, this->lfc_pressure};
         HeightLayer lfc_el_ht =
             pressure_layer_to_height(lfc_el, pres_arr, hght_arr, N);
