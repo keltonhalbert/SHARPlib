@@ -222,6 +222,28 @@ template <typename Lifter>
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const std::ptrdiff_t N);
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Compute the Effective Bulk Wind Difference
+ *
+ * The effective bulk wind difference is the wind shear between
+ * the bottom height of the effective inflow layer, and 50% of
+ * the equilibrium level depth. This is analogous to the usage
+ * of 0-6 km wind shear, but allows more flexibility for elevated
+ * convection. Returns sharp::MISSING if the effective inflow layer
+ * or equilibrium level height are sharp::MISSING.
+ *
+ * \param   pressure                        (Pa)
+ * \param   height                          (meters)
+ * \param   u_wind                          (m/s)
+ * \param   v_wind                          (m/s)
+ * \param   N                               length of arrays
+ * \param   effective_inflow_lyr            {bottom, top}
+ * \param   equilibrium_level_pressure      (Pa)
+ *
+ * \return  Effective Bulk Wind Differce    (m/s)
+ */
 [[nodiscard]] WindComponents effective_bulk_wind_difference(
     const float pressure[], const float hght[], const float u_wind[],
     const float v_wind[], const std::ptrdiff_t N,
