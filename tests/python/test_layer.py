@@ -33,6 +33,16 @@ def test_height_layer_construction():
     with pytest.raises(ValueError):
         layer.HeightLayer(np.inf, np.nan)
 
+    with pytest.raises(ValueError):
+        layer.HeightLayer(constants.MISSING, 3000.0)
+
+    with pytest.raises(ValueError):
+        layer.HeightLayer(0.0, constants.MISSING)
+
+    lyr1 = layer.HeightLayer()
+    assert (lyr1.bottom == constants.MISSING)
+    assert (lyr1.top == constants.MISSING)
+
 
 def test_pressure_layer_construction():
     lyr1 = layer.PressureLayer(100000, 10000)
@@ -61,6 +71,16 @@ def test_pressure_layer_construction():
 
     with pytest.raises(ValueError):
         layer.PressureLayer(np.inf, np.nan)
+
+    with pytest.raises(ValueError):
+        layer.PressureLayer(constants.MISSING, 50000.0)
+
+    with pytest.raises(ValueError):
+        layer.PressureLayer(100000.0, constants.MISSING)
+
+    lyr1 = layer.PressureLayer()
+    assert (lyr1.bottom == constants.MISSING)
+    assert (lyr1.top == constants.MISSING)
 
 
 def test_layer_conversion():
