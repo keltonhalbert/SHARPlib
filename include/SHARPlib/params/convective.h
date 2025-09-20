@@ -222,6 +222,12 @@ template <typename Lifter>
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const std::ptrdiff_t N);
 
+[[nodiscard]] WindComponents effective_bulk_wind_difference(
+    const float pressure[], const float hght[], const float u_wind[],
+    const float v_wind[], const std::ptrdiff_t N,
+    sharp::PressureLayer effective_inflow_lyr,
+    const float equilibrium_level_pressure);
+
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
  *

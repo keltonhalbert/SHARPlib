@@ -22,6 +22,8 @@
 
 #include <utility>
 
+#include "SHARPlib/interp.h"
+
 namespace sharp {
 
 PressureLayer effective_inflow_layer(
@@ -151,6 +153,26 @@ WindComponents storm_motion_bunkers(
                                 cloud_layer_mean.v + upshear.v};
 
     return std::make_pair(upshear, downshear);
+}
+
+WindComponents effective_bulk_wind_difference(
+    const float pressure[], const float height[], const float u_wind[],
+    const float v_wind[], const std::ptrdiff_t N,
+    sharp::PressureLayer effective_inflow_lyr,
+    const float equilibrium_level_pressure) {
+    if ((equilibrium_level_pressure == MISSING) ||
+        (effective_inflow_lyr.bottom == MISSING))
+        return {MISSING, MISSING};
+
+    sharp::HeightLayer eil_hght =
+        pressure_layer_to_height(effective_inflow_lyr, pressure, height, N);
+    float eql_hght =
+        interp_pressure(equilibrium_level_pressure, pressure, height, N);
+
+    float depth = 0.5f * (eql_hght - eil_hght.bottom);
+    sharp::HeightLayer ebwd_lyr = {eil_hght.bottom, depth};
+
+    return sharp::wind_shear(ebwd_lyr, height, u_wind, v_wind, N);
 }
 
 float entrainment_cape(const float pressure[], const float height[],
