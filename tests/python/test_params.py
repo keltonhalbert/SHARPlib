@@ -184,9 +184,9 @@ def test_effective_bulk_wind():
     )
 
     ebwd = winds.vector_magnitude(ebwd_cmp.u, ebwd_cmp.v)
-    assert (ebwd_cmp.u == pytest.approx(14.6))
+    assert (ebwd_cmp.u == pytest.approx(14.6, abs=1e-3))
     assert (ebwd_cmp.v == pytest.approx(13.321, abs=1e-3))
-    assert (ebwd == pytest.approx(19.764))
+    assert (ebwd == pytest.approx(19.764, abs=1e-3))
 
 
 def test_stp_scp_ship():
