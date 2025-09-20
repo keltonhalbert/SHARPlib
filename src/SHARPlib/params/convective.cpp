@@ -170,7 +170,7 @@ WindComponents effective_bulk_wind_difference(
         interp_pressure(equilibrium_level_pressure, pressure, height, N);
 
     float depth = 0.5f * (eql_hght - eil_hght.bottom);
-    sharp::HeightLayer ebwd_lyr = {eil_hght.bottom, depth};
+    sharp::HeightLayer ebwd_lyr = {eil_hght.bottom, eil_hght.bottom + depth};
 
     return sharp::wind_shear(ebwd_lyr, height, u_wind, v_wind, N);
 }
