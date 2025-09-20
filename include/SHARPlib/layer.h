@@ -74,6 +74,17 @@ struct HeightLayer {
     static constexpr LayerCoordinate coord = LayerCoordinate::height;
 
     /**
+     * \brief Construct an empty sharp::HeightLayer
+     *
+     * Sets the top and bottom to sharp::MISSING
+     */
+    HeightLayer() {
+        bottom = MISSING;
+        top = MISSING;
+        delta = 100.0;
+    }
+
+    /**
      * \brief Constructs a sharp::HeightLayer
      *
      * \param   bot     (bottom of layer, meters)
@@ -110,6 +121,17 @@ struct PressureLayer {
      * \brief The coordinate system of the layer
      */
     static constexpr LayerCoordinate coord = LayerCoordinate::pressure;
+
+    /**
+     * \brief Construct an empty sharp::PressureLayer
+     *
+     * Sets the top and bottom to sharp::MISSING
+     */
+    PressureLayer() {
+        bottom = MISSING;
+        top = MISSING;
+        delta = -1000.0;
+    }
 
     /**
      * \brief Constructs a sharp::PressureLayer

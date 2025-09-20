@@ -24,6 +24,7 @@ inline void make_layer_bindings(nb::module_ m) {
 
     // Bind the constructors, named fields, and default arguments
     nb::class_<sharp::HeightLayer>(m_layer, "HeightLayer")
+        .def(nb::init<>())
         .def(nb::init<float, float, float>(), nb::arg("bottom"), nb::arg("top"),
              nb::arg("delta") = 100.0f)
         .def_rw("bottom", &sharp::HeightLayer::bottom,
@@ -39,6 +40,7 @@ inline void make_layer_bindings(nb::module_ m) {
         });
 
     nb::class_<sharp::PressureLayer>(m_layer, "PressureLayer")
+        .def(nb::init<>())
         .def(nb::init<float, float, float>(), nb::arg("bottom"), nb::arg("top"),
              nb::arg("delta") = -1000.0f)
         .def_rw("bottom", &sharp::PressureLayer::bottom,
