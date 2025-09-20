@@ -351,6 +351,37 @@ tuple[nwsspc.sharp.calc.winds.WindComponents, nwsspc.sharp.calc.winds.WindCompon
     (upshear, downshear)
     )pbdoc");
 
+    m_params.def(
+        "effective_bulk_wind_difference",
+        [](const_prof_arr_t pres, const_prof_arr_t hght, const_prof_arr_t uwin,
+           const_prof_arr_t vwin, sharp::PressureLayer eil,
+           const float eql_pres) {
+            if ((pres.shape(0) != hght.shape(0)) ||
+                (pres.shape(0) != uwin.shape(0)) ||
+                (pres.shape(0) != vwin.shape(0))) {
+                throw nb::buffer_error(
+                    "pressure, height, u_wind, and v_wind must have the "
+                    "same sizes!");
+            }
+            return sharp::effective_bulk_wind_difference(
+                pres.data(), hght.data(), uwin.data(), vwin.data(),
+                pres.shape(0), eil, eql_pres);
+        },
+        nb::arg("pressure"), nb::arg("height"), nb::arg("u_wind"),
+        nb::arg("v_wind"), nb::arg("effective_inflow_layer"),
+        nb::arg("equilibrium_level_pressure"),
+        R"pbdoc(
+Compute the Effective Bulk Wind Difference 
+
+The effective bulk wind difference is the wind shear between 
+the bottom height of the effective inflow layer, and 50% of 
+the equilibrium level depth. This is analogous to the usage 
+of 0-6 km wind shear, but allows more flexibility for elevated 
+convection. Returns MISSING if the effective inflow layer or 
+equilibrium level pressure are MISSING.
+
+    )pbdoc");
+
     m_params.def("energy_helicity_index", &sharp::energy_helicity_index,
                  nb::arg("cape"), nb::arg("helicity"),
                  R"pbdoc(
@@ -409,9 +440,9 @@ pcl : nwsspc.sharp.calc.parcel.Parcel
 lcl_hght_agl : float 
     The parcel LCL height in meters
 storm_relative_helicity : float 
-    For effecitve-layer STP, effecitve SRH, and for fixed-layer, 0-1 km SRH (m^2 / s^2)
+    For effective-layer STP, effective SRH, and for fixed-layer, 0-1 km SRH (m^2 / s^2)
 bulk_wind_difference : float 
-    For effective-layer STP, effecitve BWD, and for fixed-layer STP, 0-6 km BWD (m/s)
+    For effective-layer STP, effective BWD, and for fixed-layer STP, 0-6 km BWD (m/s)
 
 Returns
 -------
@@ -452,7 +483,7 @@ Parameters
 mu_cape : float 
     The CAPE of the Most Unstable Parcel (J/kg)
 eff_srh : float 
-    Effecive inflow layer Storm Relative Helicity (m^2/s^2) 
+    Effective inflow layer Storm Relative Helicity (m^2/s^2) 
 eff_shear : float 
     Effective layer shear (m/s)
 

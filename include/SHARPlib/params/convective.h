@@ -232,7 +232,7 @@ template <typename Lifter>
  * the equilibrium level depth. This is analogous to the usage
  * of 0-6 km wind shear, but allows more flexibility for elevated
  * convection. Returns sharp::MISSING if the effective inflow layer
- * or equilibrium level height are sharp::MISSING.
+ * or equilibrium level pressure are sharp::MISSING.
  *
  * \param   pressure                        (Pa)
  * \param   height                          (meters)
