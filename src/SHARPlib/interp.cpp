@@ -26,11 +26,11 @@ float interp_height(const float height_val, const float height_arr[],
 #ifndef NO_QC
     if (height_val == MISSING) return MISSING;
     if (std::isnan(height_val)) return MISSING;
+#endif
     // If the height value is beyond the top of the profile,
     // or below the surface, we can't reasonably extrapolate
     if ((height_val > height_arr[N - 1]) || (height_val < height_arr[0]))
         return MISSING;
-#endif
 
     static constexpr auto comp = std::less<float>();
     std::ptrdiff_t idx_top = upper_bound(height_arr, N, height_val, comp);
@@ -69,13 +69,13 @@ float interp_pressure(const float pressure_val, const float pressure_arr[],
 #ifndef NO_QC
     if (pressure_val == MISSING) return MISSING;
     if (std::isnan(pressure_val)) return MISSING;
+#endif
     // If the pressure value is beyond the top of the profile,
     // or below the surface, we can't reasonably extrapolate
     if ((pressure_val < pressure_arr[N - 1]) ||
         (pressure_val > pressure_arr[0])) {
         return MISSING;
     }
-#endif
 
     static constexpr auto comp = std::greater<float>();
     std::ptrdiff_t idx_top = upper_bound(pressure_arr, N, pressure_val, comp);
@@ -160,7 +160,7 @@ float find_first_height(const float data_val, const float height_arr[],
     }
 #endif
 
-    for (std::ptrdiff_t k = 1; k < N; ++k) {
+    for (std::ptrdiff_t k = k_start + 1; k < N; ++k) {
         float val0 = data_arr[k_start];
         float val1 = data_arr[k];
 #ifndef NO_QC
