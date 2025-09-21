@@ -119,20 +119,6 @@ def test_bunkers_motion_nonparcel():
     assert (storm_mtn.v == pytest.approx(5.7385511))
 
 
-def test_corfidi_vectors():
-    upshear, downshear = params.mcs_motion_corfidi(
-        snd_data["pres"],
-        snd_data["hght"],
-        snd_data["uwin"],
-        snd_data["vwin"]
-    )
-
-    assert (upshear.u == pytest.approx(12.7017, abs=1e-3))
-    assert (upshear.v == pytest.approx(2.99329, abs=1e-3))
-    assert (downshear.u == pytest.approx(23.2054, abs=1e-3))
-    assert (downshear.v == pytest.approx(16.10519, abs=1e-3))
-
-
 def test_bunkers_motion():
     # parcel based Bunkers motion
     mupcl = parcel.Parcel()
@@ -158,6 +144,49 @@ def test_bunkers_motion():
 
     assert (storm_mtn.u == pytest.approx(9.65811))
     assert (storm_mtn.v == pytest.approx(5.558156))
+
+
+def test_corfidi_vectors():
+    upshear, downshear = params.mcs_motion_corfidi(
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["uwin"],
+        snd_data["vwin"]
+    )
+
+    assert (upshear.u == pytest.approx(12.7017, abs=1e-3))
+    assert (upshear.v == pytest.approx(2.99329, abs=1e-3))
+    assert (downshear.u == pytest.approx(23.2054, abs=1e-3))
+    assert (downshear.v == pytest.approx(16.10519, abs=1e-3))
+
+
+def test_effective_bulk_wind():
+    lifter = parcel.lifter_cm1()
+    lifter.ma_type = thermo.adiabat.pseudo_liq
+    mupcl = parcel.Parcel()
+    eil = params.effective_inflow_layer(
+        lifter,
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["tmpk"],
+        snd_data["dwpk"],
+        snd_data["vtmp"],
+        mupcl=mupcl
+    )
+
+    ebwd_cmp = params.effective_bulk_wind_difference(
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["uwin"],
+        snd_data["vwin"],
+        eil,
+        mupcl.eql_pressure
+    )
+
+    ebwd = winds.vector_magnitude(ebwd_cmp.u, ebwd_cmp.v)
+    assert (ebwd_cmp.u == pytest.approx(14.6, abs=1e-3))
+    assert (ebwd_cmp.v == pytest.approx(13.321, abs=1e-3))
+    assert (ebwd == pytest.approx(19.764, abs=1e-3))
 
 
 def test_stp_scp_ship():
@@ -207,26 +236,15 @@ def test_stp_scp_ship():
         snd_data["vwin"]
     )
 
-    # Get the effective bulk wind difference
-    eil_hght = layer.pressure_layer_to_height(
-        eil,
+    ebwd_cmp = params.effective_bulk_wind_difference(
         snd_data["pres"],
-        snd_data["hght"]
-    )
-    eql_hght = interp.interp_pressure(
-        mupcl.eql_pressure,
-        snd_data["pres"],
-        snd_data["hght"]
-    )
-    depth = (eql_hght - eil_hght.bottom)*0.5
-    ebwd_lyr = layer.HeightLayer(
-        eil_hght.bottom, float(eil_hght.bottom + depth))
-    ebwd_cmp = winds.wind_shear(
-        ebwd_lyr,
         snd_data["hght"],
         snd_data["uwin"],
-        snd_data["vwin"]
+        snd_data["vwin"],
+        eil,
+        mupcl.eql_pressure
     )
+
     ebwd = winds.vector_magnitude(ebwd_cmp.u, ebwd_cmp.v)
 
     # Get the LCL height in meters AGL
@@ -325,9 +343,10 @@ def test_dgz():
     assert (dgz.bottom == 49598)
     assert (dgz.top == 46032)
 
+
 def test_fwwi():
     fwwi = params.fosberg_fire_index(
-        308, 
+        308,
         0.00001,
         13.5
     )

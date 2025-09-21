@@ -10,6 +10,7 @@ Convective
 .. doxygenfunction:: sharp::storm_motion_bunkers(const float[], const float[], const float[], const float[], const std::ptrdiff_t, HeightLayer, HeightLayer, const bool, const bool)
 .. doxygenfunction:: sharp::storm_motion_bunkers(const float[], const float[], const float[], const float[], const std::ptrdiff_t, PressureLayer, const Parcel&, const bool)
 .. doxygenfunction:: sharp::mcs_motion_corfidi
+.. doxygenfunction:: sharp::effective_bulk_wind_difference
 .. doxygenfunction:: sharp::energy_helicity_index
 .. doxygenfunction:: sharp::supercell_composite_parameter
 .. doxygenfunction:: sharp::significant_tornado_parameter
