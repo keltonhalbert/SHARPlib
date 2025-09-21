@@ -240,7 +240,7 @@ float _solve_cm1(float& pcl_pres_next, float& pcl_pi_next, float& pcl_t_next,
                  float pcl_pres_prev, float pcl_t_prev, float pcl_theta_prev,
                  float pcl_rv_prev, float pcl_rl_prev, float pcl_ri_prev,
                  float rv_total, bool ascending, bool ice = false,
-                 float converge = 0.0002f, const int max_iters = 50) {
+                 float converge = 0.0002f, const int max_iters = 100) {
     // first guess - use the theta of the parcel
     // before lifting, and update the first guess
     // accordingly
@@ -298,6 +298,11 @@ float _solve_cm1(float& pcl_pres_next, float& pcl_pi_next, float& pcl_t_next,
             not_converged = false;
         }
         iter_count += 1;
+    }
+    if (iter_count >= max_iters) {
+        printf(
+            "WARNING: iterative solver failed to converge. "
+            "Returning best guess value.");
     }
     return pcl_theta_next;
 }
