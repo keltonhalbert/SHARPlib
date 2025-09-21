@@ -240,15 +240,16 @@ float _solve_cm1(float& pcl_pres_next, float& pcl_pi_next, float& pcl_t_next,
                  float pcl_pres_prev, float pcl_t_prev, float pcl_theta_prev,
                  float pcl_rv_prev, float pcl_rl_prev, float pcl_ri_prev,
                  float rv_total, bool ascending, bool ice = false,
-                 float converge = 0.0002f) {
+                 float converge = 0.0002f, const int max_iters = 50) {
     // first guess - use the theta of the parcel
     // before lifting, and update the first guess
     // accordingly
     float pcl_theta_last = pcl_theta_prev;
     float pcl_theta_next = pcl_theta_prev;
     bool not_converged = true;
+    int iter_count = 0;
 
-    while (not_converged) {
+    while ((not_converged) && (iter_count < max_iters)) {
         pcl_t_next = pcl_theta_last * pcl_pi_next;
 
         float fliq = 1.0;
@@ -296,6 +297,7 @@ float _solve_cm1(float& pcl_pres_next, float& pcl_pi_next, float& pcl_t_next,
         } else {
             not_converged = false;
         }
+        iter_count += 1;
     }
     return pcl_theta_next;
 }
@@ -346,8 +348,6 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
             pcl_pres_next, pcl_pi_next, pcl_t_next, pcl_rv_next, pcl_rl_next,
             pcl_ri_next, pcl_pres_prev, pcl_t_prev, pcl_theta_prev, pcl_rv_prev,
             pcl_rl_prev, pcl_ri_prev, rv_total, ascending, ice, converge);
-        /*printf("%f %f\t%f\t%f %f\n", pcl_pres_prev, pcl_theta_prev,*/
-        /*       pcl_pres_next, pcl_rv_next, rv_total);*/
 
         if ((ma_type == adiabat::pseudo_liq) ||
             (ma_type == adiabat::pseudo_ice)) {
