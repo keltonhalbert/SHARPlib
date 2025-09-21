@@ -383,6 +383,9 @@ enum class adiabat : int {
  *  (these are going to be the same value). Essentially, the total water vapor
  *  before condensation.
  *
+ *  If the internal solver reaches 100 iterations without converging, it will
+ *  return the last computed value and print a warning.
+ *
  * \param   pressure        (Pa)
  * \param   temperature     (K)
  * \param   new_pressure    (Pa)
