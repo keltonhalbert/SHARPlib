@@ -168,14 +168,14 @@ float relative_humidity(float pressure, float temperature, float dewpoint) {
     return vapor_pres / saturation_vapor_pres;
 }
 
-float virtual_temperature(float temperature, float qv, float ql, float qi) {
+float virtual_temperature(float temperature, float rv, float rl, float ri) {
 #ifndef NO_QC
-    if ((qv == MISSING) || (ql == MISSING) || (qi == MISSING) ||
+    if ((rv == MISSING) || (rl == MISSING) || (ri == MISSING) ||
         (temperature == MISSING)) {
         return MISSING;
     }
 #endif
-    return (temperature * ((1.0 + (qv / EPSILON)) / (1.0 + qv + ql + qi)));
+    return (temperature * ((1.0 + (rv / EPSILON)) / (1.0 + rv + rl + ri)));
 }
 
 float saturated_lift(float pressure, float theta_sat, float converge) {
@@ -454,6 +454,7 @@ float lapse_rate(HeightLayer layer_agl, const float height[],
 
     // dT/dz, positive (definition of lapse rate), in km
     const float dz = layer_agl.top - layer_agl.bottom;
+    if (dz < 1e-6) return MISSING;
     return ((tmpc_u - tmpc_l) / dz) * -1000.0f;
 }
 
