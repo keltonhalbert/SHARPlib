@@ -477,7 +477,7 @@ template <typename L>
 [[nodiscard]] float integrate_layer_trapz(L layer, const float var_array[],
                                           const float coord_array[],
                                           const std::ptrdiff_t N,
-                                          const float integ_sign = 0,
+                                          const int integ_sign = 0,
                                           const bool weighted = false) {
     float var_lyr_bottom;
     float coord_lyr_bottom = layer.bottom;
@@ -502,44 +502,56 @@ template <typename L>
         var_lyr_top = interp_pressure(layer.top, coord_array, var_array, N);
     }
 
-    for (std::ptrdiff_t k = idx.kbot; k < idx.ktop; ++k) {
-#ifndef NO_QC
-        if (var_array[k] == MISSING) {
-            continue;
+    if (idx.ktop < idx.kbot) {
+        if ((var_lyr_bottom == MISSING) || (var_lyr_top == MISSING)) {
+            return MISSING;
         }
-#endif
-
-        float coord_bottom = coord_array[k];
-        float var_bottom = var_array[k];
-
-        float coord_top = coord_array[k + 1];
-        float var_top = var_array[k + 1];
-
-        float layer_avg = _integ_trapz(var_top, var_bottom, coord_top,
-                                       coord_bottom, weights, weighted);
+        float layer_avg = _integ_trapz(var_lyr_top, var_lyr_bottom, layer.top,
+                                       layer.bottom, weights, weighted);
 
         float cond =
             (float)((!integ_sign) | (isign == std::signbit(layer_avg)));
         integrated += cond * layer_avg;
-    }
+    } else {
+        for (std::ptrdiff_t k = idx.kbot; k < idx.ktop; ++k) {
+#ifndef NO_QC
+            if (var_array[k] == MISSING) {
+                continue;
+            }
+#endif
 
-    // interpolated bottom of layer
+            float coord_bottom = coord_array[k];
+            float var_bottom = var_array[k];
 
-    if (var_lyr_bottom != sharp::MISSING) {
-        float layer_avg = _integ_trapz(var_array[idx.kbot], var_lyr_bottom,
-                                       coord_array[idx.kbot], coord_lyr_bottom,
-                                       weights, weighted);
-        float cond = ((!integ_sign) | (isign == std::signbit(layer_avg)));
-        integrated += cond * layer_avg;
-    }
+            float coord_top = coord_array[k + 1];
+            float var_top = var_array[k + 1];
 
-    // interpolated top of layer
-    if (var_lyr_top != sharp::MISSING) {
-        float layer_avg =
-            _integ_trapz(var_lyr_top, var_array[idx.ktop], coord_lyr_top,
-                         coord_array[idx.ktop], weights, weighted);
-        float cond = ((!integ_sign) | (isign == std::signbit(layer_avg)));
-        integrated += cond * layer_avg;
+            float layer_avg = _integ_trapz(var_top, var_bottom, coord_top,
+                                           coord_bottom, weights, weighted);
+
+            float cond =
+                (float)((!integ_sign) | (isign == std::signbit(layer_avg)));
+            integrated += cond * layer_avg;
+        }
+
+        // interpolated bottom of layer
+
+        if (var_lyr_bottom != sharp::MISSING) {
+            float layer_avg = _integ_trapz(var_array[idx.kbot], var_lyr_bottom,
+                                           coord_array[idx.kbot],
+                                           coord_lyr_bottom, weights, weighted);
+            float cond = ((!integ_sign) | (isign == std::signbit(layer_avg)));
+            integrated += cond * layer_avg;
+        }
+
+        // interpolated top of layer
+        if (var_lyr_top != sharp::MISSING) {
+            float layer_avg =
+                _integ_trapz(var_lyr_top, var_array[idx.ktop], coord_lyr_top,
+                             coord_array[idx.ktop], weights, weighted);
+            float cond = ((!integ_sign) | (isign == std::signbit(layer_avg)));
+            integrated += cond * layer_avg;
+        }
     }
 
     if constexpr (layer.coord == LayerCoordinate::pressure) {
