@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>thermo &#8212; SHARPlib v1.1.0-dev62+g2537dd9 Manual</title>
+    <title>thermo &#8212; SHARPlib v1.1.0-dev70+g491c12e Manual</title>
   
   
   
@@ -56,8 +56,8 @@
     <link rel="prev" title="parcel" href="parcel.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.0-dev62+g2537dd9" />
-    <meta name="docbuild:last-update" content="Sep 20, 2025"/>
+  <meta name="docsearch:version" content="1.1.0-dev70+g491c12e" />
+    <meta name="docbuild:last-update" content="Sep 22, 2025"/>
   </head>
   
   
@@ -1143,6 +1143,7 @@
 <p>With a given parcel defined by a pressure and temperature (in Pascals and Kelvin), lift it moist adiabatically to a new pressure level (in Pascals) and return the temperature of the parcel at that level.</p>
 <p>This function is based on/ripped from George Byran’s (NCAR) routine in CM1. It has several options for convergence criteria, pressure increments, and the type of moist adiabat/assumptions (i.e. pseudoadiabatic, adiabatic, liquid, liquid+ice). The <a class="reference internal" href="#namespacesharp_1ad39fcd09ffea548c2aa8468c7d834d81"><span class="std std-ref">sharp::adiabat</span></a> defines the types of adiabats, and the float references to qv, ql, and qi are used to keep budgets of the moisture variables.</p>
 <p>NOTE: rv_total should most likely be the water vapor mixing ratio either at the parcel’s <a class="reference internal" href="parcel.html#namespacesharp_1a03664f85e552919899eefba1c4a7997f"><span class="std std-ref">sharp::LPL</span></a>, or the water vapor mixing ratio at the LCL (these are going to be the same value). Essentially, the total water vapor before condensation.</p>
+<p>If the internal solver reaches 100 iterations without converging, it will return the last computed value and print a warning.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

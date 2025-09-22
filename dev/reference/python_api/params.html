@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>params &#8212; SHARPlib v1.1.0-dev62+g2537dd9 Manual</title>
+    <title>params &#8212; SHARPlib v1.1.0-dev70+g491c12e Manual</title>
   
   
   
@@ -56,8 +56,8 @@
     <link rel="prev" title="layer" href="layer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.1.0-dev62+g2537dd9" />
-    <meta name="docbuild:last-update" content="Sep 20, 2025"/>
+  <meta name="docsearch:version" content="1.1.0-dev70+g491c12e" />
+    <meta name="docbuild:last-update" content="Sep 22, 2025"/>
   </head>
   
   
@@ -647,6 +647,18 @@ The method is based on observations that MCS motion is a function of
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.params.effective_bulk_wind_difference">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.params.</span></span><span class="sig-name descname"><span class="pre">effective_bulk_wind_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">u_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">v_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">effective_inflow_layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">equilibrium_level_pressure:</span> <span class="pre">float</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="winds.html#nwsspc.sharp.calc.winds.WindComponents" title="nwsspc.sharp.calc.winds.WindComponents"><span class="pre">nwsspc.sharp.calc.winds.WindComponents</span></a></span></span><a class="headerlink" href="#nwsspc.sharp.calc.params.effective_bulk_wind_difference" title="Link to this definition">#</a></dt>
+<dd><p>Compute the Effective Bulk Wind Difference</p>
+<p>The effective bulk wind difference is the wind shear between
+the bottom height of the effective inflow layer, and 50% of
+the equilibrium level depth. This is analogous to the usage
+of 0-6 km wind shear, but allows more flexibility for elevated
+convection. Returns MISSING if the effective inflow layer or
+equilibrium level pressure are MISSING.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.params.energy_helicity_index">
 <span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.params.</span></span><span class="sig-name descname"><span class="pre">energy_helicity_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">helicity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.params.energy_helicity_index" title="Link to this definition">#</a></dt>
 <dd><p>Computes the Energy Helicity Index.</p>
@@ -694,8 +706,8 @@ equilibrium level of the most unstable parcel.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pcl</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.Parcel" title="nwsspc.sharp.calc.parcel.Parcel"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.Parcel</span></code></a>) – For effective-layer STP, a mixed-layer parcel, and for fixed-layer STP, a surface-based parcel</p></li>
 <li><p><strong>lcl_hght_agl</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The parcel LCL height in meters</p></li>
-<li><p><strong>storm_relative_helicity</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – For effecitve-layer STP, effecitve SRH, and for fixed-layer, 0-1 km SRH (m^2 / s^2)</p></li>
-<li><p><strong>bulk_wind_difference</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – For effective-layer STP, effecitve BWD, and for fixed-layer STP, 0-6 km BWD (m/s)</p></li>
+<li><p><strong>storm_relative_helicity</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – For effective-layer STP, effective SRH, and for fixed-layer, 0-1 km SRH (m^2 / s^2)</p></li>
+<li><p><strong>bulk_wind_difference</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – For effective-layer STP, effective BWD, and for fixed-layer STP, 0-6 km BWD (m/s)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -729,7 +741,7 @@ storm motion, and will return negative values.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mu_cape</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The CAPE of the Most Unstable Parcel (J/kg)</p></li>
-<li><p><strong>eff_srh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Effecive inflow layer Storm Relative Helicity (m^2/s^2)</p></li>
+<li><p><strong>eff_srh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Effective inflow layer Storm Relative Helicity (m^2/s^2)</p></li>
 <li><p><strong>eff_shear</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Effective layer shear (m/s)</p></li>
 </ul>
 </dd>
@@ -1008,6 +1020,7 @@ PressureLayer are set to MISSING.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.effective_inflow_layer"><code class="docutils literal notranslate"><span class="pre">effective_inflow_layer</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.storm_motion_bunkers"><code class="docutils literal notranslate"><span class="pre">storm_motion_bunkers</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.mcs_motion_corfidi"><code class="docutils literal notranslate"><span class="pre">mcs_motion_corfidi</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.effective_bulk_wind_difference"><code class="docutils literal notranslate"><span class="pre">effective_bulk_wind_difference</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.energy_helicity_index"><code class="docutils literal notranslate"><span class="pre">energy_helicity_index</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.significant_tornado_parameter"><code class="docutils literal notranslate"><span class="pre">significant_tornado_parameter</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.supercell_composite_parameter"><code class="docutils literal notranslate"><span class="pre">supercell_composite_parameter</span></code></a></li>
