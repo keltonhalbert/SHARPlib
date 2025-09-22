@@ -1,0 +1,1283 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" data-theme="dark">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index &#8212; SHARPlib v1.1.0-4-g0293aa3 Manual</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="_static/documentation_options.js?v=b3e8092d"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://keltonhalbert.github.io/SHARPlib/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.1.0-4-g0293aa3';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.0-4-g0293aa3" />
+    <meta name="docbuild:last-update" content="Sep 22, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="dark">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="_static/logo.png" class="logo__image only-dark" alt=""/>
+    <img src="_static/logo.png" class="logo__image only-light pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">SHARPlib</p>
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="reference/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="faq.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/tree/main/examples/Python">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/releases">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Bluesky</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="reference/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="faq.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/tree/main/examples/Python">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/releases">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Bluesky</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none"></div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#K"><strong>K</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ 
+</div>
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.adiabat.adiab_ice">adiab_ice (nwsspc.sharp.calc.thermo.adiabat attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.adiabat.adiab_liq">adiab_liq (nwsspc.sharp.calc.thermo.adiabat attribute)</a>
+</li>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.adiabat">adiabat (class in nwsspc.sharp.calc.thermo)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.HeightLayer.bottom">bottom (nwsspc.sharp.calc.layer.HeightLayer property)</a>
+
+      <ul>
+        <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.PressureLayer.bottom">(nwsspc.sharp.calc.layer.PressureLayer property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.buoyancy">buoyancy() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.DowndraftParcel.cape">cape (nwsspc.sharp.calc.parcel.DowndraftParcel property)</a>
+
+      <ul>
+        <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.Parcel.cape">(nwsspc.sharp.calc.parcel.Parcel property)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.DowndraftParcel.cinh">cinh (nwsspc.sharp.calc.parcel.DowndraftParcel property)</a>
+
+      <ul>
+        <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.Parcel.cinh">(nwsspc.sharp.calc.parcel.Parcel property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/winds.html#nwsspc.sharp.calc.winds.components_to_vector">components_to_vector() (in module nwsspc.sharp.calc.winds)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1.converge">converge (nwsspc.sharp.calc.parcel.lifter_cm1 property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.HeightLayer.delta">delta (nwsspc.sharp.calc.layer.HeightLayer property)</a>
+
+      <ul>
+        <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.PressureLayer.delta">(nwsspc.sharp.calc.layer.PressureLayer property)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/python_api/params.html#nwsspc.sharp.calc.params.dendritic_layer">dendritic_layer() (in module nwsspc.sharp.calc.params)</a>
+</li>
+      <li><a href="reference/python_api/winds.html#nwsspc.sharp.calc.winds.WindVector.direction">direction (nwsspc.sharp.calc.winds.WindVector property)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.DowndraftParcel">DowndraftParcel (class in nwsspc.sharp.calc.parcel)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.DowndraftParcel.DowndraftParcel.cape_cinh">DowndraftParcel.cape_cinh() (in module nwsspc.sharp.calc.parcel.DowndraftParcel)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.DowndraftParcel.DowndraftParcel.lower_parcel">DowndraftParcel.lower_parcel() (in module nwsspc.sharp.calc.parcel.DowndraftParcel)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.DowndraftParcel.DowndraftParcel.min_thetae">DowndraftParcel.min_thetae() (in module nwsspc.sharp.calc.parcel.DowndraftParcel)</a>
+</li>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.drylift">drylift() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.DowndraftParcel.dwpk">dwpk (nwsspc.sharp.calc.parcel.DowndraftParcel property)</a>
+
+      <ul>
+        <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.Parcel.dwpk">(nwsspc.sharp.calc.parcel.Parcel property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/params.html#nwsspc.sharp.calc.params.effective_bulk_wind_difference">effective_bulk_wind_difference() (in module nwsspc.sharp.calc.params)</a>
+</li>
+      <li><a href="reference/python_api/params.html#nwsspc.sharp.calc.params.effective_inflow_layer">effective_inflow_layer() (in module nwsspc.sharp.calc.params)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/params.html#nwsspc.sharp.calc.params.energy_helicity_index">energy_helicity_index() (in module nwsspc.sharp.calc.params)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.Parcel.eql_pressure">eql_pressure (nwsspc.sharp.calc.parcel.Parcel property)</a>
+</li>
+      <li><a href="reference/python_api/params.html#nwsspc.sharp.calc.params.equilibrium_moisture_content">equilibrium_moisture_content() (in module nwsspc.sharp.calc.params)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.LPL.FCST">FCST (nwsspc.sharp.calc.parcel.LPL attribute)</a>
+</li>
+      <li><a href="reference/python_api/interp.html#nwsspc.sharp.calc.interp.find_first_height">find_first_height() (in module nwsspc.sharp.calc.interp)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/interp.html#nwsspc.sharp.calc.interp.find_first_pressure">find_first_pressure() (in module nwsspc.sharp.calc.interp)</a>
+</li>
+      <li><a href="reference/python_api/params.html#nwsspc.sharp.calc.params.fosberg_fire_index">fosberg_fire_index() (in module nwsspc.sharp.calc.params)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.get_layer_index">get_layer_index() (in module nwsspc.sharp.calc.layer)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/params.html#nwsspc.sharp.calc.params.hail_growth_layer">hail_growth_layer() (in module nwsspc.sharp.calc.params)</a>
+</li>
+      <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.height_layer_to_pressure">height_layer_to_pressure() (in module nwsspc.sharp.calc.layer)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.HeightLayer">HeightLayer (class in nwsspc.sharp.calc.layer)</a>
+</li>
+      <li><a href="reference/python_api/winds.html#nwsspc.sharp.calc.winds.helicity">helicity() (in module nwsspc.sharp.calc.winds)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.integrate_layer_trapz">integrate_layer_trapz() (in module nwsspc.sharp.calc.layer)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/interp.html#nwsspc.sharp.calc.interp.interp_height">interp_height() (in module nwsspc.sharp.calc.interp)</a>
+</li>
+      <li><a href="reference/python_api/interp.html#nwsspc.sharp.calc.interp.interp_pressure">interp_pressure() (in module nwsspc.sharp.calc.interp)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.LayerIndex.kbot">kbot (nwsspc.sharp.calc.layer.LayerIndex property)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.LayerIndex.ktop">ktop (nwsspc.sharp.calc.layer.LayerIndex property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.lapse_rate">lapse_rate() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.lapse_rate_max">lapse_rate_max() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+      <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.layer_max">layer_max() (in module nwsspc.sharp.calc.layer)</a>
+</li>
+      <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.layer_mean">layer_mean() (in module nwsspc.sharp.calc.layer)</a>
+</li>
+      <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.layer_min">layer_min() (in module nwsspc.sharp.calc.layer)</a>
+</li>
+      <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.LayerIndex">LayerIndex (class in nwsspc.sharp.calc.layer)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.Parcel.lcl_pressure">lcl_pressure (nwsspc.sharp.calc.parcel.Parcel property)</a>
+</li>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.lcl_temperature">lcl_temperature() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.Parcel.lfc_pressure">lfc_pressure (nwsspc.sharp.calc.parcel.Parcel property)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1">lifter_cm1 (class in nwsspc.sharp.calc.parcel)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1.lifter_cm1.__call__">lifter_cm1.__call__() (in module nwsspc.sharp.calc.parcel.lifter_cm1)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1.lifter_cm1.parcel_virtual_temperature">lifter_cm1.parcel_virtual_temperature() (in module nwsspc.sharp.calc.parcel.lifter_cm1)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.lifter_wobus">lifter_wobus (class in nwsspc.sharp.calc.parcel)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.lifter_wobus.lifter_wobus.__call__">lifter_wobus.__call__() (in module nwsspc.sharp.calc.parcel.lifter_wobus)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.lifter_wobus.lifter_wobus.parcel_virtual_temperature">lifter_wobus.parcel_virtual_temperature() (in module nwsspc.sharp.calc.parcel.lifter_wobus)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.LPL">LPL (class in nwsspc.sharp.calc.parcel)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1.ma_type">ma_type (nwsspc.sharp.calc.parcel.lifter_cm1 property)</a>
+</li>
+      <li><a href="reference/python_api/params.html#nwsspc.sharp.calc.params.mcs_motion_corfidi">mcs_motion_corfidi() (in module nwsspc.sharp.calc.params)</a>
+</li>
+      <li><a href="reference/python_api/winds.html#nwsspc.sharp.calc.winds.mean_wind">mean_wind() (in module nwsspc.sharp.calc.winds)</a>
+</li>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.mixratio">mixratio() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.mixratio_ice">mixratio_ice() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.LPL.ML">ML (nwsspc.sharp.calc.parcel.LPL attribute)</a>
+</li>
+      <li>
+    module
+
+      <ul>
+        <li><a href="reference/python_api/interp.html#module-nwsspc.sharp.calc.interp">nwsspc.sharp.calc.interp</a>
+</li>
+        <li><a href="reference/python_api/layer.html#module-nwsspc.sharp.calc.layer">nwsspc.sharp.calc.layer</a>
+</li>
+        <li><a href="reference/python_api/params.html#module-nwsspc.sharp.calc.params">nwsspc.sharp.calc.params</a>
+</li>
+        <li><a href="reference/python_api/thermo.html#module-nwsspc.sharp.calc.thermo">nwsspc.sharp.calc.thermo</a>
+</li>
+        <li><a href="reference/python_api/winds.html#module-nwsspc.sharp.calc.winds">nwsspc.sharp.calc.winds</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.Parcel.mpl_pressure">mpl_pressure (nwsspc.sharp.calc.parcel.Parcel property)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.LPL.MU">MU (nwsspc.sharp.calc.parcel.LPL attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    nwsspc.sharp.calc.interp
+
+      <ul>
+        <li><a href="reference/python_api/interp.html#module-nwsspc.sharp.calc.interp">module</a>
+</li>
+      </ul></li>
+      <li>
+    nwsspc.sharp.calc.layer
+
+      <ul>
+        <li><a href="reference/python_api/layer.html#module-nwsspc.sharp.calc.layer">module</a>
+</li>
+      </ul></li>
+      <li>
+    nwsspc.sharp.calc.params
+
+      <ul>
+        <li><a href="reference/python_api/params.html#module-nwsspc.sharp.calc.params">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    nwsspc.sharp.calc.thermo
+
+      <ul>
+        <li><a href="reference/python_api/thermo.html#module-nwsspc.sharp.calc.thermo">module</a>
+</li>
+      </ul></li>
+      <li>
+    nwsspc.sharp.calc.winds
+
+      <ul>
+        <li><a href="reference/python_api/winds.html#module-nwsspc.sharp.calc.winds">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.Parcel">Parcel (class in nwsspc.sharp.calc.parcel)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.Parcel.Parcel.cape_cinh">Parcel.cape_cinh() (in module nwsspc.sharp.calc.parcel.Parcel)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.Parcel.Parcel.find_lfc_el">Parcel.find_lfc_el() (in module nwsspc.sharp.calc.parcel.Parcel)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.Parcel.Parcel.lift_parcel">Parcel.lift_parcel() (in module nwsspc.sharp.calc.parcel.Parcel)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.Parcel.Parcel.maximum_parcel_level">Parcel.maximum_parcel_level() (in module nwsspc.sharp.calc.parcel.Parcel)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.Parcel.Parcel.mixed_layer_parcel">Parcel.mixed_layer_parcel() (in module nwsspc.sharp.calc.parcel.Parcel)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.Parcel.Parcel.most_unstable_parcel">Parcel.most_unstable_parcel() (in module nwsspc.sharp.calc.parcel.Parcel)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.Parcel.Parcel.surface_parcel">Parcel.surface_parcel() (in module nwsspc.sharp.calc.parcel.Parcel)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/params.html#nwsspc.sharp.calc.params.precipitable_water">precipitable_water() (in module nwsspc.sharp.calc.params)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.DowndraftParcel.pres">pres (nwsspc.sharp.calc.parcel.DowndraftParcel property)</a>
+
+      <ul>
+        <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.Parcel.pres">(nwsspc.sharp.calc.parcel.Parcel property)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1.pressure_incr">pressure_incr (nwsspc.sharp.calc.parcel.lifter_cm1 property)</a>
+</li>
+      <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.pressure_layer_to_height">pressure_layer_to_height() (in module nwsspc.sharp.calc.layer)</a>
+</li>
+      <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.PressureLayer">PressureLayer (class in nwsspc.sharp.calc.layer)</a>
+</li>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.adiabat.pseudo_ice">pseudo_ice (nwsspc.sharp.calc.thermo.adiabat attribute)</a>
+</li>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.adiabat.pseudo_liq">pseudo_liq (nwsspc.sharp.calc.thermo.adiabat attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.relative_humidity">relative_humidity() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.LPL.SFC">SFC (nwsspc.sharp.calc.parcel.LPL attribute)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv45sharp">sharp (C++ type)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp7adiabatE">sharp::adiabat (C++ enum)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp7adiabat9adiab_iceE">sharp::adiabat::adiab_ice (C++ enumerator)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp7adiabat9adiab_liqE">sharp::adiabat::adiab_liq (C++ enumerator)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp7adiabat3ENDE">sharp::adiabat::END (C++ enumerator)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp7adiabat10pseudo_iceE">sharp::adiabat::pseudo_ice (C++ enumerator)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp7adiabat10pseudo_liqE">sharp::adiabat::pseudo_liq (C++ enumerator)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp8buoyancyEA_KfA_KfA_fNSt9ptrdiff_tE">sharp::buoyancy (C++ function)</a>, <a href="reference/cpp_api/thermo.html#_CPPv4N5sharp8buoyancyEKfKf">[1]</a>
+</li>
+      <li><a href="reference/cpp_api/winds.html#_CPPv4N5sharp20components_to_vectorE14WindComponents">sharp::components_to_vector (C++ function)</a>, <a href="reference/cpp_api/winds.html#_CPPv4N5sharp20components_to_vectorEff">[1]</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp9CP_DRYAIRE">sharp::CP_DRYAIR (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp6CP_ICEE">sharp::CP_ICE (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp9CP_LIQUIDE">sharp::CP_LIQUID (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp8CP_VAPORE">sharp::CP_VAPOR (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/params.html#_CPPv4N5sharp15dendritic_layerEA_KfA_KfKNSt9ptrdiff_tE">sharp::dendritic_layer (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp15DowndraftParcelE">sharp::DowndraftParcel (C++ struct)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp15DowndraftParcel4capeE">sharp::DowndraftParcel::cape (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp15DowndraftParcel9cape_cinhEA_KfA_KfA_KfK9ptrdiff_t">sharp::DowndraftParcel::cape_cinh (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp15DowndraftParcel4cinhE">sharp::DowndraftParcel::cinh (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp15DowndraftParcel4dwpkE">sharp::DowndraftParcel::dwpk (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4I0EN5sharp15DowndraftParcel12lower_parcelEvR3LftA_KfA_fKNSt9ptrdiff_tE">sharp::DowndraftParcel::lower_parcel (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp15DowndraftParcel10min_thetaeERN5sharp13PressureLayerEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tEKf">sharp::DowndraftParcel::min_thetae (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp15DowndraftParcel4presE">sharp::DowndraftParcel::pres (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp15DowndraftParcel4tmpkE">sharp::DowndraftParcel::tmpk (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp22DRYAIR_SPEC_HEAT_RATIOE">sharp::DRYAIR_SPEC_HEAT_RATIO (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp7dryliftEfffRfRf">sharp::drylift (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/params.html#_CPPv4N5sharp30effective_bulk_wind_differenceEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tEN5sharp13PressureLayerEKf">sharp::effective_bulk_wind_difference (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/params.html#_CPPv4I0EN5sharp22effective_inflow_layerE13PressureLayerR6LifterA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel">sharp::effective_inflow_layer (C++ function)</a>, <a href="reference/cpp_api/params.html#_CPPv4N5sharp22effective_inflow_layerERN5sharp10lifter_cm1EA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel">[1]</a>, <a href="reference/cpp_api/params.html#_CPPv4N5sharp22effective_inflow_layerERN5sharp12lifter_wobusEA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel">[2]</a>
+</li>
+      <li><a href="reference/cpp_api/params.html#_CPPv4N5sharp21energy_helicity_indexEff">sharp::energy_helicity_index (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp7EPSILONE">sharp::EPSILON (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/params.html#_CPPv4N5sharp28equilibrium_moisture_contentEff">sharp::equilibrium_moisture_content (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp6EXP_LSE">sharp::EXP_LS (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp6EXP_LVE">sharp::EXP_LV (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/interp.html#_CPPv4N5sharp17find_first_heightEKfA_KfA_KfKNSt9ptrdiff_tE">sharp::find_first_height (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/interp.html#_CPPv4N5sharp19find_first_pressureEKfA_KfA_KfKNSt9ptrdiff_tE">sharp::find_first_pressure (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/params.html#_CPPv4N5sharp18fosberg_fire_indexEfff">sharp::fosberg_fire_index (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp7GAMMA_DE">sharp::GAMMA_D (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp15get_layer_indexER11HeightLayerA_KfKNSt9ptrdiff_tE">sharp::get_layer_index (C++ function)</a>, <a href="reference/cpp_api/layer.html#_CPPv4N5sharp15get_layer_indexER13PressureLayerA_KfKNSt9ptrdiff_tE">[1]</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp7GRAVITYE">sharp::GRAVITY (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/params.html#_CPPv4N5sharp17hail_growth_layerEA_KfA_KfKNSt9ptrdiff_tE">sharp::hail_growth_layer (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp24height_layer_to_pressureE11HeightLayerA_KfA_KfKNSt9ptrdiff_tEKb">sharp::height_layer_to_pressure (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp11HeightLayerE">sharp::HeightLayer (C++ struct)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp11HeightLayer6bottomE">sharp::HeightLayer::bottom (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp11HeightLayer5coordE">sharp::HeightLayer::coord (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp11HeightLayer5deltaE">sharp::HeightLayer::delta (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp11HeightLayer11HeightLayerEfff">sharp::HeightLayer::HeightLayer (C++ function)</a>, <a href="reference/cpp_api/layer.html#_CPPv4N5sharp11HeightLayer11HeightLayerEv">[1]</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp11HeightLayer3topE">sharp::HeightLayer::top (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/winds.html#_CPPv4I0EN5sharp8helicityEf1L14WindComponentsA_KfA_KfA_KfKNSt9ptrdiff_tE">sharp::helicity (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp9HPA_TO_PAE">sharp::HPA_TO_PA (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4I0EN5sharp21integrate_layer_trapzEf1LA_KfA_KfKNSt9ptrdiff_tEKiKb">sharp::integrate_layer_trapz (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/interp.html#_CPPv4N5sharp13interp_heightEKfA_KfA_KfKNSt9ptrdiff_tE">sharp::interp_height (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/interp.html#_CPPv4N5sharp15interp_pressureEKfA_KfA_KfKNSt9ptrdiff_tE">sharp::interp_pressure (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp10lapse_rateE11HeightLayerA_KfA_KfKNSt9ptrdiff_tE">sharp::lapse_rate (C++ function)</a>, <a href="reference/cpp_api/thermo.html#_CPPv4N5sharp10lapse_rateE13PressureLayerA_KfA_KfA_KfKNSt9ptrdiff_tE">[1]</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp14lapse_rate_maxE11HeightLayerKfA_KfA_KfKNSt9ptrdiff_tEP11HeightLayer">sharp::lapse_rate_max (C++ function)</a>, <a href="reference/cpp_api/thermo.html#_CPPv4N5sharp14lapse_rate_maxE13PressureLayerKfA_KfA_KfA_KfKNSt9ptrdiff_tEP13PressureLayer">[1]</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4I0EN5sharp9layer_maxEf1LA_KfA_KfKNSt9ptrdiff_tEPf">sharp::layer_max (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp10layer_meanE11HeightLayerA_KfA_KfA_KfKNSt9ptrdiff_tEKb">sharp::layer_mean (C++ function)</a>, <a href="reference/cpp_api/layer.html#_CPPv4N5sharp10layer_meanE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE">[1]</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4I0EN5sharp9layer_minEf1LA_KfA_KfKNSt9ptrdiff_tEPf">sharp::layer_min (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp10LayerIndexE">sharp::LayerIndex (C++ struct)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp10LayerIndex4kbotE">sharp::LayerIndex::kbot (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp10LayerIndex4ktopE">sharp::LayerIndex::ktop (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp15lcl_temperatureEff">sharp::lcl_temperature (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp10lifter_cm1E">sharp::lifter_cm1 (C++ struct)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp10lifter_cm18convergeE">sharp::lifter_cm1::converge (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp10lifter_cm17ma_typeE">sharp::lifter_cm1::ma_type (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp10lifter_cm1clEKfKfKf">sharp::lifter_cm1::operator() (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4NK5sharp10lifter_cm126parcel_virtual_temperatureEKfKf">sharp::lifter_cm1::parcel_virtual_temperature (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp10lifter_cm113pressure_incrE">sharp::lifter_cm1::pressure_incr (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp10lifter_cm12riE">sharp::lifter_cm1::ri (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp10lifter_cm12rlE">sharp::lifter_cm1::rl (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp10lifter_cm12rvE">sharp::lifter_cm1::rv (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp10lifter_cm18rv_totalE">sharp::lifter_cm1::rv_total (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp10lifter_cm15setupEKfKf">sharp::lifter_cm1::setup (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp12lifter_wobusE">sharp::lifter_wobus (C++ struct)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp12lifter_wobus8convergeE">sharp::lifter_wobus::converge (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4NK5sharp12lifter_wobusclEKfKfKf">sharp::lifter_wobus::operator() (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4NK5sharp12lifter_wobus26parcel_virtual_temperatureEKfKf">sharp::lifter_wobus::parcel_virtual_temperature (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4NK5sharp12lifter_wobus5setupEKfKf">sharp::lifter_wobus::setup (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp3LPLE">sharp::LPL (C++ enum)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp3LPL3ENDE">sharp::LPL::END (C++ enumerator)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp3LPL4FCSTE">sharp::LPL::FCST (C++ enumerator)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp3LPL2MLE">sharp::LPL::ML (C++ enumerator)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp3LPL2MUE">sharp::LPL::MU (C++ enumerator)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp3LPL3SFCE">sharp::LPL::SFC (C++ enumerator)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp3LPL3USRE">sharp::LPL::USR (C++ enumerator)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp3LS1E">sharp::LS1 (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp3LS2E">sharp::LS2 (C++ member)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp3LV1E">sharp::LV1 (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp3LV2E">sharp::LV2 (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/params.html#_CPPv4N5sharp18mcs_motion_corfidiEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE">sharp::mcs_motion_corfidi (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp4MDRYE">sharp::MDRY (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/winds.html#_CPPv4N5sharp9mean_windE13PressureLayerA_KfA_KfA_KfKNSt9ptrdiff_tEKb">sharp::mean_wind (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp7MISSINGE">sharp::MISSING (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp8mixratioEf">sharp::mixratio (C++ function)</a>, <a href="reference/cpp_api/thermo.html#_CPPv4N5sharp8mixratioEff">[1]</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp12mixratio_iceEff">sharp::mixratio_ice (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp17moist_adiabat_cm1EfffRfRfRfRfff7adiabat">sharp::moist_adiabat_cm1 (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp6MWATERE">sharp::MWATER (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp9PA_TO_HPAE">sharp::PA_TO_HPA (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp6ParcelE">sharp::Parcel (C++ struct)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp6Parcel4capeE">sharp::Parcel::cape (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp6Parcel9cape_cinhEA_KfA_KfA_KfKNSt9ptrdiff_tE">sharp::Parcel::cape_cinh (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp6Parcel4cinhE">sharp::Parcel::cinh (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp6Parcel4dwpkE">sharp::Parcel::dwpk (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp6Parcel12eql_pressureE">sharp::Parcel::eql_pressure (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp6Parcel11find_lfc_elEA_KfA_KfA_KfKNSt9ptrdiff_tE">sharp::Parcel::find_lfc_el (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp6Parcel12lcl_pressureE">sharp::Parcel::lcl_pressure (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp6Parcel12lfc_pressureE">sharp::Parcel::lfc_pressure (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4I0EN5sharp6Parcel11lift_parcelEvR3LftA_KfA_fKNSt9ptrdiff_tE">sharp::Parcel::lift_parcel (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp6Parcel20maximum_parcel_levelEA_KfA_KfA_KfKNSt9ptrdiff_tE">sharp::Parcel::maximum_parcel_level (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4I0EN5sharp6Parcel18mixed_layer_parcelE6ParcelR3LyrA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE">sharp::Parcel::mixed_layer_parcel (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4I00EN5sharp6Parcel20most_unstable_parcelE6ParcelR3LyrR3LftA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tE">sharp::Parcel::most_unstable_parcel (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp6Parcel12mpl_pressureE">sharp::Parcel::mpl_pressure (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp6Parcel4presE">sharp::Parcel::pres (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp6Parcel6sourceE">sharp::Parcel::source (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp6Parcel14surface_parcelEKfKfKf">sharp::Parcel::surface_parcel (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/parcel.html#_CPPv4N5sharp6Parcel4tmpkE">sharp::Parcel::tmpk (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp2PIE">sharp::PI (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp7PRANDTLE">sharp::PRANDTL (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/params.html#_CPPv4N5sharp18precipitable_waterE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE">sharp::precipitable_water (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp24pressure_layer_to_heightE13PressureLayerA_KfA_KfKNSt9ptrdiff_tEKb">sharp::pressure_layer_to_height (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp13PressureLayerE">sharp::PressureLayer (C++ struct)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp13PressureLayer6bottomE">sharp::PressureLayer::bottom (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp13PressureLayer5coordE">sharp::PressureLayer::coord (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp13PressureLayer5deltaE">sharp::PressureLayer::delta (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp13PressureLayer13PressureLayerEfff">sharp::PressureLayer::PressureLayer (C++ function)</a>, <a href="reference/cpp_api/layer.html#_CPPv4N5sharp13PressureLayer13PressureLayerEv">[1]</a>
+</li>
+      <li><a href="reference/cpp_api/layer.html#_CPPv4N5sharp13PressureLayer3topE">sharp::PressureLayer::top (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp5RDGASE">sharp::RDGAS (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp17relative_humidityEfff">sharp::relative_humidity (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp4RGASE">sharp::RGAS (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp8RHO_LWATE">sharp::RHO_LWAT (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp4ROCPE">sharp::ROCP (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp5RVGASE">sharp::RVGAS (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp14saturated_liftEfff">sharp::saturated_lift (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/params.html#_CPPv4N5sharp26significant_hail_parameterERKN5sharp6ParcelEffff">sharp::significant_hail_parameter (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/params.html#_CPPv4N5sharp29significant_tornado_parameterE6Parcelfff">sharp::significant_tornado_parameter (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp17specific_humidityEf">sharp::specific_humidity (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/params.html#_CPPv4N5sharp20storm_motion_bunkersEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE11HeightLayer11HeightLayerKbKb">sharp::storm_motion_bunkers (C++ function)</a>, <a href="reference/cpp_api/params.html#_CPPv4N5sharp20storm_motion_bunkersEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE13PressureLayerRK6ParcelKb">[1]</a>
+</li>
+      <li><a href="reference/cpp_api/params.html#_CPPv4N5sharp29supercell_composite_parameterEfff">sharp::supercell_composite_parameter (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp23temperature_at_mixratioEff">sharp::temperature_at_mixratio (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp5thetaEfff">sharp::theta (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp11theta_levelEff">sharp::theta_level (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp18THETA_REF_PRESSUREE">sharp::THETA_REF_PRESSURE (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4I0EN5sharp13theta_wetbulbEf3Lftfff">sharp::theta_wetbulb (C++ function)</a>, <a href="reference/cpp_api/thermo.html#_CPPv4N5sharp13theta_wetbulbE10lifter_cm1fff">[1]</a>, <a href="reference/cpp_api/thermo.html#_CPPv4N5sharp13theta_wetbulbE12lifter_wobusfff">[2]</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp6thetaeEfff">sharp::thetae (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp3TOLE">sharp::TOL (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/winds.html#_CPPv4N5sharp11u_componentEff">sharp::u_component (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/winds.html#_CPPv4N5sharp11v_componentEff">sharp::v_component (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp14vapor_pressureEff">sharp::vapor_pressure (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp18vapor_pressure_iceEff">sharp::vapor_pressure_ice (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp11VAPPRES_REFE">sharp::VAPPRES_REF (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/winds.html#_CPPv4N5sharp12vector_angleEff">sharp::vector_angle (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/winds.html#_CPPv4N5sharp16vector_magnitudeEff">sharp::vector_magnitude (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/winds.html#_CPPv4N5sharp24vector_magnitude_preciseEff">sharp::vector_magnitude_precise (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/winds.html#_CPPv4N5sharp20vector_to_componentsE10WindVector">sharp::vector_to_components (C++ function)</a>, <a href="reference/cpp_api/winds.html#_CPPv4N5sharp20vector_to_componentsEff">[1]</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp19virtual_temperatureEffff">sharp::virtual_temperature (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp4VKSQE">sharp::VKSQ (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4I0EN5sharp7wetbulbEf3Lftfff">sharp::wetbulb (C++ function)</a>, <a href="reference/cpp_api/thermo.html#_CPPv4N5sharp7wetbulbE10lifter_cm1fff">[1]</a>, <a href="reference/cpp_api/thermo.html#_CPPv4N5sharp7wetbulbE12lifter_wobusfff">[2]</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp7wetliftEffff">sharp::wetlift (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/winds.html#_CPPv4I0EN5sharp10wind_shearE14WindComponents1LA_KfA_KfA_KfKNSt9ptrdiff_tE">sharp::wind_shear (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/winds.html#_CPPv4N5sharp14WindComponentsE">sharp::WindComponents (C++ struct)</a>
+</li>
+      <li><a href="reference/cpp_api/winds.html#_CPPv4N5sharp14WindComponents1uE">sharp::WindComponents::u (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/winds.html#_CPPv4N5sharp14WindComponents1vE">sharp::WindComponents::v (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/winds.html#_CPPv4N5sharp10WindVectorE">sharp::WindVector (C++ struct)</a>
+</li>
+      <li><a href="reference/cpp_api/winds.html#_CPPv4N5sharp10WindVector9directionE">sharp::WindVector::direction (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/winds.html#_CPPv4N5sharp10WindVector5speedE">sharp::WindVector::speed (C++ member)</a>
+</li>
+      <li><a href="reference/cpp_api/thermo.html#_CPPv4N5sharp4wobfEf">sharp::wobf (C++ function)</a>
+</li>
+      <li><a href="reference/cpp_api/constants.html#_CPPv4N5sharp7ZEROCNKE">sharp::ZEROCNK (C++ member)</a>
+</li>
+      <li><a href="reference/python_api/params.html#nwsspc.sharp.calc.params.significant_hail_parameter">significant_hail_parameter() (in module nwsspc.sharp.calc.params)</a>
+</li>
+      <li><a href="reference/python_api/params.html#nwsspc.sharp.calc.params.significant_tornado_parameter">significant_tornado_parameter() (in module nwsspc.sharp.calc.params)</a>
+</li>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.specific_humidity">specific_humidity() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+      <li><a href="reference/python_api/winds.html#nwsspc.sharp.calc.winds.WindVector.speed">speed (nwsspc.sharp.calc.winds.WindVector property)</a>
+</li>
+      <li><a href="reference/python_api/params.html#nwsspc.sharp.calc.params.storm_motion_bunkers">storm_motion_bunkers() (in module nwsspc.sharp.calc.params)</a>
+</li>
+      <li><a href="reference/python_api/params.html#nwsspc.sharp.calc.params.supercell_composite_parameter">supercell_composite_parameter() (in module nwsspc.sharp.calc.params)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.temperature_at_mixratio">temperature_at_mixratio() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.theta">theta() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.theta_level">theta_level() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.theta_wetbulb">theta_wetbulb() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.thetae">thetae() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.DowndraftParcel.tmpk">tmpk (nwsspc.sharp.calc.parcel.DowndraftParcel property)</a>
+
+      <ul>
+        <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.Parcel.tmpk">(nwsspc.sharp.calc.parcel.Parcel property)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.HeightLayer.top">top (nwsspc.sharp.calc.layer.HeightLayer property)</a>
+
+      <ul>
+        <li><a href="reference/python_api/layer.html#nwsspc.sharp.calc.layer.PressureLayer.top">(nwsspc.sharp.calc.layer.PressureLayer property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/winds.html#nwsspc.sharp.calc.winds.WindComponents.u">u (nwsspc.sharp.calc.winds.WindComponents property)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/winds.html#nwsspc.sharp.calc.winds.u_component">u_component() (in module nwsspc.sharp.calc.winds)</a>
+</li>
+      <li><a href="reference/python_api/parcel.html#nwsspc.sharp.calc.parcel.LPL.USR">USR (nwsspc.sharp.calc.parcel.LPL attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/winds.html#nwsspc.sharp.calc.winds.WindComponents.v">v (nwsspc.sharp.calc.winds.WindComponents property)</a>
+</li>
+      <li><a href="reference/python_api/winds.html#nwsspc.sharp.calc.winds.v_component">v_component() (in module nwsspc.sharp.calc.winds)</a>
+</li>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.vapor_pressure">vapor_pressure() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.vapor_pressure_ice">vapor_pressure_ice() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/winds.html#nwsspc.sharp.calc.winds.vector_angle">vector_angle() (in module nwsspc.sharp.calc.winds)</a>
+</li>
+      <li><a href="reference/python_api/winds.html#nwsspc.sharp.calc.winds.vector_magnitude">vector_magnitude() (in module nwsspc.sharp.calc.winds)</a>
+</li>
+      <li><a href="reference/python_api/winds.html#nwsspc.sharp.calc.winds.vector_to_components">vector_to_components() (in module nwsspc.sharp.calc.winds)</a>
+</li>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.virtual_temperature">virtual_temperature() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.wetbulb">wetbulb() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.wetlift">wetlift() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+      <li><a href="reference/python_api/winds.html#nwsspc.sharp.calc.winds.wind_shear">wind_shear() (in module nwsspc.sharp.calc.winds)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/python_api/winds.html#nwsspc.sharp.calc.winds.WindComponents">WindComponents (class in nwsspc.sharp.calc.winds)</a>
+</li>
+      <li><a href="reference/python_api/winds.html#nwsspc.sharp.calc.winds.WindVector">WindVector (class in nwsspc.sharp.calc.winds)</a>
+</li>
+      <li><a href="reference/python_api/thermo.html#nwsspc.sharp.calc.thermo.wobf">wobf() (in module nwsspc.sharp.calc.thermo)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2025, NOAA/NWS/NCEP Storm Prediction Center.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

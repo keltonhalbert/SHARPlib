@@ -1,0 +1,1250 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="dark">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>parcel &#8212; SHARPlib v1.1.0-4-g0293aa3 Manual</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=b3e8092d"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/cpp_api/parcel';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://keltonhalbert.github.io/SHARPlib/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.1.0-4-g0293aa3';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="thermo" href="thermo.html" />
+    <link rel="prev" title="params" href="params.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.0-4-g0293aa3" />
+    <meta name="docbuild:last-update" content="Sep 22, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="dark">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-dark" alt=""/>
+    <img src="../../_static/logo.png" class="logo__image only-light pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">SHARPlib</p>
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../faq.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/tree/main/examples/Python">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/releases">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Bluesky</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../faq.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/tree/main/examples/Python">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/releases">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Bluesky</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="constants.html">constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interp.html">interp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layer.html">layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="params.html">params</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">parcel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermo.html">thermo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="winds.html">winds</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">C++ API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">parcel</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="parcel">
+<h1>parcel<a class="headerlink" href="#parcel" title="Link to this heading">#</a></h1>
+<section id="parcel-lifters">
+<h2>Parcel Lifters<a class="headerlink" href="#parcel-lifters" title="Link to this heading">#</a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp12lifter_wobusE">
+<span id="_CPPv3N5sharp12lifter_wobusE"></span><span id="_CPPv2N5sharp12lifter_wobusE"></span><span id="sharp::lifter_wobus"></span><span class="target" id="structsharp_1_1lifter__wobus"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lifter_wobus</span></span></span><a class="headerlink" href="#_CPPv4N5sharp12lifter_wobusE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A functor that calls the Wobus Wetlift funtion. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>This functor is used to wrap the Wobus Wetlift function for parcel lifting routines. Functors - classes with their operator() overloaded - are used so that functions can be passed to templates in a way that the compiler can still optimize, rather than using function pointers or lambdas.</p>
+<p>Specifically, this functor is designed to be passed as a template argument to <a class="reference internal" href="#structsharp_1_1Parcel_1a9523de2b8b4c28ca49fba3013f94cb06"><span class="std std-ref">sharp::Parcel::lift_parcel</span></a>, so that the method of computing moist adiabats can be changed without changing the overall parcel lifting code. The reason this is awesome is that the compiler can still optimize and inline this code, while the user can configure the parcel lifting algorithm to their specifications. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5sharp12lifter_wobus5setupEKfKf">
+<span id="_CPPv3NK5sharp12lifter_wobus5setupEKfKf"></span><span id="_CPPv2NK5sharp12lifter_wobus5setupEKfKf"></span><span id="sharp::lifter_wobus::setup__floatC.floatCC"></span><span class="target" id="structsharp_1_1lifter__wobus_1aff7ac3dd393ccac49f491014ffa09f57"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setup</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lcl_pres</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lcl_tmpk</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5sharp12lifter_wobus5setupEKfKf" title="Link to this definition">#</a><br /></dt>
+<dd><p>Perform the setup step for the parcel lifter. </p>
+<p>Some parcel lifters require setup in order to handle adiabatic ascent and tracking of vapor, liquid, and ice mixing ratios. The Wobus lifter does not require this, however, so this function does nothing. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5sharp12lifter_wobusclEKfKfKf">
+<span id="_CPPv3NK5sharp12lifter_wobusclEKfKfKf"></span><span id="_CPPv2NK5sharp12lifter_wobusclEKfKfKf"></span><span id="sharp::lifter_wobus::call-operator__floatC.floatC.floatCC"></span><span class="target" id="structsharp_1_1lifter__wobus_1a92ffe04c0425aef07c524759d799066e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pres</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tmpk</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">new_pres</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5sharp12lifter_wobusclEKfKfKf" title="Link to this definition">#</a><br /></dt>
+<dd><p>Overloads operator() to call <a class="reference internal" href="thermo.html#namespacesharp_1af50c69b629718ef1260e8448af645843"><span class="std std-ref">sharp::wetlift</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pres</strong> – <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> pressure (Pa) </p></li>
+<li><p><strong>tmpk</strong> – <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> temperature (K) </p></li>
+<li><p><strong>new_pres</strong> – Final level of parcel after lift (Pa)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The temperature of the lifted parcel </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5sharp12lifter_wobus26parcel_virtual_temperatureEKfKf">
+<span id="_CPPv3NK5sharp12lifter_wobus26parcel_virtual_temperatureEKfKf"></span><span id="_CPPv2NK5sharp12lifter_wobus26parcel_virtual_temperatureEKfKf"></span><span id="sharp::lifter_wobus::parcel_virtual_temperature__floatC.floatCC"></span><span class="target" id="structsharp_1_1lifter__wobus_1a82be5bdfdff54890488bbc1461b5b05e"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parcel_virtual_temperature</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pres</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tmpk</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5sharp12lifter_wobus26parcel_virtual_temperatureEKfKf" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the virtual temperature of the parcel. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pres</strong> – <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> pressure (Pa) </p></li>
+<li><p><strong>tmpk</strong> – <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The virtual temperature of the parcel </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp12lifter_wobus8convergeE">
+<span id="_CPPv3N5sharp12lifter_wobus8convergeE"></span><span id="_CPPv2N5sharp12lifter_wobus8convergeE"></span><span id="sharp::lifter_wobus::converge__float"></span><span class="target" id="structsharp_1_1lifter__wobus_1a38ee5e05b72219b95385e3c88fba92da"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">converge</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.001f</span></span><a class="headerlink" href="#_CPPv4N5sharp12lifter_wobus8convergeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The iterative convergence criteria (K) </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp10lifter_cm1E">
+<span id="_CPPv3N5sharp10lifter_cm1E"></span><span id="_CPPv2N5sharp10lifter_cm1E"></span><span id="sharp::lifter_cm1"></span><span class="target" id="structsharp_1_1lifter__cm1"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lifter_cm1</span></span></span><a class="headerlink" href="#_CPPv4N5sharp10lifter_cm1E" title="Link to this definition">#</a><br /></dt>
+<dd><p>A functor that calls the CM1 moist adiabat solver. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>This functor is used to wrap the CM1 moist adiabat function for parcel lifting routines. Functors - classes with their operator() overloaded - are used so that functions can be passed to templates in a way that the compiler can still optimize, rather than using function pointers or lambdas.</p>
+<p>Specifically, this functor is designed to be passed as a template argument to <a class="reference internal" href="#structsharp_1_1Parcel_1a9523de2b8b4c28ca49fba3013f94cb06"><span class="std std-ref">sharp::Parcel::lift_parcel</span></a>, so that the method of computing moist adiabats can be changed without changing the overall parcel lifting code. The reason this is awesome is that the compiler can still optimize and inline this code, while the user can configure the parcel lifting algorithm to their specifications. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp10lifter_cm15setupEKfKf">
+<span id="_CPPv3N5sharp10lifter_cm15setupEKfKf"></span><span id="_CPPv2N5sharp10lifter_cm15setupEKfKf"></span><span id="sharp::lifter_cm1::setup__floatC.floatC"></span><span class="target" id="structsharp_1_1lifter__cm1_1a4750e359411eefdfb6d4970052637750"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">setup</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lcl_pres</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lcl_tmpk</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp10lifter_cm15setupEKfKf" title="Link to this definition">#</a><br /></dt>
+<dd><p>perform the necessary setup for parcel ascent. </p>
+<p>This function sets the total water mixing ratio for adiabatic parcel ascent, and zeroes out the vapor, liquid, and ice mixing ratios from previous parcel ascents. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp10lifter_cm1clEKfKfKf">
+<span id="_CPPv3N5sharp10lifter_cm1clEKfKfKf"></span><span id="_CPPv2N5sharp10lifter_cm1clEKfKfKf"></span><span id="sharp::lifter_cm1::call-operator__floatC.floatC.floatC"></span><span class="target" id="structsharp_1_1lifter__cm1_1a2eeb5b118ef40e873c09ac9b3635f7b9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pres</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tmpk</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">new_pres</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp10lifter_cm1clEKfKfKf" title="Link to this definition">#</a><br /></dt>
+<dd><p>Overloads operator() to call <a class="reference internal" href="thermo.html#namespacesharp_1aa258841692c25171d3f3b2e8b1f52079"><span class="std std-ref">sharp::moist_adiabat_cm1</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pres</strong> – <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> pressure (Pa) </p></li>
+<li><p><strong>tmpk</strong> – <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> temperature (K) </p></li>
+<li><p><strong>new_pres</strong> – Final level of parcel after lift (Pa)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The temperature of the lifted parcel </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5sharp10lifter_cm126parcel_virtual_temperatureEKfKf">
+<span id="_CPPv3NK5sharp10lifter_cm126parcel_virtual_temperatureEKfKf"></span><span id="_CPPv2NK5sharp10lifter_cm126parcel_virtual_temperatureEKfKf"></span><span id="sharp::lifter_cm1::parcel_virtual_temperature__floatC.floatCC"></span><span class="target" id="structsharp_1_1lifter__cm1_1a2fc203010e232bd969ac0b09f15c4329"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parcel_virtual_temperature</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pres</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tmpk</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5sharp10lifter_cm126parcel_virtual_temperatureEKfKf" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the virtual temperature of the parcel. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pres</strong> – <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> pressure (Pa) </p></li>
+<li><p><strong>tmpk</strong> – <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The virtual temperature of the parcel </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp10lifter_cm17ma_typeE">
+<span id="_CPPv3N5sharp10lifter_cm17ma_typeE"></span><span id="_CPPv2N5sharp10lifter_cm17ma_typeE"></span><span id="sharp::lifter_cm1::ma_type__adiabat"></span><span class="target" id="structsharp_1_1lifter__cm1_1ae46c58cea6eb213e69cefa910b897538"></span><a class="reference internal" href="thermo.html#_CPPv4N5sharp7adiabatE" title="sharp::adiabat"><span class="n"><span class="pre">adiabat</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ma_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="thermo.html#_CPPv4N5sharp7adiabatE" title="sharp::adiabat"><span class="n"><span class="pre">adiabat</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="thermo.html#_CPPv4N5sharp7adiabat10pseudo_liqE" title="sharp::adiabat::pseudo_liq"><span class="n"><span class="pre">pseudo_liq</span></span></a><a class="headerlink" href="#_CPPv4N5sharp10lifter_cm17ma_typeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The type of moist adiabat to use, as defined by <a class="reference internal" href="thermo.html#namespacesharp_1ad39fcd09ffea548c2aa8468c7d834d81"><span class="std std-ref">sharp::adiabat</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp10lifter_cm113pressure_incrE">
+<span id="_CPPv3N5sharp10lifter_cm113pressure_incrE"></span><span id="_CPPv2N5sharp10lifter_cm113pressure_incrE"></span><span id="sharp::lifter_cm1::pressure_incr__float"></span><span class="target" id="structsharp_1_1lifter__cm1_1a14991ad94ae6bac4421a2a7f3f9a5e4c"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pressure_incr</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">500.0f</span></span><a class="headerlink" href="#_CPPv4N5sharp10lifter_cm113pressure_incrE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The pressure increment (Pa) to use for the iterative solver. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp10lifter_cm18convergeE">
+<span id="_CPPv3N5sharp10lifter_cm18convergeE"></span><span id="_CPPv2N5sharp10lifter_cm18convergeE"></span><span id="sharp::lifter_cm1::converge__float"></span><span class="target" id="structsharp_1_1lifter__cm1_1a645233f46f93344a4050118a3fcd0c9c"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">converge</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.001f</span></span><a class="headerlink" href="#_CPPv4N5sharp10lifter_cm18convergeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The iterative convergence criteria (K) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp10lifter_cm18rv_totalE">
+<span id="_CPPv3N5sharp10lifter_cm18rv_totalE"></span><span id="_CPPv2N5sharp10lifter_cm18rv_totalE"></span><span id="sharp::lifter_cm1::rv_total__float"></span><span class="target" id="structsharp_1_1lifter__cm1_1a1758f1feeedd42ff248ad6b55cbde000"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rv_total</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="constants.html#_CPPv4N5sharp7MISSINGE" title="sharp::MISSING"><span class="n"><span class="pre">MISSING</span></span></a><a class="headerlink" href="#_CPPv4N5sharp10lifter_cm18rv_totalE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Used to keep track of mixing ratio for conserved/adiabatic lifting. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp10lifter_cm12rvE">
+<span id="_CPPv3N5sharp10lifter_cm12rvE"></span><span id="_CPPv2N5sharp10lifter_cm12rvE"></span><span id="sharp::lifter_cm1::rv__float"></span><span class="target" id="structsharp_1_1lifter__cm1_1a4cdf7ebf0718b56fba138b928b559182"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rv</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="constants.html#_CPPv4N5sharp7MISSINGE" title="sharp::MISSING"><span class="n"><span class="pre">MISSING</span></span></a><a class="headerlink" href="#_CPPv4N5sharp10lifter_cm12rvE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Water vapor mixing ratio variable updated during parcel lifts. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp10lifter_cm12rlE">
+<span id="_CPPv3N5sharp10lifter_cm12rlE"></span><span id="_CPPv2N5sharp10lifter_cm12rlE"></span><span id="sharp::lifter_cm1::rl__float"></span><span class="target" id="structsharp_1_1lifter__cm1_1a4ae0d7ec453ae9489643f8ff57cf8139"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rl</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="constants.html#_CPPv4N5sharp7MISSINGE" title="sharp::MISSING"><span class="n"><span class="pre">MISSING</span></span></a><a class="headerlink" href="#_CPPv4N5sharp10lifter_cm12rlE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Liquid water mixing ratio variable updated during parcel lifts. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp10lifter_cm12riE">
+<span id="_CPPv3N5sharp10lifter_cm12riE"></span><span id="_CPPv2N5sharp10lifter_cm12riE"></span><span id="sharp::lifter_cm1::ri__float"></span><span class="target" id="structsharp_1_1lifter__cm1_1aaa41a6bdf1541d95e19f8a56d39c8865"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ri</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="constants.html#_CPPv4N5sharp7MISSINGE" title="sharp::MISSING"><span class="n"><span class="pre">MISSING</span></span></a><a class="headerlink" href="#_CPPv4N5sharp10lifter_cm12riE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Ice water mixing ratio variable updated during parcel lifts. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+<section id="parcels">
+<h2>Parcels<a class="headerlink" href="#parcels" title="Link to this heading">#</a></h2>
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp3LPLE">
+<span id="_CPPv3N5sharp3LPLE"></span><span id="_CPPv2N5sharp3LPLE"></span><span class="target" id="namespacesharp_1a03664f85e552919899eefba1c4a7997f"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">LPL</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><a class="headerlink" href="#_CPPv4N5sharp3LPLE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Enum that defines the lifted parcel level (LPL) of origin. </p>
+<p>The SFC parcel is a surface-based parcel, where the parcel initial attributes are set to the surface pressure, temperature, and dewpoint.</p>
+<p>The FCST parcel is a forecast-surface-based parcel, in which the afternoon surface temperature and dewpoint are estimated and set as the parcel starting values.</p>
+<p>The MU parcel is the most unstable parcel, in which the parcel attributes are set to the pressure, temperature, and dewpoint of the maximum Theta-E level within the bottom 400 hPa of the profile.</p>
+<p>The ML parcel is the mixed-layer parcel, in which the mean theta and water vapor mixing ratio within the lowest 100 hPa are used to estimate a boundary layer mean, and lifted from the surface.</p>
+<p>The USR parcel means that the parcel initial lifting attributes have already been set by the programmer or user, and there is no need for them to be set or modified. </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp3LPL3SFCE">
+<span id="_CPPv3N5sharp3LPL3SFCE"></span><span id="_CPPv2N5sharp3LPL3SFCE"></span><span class="target" id="namespacesharp_1a03664f85e552919899eefba1c4a7997faf3385210bc009d67471bd739689779de"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SFC</span></span></span><a class="headerlink" href="#_CPPv4N5sharp3LPL3SFCE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Surface Based <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp3LPL4FCSTE">
+<span id="_CPPv3N5sharp3LPL4FCSTE"></span><span id="_CPPv2N5sharp3LPL4FCSTE"></span><span class="target" id="namespacesharp_1a03664f85e552919899eefba1c4a7997fa0f46ff8d6503905b6b729f2ec851079f"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FCST</span></span></span><a class="headerlink" href="#_CPPv4N5sharp3LPL4FCSTE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Forecast Surface <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp3LPL2MUE">
+<span id="_CPPv3N5sharp3LPL2MUE"></span><span id="_CPPv2N5sharp3LPL2MUE"></span><span class="target" id="namespacesharp_1a03664f85e552919899eefba1c4a7997fae5919ba9cf2e803bdbc98334a7f64daa"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MU</span></span></span><a class="headerlink" href="#_CPPv4N5sharp3LPL2MUE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Most Unstable <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp3LPL2MLE">
+<span id="_CPPv3N5sharp3LPL2MLE"></span><span id="_CPPv2N5sharp3LPL2MLE"></span><span class="target" id="namespacesharp_1a03664f85e552919899eefba1c4a7997fad01fd9b01e9dde8bd3dc247afbfb7218"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ML</span></span></span><a class="headerlink" href="#_CPPv4N5sharp3LPL2MLE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Mixed Layer <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp3LPL3USRE">
+<span id="_CPPv3N5sharp3LPL3USRE"></span><span id="_CPPv2N5sharp3LPL3USRE"></span><span class="target" id="namespacesharp_1a03664f85e552919899eefba1c4a7997fa2b6cc9c30eaad9c109091ea928529cbd"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">USR</span></span></span><a class="headerlink" href="#_CPPv4N5sharp3LPL3USRE" title="Link to this definition">#</a><br /></dt>
+<dd><p>User-defined <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp3LPL3ENDE">
+<span id="_CPPv3N5sharp3LPL3ENDE"></span><span id="_CPPv2N5sharp3LPL3ENDE"></span><span class="target" id="namespacesharp_1a03664f85e552919899eefba1c4a7997fab1a326c06d88bf042f73d70f50197905"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">END</span></span></span><a class="headerlink" href="#_CPPv4N5sharp3LPL3ENDE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6ParcelE">
+<span id="_CPPv3N5sharp6ParcelE"></span><span id="_CPPv2N5sharp6ParcelE"></span><span id="sharp::Parcel"></span><span class="target" id="structsharp_1_1Parcel"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Parcel</span></span></span><a class="headerlink" href="#_CPPv4N5sharp6ParcelE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Data that defines a <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a>, its attributes, and derived quantities. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Contains information about a <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a>’s starting level and thermodynamic attributes, as well as paramaters computed using the parcel. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5sharp6Parcel11lift_parcelEvR3LftA_KfA_fKNSt9ptrdiff_tE">
+<span id="_CPPv3I0EN5sharp6Parcel11lift_parcelER3LftA_KfA_fKNSt9ptrdiff_tE"></span><span id="_CPPv2I0EN5sharp6Parcel11lift_parcelER3LftA_KfA_fKNSt9ptrdiff_tE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Lft</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structsharp_1_1Parcel_1a9523de2b8b4c28ca49fba3013f94cb06"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lift_parcel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5sharp6Parcel11lift_parcelEvR3LftA_KfA_fKNSt9ptrdiff_tE" title="sharp::Parcel::lift_parcel::Lft"><span class="n"><span class="pre">Lft</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">liftpcl</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pcl_vtmpk_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5sharp6Parcel11lift_parcelEvR3LftA_KfA_fKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Lifts a <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">sharp::Parcel</span></a> to compute its virtual temperature. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Lifts a <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">sharp::Parcel</span></a> dry adiabatically from its <a class="reference internal" href="#namespacesharp_1a03664f85e552919899eefba1c4a7997f"><span class="std std-ref">sharp::LPL</span></a> to its LCL dry adiabatically, and then moist adiabatically from the LCL to the top of the profile. The moist adiabat used is determined bu the type of lifting functor passed to the function (i.e. <a class="reference internal" href="#structsharp_1_1lifter__wobus"><span class="std std-ref">sharp::lifter_wobus</span></a> or <a class="reference internal" href="#structsharp_1_1lifter__cm1"><span class="std std-ref">sharp::lifter_cm1</span></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>liftpcl</strong> – <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> lifting function/functor </p></li>
+<li><p><strong>pressure_arr</strong> – Array of env pressure (Pa) </p></li>
+<li><p><strong>pcl_vtmpk_arr</strong> – The array to fill with virtual temp (K) </p></li>
+<li><p><strong>N</strong> – The length of the arrays </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6Parcel11find_lfc_elEA_KfA_KfA_KfKNSt9ptrdiff_tE">
+<span id="_CPPv3N5sharp6Parcel11find_lfc_elEA_KfA_KfA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp6Parcel11find_lfc_elEA_KfA_KfA_KfKNSt9ptrdiff_tE"></span><span id="sharp::Parcel::find_lfc_el__floatCA.floatCA.floatCA.std::ptrdiff_tC"></span><span class="target" id="structsharp_1_1Parcel_1a8a311e09b1d46a829212da94cf181537"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">find_lfc_el</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pres_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hght_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">buoy_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp6Parcel11find_lfc_elEA_KfA_KfA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Find the LFC and EL that bounds the layer with the maximum CAPE. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Searches the buoyancy array for the LFC and EL combination that results in the most CAPE in the given profile. The buoyancy array is typically computed by calling <a class="reference internal" href="#structsharp_1_1Parcel_1a9523de2b8b4c28ca49fba3013f94cb06"><span class="std std-ref">sharp::Parcel::lift_parcel</span></a>. Once the LFC and EL are found, the values are set in sharp::Parcel::lfc_pres and sharp::Parcel::eql_pres.</p>
+<p>The value of sharp::Parcel::eql_pres is <a class="reference internal" href="constants.html#namespacesharp_1af2ffcc858ff03be6e2ae2fe2ee20040d"><span class="std std-ref">sharp::MISSING</span></a> if there there is no qualifying level found within the data bounds (e.g. incomplete data, or an EL above the available data). Any calls to <a class="reference internal" href="#structsharp_1_1Parcel_1a0560bd193b2d2d6bc6b08baa7463fba4"><span class="std std-ref">sharp::Parcel::cape_cinh</span></a> will still compute CAPE without the presence of an EL, using the best-available data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pres_arr</strong> – The pressure coordinate array (Pa) </p></li>
+<li><p><strong>hght_arr</strong> – The height coordinate array (meters) </p></li>
+<li><p><strong>buoy_arr</strong> – The profile buoyancy array (m/s^2) </p></li>
+<li><p><strong>N</strong> – The length of the arrays </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6Parcel20maximum_parcel_levelEA_KfA_KfA_KfKNSt9ptrdiff_tE">
+<span id="_CPPv3N5sharp6Parcel20maximum_parcel_levelEA_KfA_KfA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp6Parcel20maximum_parcel_levelEA_KfA_KfA_KfKNSt9ptrdiff_tE"></span><span id="sharp::Parcel::maximum_parcel_level__floatCA.floatCA.floatCA.std::ptrdiff_tC"></span><span class="target" id="structsharp_1_1Parcel_1ac9c9fb3e7649324c598e6255ac0c99f3"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">maximum_parcel_level</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pres_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hght_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">buoy_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp6Parcel20maximum_parcel_levelEA_KfA_KfA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Find the pressure of the Maximum <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> Level (MPL). </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>The Maximum <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> Level (MPL) is the level a parcel would reach if it expended all of its integrated positive buoyancy past the Eqilibrium Level. It is found by integrating negatively buoyant area above the Equilibrium Level until the integrated negative buoyancy is equal in magnitude to the Convective Available Potential Energy betwee the Level of Free Convection and the Equilibrium Level.</p>
+<p>For valid calculations, <a class="reference internal" href="#structsharp_1_1Parcel_1a0560bd193b2d2d6bc6b08baa7463fba4"><span class="std std-ref">sharp::Parcel::cape_cinh</span></a> must be called first, or <a class="reference internal" href="#structsharp_1_1Parcel_1abe6f9e3ee98fde1d361814a5d6384b1a"><span class="std std-ref">sharp::Parcel::cape</span></a> and <a class="reference internal" href="#structsharp_1_1Parcel_1ac76710675fd2f495d52ac35d0d1de246"><span class="std std-ref">sharp::Parcel::eql_pressure</span></a> must be set.</p>
+<p>A value of <a class="reference internal" href="constants.html#namespacesharp_1af2ffcc858ff03be6e2ae2fe2ee20040d"><span class="std std-ref">sharp::MISSING</span></a> is returned if:<ul class="simple">
+<li><p>CAPE is 0</p></li>
+<li><p><a class="reference internal" href="#structsharp_1_1Parcel_1ac76710675fd2f495d52ac35d0d1de246"><span class="std std-ref">sharp::Parcel::eql_pressure</span></a> is <a class="reference internal" href="constants.html#namespacesharp_1af2ffcc858ff03be6e2ae2fe2ee20040d"><span class="std std-ref">sharp::MISSING</span></a></p></li>
+<li><p>No valid MPL candidate is found within the profile.<ul>
+<li><p>In this scenario, it likely exceeds the top of the available data.</p></li>
+</ul>
+</p></li>
+</ul>
+</p>
+<p>In addition to being returned, the result is stored inside of <a class="reference internal" href="#structsharp_1_1Parcel_1ab6721ac2cbbd9b4fe3fe6f751afc4f35"><span class="std std-ref">sharp::Parcel::mpl_pressure</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pres_arr</strong> – Array of pressure (Pa) </p></li>
+<li><p><strong>hght_arr</strong> – Array of height (meters) </p></li>
+<li><p><strong>buoy_arr</strong> – Array of buoyancy (m/s^2) </p></li>
+<li><p><strong>N</strong> – Lengh of arrays</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Maximum <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> Level (MPL) Pressure (Pa) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6Parcel9cape_cinhEA_KfA_KfA_KfKNSt9ptrdiff_tE">
+<span id="_CPPv3N5sharp6Parcel9cape_cinhEA_KfA_KfA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp6Parcel9cape_cinhEA_KfA_KfA_KfKNSt9ptrdiff_tE"></span><span id="sharp::Parcel::cape_cinh__floatCA.floatCA.floatCA.std::ptrdiff_tC"></span><span class="target" id="structsharp_1_1Parcel_1a0560bd193b2d2d6bc6b08baa7463fba4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cape_cinh</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pres_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hght_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">buoy_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp6Parcel9cape_cinhEA_KfA_KfA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute CAPE and CINH for a previously lifted <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">sharp::Parcel</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Assuming that <a class="reference internal" href="#structsharp_1_1Parcel_1a9523de2b8b4c28ca49fba3013f94cb06"><span class="std std-ref">sharp::Parcel::lift_parcel</span></a> has been called, cape_cinh will integrate the area between the LFC and EL to compute CAPE, and integrate the area between the LPL and LCL to compute CINH.</p>
+<p>If <a class="reference internal" href="#structsharp_1_1Parcel_1ac76710675fd2f495d52ac35d0d1de246"><span class="std std-ref">sharp::Parcel::eql_pressure</span></a> is <a class="reference internal" href="constants.html#namespacesharp_1af2ffcc858ff03be6e2ae2fe2ee20040d"><span class="std std-ref">sharp::MISSING</span></a>, but the <a class="reference internal" href="#structsharp_1_1Parcel_1a55dcb9c777b42c5f35537730c044e004"><span class="std std-ref">sharp::Parcel::lfc_pressure</span></a> is defined, the routine will compute CAPE with the available data despite the lack of a defined equilibrium level. This is useful for incomplete profile data, or pressure-level data where the EL is above the top pressure value.</p>
+<p>The results are set in pcl-&gt;cape and pcl-&gt;cinh.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pres_arr</strong> – Array of pressure (Pa) </p></li>
+<li><p><strong>hght_arr</strong> – Array of height (meters) </p></li>
+<li><p><strong>buoy_arr</strong> – Array of buoyancy (m/s^2) </p></li>
+<li><p><strong>N</strong> – Length of arrays </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6Parcel4presE">
+<span id="_CPPv3N5sharp6Parcel4presE"></span><span id="_CPPv2N5sharp6Parcel4presE"></span><span id="sharp::Parcel::pres__float"></span><span class="target" id="structsharp_1_1Parcel_1acdce27acf6bd8a327993f5d4cf240906"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pres</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="constants.html#_CPPv4N5sharp7MISSINGE" title="sharp::MISSING"><span class="n"><span class="pre">MISSING</span></span></a><a class="headerlink" href="#_CPPv4N5sharp6Parcel4presE" title="Link to this definition">#</a><br /></dt>
+<dd><p><a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> starting pressure (Pa) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6Parcel4tmpkE">
+<span id="_CPPv3N5sharp6Parcel4tmpkE"></span><span id="_CPPv2N5sharp6Parcel4tmpkE"></span><span id="sharp::Parcel::tmpk__float"></span><span class="target" id="structsharp_1_1Parcel_1abd477130779ca88ce737770fb7a0b748"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tmpk</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="constants.html#_CPPv4N5sharp7MISSINGE" title="sharp::MISSING"><span class="n"><span class="pre">MISSING</span></span></a><a class="headerlink" href="#_CPPv4N5sharp6Parcel4tmpkE" title="Link to this definition">#</a><br /></dt>
+<dd><p><a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> starting temperature (K) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6Parcel4dwpkE">
+<span id="_CPPv3N5sharp6Parcel4dwpkE"></span><span id="_CPPv2N5sharp6Parcel4dwpkE"></span><span id="sharp::Parcel::dwpk__float"></span><span class="target" id="structsharp_1_1Parcel_1aec26ccd19be00c0c3368b416bee1cd61"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dwpk</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="constants.html#_CPPv4N5sharp7MISSINGE" title="sharp::MISSING"><span class="n"><span class="pre">MISSING</span></span></a><a class="headerlink" href="#_CPPv4N5sharp6Parcel4dwpkE" title="Link to this definition">#</a><br /></dt>
+<dd><p><a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> starting dewpoint (K) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6Parcel12lcl_pressureE">
+<span id="_CPPv3N5sharp6Parcel12lcl_pressureE"></span><span id="_CPPv2N5sharp6Parcel12lcl_pressureE"></span><span id="sharp::Parcel::lcl_pressure__float"></span><span class="target" id="structsharp_1_1Parcel_1ae4798e73dc979eb1bf00d7057ed7eea0"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lcl_pressure</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="constants.html#_CPPv4N5sharp7MISSINGE" title="sharp::MISSING"><span class="n"><span class="pre">MISSING</span></span></a><a class="headerlink" href="#_CPPv4N5sharp6Parcel12lcl_pressureE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Pressure at the Lifted Condensation Level (Pa) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6Parcel12lfc_pressureE">
+<span id="_CPPv3N5sharp6Parcel12lfc_pressureE"></span><span id="_CPPv2N5sharp6Parcel12lfc_pressureE"></span><span id="sharp::Parcel::lfc_pressure__float"></span><span class="target" id="structsharp_1_1Parcel_1a55dcb9c777b42c5f35537730c044e004"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lfc_pressure</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="constants.html#_CPPv4N5sharp7MISSINGE" title="sharp::MISSING"><span class="n"><span class="pre">MISSING</span></span></a><a class="headerlink" href="#_CPPv4N5sharp6Parcel12lfc_pressureE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Pressure at the Level of Free Convection (Pa) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6Parcel12eql_pressureE">
+<span id="_CPPv3N5sharp6Parcel12eql_pressureE"></span><span id="_CPPv2N5sharp6Parcel12eql_pressureE"></span><span id="sharp::Parcel::eql_pressure__float"></span><span class="target" id="structsharp_1_1Parcel_1ac76710675fd2f495d52ac35d0d1de246"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">eql_pressure</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="constants.html#_CPPv4N5sharp7MISSINGE" title="sharp::MISSING"><span class="n"><span class="pre">MISSING</span></span></a><a class="headerlink" href="#_CPPv4N5sharp6Parcel12eql_pressureE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Pressure at the parcel Equilibrium Level (Pa) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6Parcel12mpl_pressureE">
+<span id="_CPPv3N5sharp6Parcel12mpl_pressureE"></span><span id="_CPPv2N5sharp6Parcel12mpl_pressureE"></span><span id="sharp::Parcel::mpl_pressure__float"></span><span class="target" id="structsharp_1_1Parcel_1ab6721ac2cbbd9b4fe3fe6f751afc4f35"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mpl_pressure</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="constants.html#_CPPv4N5sharp7MISSINGE" title="sharp::MISSING"><span class="n"><span class="pre">MISSING</span></span></a><a class="headerlink" href="#_CPPv4N5sharp6Parcel12mpl_pressureE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Pressure at the Maximum <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> Level (MPL) (Pa) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6Parcel4capeE">
+<span id="_CPPv3N5sharp6Parcel4capeE"></span><span id="_CPPv2N5sharp6Parcel4capeE"></span><span id="sharp::Parcel::cape__float"></span><span class="target" id="structsharp_1_1Parcel_1abe6f9e3ee98fde1d361814a5d6384b1a"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cape</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><a class="headerlink" href="#_CPPv4N5sharp6Parcel4capeE" title="Link to this definition">#</a><br /></dt>
+<dd><p><a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> Convective Available Potential Energy (J/kg) between the LFC and EL. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6Parcel4cinhE">
+<span id="_CPPv3N5sharp6Parcel4cinhE"></span><span id="_CPPv2N5sharp6Parcel4cinhE"></span><span id="sharp::Parcel::cinh__float"></span><span class="target" id="structsharp_1_1Parcel_1af2f4106c560b37ed8d13c3f272fa68a4"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cinh</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">nanf</span></span><span class="p"><span class="pre">(</span></span><span class="s"><span class="pre">&quot;&quot;</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N5sharp6Parcel4cinhE" title="Link to this definition">#</a><br /></dt>
+<dd><p><a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> Convective Inhibition (J/kg) between the LFC and EL. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6Parcel6sourceE">
+<span id="_CPPv3N5sharp6Parcel6sourceE"></span><span id="_CPPv2N5sharp6Parcel6sourceE"></span><span id="sharp::Parcel::source__LPL"></span><span class="target" id="structsharp_1_1Parcel_1a43773542f542f0fb4a2c85bd71a39cb8"></span><a class="reference internal" href="#_CPPv4N5sharp3LPLE" title="sharp::LPL"><span class="n"><span class="pre">LPL</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">source</span></span></span><a class="headerlink" href="#_CPPv4N5sharp6Parcel6sourceE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The type of parcel this is. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6Parcel14surface_parcelEKfKfKf">
+<span id="_CPPv3N5sharp6Parcel14surface_parcelEKfKfKf"></span><span id="_CPPv2N5sharp6Parcel14surface_parcelEKfKfKf"></span><span id="sharp::Parcel::surface_parcel__floatC.floatC.floatC"></span><span class="target" id="structsharp_1_1Parcel_1aa1b370d9ea08877cc6438241fd013e3a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp6ParcelE" title="sharp::Parcel"><span class="n"><span class="pre">Parcel</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">surface_parcel</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N5sharp6Parcel14surface_parcelEKfKfKf" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct and return a surface-based <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Given input values of surface pressure, temperature, and dewpoint temperature, construct and return a Surface Based <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – Surface pressure (Pa) </p></li>
+<li><p><strong>temperature</strong> – Surface temperature (K) </p></li>
+<li><p><strong>dewpoint</strong> – Surface dewpoint (K) </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">sharp::Parcel</span></a> with surface values </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5sharp6Parcel18mixed_layer_parcelE6ParcelR3LyrA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE">
+<span id="_CPPv3I0EN5sharp6Parcel18mixed_layer_parcelER3LyrA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2I0EN5sharp6Parcel18mixed_layer_parcelER3LyrA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Lyr</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structsharp_1_1Parcel_1a1bf670e79f35a1ce8c904b7ead32ccbe"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp6ParcelE" title="sharp::Parcel"><span class="n"><span class="pre">Parcel</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mixed_layer_parcel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5sharp6Parcel18mixed_layer_parcelE6ParcelR3LyrA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE" title="sharp::Parcel::mixed_layer_parcel::Lyr"><span class="n"><span class="pre">Lyr</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">mix_layer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pot_temperature</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv_mixratio</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN5sharp6Parcel18mixed_layer_parcelE6ParcelR3LyrA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct and return a mixed-layer <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Given input arrays of pressure, height, potential temperature, and water vapor mixing ratio, as well as a defined <a class="reference internal" href="layer.html#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> or <a class="reference internal" href="layer.html#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a>, compute and return a mixed-layer <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mix_layer</strong> – <a class="reference internal" href="layer.html#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> or <a class="reference internal" href="layer.html#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a></p></li>
+<li><p><strong>pressure</strong> – Array of pressure (Pa) </p></li>
+<li><p><strong>height</strong> – Array of height (meters) </p></li>
+<li><p><strong>pot_temperature</strong> – Array of potential temperature (K) </p></li>
+<li><p><strong>wv_mixratio</strong> – Array of water vapor mixing ratio (unitless) </p></li>
+<li><p><strong>N</strong> – Length of arrays </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">sharp::Parcel</span></a> with mixed-layer values </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00EN5sharp6Parcel20most_unstable_parcelE6ParcelR3LyrR3LftA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tE">
+<span id="_CPPv3I00EN5sharp6Parcel20most_unstable_parcelER3LyrR3LftA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tE"></span><span id="_CPPv2I00EN5sharp6Parcel20most_unstable_parcelER3LyrR3LftA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Lyr</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Lft</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structsharp_1_1Parcel_1aa258d27992d22d8b80cb221e6e2a6c19"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp6ParcelE" title="sharp::Parcel"><span class="n"><span class="pre">Parcel</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">most_unstable_parcel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00EN5sharp6Parcel20most_unstable_parcelE6ParcelR3LyrR3LftA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tE" title="sharp::Parcel::most_unstable_parcel::Lyr"><span class="n"><span class="pre">Lyr</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">search_layer</span></span>, <a class="reference internal" href="#_CPPv4I00EN5sharp6Parcel20most_unstable_parcelE6ParcelR3LyrR3LftA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tE" title="sharp::Parcel::most_unstable_parcel::Lft"><span class="n"><span class="pre">Lft</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lifter</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">virtemp</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pcl_virtemp</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">buoy_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I00EN5sharp6Parcel20most_unstable_parcelE6ParcelR3LyrR3LftA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct and return a most-unstable <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Given input arrays of pressure, height, temperature, virtual temperature, and dewpoint, a scratch/working array to store values of buoyancy, and a defined <a class="reference internal" href="layer.html#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> or <a class="reference internal" href="layer.html#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a> to search over, find and return the most-unstable parcel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – Array of pressure (Pa) </p></li>
+<li><p><strong>height</strong> – Array of height (meters) </p></li>
+<li><p><strong>temperature</strong> – Array of temperature (K) </p></li>
+<li><p><strong>virtemp</strong> – Array of virtual temperature (K) </p></li>
+<li><p><strong>dewpoint</strong> – Array of dewpoint temperature (K) </p></li>
+<li><p><strong>pcl_virtemp</strong> – Writeable array for parcel lifting calcs (K) </p></li>
+<li><p><strong>buoy_arr</strong> – Writeable array for buoyancy calcs (m/s^2) </p></li>
+<li><p><strong>N</strong> – Length of arrays </p></li>
+<li><p><strong>search_layer</strong> – <a class="reference internal" href="layer.html#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> or sharp::HeightLay </p></li>
+<li><p><strong>lifter</strong> – The parcel moist adiabatic ascent function </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The most unstable <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">sharp::Parcel</span></a> within the search layer </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp15DowndraftParcelE">
+<span id="_CPPv3N5sharp15DowndraftParcelE"></span><span id="_CPPv2N5sharp15DowndraftParcelE"></span><span id="sharp::DowndraftParcel"></span><span class="target" id="structsharp_1_1DowndraftParcel"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DowndraftParcel</span></span></span><a class="headerlink" href="#_CPPv4N5sharp15DowndraftParcelE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Data that defines a <a class="reference internal" href="#structsharp_1_1DowndraftParcel"><span class="std std-ref">DowndraftParcel</span></a>, its attributes, and derived quantities. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Contains information about a <a class="reference internal" href="#structsharp_1_1DowndraftParcel"><span class="std std-ref">DowndraftParcel</span></a>’s starting level and thermodynamic attributes, as well as paramaters computed using the parcel. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5sharp15DowndraftParcel12lower_parcelEvR3LftA_KfA_fKNSt9ptrdiff_tE">
+<span id="_CPPv3I0EN5sharp15DowndraftParcel12lower_parcelER3LftA_KfA_fKNSt9ptrdiff_tE"></span><span id="_CPPv2I0EN5sharp15DowndraftParcel12lower_parcelER3LftA_KfA_fKNSt9ptrdiff_tE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Lft</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="structsharp_1_1DowndraftParcel_1a4363456356a444885d98fff1514d70c7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lower_parcel</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5sharp15DowndraftParcel12lower_parcelEvR3LftA_KfA_fKNSt9ptrdiff_tE" title="sharp::DowndraftParcel::lower_parcel::Lft"><span class="n"><span class="pre">Lft</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">liftpcl</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pcl_tmpk_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5sharp15DowndraftParcel12lower_parcelEvR3LftA_KfA_fKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Lowers a saturated <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">sharp::Parcel</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Lowers a saturated <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">sharp::Parcel</span></a> moist adiabatically from its <a class="reference internal" href="#namespacesharp_1a03664f85e552919899eefba1c4a7997f"><span class="std std-ref">sharp::LPL</span></a> to the surface. The moist adiabat used is determined bu the type of lifting functor passed to the function (i.e. <a class="reference internal" href="#structsharp_1_1lifter__wobus"><span class="std std-ref">sharp::lifter_wobus</span></a> or <a class="reference internal" href="#structsharp_1_1lifter__cm1"><span class="std std-ref">sharp::lifter_cm1</span></a>).</p>
+<p>Unlike sharp::lift_parcel, the virtual temperature correction is not used for downdraft parcels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>liftpcl</strong> – <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> lifting function/functor </p></li>
+<li><p><strong>pressure_arr</strong> – Array of env pressure (Pa) </p></li>
+<li><p><strong>pcl_tmpk_arr</strong> – The array to fill with parcel temperature (K) </p></li>
+<li><p><strong>N</strong> – The length of the arrays </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp15DowndraftParcel9cape_cinhEA_KfA_KfA_KfK9ptrdiff_t">
+<span id="_CPPv3N5sharp15DowndraftParcel9cape_cinhEA_KfA_KfA_KfK9ptrdiff_t"></span><span id="_CPPv2N5sharp15DowndraftParcel9cape_cinhEA_KfA_KfA_KfK9ptrdiff_t"></span><span id="sharp::DowndraftParcel::cape_cinh__floatCA.floatCA.floatCA.ptrdiff_tC"></span><span class="target" id="structsharp_1_1DowndraftParcel_1ac467d865381bd48be378760641bbc0dc"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cape_cinh</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pres_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hght_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">buoy_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp15DowndraftParcel9cape_cinhEA_KfA_KfA_KfK9ptrdiff_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute CAPE and CINH for a previously lowered <a class="reference internal" href="#structsharp_1_1DowndraftParcel"><span class="std std-ref">sharp::DowndraftParcel</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Assuming that <a class="reference internal" href="#structsharp_1_1DowndraftParcel_1a4363456356a444885d98fff1514d70c7"><span class="std std-ref">sharp::DowndraftParcel::lower_parcel</span></a> has been called, cape_cinh will integrate the area between the LPL and the surface to compute downdraft CAPE and downdraft CINH.</p>
+<p>The results are set in <a class="reference internal" href="#structsharp_1_1DowndraftParcel_1a08c39d0e88f32bfc7dc84f488fa41ae3"><span class="std std-ref">sharp::DowndraftParcel::cape</span></a> and <a class="reference internal" href="#structsharp_1_1DowndraftParcel_1a445e7632c31842c42d250b3f3e479174"><span class="std std-ref">sharp::DowndraftParcel::cinh</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pres_arr</strong> – Array of pressure (Pa) </p></li>
+<li><p><strong>hght_arr</strong> – Array of height (meters) </p></li>
+<li><p><strong>buoy_arr</strong> – Array of buoyancy (m/s^2) </p></li>
+<li><p><strong>N</strong> – Length of arrays </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp15DowndraftParcel4presE">
+<span id="_CPPv3N5sharp15DowndraftParcel4presE"></span><span id="_CPPv2N5sharp15DowndraftParcel4presE"></span><span id="sharp::DowndraftParcel::pres__float"></span><span class="target" id="structsharp_1_1DowndraftParcel_1a4888f06cccb2d63f34a6053d872d0114"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pres</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="constants.html#_CPPv4N5sharp7MISSINGE" title="sharp::MISSING"><span class="n"><span class="pre">MISSING</span></span></a><a class="headerlink" href="#_CPPv4N5sharp15DowndraftParcel4presE" title="Link to this definition">#</a><br /></dt>
+<dd><p><a class="reference internal" href="#structsharp_1_1DowndraftParcel"><span class="std std-ref">DowndraftParcel</span></a> starting pressure (Pa) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp15DowndraftParcel4tmpkE">
+<span id="_CPPv3N5sharp15DowndraftParcel4tmpkE"></span><span id="_CPPv2N5sharp15DowndraftParcel4tmpkE"></span><span id="sharp::DowndraftParcel::tmpk__float"></span><span class="target" id="structsharp_1_1DowndraftParcel_1a2a0ad417414bf4fbccdff618ef37a5c7"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tmpk</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="constants.html#_CPPv4N5sharp7MISSINGE" title="sharp::MISSING"><span class="n"><span class="pre">MISSING</span></span></a><a class="headerlink" href="#_CPPv4N5sharp15DowndraftParcel4tmpkE" title="Link to this definition">#</a><br /></dt>
+<dd><p><a class="reference internal" href="#structsharp_1_1DowndraftParcel"><span class="std std-ref">DowndraftParcel</span></a> starting temperature (K) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp15DowndraftParcel4dwpkE">
+<span id="_CPPv3N5sharp15DowndraftParcel4dwpkE"></span><span id="_CPPv2N5sharp15DowndraftParcel4dwpkE"></span><span id="sharp::DowndraftParcel::dwpk__float"></span><span class="target" id="structsharp_1_1DowndraftParcel_1a11f017ef2665675dfdb131f1a19e4e90"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dwpk</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="constants.html#_CPPv4N5sharp7MISSINGE" title="sharp::MISSING"><span class="n"><span class="pre">MISSING</span></span></a><a class="headerlink" href="#_CPPv4N5sharp15DowndraftParcel4dwpkE" title="Link to this definition">#</a><br /></dt>
+<dd><p><a class="reference internal" href="#structsharp_1_1DowndraftParcel"><span class="std std-ref">DowndraftParcel</span></a> starting dewpoint (K) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp15DowndraftParcel4capeE">
+<span id="_CPPv3N5sharp15DowndraftParcel4capeE"></span><span id="_CPPv2N5sharp15DowndraftParcel4capeE"></span><span id="sharp::DowndraftParcel::cape__float"></span><span class="target" id="structsharp_1_1DowndraftParcel_1a08c39d0e88f32bfc7dc84f488fa41ae3"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cape</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><a class="headerlink" href="#_CPPv4N5sharp15DowndraftParcel4capeE" title="Link to this definition">#</a><br /></dt>
+<dd><p><a class="reference internal" href="#structsharp_1_1DowndraftParcel"><span class="std std-ref">DowndraftParcel</span></a> Convective Available Potential Energy (J/kg) between the LFC and EL. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp15DowndraftParcel4cinhE">
+<span id="_CPPv3N5sharp15DowndraftParcel4cinhE"></span><span id="_CPPv2N5sharp15DowndraftParcel4cinhE"></span><span id="sharp::DowndraftParcel::cinh__float"></span><span class="target" id="structsharp_1_1DowndraftParcel_1a445e7632c31842c42d250b3f3e479174"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cinh</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">nanf</span></span><span class="p"><span class="pre">(</span></span><span class="s"><span class="pre">&quot;&quot;</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv4N5sharp15DowndraftParcel4cinhE" title="Link to this definition">#</a><br /></dt>
+<dd><p><a class="reference internal" href="#structsharp_1_1DowndraftParcel"><span class="std std-ref">DowndraftParcel</span></a> Convective Inhibition (J/kg) between the LFC and EL. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp15DowndraftParcel10min_thetaeERN5sharp13PressureLayerEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tEKf">
+<span id="_CPPv3N5sharp15DowndraftParcel10min_thetaeERN5sharp13PressureLayerEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tEKf"></span><span id="_CPPv2N5sharp15DowndraftParcel10min_thetaeERN5sharp13PressureLayerEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tEKf"></span><span id="sharp::DowndraftParcel::min_thetae__sharp::PressureLayerR.floatCA.floatCA.floatCA.floatCA.std::ptrdiff_tC.floatC"></span><span class="target" id="structsharp_1_1DowndraftParcel_1a695a32302d15cd2cdc86ba51b94cd4f0"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp15DowndraftParcelE" title="sharp::DowndraftParcel"><span class="n"><span class="pre">DowndraftParcel</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">min_thetae</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="layer.html#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">search_layer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">thetae</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mean_depth</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">10000.0f</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp15DowndraftParcel10min_thetaeERN5sharp13PressureLayerEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tEKf" title="Link to this definition">#</a><br /></dt>
+<dd><p>Define a downdraft parcel. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Defines a downdraft parcel within a given search layer. The downdraft parcel is defined as the mimumim layer-mean equivalent potential temperature (Theta-E) within the search layer. Typical values are to search within the lowest 400 hPa of the profile, and a mean depth of 100 hPa.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>search_layer</strong> – <a class="reference internal" href="layer.html#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> to search </p></li>
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>dewpoint</strong> – (K) </p></li>
+<li><p><strong>thetae</strong> – (K) </p></li>
+<li><p><strong>N</strong> – (length of arrays) </p></li>
+<li><p><strong>mean_depth</strong> – (Pa)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the <a class="reference internal" href="#structsharp_1_1DowndraftParcel"><span class="std std-ref">sharp::DowndraftParcel</span></a> defining a downdraft parcel. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="params.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">params</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="thermo.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">thermo</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parcel-lifters">Parcel Lifters</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp12lifter_wobusE"><code class="docutils literal notranslate"><span class="pre">sharp::lifter_wobus</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK5sharp12lifter_wobus5setupEKfKf"><code class="docutils literal notranslate"><span class="pre">setup()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK5sharp12lifter_wobusclEKfKfKf"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK5sharp12lifter_wobus26parcel_virtual_temperatureEKfKf"><code class="docutils literal notranslate"><span class="pre">parcel_virtual_temperature()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp12lifter_wobus8convergeE"><code class="docutils literal notranslate"><span class="pre">converge</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp10lifter_cm1E"><code class="docutils literal notranslate"><span class="pre">sharp::lifter_cm1</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp10lifter_cm15setupEKfKf"><code class="docutils literal notranslate"><span class="pre">setup()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp10lifter_cm1clEKfKfKf"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK5sharp10lifter_cm126parcel_virtual_temperatureEKfKf"><code class="docutils literal notranslate"><span class="pre">parcel_virtual_temperature()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp10lifter_cm17ma_typeE"><code class="docutils literal notranslate"><span class="pre">ma_type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp10lifter_cm113pressure_incrE"><code class="docutils literal notranslate"><span class="pre">pressure_incr</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp10lifter_cm18convergeE"><code class="docutils literal notranslate"><span class="pre">converge</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp10lifter_cm18rv_totalE"><code class="docutils literal notranslate"><span class="pre">rv_total</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp10lifter_cm12rvE"><code class="docutils literal notranslate"><span class="pre">rv</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp10lifter_cm12rlE"><code class="docutils literal notranslate"><span class="pre">rl</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp10lifter_cm12riE"><code class="docutils literal notranslate"><span class="pre">ri</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parcels">Parcels</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp3LPLE"><code class="docutils literal notranslate"><span class="pre">LPL</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp3LPL3SFCE"><code class="docutils literal notranslate"><span class="pre">SFC</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp3LPL4FCSTE"><code class="docutils literal notranslate"><span class="pre">FCST</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp3LPL2MUE"><code class="docutils literal notranslate"><span class="pre">MU</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp3LPL2MLE"><code class="docutils literal notranslate"><span class="pre">ML</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp3LPL3USRE"><code class="docutils literal notranslate"><span class="pre">USR</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp3LPL3ENDE"><code class="docutils literal notranslate"><span class="pre">END</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6ParcelE"><code class="docutils literal notranslate"><span class="pre">sharp::Parcel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN5sharp6Parcel11lift_parcelEvR3LftA_KfA_fKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">lift_parcel()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel11find_lfc_elEA_KfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">find_lfc_el()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel20maximum_parcel_levelEA_KfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">maximum_parcel_level()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel9cape_cinhEA_KfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">cape_cinh()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel4presE"><code class="docutils literal notranslate"><span class="pre">pres</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel4tmpkE"><code class="docutils literal notranslate"><span class="pre">tmpk</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel4dwpkE"><code class="docutils literal notranslate"><span class="pre">dwpk</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel12lcl_pressureE"><code class="docutils literal notranslate"><span class="pre">lcl_pressure</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel12lfc_pressureE"><code class="docutils literal notranslate"><span class="pre">lfc_pressure</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel12eql_pressureE"><code class="docutils literal notranslate"><span class="pre">eql_pressure</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel12mpl_pressureE"><code class="docutils literal notranslate"><span class="pre">mpl_pressure</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel4capeE"><code class="docutils literal notranslate"><span class="pre">cape</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel4cinhE"><code class="docutils literal notranslate"><span class="pre">cinh</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel6sourceE"><code class="docutils literal notranslate"><span class="pre">source</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel14surface_parcelEKfKfKf"><code class="docutils literal notranslate"><span class="pre">surface_parcel()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN5sharp6Parcel18mixed_layer_parcelE6ParcelR3LyrA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">mixed_layer_parcel()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EN5sharp6Parcel20most_unstable_parcelE6ParcelR3LyrR3LftA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">most_unstable_parcel()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp15DowndraftParcelE"><code class="docutils literal notranslate"><span class="pre">sharp::DowndraftParcel</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN5sharp15DowndraftParcel12lower_parcelEvR3LftA_KfA_fKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">lower_parcel()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp15DowndraftParcel9cape_cinhEA_KfA_KfA_KfK9ptrdiff_t"><code class="docutils literal notranslate"><span class="pre">cape_cinh()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp15DowndraftParcel4presE"><code class="docutils literal notranslate"><span class="pre">pres</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp15DowndraftParcel4tmpkE"><code class="docutils literal notranslate"><span class="pre">tmpk</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp15DowndraftParcel4dwpkE"><code class="docutils literal notranslate"><span class="pre">dwpk</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp15DowndraftParcel4capeE"><code class="docutils literal notranslate"><span class="pre">cape</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp15DowndraftParcel4cinhE"><code class="docutils literal notranslate"><span class="pre">cinh</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp15DowndraftParcel10min_thetaeERN5sharp13PressureLayerEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tEKf"><code class="docutils literal notranslate"><span class="pre">min_thetae()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2025, NOAA/NWS/NCEP Storm Prediction Center.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
