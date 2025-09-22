@@ -1,4 +1,3 @@
- 
 function(get_version_from_git)
     find_package(Git QUIET)
     if(NOT Git_FOUND)
@@ -36,13 +35,9 @@ function(get_version_from_git)
         string(REGEX REPLACE "-[0-9]+-g[0-9a-f]+$" "" VERSION_RAW "${VERSION_RAW}")
     else()
         set(COMMIT_COUNT 0)
-        # If no count/hash, we're on a tag or it's just a hash. Get the hash directly.
-        execute_process(
-            COMMAND ${GIT_EXECUTABLE} rev-parse --short=7 HEAD
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            OUTPUT_VARIABLE COMMIT_HASH
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
+        # MODIFICATION: If no count/hash, we are exactly on a tag.
+        # The hash should not be part of the final version metadata in this case.
+        set(COMMIT_HASH "")
     endif()
 
     # 3. Parse the remaining tag part (v1.2.3 or v1.2.3-rc1)
@@ -59,6 +54,13 @@ function(get_version_from_git)
         set(PROJECT_VERSION_MINOR 0)
         set(PROJECT_VERSION_PATCH 1)
         set(PRE_RELEASE_TAG_PART "dev")
+        # Since we couldn't find a tag, we should use the current hash for metadata
+        execute_process(
+            COMMAND ${GIT_EXECUTABLE} rev-parse --short=7 HEAD
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            OUTPUT_VARIABLE COMMIT_HASH
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
     endif()
 
     # 4. Apply the "next version" logic
@@ -112,4 +114,4 @@ function(get_version_from_git)
     set(GIT_COMMIT_HASH "g${COMMIT_HASH}" PARENT_SCOPE)
     set(BUILD_METADATA "${BUILD_METADATA}" PARENT_SCOPE)
     set(IS_DIRTY "${IS_DIRTY}" PARENT_SCOPE)
-endfunction()
+endfunction() 
