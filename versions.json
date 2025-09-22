@@ -2,11 +2,17 @@
     {
         "version": "latest",
         "url": "https://keltonhalbert.github.io/SHARPlib/latest",
-        "is_latest": true
+        "is_latest": false
     },
     {
         "name": "dev",
         "version": "dev",
-        "url": "https://keltonhalbert.github.io/SHARPlib/dev"
+        "url": "https://keltonhalbert.github.io/SHARPlib/dev",
+        "is_latest": false
+    },
+    {
+        "version": "v1.1.0",
+        "url": "https://keltonhalbert.github.io/SHARPlib/v1.1.0",
+        "is_latest": true
     }
 ]
