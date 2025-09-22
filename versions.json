@@ -2,7 +2,7 @@
     {
         "version": "latest",
         "url": "https://keltonhalbert.github.io/SHARPlib/latest",
-        "is_latest": false
+        "is_latest": true
     },
     {
         "name": "dev",
