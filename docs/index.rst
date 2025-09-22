@@ -16,8 +16,8 @@ SHARPlib
    :target: https://github.com/keltonhalbert/SHARPlib/actions/workflows/wheels.yml
    :alt: Build Wheels
 
-.. |docs_badge| image:: https://github.com/keltonhalbert/SHARPlib/actions/workflows/doxygen-gh-pages.yml/badge.svg
-   :target: https://github.com/keltonhalbert/SHARPlib/actions/workflows/doxygen-gh-pages.yml
+.. |docs_badge| image:: https://github.com/keltonhalbert/SHARPlib/actions/workflows/docs.yml/badge.svg
+   :target: https://github.com/keltonhalbert/SHARPlib/actions/workflows/docs.yml
    :alt: Build Docs
 
 .. |conda_version_badge| image:: https://anaconda.org/conda-forge/sharplib/badges/version.svg

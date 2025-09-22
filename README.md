@@ -2,7 +2,8 @@
 [![C++ CI (Linux, MacOS, Windows)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/cmake.yml/badge.svg)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/cmake.yml)
 [![Python CI (Linux, MacOS, Windows)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/python.yml/badge.svg)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/python.yml)
 [![Build Wheels](https://github.com/keltonhalbert/SHARPlib/actions/workflows/wheels.yml/badge.svg)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/wheels.yml)
-[![Build Docs](https://github.com/keltonhalbert/SHARPlib/actions/workflows/doxygen-gh-pages.yml/badge.svg)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/doxygen-gh-pages.yml)
+[![Build Docs](https://github.com/keltonhalbert/SHARPlib/actions/workflows/docs.yml/badge.svg)](https://github.com/keltonhalbert/SHARPlib/actions/workflows/docs.yml)
+
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/sharplib/badges/version.svg)](https://anaconda.org/conda-forge/sharplib)
 [![PyPI - Version](https://img.shields.io/pypi/v/SHARPlib)](https://pypi.org/project/SHARPlib/)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/SHARPlib)
