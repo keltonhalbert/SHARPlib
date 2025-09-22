@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(GitVersion)
 
-get_version_from_git()
+get_project_version()
 
 configure_file(
     include/SHARPlib/version.h.in
