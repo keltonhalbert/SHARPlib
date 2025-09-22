@@ -18,6 +18,11 @@
     {
         "version": "v1.1.0-2-g05c9b14",
         "url": "https://keltonhalbert.github.io/SHARPlib/v1.1.0-2-g05c9b14",
+        "is_latest": false
+    },
+    {
+        "version": "v1.1.0-3-ge48b32a",
+        "url": "https://keltonhalbert.github.io/SHARPlib/v1.1.0-3-ge48b32a",
         "is_latest": true
     }
 ]
