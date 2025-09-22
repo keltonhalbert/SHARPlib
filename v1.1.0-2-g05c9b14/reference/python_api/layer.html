@@ -1,0 +1,979 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="dark">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>layer &#8212; SHARPlib v1.1.0-2-g05c9b14 Manual</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=b3e8092d"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/python_api/layer';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://keltonhalbert.github.io/SHARPlib/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.1.0-2-g05c9b14';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="params" href="params.html" />
+    <link rel="prev" title="interp" href="interp.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.0-2-g05c9b14" />
+    <meta name="docbuild:last-update" content="Sep 22, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="dark">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-dark" alt=""/>
+    <img src="../../_static/logo.png" class="logo__image only-light pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">SHARPlib</p>
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../faq.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/tree/main/examples/Python">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/releases">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Bluesky</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../faq.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/tree/main/examples/Python">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/releases">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Bluesky</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="interp.html">interp</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parcel.html">parcel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermo.html">thermo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="winds.html">winds</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../cpp_api/index.html">C++ API</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Python API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">layer</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-nwsspc.sharp.calc.layer">
+<span id="layer"></span><h1>layer<a class="headerlink" href="#module-nwsspc.sharp.calc.layer" title="Link to this heading">#</a></h1>
+<p>Sounding and Hodograph Analysis and Research Program Library (SHARPlib) :: Atmospheric Layer Routines</p>
+<section id="layer-definitions">
+<h2>Layer Definitions<a class="headerlink" href="#layer-definitions" title="Link to this heading">#</a></h2>
+<p>Atmospheric layers can be defined in pressure or height coordinate space. These named structs are used to determine over which layer and in what coordinate space various calculations are performed in. There is an additional named struct that is used to store the index range the layer occupies.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.PressureLayer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.layer.</span></span><span class="sig-name descname"><span class="pre">PressureLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nwsspc.sharp.calc.layer.PressureLayer" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.layer.</span></span><span class="sig-name descname"><span class="pre">PressureLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1000.0</span></span></em><span class="sig-paren">)</span></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.PressureLayer.bottom">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bottom</span></span><a class="headerlink" href="#nwsspc.sharp.calc.layer.PressureLayer.bottom" title="Link to this definition">#</a></dt>
+<dd><p>The bottom of the PressureLayer (Pa)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.PressureLayer.top">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">top</span></span><a class="headerlink" href="#nwsspc.sharp.calc.layer.PressureLayer.top" title="Link to this definition">#</a></dt>
+<dd><p>The top of the PressureLayer (Pa)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.PressureLayer.delta">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delta</span></span><a class="headerlink" href="#nwsspc.sharp.calc.layer.PressureLayer.delta" title="Link to this definition">#</a></dt>
+<dd><p>The PressureLayer delta (increment) to use if iterating (Pa)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.HeightLayer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.layer.</span></span><span class="sig-name descname"><span class="pre">HeightLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nwsspc.sharp.calc.layer.HeightLayer" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.layer.</span></span><span class="sig-name descname"><span class="pre">HeightLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottom</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100.0</span></span></em><span class="sig-paren">)</span></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.HeightLayer.bottom">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bottom</span></span><a class="headerlink" href="#nwsspc.sharp.calc.layer.HeightLayer.bottom" title="Link to this definition">#</a></dt>
+<dd><p>The bottom of the HeightLayer (meters)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.HeightLayer.top">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">top</span></span><a class="headerlink" href="#nwsspc.sharp.calc.layer.HeightLayer.top" title="Link to this definition">#</a></dt>
+<dd><p>The top of the HeightLayer (meters)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.HeightLayer.delta">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delta</span></span><a class="headerlink" href="#nwsspc.sharp.calc.layer.HeightLayer.delta" title="Link to this definition">#</a></dt>
+<dd><p>The HeightLayer delta (increment) to use if iterating (meters).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.LayerIndex">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.layer.</span></span><span class="sig-name descname"><span class="pre">LayerIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kbot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ktop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nwsspc.sharp.calc.layer.LayerIndex" title="Link to this definition">#</a></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.LayerIndex.kbot">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kbot</span></span><a class="headerlink" href="#nwsspc.sharp.calc.layer.LayerIndex.kbot" title="Link to this definition">#</a></dt>
+<dd><p>The bottom index of a layer on a coordinate array (pressure or height).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.LayerIndex.ktop">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ktop</span></span><a class="headerlink" href="#nwsspc.sharp.calc.layer.LayerIndex.ktop" title="Link to this definition">#</a></dt>
+<dd><p>The top index of a layer on a coordinate array (pressure or height).</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="layer-conversions">
+<h2>Layer Conversions<a class="headerlink" href="#layer-conversions" title="Link to this heading">#</a></h2>
+<p>Layers can be converted from one coordinate system to another using interpolation, or have their index values calculated for looping over arrays.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.height_layer_to_pressure">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.layer.</span></span><span class="sig-name descname"><span class="pre">height_layer_to_pressure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">isAGL:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></a></span></span><a class="headerlink" href="#nwsspc.sharp.calc.layer.height_layer_to_pressure" title="Link to this definition">#</a></dt>
+<dd><p>Converts a HeightLayer to a PressureLayer via interpolation, with the
+optional argument to convert the HeightLayer from meters AGL to MSL by adding
+the station height to the HeightLayer. If for some strange reason
+you provide a HeightLayer that is out of the bounds of height[], then
+the bottom and top of the output layer will be set to MISSING.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.layer.HeightLayer" title="nwsspc.sharp.calc.layer.HeightLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer</span></code></a>)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of heights</p></li>
+<li><p><strong>isAGL</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Whether or not the station height needs to be added for interpolation (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.pressure_layer_to_height">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.layer.</span></span><span class="sig-name descname"><span class="pre">pressure_layer_to_height</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">toAGL:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nwsspc.sharp.calc.layer.HeightLayer" title="nwsspc.sharp.calc.layer.HeightLayer"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer</span></a></span></span><a class="headerlink" href="#nwsspc.sharp.calc.layer.pressure_layer_to_height" title="Link to this definition">#</a></dt>
+<dd><p>Converts a PressureLayer to a HeightLayer via interpolation, with the
+optional argument to convert the HeightLayer to meters AGL by subtracting off
+the station height from the returned HeightLayer. If for some strange reason
+you provide a PressureLayer that is out of the bounds of pressure[], then
+the bottom and top of the output layer will be set to MISSING.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a>)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of heights</p></li>
+<li><p><strong>toAGL</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Whether or not to subtract the station height from the HeightLayer (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#nwsspc.sharp.calc.layer.HeightLayer" title="nwsspc.sharp.calc.layer.HeightLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.get_layer_index">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.layer.</span></span><span class="sig-name descname"><span class="pre">get_layer_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nwsspc.sharp.calc.layer.LayerIndex" title="nwsspc.sharp.calc.layer.LayerIndex"><span class="pre">nwsspc.sharp.calc.layer.LayerIndex</span></a></span></span><a class="headerlink" href="#nwsspc.sharp.calc.layer.get_layer_index" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.layer.</span></span><span class="sig-name descname"><span class="pre">get_layer_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nwsspc.sharp.calc.layer.LayerIndex" title="nwsspc.sharp.calc.layer.LayerIndex"><span class="pre">nwsspc.sharp.calc.layer.LayerIndex</span></a></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_layer_index(layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">nwsspc.sharp.calc.layer.LayerIndex</span></code></p></li>
+</ol>
+<p>Finds the interior array indices encapsulated by the given PressureLayer.
+More specifically, the returned LayerIndex excludes the exact top and bottom
+values (in mathematical notation, [bottom, top]). This behavior is due to the
+fact many algorithms use interpolation to get the exact values of arbitrary
+top/bottom locations within a profile.</p>
+<p>If layer.bottom or layer.top are out of bounds, this function
+will truncate the layer to the coordinate range of data provided
+by coord[] in an attempt to gracefully continue and produce a result.
+This will modify the value of the given PressureLayer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a>)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressures</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A LayerIndex with {kbot, ktop}.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#nwsspc.sharp.calc.layer.LayerIndex" title="nwsspc.sharp.calc.layer.LayerIndex"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.LayerIndex</span></code></a></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_layer_index(layer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">nwsspc.sharp.calc.layer.LayerIndex</span></code></p></li>
+</ol>
+<p>Finds the interior array indices encapsulated by the given HeightLayer.
+More specifically, the returned LayerIndex excludes the exact top and bottom
+values (in mathematical notation, [bottom, top]). This behavior is due to the
+fact many algorithms use interpolation to get the exact values of arbitrary
+top/bottom locations within a profile.</p>
+<p>If layer.bottom or layer.top are out of bounds, this function
+will truncate the layer to the coordinate range of data provided
+by coord[] in an attempt to gracefully continue and produce a result.
+This will modify the value of the given HeightLayer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.layer.HeightLayer" title="nwsspc.sharp.calc.layer.HeightLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer</span></code></a>)</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of heights</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A LayerIndex with {kbot, ktop}.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#nwsspc.sharp.calc.layer.LayerIndex" title="nwsspc.sharp.calc.layer.LayerIndex"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.LayerIndex</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="layer-calculations">
+<h2>Layer Calculations<a class="headerlink" href="#layer-calculations" title="Link to this heading">#</a></h2>
+<p>Perform a search or calculation over a given layer type.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.layer_min">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.layer.</span></span><span class="sig-name descname"><span class="pre">layer_min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">data:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.layer.layer_min" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.layer.</span></span><span class="sig-name descname"><span class="pre">layer_min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">data:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">layer_min(layer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">data:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">tuple[float,</span> <span class="pre">float]</span></code></p></li>
+</ol>
+<p>Returns the minimum value of the data array within the given HeightLayer. The
+function bounds checks the layer by calling get_layer_index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.layer.HeightLayer" title="nwsspc.sharp.calc.layer.HeightLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer</span></code></a>)</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of heights</p></li>
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D array of data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(min_value, level_of_min)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple[float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float]</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">layer_min(layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">data:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">tuple[float,</span> <span class="pre">float]</span></code></p></li>
+</ol>
+<p>Returns the minimum value of the data array within the given PressureLayer. The
+function bounds checks the layer by calling get_layer_index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a>)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure</p></li>
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D array of data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(min_value, level_of_min)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple[float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.layer_max">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.layer.</span></span><span class="sig-name descname"><span class="pre">layer_max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">data:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.layer.layer_max" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.layer.</span></span><span class="sig-name descname"><span class="pre">layer_max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">data:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">layer_max(layer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">data:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">tuple[float,</span> <span class="pre">float]</span></code></p></li>
+</ol>
+<p>Returns the maximum value observed within the given data array over
+the given HeightLayer. The function bounds checks the layer by calling
+get_layer_index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.layer.HeightLayer" title="nwsspc.sharp.calc.layer.HeightLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer</span></code></a>)</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of height values</p></li>
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of data values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(max_value, level_of_max)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple[float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float]</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">layer_max(layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">data:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">tuple[float,</span> <span class="pre">float]</span></code></p></li>
+</ol>
+<p>Returns the maximum value observed within the given data array over the given
+PressureLayer. The function bounds checks the layer by calling get_layer_index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a>)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure values</p></li>
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of data values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(max_value, level_of_max)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple[float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.layer_mean">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.layer.</span></span><span class="sig-name descname"><span class="pre">layer_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">PressureLayer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">data:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.layer.layer_mean" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.layer.</span></span><span class="sig-name descname"><span class="pre">layer_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">HeightLayer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">data:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">isAGL:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">layer_mean(PressureLayer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">data:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Computes the pressure-weighted mean value of a field over
+a given PressureLayer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a>)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure values</p></li>
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of data values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">layer_mean(HeightLayer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">data:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">isAGL:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Computes the pressure-weighted mean value of a field over
+a given HeightLayer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.layer.HeightLayer" title="nwsspc.sharp.calc.layer.HeightLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer</span></code></a>)</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of height values</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure values</p></li>
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of data values</p></li>
+<li><p><strong>isAGL</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Whether or not the surface station height should be added to the HeightLayer (default: False)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.layer.integrate_layer_trapz">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.layer.</span></span><span class="sig-name descname"><span class="pre">integrate_layer_trapz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">data:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">integ_sign:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">weighted:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.layer.integrate_layer_trapz" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.layer.</span></span><span class="sig-name descname"><span class="pre">integrate_layer_trapz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">data:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">integ_sign:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">weighted:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">integrate_layer_trapz(layer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">data:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">integ_sign:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">weighted:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Returns a trapezoidal integration of the given data array over
+the given HeightLayer. There is an additional argument that
+determines whether this is a weighted average or not. The sign
+of the integration may be passed as well, i.e. integrating only
+positive or negative area, by passing a 1, 0, or -1 to integ_sign.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.layer.HeightLayer" title="nwsspc.sharp.calc.layer.HeightLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer</span></code></a>)</p></li>
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of data values</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of height values</p></li>
+<li><p><strong>integ_sign</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – The sign of the area to integrate (-1: negative; 1: positive; 0: both; default: 0)</p></li>
+<li><p><strong>weighted</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Boolean determining whether or not the integration is weighted by the coordinate array</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">integrate_layer_trapz(layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">data:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">integ_sign:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0,</span> <span class="pre">weighted:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Returns the trapezoidal integration of the given data array over
+the given PressureLayer. There is an additional argument that
+determines whether this is a weighted average or not. The sign
+of the integration may be passed as well, i.e. integrating only
+positive or negative area, by passing a 1, 0, or -1 to integ_sign.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a>)</p></li>
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of data values</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure values</p></li>
+<li><p><strong>integ_sign</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – The sign of the area to integrate (-1: negative; 1: positive; 0: both; default: 0)</p></li>
+<li><p><strong>weighted</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – Boolean determining whether or not the integration is weighted by the coordinate array</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="interp.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">interp</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="params.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">params</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#layer-definitions">Layer Definitions</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.PressureLayer"><code class="docutils literal notranslate"><span class="pre">PressureLayer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.PressureLayer.bottom"><code class="docutils literal notranslate"><span class="pre">PressureLayer.bottom</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.PressureLayer.top"><code class="docutils literal notranslate"><span class="pre">PressureLayer.top</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.PressureLayer.delta"><code class="docutils literal notranslate"><span class="pre">PressureLayer.delta</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.HeightLayer"><code class="docutils literal notranslate"><span class="pre">HeightLayer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.HeightLayer.bottom"><code class="docutils literal notranslate"><span class="pre">HeightLayer.bottom</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.HeightLayer.top"><code class="docutils literal notranslate"><span class="pre">HeightLayer.top</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.HeightLayer.delta"><code class="docutils literal notranslate"><span class="pre">HeightLayer.delta</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.LayerIndex"><code class="docutils literal notranslate"><span class="pre">LayerIndex</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.LayerIndex.kbot"><code class="docutils literal notranslate"><span class="pre">LayerIndex.kbot</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.LayerIndex.ktop"><code class="docutils literal notranslate"><span class="pre">LayerIndex.ktop</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#layer-conversions">Layer Conversions</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.height_layer_to_pressure"><code class="docutils literal notranslate"><span class="pre">height_layer_to_pressure</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.pressure_layer_to_height"><code class="docutils literal notranslate"><span class="pre">pressure_layer_to_height</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.get_layer_index"><code class="docutils literal notranslate"><span class="pre">get_layer_index</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#layer-calculations">Layer Calculations</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.layer_min"><code class="docutils literal notranslate"><span class="pre">layer_min</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.layer_max"><code class="docutils literal notranslate"><span class="pre">layer_max</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.layer_mean"><code class="docutils literal notranslate"><span class="pre">layer_mean</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.layer.integrate_layer_trapz"><code class="docutils literal notranslate"><span class="pre">integrate_layer_trapz</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2025, NOAA/NWS/NCEP Storm Prediction Center.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
