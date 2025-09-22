@@ -1,6 +1,3 @@
-[submodule "docs/doxygen-awesome-css"]
-	path = docs/doxygen-awesome-css
-	url = https://github.com/jothepro/doxygen-awesome-css.git
 [submodule "external/fmt"]
 	path = external/fmt
 	url = https://github.com/fmtlib/fmt.git
@@ -9,4 +6,4 @@
 	url = https://github.com/google/benchmark.git
 [submodule "external/nanobind"]
 	path = external/nanobind
-	url = https://github.com/wjakob/nanobind
+	url = https://github.com/wjakob/nanobind.git 

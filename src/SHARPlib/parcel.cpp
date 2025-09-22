@@ -10,6 +10,7 @@
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
+#include <SHARPlib/algorithms.h>
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
@@ -138,7 +139,7 @@ void Parcel::find_lfc_el(const float pres_arr[], const float hght_arr[],
         buoy_bot = buoy_top;
     }
     if (in_pos_area) {
-        eql_pres = pres_arr[N - 1];
+        eql_pres = MISSING;
         if (pos_buoy > pos_buoy_max) {
             pos_buoy_max = pos_buoy;
             lfc_pres_final = lfc_pres;
@@ -151,12 +152,86 @@ void Parcel::find_lfc_el(const float pres_arr[], const float hght_arr[],
     }
 }
 
+float Parcel::maximum_parcel_level(const float pres_arr[],
+                                   const float hght_arr[],
+                                   const float buoy_arr[],
+                                   const std::ptrdiff_t N) {
+    if (this->cape == 0) return MISSING;
+    if (this->eql_pressure == MISSING) return MISSING;
+
+    float weights = 0.0;
+    float integrated = 0.0f;
+    sharp::PressureLayer mpl_search = {this->eql_pressure, pres_arr[N - 1]};
+    const sharp::LayerIndex mpl_idx = get_layer_index(mpl_search, pres_arr, N);
+
+    const float lyr_bottom_buoy =
+        interp_pressure(mpl_search.bottom, pres_arr, buoy_arr, N);
+    const float lyr_bottom_hght =
+        interp_pressure(mpl_search.bottom, pres_arr, hght_arr, N);
+
+    integrated =
+        _integ_trapz(buoy_arr[mpl_idx.kbot], lyr_bottom_buoy,
+                     hght_arr[mpl_idx.kbot], lyr_bottom_hght, weights, false);
+
+    bool mpl_candidate_found = false;
+    std::ptrdiff_t k = mpl_idx.kbot;
+    for (; k < mpl_idx.ktop; ++k) {
+        const float hght_bottom = hght_arr[k];
+        const float buoy_bottom = buoy_arr[k];
+
+        const float hght_top = hght_arr[k + 1];
+        const float buoy_top = buoy_arr[k + 1];
+
+        const float lyr_energy = _integ_trapz(buoy_top, buoy_bottom, hght_top,
+                                              hght_bottom, weights, false);
+        integrated += lyr_energy;
+        if (std::abs(integrated) > this->cape) {
+            mpl_candidate_found = true;
+            integrated -= lyr_energy;
+            break;
+        }
+    }
+
+    if (!mpl_candidate_found) {
+        return MISSING;
+    }
+
+    const float remaining_energy = this->cape + integrated;
+
+    const float pres_bottom = pres_arr[k];
+    const float hght_bottom = hght_arr[k];
+    const float buoy_bottom = buoy_arr[k];
+
+    float mpl_pres = MISSING;
+    for (float pres_top = pres_bottom - 100.0f; pres_top >= pres_arr[N - 1];
+         pres_top -= 100.0f) {
+        const float hght_top = interp_pressure(pres_top, pres_arr, hght_arr, N);
+        const float buoy_top = interp_pressure(pres_top, pres_arr, buoy_arr, N);
+
+        const float layer_energy = _integ_trapz(buoy_top, buoy_bottom, hght_top,
+                                                hght_bottom, weights, false);
+
+        if (remaining_energy + layer_energy <= 0.0f) {
+            mpl_pres = pres_top;
+            break;
+        }
+    }
+
+    this->mpl_pressure = mpl_pres;
+    return this->mpl_pressure;
+}
+
 void Parcel::cape_cinh(const float pres_arr[], const float hght_arr[],
                        const float buoy_arr[], const ptrdiff_t N) {
     if (this->lcl_pressure == MISSING) return;
     find_lfc_el(pres_arr, hght_arr, buoy_arr, N);
-    if ((this->lfc_pressure != MISSING) && (this->eql_pressure != MISSING)) {
-        PressureLayer lfc_el = {this->lfc_pressure, this->eql_pressure};
+    if (this->lfc_pressure != MISSING) {
+        PressureLayer lfc_el = {MISSING, MISSING};
+        if (this->eql_pressure == MISSING) {
+            lfc_el = {this->lfc_pressure, pres_arr[N - 1]};
+        } else {
+            lfc_el = {this->lfc_pressure, this->eql_pressure};
+        }
         PressureLayer lpl_lfc = {this->pres, this->lfc_pressure};
         HeightLayer lfc_el_ht =
             pressure_layer_to_height(lfc_el, pres_arr, hght_arr, N);
@@ -167,6 +242,40 @@ void Parcel::cape_cinh(const float pres_arr[], const float hght_arr[],
             integrate_layer_trapz(lpl_lfc_ht, buoy_arr, hght_arr, N, -1);
         this->cape = integrate_layer_trapz(lfc_el_ht, buoy_arr, hght_arr, N, 1);
     }
+}
+
+DowndraftParcel::DowndraftParcel() {}
+
+DowndraftParcel::DowndraftParcel(const float pressure, const float temperature,
+                                 const float dewpoint) {
+    this->pres = pressure;
+    this->tmpk = temperature;
+    this->dwpk = dewpoint;
+}
+
+template void DowndraftParcel::lower_parcel<lifter_wobus>(
+    lifter_wobus& liftpcl, const float pressure_arr[], float pcl_tmpk_arr[],
+    const std::ptrdiff_t N);
+
+template void DowndraftParcel::lower_parcel<lifter_cm1>(
+    lifter_cm1& liftpcl, const float pressure_arr[], float pcl_tmpk_arr[],
+    const std::ptrdiff_t N);
+
+void DowndraftParcel::cape_cinh(const float pres_arr[], const float hght_arr[],
+                                const float buoy_arr[], const ptrdiff_t N) {
+    if ((this->pres == MISSING) || (this->tmpk == MISSING) ||
+        (this->dwpk == MISSING)) {
+        return;
+    }
+
+    sharp::PressureLayer dcape_lyr = {pres_arr[0], this->pres};
+    sharp::HeightLayer dcape_hght_lyr =
+        pressure_layer_to_height(dcape_lyr, pres_arr, hght_arr, N);
+
+    this->cinh =
+        integrate_layer_trapz(dcape_hght_lyr, buoy_arr, hght_arr, N, 1);
+    this->cape =
+        integrate_layer_trapz(dcape_hght_lyr, buoy_arr, hght_arr, N, -1);
 }
 
 }  // end namespace sharp

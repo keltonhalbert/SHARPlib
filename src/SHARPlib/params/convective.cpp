@@ -15,10 +15,13 @@
 #include "SHARPlib/params/convective.h"
 
 #include <SHARPlib/constants.h>
+#include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
+
+#include <utility>
 
 namespace sharp {
 
@@ -120,6 +123,55 @@ WindComponents storm_motion_bunkers(
     HeightLayer mw_layer = {eil_hght.bottom, htop};
     return storm_motion_bunkers(pressure, height, u_wind, v_wind, N, mw_layer,
                                 shr_layer, leftMover, true);
+}
+
+[[nodiscard]] std::pair<WindComponents, WindComponents> mcs_motion_corfidi(
+    const float pressure[], const float height[], const float u_wind[],
+    const float v_wind[], const std::ptrdiff_t N) {
+    const float pres_sfc = pressure[0];
+
+    WindComponents cloud_layer_mean;
+    if (pres_sfc < 85000.0f) {
+        cloud_layer_mean =
+            mean_wind({pres_sfc, 30000.0}, pressure, u_wind, v_wind, N, false);
+    } else {
+        cloud_layer_mean =
+            mean_wind({85000.0, 30000.0}, pressure, u_wind, v_wind, N, false);
+    }
+
+    HeightLayer low_layer = {0, 1500.0};  // agl
+    PressureLayer low_layer_pres =
+        height_layer_to_pressure(low_layer, pressure, height, N, true);
+
+    WindComponents low_level_mean =
+        mean_wind(low_layer_pres, pressure, u_wind, v_wind, N, false);
+
+    WindComponents upshear = {cloud_layer_mean.u - low_level_mean.u,
+                              cloud_layer_mean.v - low_level_mean.v};
+    WindComponents downshear = {cloud_layer_mean.u + upshear.u,
+                                cloud_layer_mean.v + upshear.v};
+
+    return std::make_pair(upshear, downshear);
+}
+
+WindComponents effective_bulk_wind_difference(
+    const float pressure[], const float height[], const float u_wind[],
+    const float v_wind[], const std::ptrdiff_t N,
+    sharp::PressureLayer effective_inflow_lyr,
+    const float equilibrium_level_pressure) {
+    if ((equilibrium_level_pressure == MISSING) ||
+        (effective_inflow_lyr.bottom == MISSING))
+        return {MISSING, MISSING};
+
+    sharp::HeightLayer eil_hght =
+        pressure_layer_to_height(effective_inflow_lyr, pressure, height, N);
+    float eql_hght =
+        interp_pressure(equilibrium_level_pressure, pressure, height, N);
+
+    float depth = 0.5f * (eql_hght - eil_hght.bottom);
+    sharp::HeightLayer ebwd_lyr = {eil_hght.bottom, eil_hght.bottom + depth};
+
+    return sharp::wind_shear(ebwd_lyr, height, u_wind, v_wind, N);
 }
 
 float entrainment_cape(const float pressure[], const float height[],
@@ -257,7 +309,7 @@ float significant_tornado_parameter(Parcel pcl, float lcl_hght_agl,
                                     float storm_relative_helicity,
                                     float bulk_wind_difference) {
     float cinh_term, lcl_term, shear_term, srh_term, cape_term;
-    if (pcl.cape == MISSING) return MISSING;
+    if (std::isnan(pcl.cinh)) return 0.0;
 
     if (pcl.cinh >= -50.0)
         cinh_term = 1.0;

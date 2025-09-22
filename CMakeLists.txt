@@ -6,16 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(GitVersion)
 
-if(NOT DEFINED SKBUILD_PROJECT_VERSION)
-    get_version_from_git()
-else()
-    # Extract major, minor, patch from PROJECT_VERSION
-    message(${SKBUILD_PROJECT_VERSION})
-    string(REGEX REPLACE "^([0-9]+)\\.([0-9]+)\\.([0-9]+).*" "\\1;\\2;\\3" VERSION_LIST ${SKBUILD_PROJECT_VERSION})
-    list(GET VERSION_LIST 0 PROJECT_VERSION_MAJOR)
-    list(GET VERSION_LIST 1 PROJECT_VERSION_MINOR)
-    list(GET VERSION_LIST 2 PROJECT_VERSION_PATCH)
-endif()
+get_version_from_git()
 
 configure_file(
     include/SHARPlib/version.h.in
@@ -43,6 +34,7 @@ target_include_directories(SHARPlib PUBLIC include external/fmt/include)
 ## We are telling the build process that the SHARP library
 ## should use the C++ linker, and setting compile options
 set_target_properties(SHARPlib PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(SHARPlib PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 ## Compiler-specific options
 if (MSVC) # For MSVC (cl) compiler
@@ -72,7 +64,7 @@ else() # For GCC/Clang
     # Add debug and release specific options
     target_compile_options(SHARPlib PRIVATE
         $<$<CONFIG:Debug>:-g -O3 -ftree-vectorize -funroll-loops> # Debug: Enable debug info, optimizations, vectorization
-        $<$<CONFIG:Release>:-O3 -ftree-vectorize -funroll-loops -fPIC> # Release: Optimize, vectorize, generate PIC
+        $<$<CONFIG:Release>:-O3 -ftree-vectorize -funroll-loops> # Release: Optimize, vectorize, generate PIC
     )
 endif()
 

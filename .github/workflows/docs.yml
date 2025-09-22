@@ -1,0 +1,158 @@
+name: documentation
+
+env:
+  DOXY_VER: "1.9.6"
+  DOC_VER: "dev"
+
+on:
+  push:
+    branches: ["develop"]
+    tags:
+      - 'v[0-9]+.[0-9]+.0'
+
+permissions:
+  contents: write
+
+jobs:
+  build_and_deploy:
+    name: Build and Deploy Docs
+    runs-on: ubuntu-latest
+    outputs:
+      doc_ver: ${{ steps.version_check.outputs.doc_ver }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+          fetch-tags: 'true'
+          fetch-depth: 0
+
+      - name: Change submodule URLs to HTTPS 
+        run: |
+          git submodule foreach '
+            git config submodule.$name.url https://github.com/$urlPath
+          '
+        shell: bash
+
+      - name: Submodules and Dependencies
+        run: |
+          git submodule update --init --recursive
+        shell: bash
+
+      - name: Python Setup
+        uses: actions/setup-python@v5
+
+      - name: Install Doxygen 
+        run: |
+          transformed_version=$(echo "$DOXY_VER" | tr '.' '_')
+          wget https://github.com/doxygen/doxygen/releases/download/Release_${transformed_version}/doxygen-$DOXY_VER.linux.bin.tar.gz
+          tar -xzf doxygen-$DOXY_VER.linux.bin.tar.gz
+          sudo mv doxygen-$DOXY_VER/bin/doxygen /usr/local/bin/doxygen
+        shell: bash
+
+      - name: Install Python Dependencies 
+        run: |
+          pip install sphinx pydata-sphinx-theme breathe numpy .
+
+      - name: Get Documentation Version 
+        id: version_check 
+        run: |
+          python -c "
+          import os
+          import nwsspc.sharp.calc as sharplib
+          
+          version = sharplib.__version__
+          print(f'Detected version: {version}')
+          
+          if 'dev' in version:
+              doc_ver = 'dev'
+          else:
+              doc_ver = f'v{version}'
+          
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f'doc_ver={doc_ver}\\n')
+          "
+
+      - name: Sphinx Build
+        run: |
+          cd docs; doxygen Doxyfile
+          sphinx-build -M html . _build
+
+      - name: Upload to GH Pages
+        env:
+          DOC_VER: ${{ steps.version_check.outputs.doc_ver }}
+        uses: peaceiris/actions-gh-pages@v4 
+        with: 
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/_build/html
+          destination_dir: ./${{ steps.version_check.outputs.doc_ver }}
+
+  update_versions:
+    name: Update JSON and Symlink
+    needs: build_and_deploy
+    if: needs.build_and_deploy.outputs.doc_ver != 'dev'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4 
+        with:
+          ref: "gh-pages"
+      
+      - name: Setup Python 
+        uses: actions/setup-python@v5
+
+      - name: Update Versions
+        env: 
+          BASE_URL: "https://keltonhalbert.github.io/SHARPlib"
+        run: |
+          python << EOF
+          import json
+          from pathlib import Path
+          import os
+
+          version_dirs = [p for p in Path().glob('v[0-9]*') if p.is_dir()]
+          version_dirs.sort()
+          latest_version_str = version_dirs[-1].name if version_dirs else 'dev'
+          print(f"Latest deployed version found: {latest_version_str}")
+
+          versions_file = Path('versions.json')
+          try:
+              with open(versions_file) as f:
+                  data = json.load(f)
+          except FileNotFoundError:
+              data = [
+                  { "version": "dev", "url": f"{os.environ['BASE_URL']}/dev" },
+              ]
+
+          found_versions = {item['version'] for item in data}
+          for ver_dir in version_dirs:
+              ver_str = ver_dir.name
+              if ver_str not in found_versions:
+                  print(f"Adding new version '{ver_str}' to versions.json")
+                  data.append({"version": ver_str, "url": f"{os.environ['BASE_URL']}/{ver_str}"})
+
+          for item in data:
+              item['is_latest'] = (item['version'] == latest_version_str)
+
+          with open(versions_file, 'w') as f:
+              json.dump(data, f, indent=4)
+          print("versions.json has been updated.")
+
+          latest_link = Path('latest')
+          latest_link.unlink(missing_ok=True) 
+          latest_link.symlink_to(latest_version_str, target_is_directory=True)
+          print(f"'latest' symlink now points to '{latest_version_str}'.")
+          EOF
+
+      - name: Commit and Push changes
+        run: |
+          git config user.name $GITHUB_ACTOR
+          git config user.email $GITHUB_ACTOR@users.noreply.github.com
+          git add versions.json latest
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "docs: Update latest version to point to new release"
+            git push
+          fi
+

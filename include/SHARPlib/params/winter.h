@@ -30,8 +30,9 @@ namespace sharp {
  * dendritic growth zone. If none is found, the top and bottom pressure levels
  * are set to sharp::MISSING.
  *
- * \param    pressure    (Pa)
- * \param    temperature (K)
+ * \param   pressure    (Pa)
+ * \param   temperature (K)
+ * \param   N           (length of arrays)
  *
  * \return   The top and bottom of the dendritic growth zone (Pa)
  */

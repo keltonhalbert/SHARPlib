@@ -149,7 +149,7 @@ template <typename _Fp>
                                     const std::ptrdiff_t N);
 
 /**
- * \athor Kelton Halbert - NWS Storm Prediction Center
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Find the pressure level of first occurrence of a given value
  *
@@ -170,7 +170,7 @@ template <typename _Fp>
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
  *
- * \brief Find the height lecel of first occurrence of a given value
+ * \brief Find the height level of first occurrence of a given value
  *
  * Conduct a bottom-up search for the first occurrence of a given value,
  * and interpolate in order to get the pressure level it occurs at.

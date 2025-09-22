@@ -39,6 +39,13 @@ HeightLayer::HeightLayer(float bottom, float top, float delta) {
             "Got bottom: {0} and top: {1}",
             bottom, top));
     }
+    if ((bottom == MISSING) != (top == MISSING)) {
+        throw std::range_error(
+            fmt::format("RangeError: Both bottom and top must be MISSING, or "
+                        "neither can be. "
+                        "Got bottom: {0} and top: {1}",
+                        bottom, top));
+    }
     if (bottom > top) {
         throw std::range_error(fmt::format(
             "RangeError: The top of the height layer must be > the bottom of "
@@ -61,6 +68,13 @@ PressureLayer::PressureLayer(float bottom, float top, float delta) {
         throw std::range_error(
             fmt::format("RangeError: infs are not a valid range option for a "
                         "PressureLayer. Got bottom: {0} and top: {1}",
+                        bottom, top));
+    }
+    if ((bottom == MISSING) != (top == MISSING)) {
+        throw std::range_error(
+            fmt::format("RangeError: Both bottom and top must be MISSING, or "
+                        "neither can be. "
+                        "Got bottom: {0} and top: {1}",
                         bottom, top));
     }
     if (bottom < top) {

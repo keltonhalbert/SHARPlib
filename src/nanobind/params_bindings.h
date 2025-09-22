@@ -3,6 +3,7 @@
 
 // clang-format off
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/pair.h>
 
 // clang-format on
 #include <SHARPlib/layer.h>
@@ -10,6 +11,7 @@
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/winds.h>
 
+#include "SHARPlib/params/fire.h"
 #include "SHARPlib/params/winter.h"
 #include "sharplib_types.h"
 
@@ -27,6 +29,13 @@ inline void make_params_bindings(nb::module_ m) {
            const_prof_arr_t height, const_prof_arr_t temperature,
            const_prof_arr_t dewpoint, const_prof_arr_t virtemp,
            float cape_thresh, float cinh_thresh, sharp::Parcel* mupcl) {
+            if ((pressure.shape(0) != height.shape(0)) ||
+                (pressure.shape(0) != temperature.shape(0)) ||
+                (pressure.shape(0) != dewpoint.shape(0)) ||
+                (pressure.shape(0) != virtemp.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
             float* pcl_vtmp = new float[height.size()];
             float* pcl_buoy = new float[height.size()];
 
@@ -48,8 +57,8 @@ inline void make_params_bindings(nb::module_ m) {
 Computes the Effective Inflow Layer, or the layer of the atmosphere
 beliefed to be the primary source of inflow for supercell thunderstorms. 
 The Effective Inflow Layer, and its use in computing shear and storm 
-relative helicity, is described by Thompson et al. 2007:
-    https://www.spc.noaa.gov/publications/thompson/effective.pdf
+relative helicity, is described by Thompson et al. 2007: 
+https://www.spc.noaa.gov/publications/thompson/effective.pdf
 
 Standard/default values for cape_thresh and cinh_thresh have been 
 experimentally determined to be cape_thresh = 100 J/kg and 
@@ -57,15 +66,33 @@ cinh_thresh = -250.0 J/kg. If an empty parcel object is passed via the
 'mupcl' kwarg, the Most Unstable parcel found during the EIL search will 
 be returned. 
 
-Parameters:
-    lifter: An instantiated lifter_cm1() or lifter_wobus()
-    pressure: A 1D NumPy array of pressure values (Pa)
-    height: A 1D NumPy array of height values (Pa)
-    temperature: A 1D NumPy array of temperature values (K)
-    dewpoint: A 1D NumPy array of dewpoint values (K)
-    virtemp: A 1D NumPy array of virtual temperature values (K)
+References 
+----------
+Thompson et al. 2007: https://www.spc.noaa.gov/publications/thompson/effective.pdf
 
+Parameters 
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+pressure : numpy.ndarray[dtype=float32]
+    A 1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of height values (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of temperature values (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of dewpoint values (K)
+virtemp : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of virtual temperature values (K)
+cape_thresh : float, default = 100.0
+    The CAPE threshold used to compute the Effective Inflow Layer 
+cinh_thresh : float, default = -250.0 
+    The CINH threshold used to compute the Effective Inflow Layer
+muplc : None or nwsspc.sharp.calc.parcel.Parcel, optional
 
+Returns 
+-------
+nwsspc.sharp.calc.layer.PressureLayer
+    The Effective Inflow Layer
     )pbdoc");
 
     m_params.def(
@@ -74,6 +101,13 @@ Parameters:
            const_prof_arr_t height, const_prof_arr_t temperature,
            const_prof_arr_t dewpoint, const_prof_arr_t virtemp,
            float cape_thresh, float cinh_thresh, sharp::Parcel* mupcl) {
+            if ((pressure.shape(0) != height.shape(0)) ||
+                (pressure.shape(0) != temperature.shape(0)) ||
+                (pressure.shape(0) != dewpoint.shape(0)) ||
+                (pressure.shape(0) != virtemp.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
             float* pcl_vtmp = new float[height.size()];
             float* pcl_buoy = new float[height.size()];
 
@@ -96,7 +130,7 @@ Computes the Effective Inflow Layer, or the layer of the atmosphere
 beliefed to be the primary source of inflow for supercell thunderstorms. 
 The Effective Inflow Layer, and its use in computing shear and storm 
 relative helicity, is described by Thompson et al. 2007:
-    https://www.spc.noaa.gov/publications/thompson/effective.pdf
+https://www.spc.noaa.gov/publications/thompson/effective.pdf
 
 Standard/default values for cape_thresh and cinh_thresh have been 
 experimentally determined to be cape_thresh = 100 J/kg and 
@@ -104,15 +138,33 @@ cinh_thresh = -250.0 J/kg. If an empty parcel object is passed via the
 'mupcl' kwarg, the Most Unstable parcel found during the EIL search will 
 be returned. 
 
-Parameters:
-    lifter: An instantiated lifter_cm1() or lifter_wobus()
-    pressure: A 1D NumPy array of pressure values (Pa)
-    height: A 1D NumPy array of height values (Pa)
-    temperature: A 1D NumPy array of temperature values (K)
-    dewpoint: A 1D NumPy array of dewpoint values (K)
-    virtemp: A 1D NumPy array of virtual temperature values (K)
+References 
+----------
+Thompson et al. 2007: https://www.spc.noaa.gov/publications/thompson/effective.pdf
 
+Parameters 
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
+pressure : numpy.ndarray[dtype=float32]
+    A 1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of height values (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of temperature values (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of dewpoint values (K)
+virtemp : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of virtual temperature values (K)
+cape_thresh : float, default = 100.0
+    The CAPE threshold used to compute the Effective Inflow Layer 
+cinh_thresh : float, default = -250.0 
+    The CINH threshold used to compute the Effective Inflow Layer
+muplc : None or nwsspc.sharp.calc.parcel.Parcel, optional
 
+Returns 
+-------
+nwsspc.sharp.calc.layer.PressureLayer
+    The Effective Inflow Layer
     )pbdoc");
 
     m_params.def(
@@ -122,6 +174,12 @@ Parameters:
            sharp::HeightLayer mean_wind_layer_agl,
            sharp::HeightLayer wind_shear_layer_agl, const bool leftMover,
            const bool pressureWeighted) {
+            if ((pressure.shape(0) != height.shape(0)) ||
+                (pressure.shape(0) != u_wind.shape(0)) ||
+                (pressure.shape(0) != v_wind.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
             sharp::WindComponents storm_mtn = sharp::storm_motion_bunkers(
                 pressure.data(), height.data(), u_wind.data(), v_wind.data(),
                 height.size(), mean_wind_layer_agl, wind_shear_layer_agl,
@@ -136,23 +194,39 @@ Parameters:
         R"pbdoc(
 Estimates the supercell storm motion using the Bunkers et al. 2000 method 
 described in the following paper:
-    https://doi.org/10.1175/1520-0434(2000)015%3C0061:PSMUAN%3E2.0.CO;2
+https://doi.org/10.1175/1520-0434(2000)015%3C0061:PSMUAN%3E2.0.CO;2
         
 This does not use any of the updated methods described by Bunkers et al. 2014, 
 which uses Effective Inflow Layer metrics to get better estimates of storm 
 motion, especially when considering elevated convection. 
 
-Params:
-    pressure: 1D NumPy array of pressure values (Pa)
-    height: 1D NumPy array of height values (meters)
-    u_wind: 1D NumPy array of U wind component values (m/s)
-    v_wind: 1D NumPy array of V wind compnent values (m/s)
-    mean_wind_layer_agl: HeightLayer (AGL) for computing the mean wind 
-    wind_shear_layer_agl: HeightLayer (AGL) for computing wind_shear
-    leftMover: Whether to compute left mover supercell motion (default: False)
-    pressureWeighted: Whether to use the pressure weighted mean wind (default: False)
+References 
+----------
 
-Returns:
+Buners et al. 2000: https://doi.org/10.1175/1520-0434(2000)015%3C0061:PSMUAN%3E2.0.CO;2
+
+Parameters 
+----------
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    1D NumPy array of height values (meters)
+u_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of U wind component values (m/s)
+v_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of V wind compnent values (m/s)
+mean_wind_layer_agl : nwsspc.sharp.calc.layer.HeightLayer 
+    HeightLayer (AGL) for computing the mean wind 
+wind_shear_layer_agl : nwsspc.sharp.calc.layer.HeightLayer 
+    HeightLayer (AGL) for computing wind_shear
+leftMover : bool 
+    Whether to compute left mover supercell motion (default: False)
+pressureWeighted : bool 
+    Whether to use the pressure weighted mean wind (default: False)
+
+Returns
+-------
+nwsspc.sharp.calc.winds.WindComponents
     U, V wind components of storm motion (m/s)
     )pbdoc");
 
@@ -162,6 +236,12 @@ Returns:
            const_prof_arr_t u_wind, const_prof_arr_t v_wind,
            sharp::PressureLayer eff_infl_lyr, sharp::Parcel& mupcl,
            const bool leftMover) {
+            if ((pressure.shape(0) != height.shape(0)) ||
+                (pressure.shape(0) != u_wind.shape(0)) ||
+                (pressure.shape(0) != v_wind.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
             sharp::WindComponents storm_mtn = sharp::storm_motion_bunkers(
                 pressure.data(), height.data(), u_wind.data(), v_wind.data(),
                 height.size(), eff_infl_lyr, mupcl, leftMover);
@@ -174,7 +254,7 @@ Returns:
         R"pbdoc(
 Estimates supercell storm motion using the Bunkers et al. 2014 
 method described in the following paper:
-    http://dx.doi.org/10.15191/nwajom.2014.0211
+http://dx.doi.org/10.15191/nwajom.2014.0211
     
 This method is parcel based, using a mean-wind vector defined as the 
 pressure-weighted mean wind between the Effective Inflow Layer surface 
@@ -190,17 +270,115 @@ to be precomputed and passed to this routine. These are expensive
 operations that are presumed to be computed at some other point 
 in the analysis pipeline. 
 
-Parameters:
-    pressure: 1D NumPy array of pressure values (Pa)
-    height: 1D NumPy array of height values (meters)
-    u_wind: 1D NumPy array of U wind component values (m/s)
-    v_wind: 1D NumPy array of V wind component values (m/s)
-    eff_infl_lyr: Effective Inflow Layer PressureLayer
-    mupcl: Most Unstable Parcel 
-    leftMover: Whether or not to compute left moving supercell motion (default: False)
+References
+----------
+Bunkers et al. 2014: http://dx.doi.org/10.15191/nwajom.2014.0211
 
-Returns:
+Parameters 
+----------
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of height values (meters)
+u_wind : numpy.ndarray[dtype=float32] 
+    1D NumPy array of U wind component values (m/s)
+v_wind : numpy.ndarray[dtype=float32] 
+    1D NumPy array of V wind component values (m/s)
+eff_infl_lyr : nwsspc.sharp.calc.layer.PressureLayer 
+    Effective Inflow Layer PressureLayer
+mupcl : nwsspc.sharp.calc.parcel.Parcel 
+    Most Unstable Parcel 
+leftMover : bool 
+    Whether or not to compute left moving supercell motion (default: False)
+
+Returns
+-------
+nwsspc.sharp.calc.winds.WindComponents
     U, V wind components of storm motion (m/s)
+
+    )pbdoc");
+
+    m_params.def(
+        "mcs_motion_corfidi",
+        [](const_prof_arr_t pressure, const_prof_arr_t height,
+           const_prof_arr_t u_wind, const_prof_arr_t v_wind)
+            -> std::pair<sharp::WindComponents, sharp::WindComponents> {
+            auto pres = pressure.view();
+            auto hght = height.view();
+            auto uwin = u_wind.view();
+            auto vwin = v_wind.view();
+
+            if ((pres.shape(0) != hght.shape(0)) ||
+                (pres.shape(0) != uwin.shape(0)) ||
+                (pres.shape(0) != vwin.shape(0))) {
+                throw nb::buffer_error(
+                    "pressure, height, u_wind, and v_wind must have the "
+                    "same sizes!");
+            }
+
+            return sharp::mcs_motion_corfidi(pres.data(), hght.data(),
+                                             uwin.data(), vwin.data(),
+                                             pressure.size());
+        },
+        nb::arg("pressure"), nb::arg("height"), nb::arg("u_wind"),
+        nb::arg("v_wind"), R"pbdoc(
+Compute the Corfidi upshear and downshear MCS motion vectors.
+
+Estimates the mesoscale convective system (MCS) motion vectors for upshear 
+and downshear propagating convective systems as in Corfidi et al. 2003.
+The method is based on observations that MCS motion is a function of 
+1) the advection of existing cells by the mean wind and 
+2) the propagation of new convection relative to existing storms.
+
+References
+----------
+Corfidi et al. 2003: https://www.spc.noaa.gov/publications/corfidi/mcs2003.pdf
+
+Parameters 
+----------
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of height values (meters)
+u_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of u-wind components (m/s)
+v_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of v-wind components (m/s)
+
+Returns 
+-------
+tuple[nwsspc.sharp.calc.winds.WindComponents, nwsspc.sharp.calc.winds.WindComponents]
+    (upshear, downshear)
+    )pbdoc");
+
+    m_params.def(
+        "effective_bulk_wind_difference",
+        [](const_prof_arr_t pres, const_prof_arr_t hght, const_prof_arr_t uwin,
+           const_prof_arr_t vwin, sharp::PressureLayer eil,
+           const float eql_pres) {
+            if ((pres.shape(0) != hght.shape(0)) ||
+                (pres.shape(0) != uwin.shape(0)) ||
+                (pres.shape(0) != vwin.shape(0))) {
+                throw nb::buffer_error(
+                    "pressure, height, u_wind, and v_wind must have the "
+                    "same sizes!");
+            }
+            return sharp::effective_bulk_wind_difference(
+                pres.data(), hght.data(), uwin.data(), vwin.data(),
+                pres.shape(0), eil, eql_pres);
+        },
+        nb::arg("pressure"), nb::arg("height"), nb::arg("u_wind"),
+        nb::arg("v_wind"), nb::arg("effective_inflow_layer"),
+        nb::arg("equilibrium_level_pressure"),
+        R"pbdoc(
+Compute the Effective Bulk Wind Difference 
+
+The effective bulk wind difference is the wind shear between 
+the bottom height of the effective inflow layer, and 50% of 
+the equilibrium level depth. This is analogous to the usage 
+of 0-6 km wind shear, but allows more flexibility for elevated 
+convection. Returns MISSING if the effective inflow layer or 
+equilibrium level pressure are MISSING.
 
     )pbdoc");
 
@@ -209,11 +387,25 @@ Returns:
                  R"pbdoc(
 Computes the Energy Helicity Index.
 
-Parameters:
-    cape: Convective Available Potential Energy (J/kg)
-    helicity: Storm Relative Helicity (m^2 / s^2 a.k.a J/kg)
+EHI is a composite parameter based on the premise that 
+storm rotation shoudl be maximized when CAPE is large 
+and SRH is large. Typically, the layers used for helicity 
+are either 0-1 km AGL or 0-3 km AGL.
+ 
+References 
+----------
+https://doi.org/10.1175/1520-0434(2003)18%3C530:RSATFP%3E2.0.CO;2
 
-Returns:
+Parameters 
+----------
+CAPE : float 
+    Convective Available Potential Energy (J/kg)
+helicity : float 
+    Storm Relative Helicity (m^2 / s^2 a.k.a J/kg)
+
+Returns
+-------
+float
     Energy Helicity Index (umitless)
     )pbdoc");
 
@@ -224,14 +416,38 @@ Returns:
                  R"pbdoc(
 Computes the Significant Tornado Parameter.
 
-References:
-    Thompson et al 2012: https://www.spc.noaa.gov/publications/thompson/waf-env.pdf
 
-Parameters:
-    pcl: For effective-layer STP, a mixed-layer parcel, and for fixed-layer STP, a surface-based parcel 
-    lcl_hght_agl: The parcel LCL height in meters
-    storm_relative_helicity: For effecitve-layer STP, effecitve SRH, and for fixed-layer, 0-1 km SRH (m^2 / s^2)
-    bulk_wind_difference: For effective-layer STP, effecitve BWD, and for fixed-layer STP, 0-6 km BWD (m/s)
+The Significant Tornado Parameter is used to diagnose environments
+where tornadoes are favored. STP traditionally comes in two flavors:
+fixed-layer, and effective-layer. Fixed-layer STP expects surface-based
+CAPE, the surface-based LCL, 0-1 km storm-relative helicity, the
+0-6 km bulk wind difference, and the surface-based CINH. For the
+effective inflow layer based STP, use 100mb mixed-layer CAPE,
+100mb mixed-layer LCL height AGL, effective-layer srh, the
+effective layer bulk wind difference, and the 100mb mixed-layer
+CINH. NOTE: The effective bulk wind difference is the shear between
+the bottom of the effective inflow layer and 50% of the height of the
+equilibrium level of the most unstable parcel.
+
+References
+----------
+Thompson et al 2012: https://www.spc.noaa.gov/publications/thompson/waf-env.pdf
+
+Parameters 
+----------
+pcl : nwsspc.sharp.calc.parcel.Parcel 
+    For effective-layer STP, a mixed-layer parcel, and for fixed-layer STP, a surface-based parcel 
+lcl_hght_agl : float 
+    The parcel LCL height in meters
+storm_relative_helicity : float 
+    For effective-layer STP, effective SRH, and for fixed-layer, 0-1 km SRH (m^2 / s^2)
+bulk_wind_difference : float 
+    For effective-layer STP, effective BWD, and for fixed-layer STP, 0-6 km BWD (m/s)
+
+Returns
+-------
+float 
+    The Significant Tornado Parameter
     )pbdoc");
 
     m_params.def("supercell_composite_parameter",
@@ -240,18 +456,40 @@ Parameters:
                  R"pbdoc(
 Computes the Supercell Composite Parameter. 
 
-References:
-    Thompson et al 2003: https://www.spc.noaa.gov/publications/thompson/ruc_waf.pdf
-    Thompson et al 2007: https://www.spc.noaa.gov/publications/thompson/effective.pdf
-    Thompson et al 2012: https://www.spc.noaa.gov/publications/thompson/waf-env.pdf
+The supercell composite parameter is used to diagnose environments
+where supercells are favored. Requires computing most unstable
+CAPE, effective layer storm relative helicity, and effective
+bulk shear. Effective bulk shear is the vector difference between
+the winds at the bottom of the effective inflow layer, and 50% of
+the equilibrium level height. It is similar to the 0-6 km shear
+vector, but allows for elevated supercell thunderstorms.
+
+The left-moving supercell composite parameter can be computed by
+providing effective SRH calculated using the bunkers left-moving
+storm motion, and will return negative values.
+
+References
+----------
+Thompson et al 2003: https://www.spc.noaa.gov/publications/thompson/ruc_waf.pdf
+
+Thompson et al 2007: https://www.spc.noaa.gov/publications/thompson/effective.pdf
+
+Thompson et al 2012: https://www.spc.noaa.gov/publications/thompson/waf-env.pdf
+
         
 
-Parameters:
-    mu_cape: The CAPE of the Most Unstable Parcel (J/kg)
-    eff_srh: Effecive inflow layer Storm Relative Helicity (m^2/s^2) 
-    eff_shear: Effective layer shear (m/s)
+Parameters 
+----------
+mu_cape : float 
+    The CAPE of the Most Unstable Parcel (J/kg)
+eff_srh : float 
+    Effective inflow layer Storm Relative Helicity (m^2/s^2) 
+eff_shear : float 
+    Effective layer shear (m/s)
 
-Returns:
+Returns
+-------
+float
     Supercell Composite Parameter (unitless)
     )pbdoc");
 
@@ -295,14 +533,22 @@ greater than 1.00 indicate a favorable environment for SIG hail. Values greater
 than 4 are considered very high. In practice, maximum contour values of 1.5-2.0 
 or higher will typically be present when SIG hail is going to be reported. 
 
-Parameters:
-    mu_pcl: A precomputed Most Unstable parcel
-    lapse_rate_700_500mb: The 700-500 mb lapse rate (K/km)
-    tmpk_500mb: The 500mb temperature (K)
-    freezing_level_agl: The height of the freezing level (AGL, meters)
-    shear_0_6km: The 0-6 km shear vector magnitude (m/s)
+Parameters 
+----------
+mu_pcl : nwsspc.sharp.calc.parcel.Parcel 
+    A precomputed Most Unstable parcel
+lapse_rate_700_500mb : float
+    The 700-500 mb lapse rate (K/km)
+tmpk_500mb : float 
+    The 500mb temperature (K)
+freezing_level_agl : float 
+    The height of the freezing level (AGL, meters)
+shear_0_6km : float
+    The 0-6 km shear vector magnitude (m/s)
 
-Returns:
+Returns
+-------
+float
     The significant hail parameter
     )pbdoc");
 
@@ -310,6 +556,10 @@ Returns:
         "precipitable_water",
         [](sharp::PressureLayer& layer, const_prof_arr_t pres,
            const_prof_arr_t mixr) {
+            if ((pres.shape(0) != mixr.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
             return sharp::precipitable_water(layer, pres.data(), mixr.data(),
                                              pres.size());
         },
@@ -319,38 +569,28 @@ Returns:
 Given a PressureLayer to integrate over, compute the precipitable water 
 from the given pressure and mixing ratio arrays.
 
-Parameters:
-    layer: a PressureLayer over which to integrate (Pa)
-    pres: 1D NumPy array of presssure values (Pa)
-    mixr: 1D NumPy array of water vapor mixing ratio values (unitless)
+Parameters 
+----------
+layer : nwsspc.sharp.calc.layer.PressureLayer 
+    a PressureLayer over which to integrate (Pa)
+pres : numpy.ndarray[dtype=float32] 
+    1D NumPy array of presssure values (Pa)
+mixr : numpy.ndarray[dtype=float32] 
+    1D NumPy array of water vapor mixing ratio values (unitless)
 
-Returns:
+Returns
+-------
+float
     Precipitable water content (mm)
-    )pbdoc");
-
-    m_params.def(
-        "dendritic_layer",
-        [](const_prof_arr_t pres, const_prof_arr_t tmpk) {
-            return sharp::dendritic_layer(pres.data(), tmpk.data(),
-                                          pres.size());
-        },
-        nb::arg("pressure"), nb::arg("temperature"),
-        R"pbdoc(
-Search for and return the PressureLayer of the lowest altitude 
-dendritic growth zone. If none is found, the top and bottom of the 
-PressureLayer are set to MISSING. 
-
-Parameters:
-    pressure: 1D NumPy array of pressure values (Pa)
-    temperature: 1D NumPy array of temperature values (K)
-
-Return:
-    The PressureLayer containing the dendritic growth zone
     )pbdoc");
 
     m_params.def(
         "hail_growth_layer",
         [](const_prof_arr_t pres, const_prof_arr_t tmpk) {
+            if ((pres.shape(0) != tmpk.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
             return sharp::hail_growth_layer(pres.data(), tmpk.data(),
                                             pres.size());
         },
@@ -360,12 +600,166 @@ Search for and return the PressureLayer of the lowest altitude
 hail growth zone. If none is found, the top and bottom of the 
 PressureLayer are set to MISSING. 
 
-Parameters:
-    pressure: 1D NumPy array of pressure values (Pa)
-    temperature: 1D NumPy array of temperature values (K)
+Parameters 
+----------
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure values (Pa)
+temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of temperature values (K)
 
-Return:
+Returns 
+nwsspc.sharp.calc.layer.PressureLayer
     The PressureLayer containing the hail growth zone
+    )pbdoc");
+
+    m_params.def(
+        "dendritic_layer",
+        [](const_prof_arr_t pres, const_prof_arr_t tmpk) {
+            if ((pres.shape(0) != tmpk.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
+            return sharp::dendritic_layer(pres.data(), tmpk.data(),
+                                          pres.size());
+        },
+        nb::arg("pressure"), nb::arg("temperature"),
+        R"pbdoc(
+Search for and return the PressureLayer of the lowest altitude 
+dendritic growth zone. If none is found, the top and bottom of the 
+PressureLayer are set to MISSING. 
+
+Parameters 
+----------
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of pressure values (Pa)
+temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of temperature values (K)
+
+Returns 
+-------
+nwsspc.sharp.calc.layer.PressureLayer
+    The PressureLayer containing the dendritic growth zone
+    )pbdoc");
+
+    m_params.def("equilibrium_moisture_content",
+                 &sharp::equilibrium_moisture_content, nb::arg("temperature"),
+                 nb::arg("rel_humidity"),
+                 R"pbdoc(
+Compute the equilibrium moisture content for fuel 
+as in Simard (1968).
+
+Parameters
+----------
+temperature : float 
+    The air temperature (K)
+rel_humidity : float 
+    Relative Humidity (fraction)
+
+Returns 
+-------
+float 
+    Equilibrium Moisture Content (fraction)
+    )pbdoc");
+
+    m_params.def(
+        "equilibrium_moisture_content",
+        [](const_prof_arr_t temperature, const_prof_arr_t rel_humidity) {
+            auto tmpk = temperature.view();
+            auto relh = rel_humidity.view();
+            if ((tmpk.shape(0) != relh.shape(0))) {
+                throw nb::buffer_error(
+                    "temperature and rel_humidity must have the same size!");
+            }
+
+            float* emc_arr = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                emc_arr[k] =
+                    sharp::equilibrium_moisture_content(tmpk(k), relh(k));
+            }
+
+            nb::capsule owner(emc_arr,
+                              [](void* p) noexcept { delete[] (float*)p; });
+            return out_arr_t(emc_arr, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("temperature"), nb::arg("rel_humidity"),
+        R"pbdoc(
+Compute the equilibrium moisture content for fuel 
+as in Simard (1968).
+
+Parameters
+----------
+temperature : numpy.ndarray[dtype=float32] 
+    The air temperature (K)
+rel_humidity : numpy.ndarray[dtype=float32]
+    Relative Humidity (fraction)
+
+Returns 
+-------
+numpy.ndarray[dtype=float32]
+    Equilibrium Moisture Content (fraction)
+    )pbdoc");
+
+    m_params.def("fosberg_fire_index", &sharp::fosberg_fire_index,
+                 nb::arg("temperature"), nb::arg("rel_humidity"),
+                 nb::arg("wind_speed"),
+                 R"pbdoc(
+Compute the Fosberg Fire-Weather Index (FWWI) as in Fosberg (1978).
+
+Parameters 
+----------
+temperature : float 
+    The air temperature (K)
+rel_humidity : float 
+    The relative humidity (fraction)
+wind_speed : float 
+    Wind speed (m/s)
+
+Returns 
+-------
+float 
+    Fosberg Fire-Weather Index
+    )pbdoc");
+
+    m_params.def(
+        "fosberg_fire_index",
+        [](const_prof_arr_t temperature, const_prof_arr_t rel_humidity,
+           const_prof_arr_t wind_speed) {
+            auto tmpk = temperature.view();
+            auto relh = rel_humidity.view();
+            auto wspd = wind_speed.view();
+            if ((tmpk.shape(0) != relh.shape(0)) ||
+                (tmpk.shape(0) != wspd.shape(0))) {
+                throw nb::buffer_error(
+                    "temperature, rel_humidity, and wind_speed must have the "
+                    "same sizes!");
+            }
+
+            float* fwwi = new float[tmpk.shape(0)];
+            for (size_t k = 0; k < tmpk.shape(0); ++k) {
+                fwwi[k] = sharp::fosberg_fire_index(tmpk(k), relh(k), wspd(k));
+            }
+
+            nb::capsule owner(fwwi,
+                              [](void* p) noexcept { delete[] (float*)p; });
+            return out_arr_t(fwwi, {tmpk.shape(0)}, owner);
+        },
+        nb::arg("temperature"), nb::arg("rel_humidity"), nb::arg("wind_speed"),
+        R"pbdoc(
+Compute the Fosberg Fire-Weather Index (FWWI) as in Fosberg (1978).
+
+Parameters 
+----------
+temperature : numpy.ndarray[dtype=float32]
+    The air temperature (K)
+rel_humidity : numpy.ndarray[dtype=float32]
+    The relative humidity (fraction)
+wind_speed : numpy.ndarray[dtype=float32]
+    Wind speed (m/s)
+
+Returns 
+-------
+numpy.ndarray[dtype=float32]
+    Fosberg Fire-Weather Index
     )pbdoc");
 }
 

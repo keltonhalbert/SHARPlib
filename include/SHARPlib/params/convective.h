@@ -20,6 +20,9 @@
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
 
+#include <cstddef>
+#include <utility>
+
 namespace sharp {
 
 /**
@@ -197,6 +200,59 @@ template <typename Lifter>
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
  *
+ * \brief Compute the Corfidi upshear and downshear MCS motion vectors.
+ *
+ * Estimates mesoscale convective system (MCS) motion vectors for upshear
+ * and downshear propagating convective systems as in Corfidi et al. 2003.
+ * The method is based on observations that MCS motion is a function of
+ * 1) the advection of existing cells by the mean wind and
+ * 2) the propagation of new convection relative to existing storms.
+ *
+ * https://www.spc.noaa.gov/publications/corfidi/mcs2003.pdf
+ *
+ * \param   pressure    (Pa)
+ * \param   height      (meters)
+ * \param   u_wind      (m/s)
+ * \param   v_wind      (m/s)
+ * \param   N           (length of arrays)
+ *
+ * \return {upshear, downshear}
+ */
+[[nodiscard]] std::pair<WindComponents, WindComponents> mcs_motion_corfidi(
+    const float pressure[], const float height[], const float u_wind[],
+    const float v_wind[], const std::ptrdiff_t N);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Compute the Effective Bulk Wind Difference
+ *
+ * The effective bulk wind difference is the wind shear between
+ * the bottom height of the effective inflow layer, and 50% of
+ * the equilibrium level depth. This is analogous to the usage
+ * of 0-6 km wind shear, but allows more flexibility for elevated
+ * convection. Returns sharp::MISSING if the effective inflow layer
+ * or equilibrium level pressure are sharp::MISSING.
+ *
+ * \param   pressure                        (Pa)
+ * \param   height                          (meters)
+ * \param   u_wind                          (m/s)
+ * \param   v_wind                          (m/s)
+ * \param   N                               length of arrays
+ * \param   effective_inflow_lyr            {bottom, top}
+ * \param   equilibrium_level_pressure      (Pa)
+ *
+ * \return  Effective Bulk Wind Differce    (m/s)
+ */
+[[nodiscard]] WindComponents effective_bulk_wind_difference(
+    const float pressure[], const float hght[], const float u_wind[],
+    const float v_wind[], const std::ptrdiff_t N,
+    sharp::PressureLayer effective_inflow_lyr,
+    const float equilibrium_level_pressure);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
  * \brief Computes Entrainment CAPE using a previously lifted parcel.
  *
  * Computes Entrainment CAPE, or ECAPE, as described by Peters et al. 2023,
@@ -220,11 +276,89 @@ template <typename Lifter>
                                      const float u_wind[], const float v_wind[],
                                      const std::ptrdiff_t N, Parcel* pcl);
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediciton Center
+ *
+ * \brief Compute the Energy Helicity Index
+ *
+ * EHI is a composite parameter based on the premise that
+ * storm rotation should be maximized when CAPE is large
+ * and SRH is large. Typically, the layers used for helicity
+ * are either 0-1 km or 0-3 km.
+ *
+ * https://doi.org/10.1175/1520-0434(2003)18%3C530:RSATFP%3E2.0.CO;2
+ *
+ * \param cape      Convective Available Potential Energy (J/kg)
+ * \param helicity  Storm Relative Helicity (m^2/s^2)
+ *
+ * \return EHI  (unitless)
+ */
 [[nodiscard]] float energy_helicity_index(float cape, float helicity);
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediciton Center
+ *
+ * \brief Compute the Supercell Composite Parameter
+ *
+ * The supercell composite parameter is used to diagnose environments
+ * where supercells are favored. Requires computing most unstable
+ * CAPE, effective layer storm relative helicity, and effective
+ * bulk shear. Effective bulk shear is the vector difference between
+ * the winds at the bottom of the effective inflow layer, and 50% of
+ * the equilibrium level height. It is similar to the 0-6 km shear
+ * vector, but allows for elevated supercell thunderstorms.
+ *
+ * The left-moving supercell composite parameter can be computed by
+ * providing effective SRH calculated using the bunkers left-moving
+ * storm motion, and will return negative values.
+ *
+ * References:
+ * Thompson et al 2003:
+ * https://www.spc.noaa.gov/publications/thompson/ruc_waf.pdf
+ *
+ * Thompson et al 2007:
+ * https://www.spc.noaa.gov/publications/thompson/effective.pdf
+ *
+ * Thompson et al 2012:
+ * https://www.spc.noaa.gov/publications/thompson/waf-env.pdf
+ *
+ * \param mu_cape       Most Unstable CAPE (J/kg)
+ * \param eff_srh       Effective Layer SRH (m^2/s^2)
+ * \param eff_shear     Effective Bulk Shear (m/s)
+ *
+ * \return SCP
+ */
 [[nodiscard]] float supercell_composite_parameter(float mu_cape, float eff_srh,
                                                   float eff_shear);
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Compute the Significant Tornado Parameter
+ *
+ * The Significant Tornado Parameter is used to diagnose environments
+ * where tornadoes are favored. STP traditionally comes in two flavors:
+ * fixed-layer, and effective-layer. Fixed-layer STP expects surface-based
+ * CAPE, the surface-based LCL, 0-1 km storm-relative helicity, the
+ * 0-6 km bulk wind difference, and the surface-based CINH. For the
+ * effective inflow layer based STP, use 100mb mixed-layer CAPE,
+ * 100mb mixed-layer LCL height AGL, effective-layer srh, the
+ * effective layer bulk wind difference, and the 100mb mixed-layer
+ * CINH. NOTE: The effective bulk wind difference is the shear between
+ * the bottom of the effective inflow layer and 50% of the height of the
+ * equilibrium level of the most unstable parcel.
+ *
+ * References:
+ * Thompson et al 2012:
+ * https://www.spc.noaa.gov/publications/thompson/waf-env.pdf
+ *
+ * \param pcl                       a sharp::Parcel
+ * \param lcl_hght_agl              The      height of the LCL (meters AGL)
+ * \param storm_relative_helicity   Right-moving supercell SRH (m^2/s^2)
+ * \param bulk_wind_difference      (m/s)
+ *
+ * \return STP
+ */
 [[nodiscard]] float significant_tornado_parameter(Parcel pcl,
                                                   float lcl_hght_agl,
                                                   float storm_relative_helicity,
@@ -254,7 +388,7 @@ template <typename Lifter>
  * for significant hail, and values greater than 4 are considered
  * very high.
  *
- * \param   mu_pcl    precomputed Most Unstable Parcel
+ * \param   mu_pcl                  sharp::Parcel:most_unstable_parcel
  * \param   lapse_rate_700_500mb    (K/km)
  * \param   tmpk_500mb              (K)
  * \param   freezing_lvl_agl        (meters)
@@ -276,10 +410,10 @@ template <typename Lifter>
  * Given a sharp::PressureLayer to integrate over, compute the preciptable
  * water from the given pressure and mixing ratio arrays.
  *
- * \parameters  layer           (Pa)
- * \parameter   presssure       (Pa)
- * \parameter   mixing_ratio    (unitless)
- * \parameter   N               (length of arrays)
+ * \param   layer           (Pa)
+ * \param   pressure       (Pa)
+ * \param   mixing_ratio    (unitless)
+ * \param   N               (length of arrays)
  *
  * \return precipitable water (mm)
  */
@@ -299,6 +433,7 @@ template <typename Lifter>
  *
  * \param    pressure    (Pa)
  * \param    temperature (K)
+ * \param    N           (length of arrays)
  *
  * \return   The top and bottom of the hail growth zone (Pa)
  */

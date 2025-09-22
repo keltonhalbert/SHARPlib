@@ -18,6 +18,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 
 namespace sharp {
 
@@ -168,14 +169,14 @@ float relative_humidity(float pressure, float temperature, float dewpoint) {
     return vapor_pres / saturation_vapor_pres;
 }
 
-float virtual_temperature(float temperature, float qv, float ql, float qi) {
+float virtual_temperature(float temperature, float rv, float rl, float ri) {
 #ifndef NO_QC
-    if ((qv == MISSING) || (ql == MISSING) || (qi == MISSING) ||
+    if ((rv == MISSING) || (rl == MISSING) || (ri == MISSING) ||
         (temperature == MISSING)) {
         return MISSING;
     }
 #endif
-    return (temperature * ((1.0 + (qv / EPSILON)) / (1.0 + qv + ql + qi)));
+    return (temperature * ((1.0 + (rv / EPSILON)) / (1.0 + rv + rl + ri)));
 }
 
 float saturated_lift(float pressure, float theta_sat, float converge) {
@@ -214,7 +215,8 @@ float saturated_lift(float pressure, float theta_sat, float converge) {
     return t2 - eor;
 }
 
-float wetlift(float pressure, float temperature, float lifted_pressure) {
+float wetlift(float pressure, float temperature, float lifted_pressure,
+              float converge) {
 #ifndef NO_QC
     if ((temperature == MISSING) || (pressure == MISSING) ||
         (lifted_pressure == MISSING)) {
@@ -231,7 +233,7 @@ float wetlift(float pressure, float temperature, float lifted_pressure) {
     const float pcl_thetaw = pcl_theta - woth + wott;
     // get the temperature that crosses the moist adiabat at
     // this pressure level
-    return saturated_lift(lifted_pressure, pcl_thetaw);
+    return saturated_lift(lifted_pressure, pcl_thetaw, converge);
 }
 
 float _solve_cm1(float& pcl_pres_next, float& pcl_pi_next, float& pcl_t_next,
@@ -239,15 +241,16 @@ float _solve_cm1(float& pcl_pres_next, float& pcl_pi_next, float& pcl_t_next,
                  float pcl_pres_prev, float pcl_t_prev, float pcl_theta_prev,
                  float pcl_rv_prev, float pcl_rl_prev, float pcl_ri_prev,
                  float rv_total, bool ascending, bool ice = false,
-                 float converge = 0.0002f) {
+                 float converge = 0.0002f, const int max_iters = 100) {
     // first guess - use the theta of the parcel
     // before lifting, and update the first guess
     // accordingly
     float pcl_theta_last = pcl_theta_prev;
     float pcl_theta_next = pcl_theta_prev;
     bool not_converged = true;
+    int iter_count = 0;
 
-    while (not_converged) {
+    while ((not_converged) && (iter_count < max_iters)) {
         pcl_t_next = pcl_theta_last * pcl_pi_next;
 
         float fliq = 1.0;
@@ -295,6 +298,12 @@ float _solve_cm1(float& pcl_pres_next, float& pcl_pi_next, float& pcl_t_next,
         } else {
             not_converged = false;
         }
+        iter_count += 1;
+    }
+    if (iter_count >= max_iters) {
+        printf(
+            "WARNING: iterative solver failed to converge. "
+            "Returning best guess value.");
     }
     return pcl_theta_next;
 }
@@ -345,8 +354,6 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
             pcl_pres_next, pcl_pi_next, pcl_t_next, pcl_rv_next, pcl_rl_next,
             pcl_ri_next, pcl_pres_prev, pcl_t_prev, pcl_theta_prev, pcl_rv_prev,
             pcl_rl_prev, pcl_ri_prev, rv_total, ascending, ice, converge);
-        /*printf("%f %f\t%f\t%f %f\n", pcl_pres_prev, pcl_theta_prev,*/
-        /*       pcl_pres_next, pcl_rv_next, rv_total);*/
 
         if ((ma_type == adiabat::pseudo_liq) ||
             (ma_type == adiabat::pseudo_ice)) {
@@ -453,6 +460,7 @@ float lapse_rate(HeightLayer layer_agl, const float height[],
 
     // dT/dz, positive (definition of lapse rate), in km
     const float dz = layer_agl.top - layer_agl.bottom;
+    if (dz < 1e-6) return MISSING;
     return ((tmpc_u - tmpc_l) / dz) * -1000.0f;
 }
 

@@ -24,6 +24,7 @@ def load_parquet(filename):
     hght = snd_df["hght"].to_numpy().astype('float32')
     tmpk = snd_df["tmpc"].to_numpy().astype('float32')+273.15
     dwpk = snd_df["dwpc"].to_numpy().astype('float32')+273.15
+    relh = snd_df["relh"].to_numpy().astype('float32')
     wdir = snd_df["wdir"].to_numpy().astype('float32')
     wspd = snd_df["wspd"].to_numpy().astype('float32')
     uwin = snd_df["uwin"].to_numpy().astype('float32')
@@ -41,6 +42,7 @@ def load_parquet(filename):
     return {
         "pres": pres, "hght": hght,
         "tmpk": tmpk, "mixr": mixr,
+        "relh": relh,
         "vtmp": vtmp, "dwpk": dwpk,
         "wdir": wdir, "wspd": wspd,
         "uwin": uwin, "vwin": vwin
@@ -144,6 +146,49 @@ def test_bunkers_motion():
     assert (storm_mtn.v == pytest.approx(5.558156))
 
 
+def test_corfidi_vectors():
+    upshear, downshear = params.mcs_motion_corfidi(
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["uwin"],
+        snd_data["vwin"]
+    )
+
+    assert (upshear.u == pytest.approx(12.7017, abs=1e-3))
+    assert (upshear.v == pytest.approx(2.99329, abs=1e-3))
+    assert (downshear.u == pytest.approx(23.2054, abs=1e-3))
+    assert (downshear.v == pytest.approx(16.10519, abs=1e-3))
+
+
+def test_effective_bulk_wind():
+    lifter = parcel.lifter_cm1()
+    lifter.ma_type = thermo.adiabat.pseudo_liq
+    mupcl = parcel.Parcel()
+    eil = params.effective_inflow_layer(
+        lifter,
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["tmpk"],
+        snd_data["dwpk"],
+        snd_data["vtmp"],
+        mupcl=mupcl
+    )
+
+    ebwd_cmp = params.effective_bulk_wind_difference(
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["uwin"],
+        snd_data["vwin"],
+        eil,
+        mupcl.eql_pressure
+    )
+
+    ebwd = winds.vector_magnitude(ebwd_cmp.u, ebwd_cmp.v)
+    assert (ebwd_cmp.u == pytest.approx(14.6, abs=1e-3))
+    assert (ebwd_cmp.v == pytest.approx(13.321, abs=1e-3))
+    assert (ebwd == pytest.approx(19.764, abs=1e-3))
+
+
 def test_stp_scp_ship():
     # get the mixed-layer parcel
     mix_lyr = layer.PressureLayer(
@@ -191,26 +236,15 @@ def test_stp_scp_ship():
         snd_data["vwin"]
     )
 
-    # Get the effective bulk wind difference
-    eil_hght = layer.pressure_layer_to_height(
-        eil,
+    ebwd_cmp = params.effective_bulk_wind_difference(
         snd_data["pres"],
-        snd_data["hght"]
-    )
-    eql_hght = interp.interp_pressure(
-        mupcl.eql_pressure,
-        snd_data["pres"],
-        snd_data["hght"]
-    )
-    depth = (eql_hght - eil_hght.bottom)*0.5
-    ebwd_lyr = layer.HeightLayer(
-        eil_hght.bottom, float(eil_hght.bottom + depth))
-    ebwd_cmp = winds.wind_shear(
-        ebwd_lyr,
         snd_data["hght"],
         snd_data["uwin"],
-        snd_data["vwin"]
+        snd_data["vwin"],
+        eil,
+        mupcl.eql_pressure
     )
+
     ebwd = winds.vector_magnitude(ebwd_cmp.u, ebwd_cmp.v)
 
     # Get the LCL height in meters AGL
@@ -308,3 +342,19 @@ def test_dgz():
     dgz = params.dendritic_layer(snd_data["pres"], snd_data["tmpk"])
     assert (dgz.bottom == 49598)
     assert (dgz.top == 46032)
+
+
+def test_fwwi():
+    fwwi = params.fosberg_fire_index(
+        308,
+        0.00001,
+        13.5
+    )
+    assert (fwwi == 100.0)
+
+    tmpk = np.array([308, 308, 308], dtype='float32')
+    relh = np.array([0.00001, 0.00001, 0.00001], dtype='float32')
+    wspd = np.array([13.5, 13.5, 13.5], dtype='float32')
+
+    fwwi = params.fosberg_fire_index(tmpk, relh, wspd)
+    assert (fwwi == np.array([100.0, 100.0, 100.0], dtype='float32')).all()

@@ -277,7 +277,7 @@ enum class adiabat : int {
  * extremely cold temperatures/low pressures. If you do not want or need this
  * behavior, you can pass in something like sharp::THETA_REF_PRESSURE instead.
  *
- * \oaram   pressure    (Pa)
+ * \param   pressure    (Pa)
  * \param   temperature (K)
  * \param   dewpoint    (K)
  *
@@ -347,16 +347,19 @@ enum class adiabat : int {
  * This function relies on the Wobus Function ( sharp::wobf ), and it was shown
  * by Robert Davies-Jones (2007) that the Wobus function has a slight
  * dependence on pressure, which results in errors of up to 1.2 Kelvin
- * in the temperature of a lifted parcel.
+ * in the temperature of a lifted parcel. This function also takes an optional
+ * argument that defines the iterative convergence criteria for the solver
+ * (default: 0.001 K).
  *
  * \param    pressure              (Pa)
  * \param    temperature           (K)
  * \param    lifted_pressure       (Pa)
+ * \param    converge              (K)
  *
  * \return   lifted_temperature    (K)
  */
 [[nodiscard]] float wetlift(float pressure, float temperature,
-                            float lifted_pressure);
+                            float lifted_pressure, float converge = 0.001f);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -379,6 +382,9 @@ enum class adiabat : int {
  *  at the parcel's sharp::LPL, or the water vapor mixing ratio at the LCL
  *  (these are going to be the same value). Essentially, the total water vapor
  *  before condensation.
+ *
+ *  If the internal solver reaches 100 iterations without converging, it will
+ *  return the last computed value and print a warning.
  *
  * \param   pressure        (Pa)
  * \param   temperature     (K)

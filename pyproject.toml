@@ -1,5 +1,5 @@
 [build-system]
-requires = ["scikit-build-core", "nanobind>=2.0.0"]
+requires = ["scikit-build-core", "nanobind>=2.9.2"]
 build-backend = "scikit_build_core.build"
 
 [project]
@@ -69,9 +69,16 @@ build-verbosity = 1
 archs = ["auto64"]
 skip = ["pp*", "*i686", "*win32", "*musllinux*"]
 enable = []
+manylinux-x86_64-image = "manylinux_2_28"
+manylinux-aarch64-image = "manylinux_2_28"
 
 test-command = "pytest {project}/tests/python"
 test-requires = ["pytest", "pandas", "fastparquet"]
+
+[tool.basedpyright]
+reportMissingModuleSource = "none"
+reportUnknownVariableType = false 
+reportUnknownMemberType = "none"
 
 [tool.cibuildwheel.macos.environment]
 MACOSX_DEPLOYMENT_TARGET = "10.14"
