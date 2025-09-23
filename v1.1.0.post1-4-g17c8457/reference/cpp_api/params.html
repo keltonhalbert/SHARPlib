@@ -1,0 +1,993 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="dark">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>params &#8212; SHARPlib v1.1.0.post1-4-g17c8457 Manual</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=b3e8092d"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/cpp_api/params';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://keltonhalbert.github.io/SHARPlib/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.1.0.post1-4-g17c8457';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="parcel" href="parcel.html" />
+    <link rel="prev" title="layer" href="layer.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.0.post1-4-g17c8457" />
+    <meta name="docbuild:last-update" content="Sep 23, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="dark">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-dark" alt=""/>
+    <img src="../../_static/logo.png" class="logo__image only-light pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">SHARPlib</p>
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../faq.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/tree/main/examples/Python">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/releases">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Bluesky</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../faq.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/tree/main/examples/Python">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/releases">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Bluesky</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="constants.html">constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interp.html">interp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layer.html">layer</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parcel.html">parcel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermo.html">thermo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="winds.html">winds</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">C++ API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">params</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="params">
+<h1>params<a class="headerlink" href="#params" title="Link to this heading">#</a></h1>
+<section id="convective">
+<h2>Convective<a class="headerlink" href="#convective" title="Link to this heading">#</a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5sharp22effective_inflow_layerE13PressureLayerR6LifterA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel">
+<span id="_CPPv3I0EN5sharp22effective_inflow_layerER6LifterA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel"></span><span id="_CPPv2I0EN5sharp22effective_inflow_layerER6LifterA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Lifter</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacesharp_1a2e6b7cd4a3594a8f2c2050b0e4784cce"></span><a class="reference internal" href="layer.html#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">effective_inflow_layer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5sharp22effective_inflow_layerE13PressureLayerR6LifterA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel" title="sharp::effective_inflow_layer::Lifter"><span class="n"><span class="pre">Lifter</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lifter</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">virtemp_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pcl_vtmpk_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">buoy_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cape_thresh</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100.0</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cinh_thresh</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">250.0</span></span>, <a class="reference internal" href="parcel.html#_CPPv4N5sharp6ParcelE" title="sharp::Parcel"><span class="n"><span class="pre">Parcel</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">mupcl</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5sharp22effective_inflow_layerE13PressureLayerR6LifterA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the Effective Inflow Layer for a given atmospheric sounding. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Computes the Effective Inflow Layer, or the layer of the atmosphere believed to be the primary source of inflow for supercell thunderstorms. The Effective Inflow Layer, and its use in computing shear and storm relative helicity, is described by Thompson et al. 2007: <a class="reference external" href="https://www.spc.noaa.gov/publications/thompson/effective.pdf">https://www.spc.noaa.gov/publications/thompson/effective.pdf</a></p>
+<p>Standard/default values for cape_thresh and cinh_thresh have been experimentally determined to be cape_thresh = 100 J/kg and cinh_thresh = -250 J/kg. If a pointer to a parcel object is passed as the last arguments, the most ustanble parcel found during the EIL search will be returned to that pointer.</p>
+<p>All arrays are treated as inputs (and expected to be precomputed) except for the buoyancy array. It is more accurately meant to be an empty buffer array that can be used to hold buoyancy values during parcel lifting and integration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> – (parcel lifting functor) </p></li>
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>height</strong> – (meters) </p></li>
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>dewpoint</strong> – (K) </p></li>
+<li><p><strong>virtemp_arr</strong> – (K) </p></li>
+<li><p><strong>pcl_vtmpk_arr</strong> – (K) </p></li>
+<li><p><strong>buoy_arr</strong> – (m/s^2) </p></li>
+<li><p><strong>N</strong> – (length of arrays) </p></li>
+<li><p><strong>cape_thresh</strong> – (J/kg; default=100.0) </p></li>
+<li><p><strong>cinh_thresh</strong> – (J/kg; default=-250.0) </p></li>
+<li><p><strong>mupcl</strong> – (store the most unstable parcel; defualt=nullptr)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>{bottom, top} </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp22effective_inflow_layerERN5sharp12lifter_wobusEA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel">
+<span id="_CPPv3N5sharp22effective_inflow_layerERN5sharp12lifter_wobusEA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel"></span><span id="_CPPv2N5sharp22effective_inflow_layerERN5sharp12lifter_wobusEA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel"></span><span id="sharp::effective_inflow_layer__sharp::lifter_wobusR.floatCA.floatCA.floatCA.floatCA.floatCA.floatA.floatA.std::ptrdiff_tC.floatC.floatC.ParcelP"></span><span class="target" id="namespacesharp_1ad4acd4077bc73279a9af0011f3f09954"></span><a class="reference internal" href="layer.html#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">effective_inflow_layer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="parcel.html#_CPPv4N5sharp12lifter_wobusE" title="sharp::lifter_wobus"><span class="n"><span class="pre">lifter_wobus</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lifter</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">virtemp_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pcl_vtmpk_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">buoy_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cape_thresh</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cinh_thresh</span></span>, <a class="reference internal" href="parcel.html#_CPPv4N5sharp6ParcelE" title="sharp::Parcel"><span class="n"><span class="pre">Parcel</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">mupcl</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp22effective_inflow_layerERN5sharp12lifter_wobusEA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp22effective_inflow_layerERN5sharp10lifter_cm1EA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel">
+<span id="_CPPv3N5sharp22effective_inflow_layerERN5sharp10lifter_cm1EA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel"></span><span id="_CPPv2N5sharp22effective_inflow_layerERN5sharp10lifter_cm1EA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel"></span><span id="sharp::effective_inflow_layer__sharp::lifter_cm1R.floatCA.floatCA.floatCA.floatCA.floatCA.floatA.floatA.std::ptrdiff_tC.floatC.floatC.ParcelP"></span><span class="target" id="namespacesharp_1aa95eb7a4955df00fcb68b2cd624de2fc"></span><a class="reference internal" href="layer.html#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">effective_inflow_layer</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="parcel.html#_CPPv4N5sharp10lifter_cm1E" title="sharp::lifter_cm1"><span class="n"><span class="pre">lifter_cm1</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lifter</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">virtemp_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pcl_vtmpk_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">buoy_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cape_thresh</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cinh_thresh</span></span>, <a class="reference internal" href="parcel.html#_CPPv4N5sharp6ParcelE" title="sharp::Parcel"><span class="n"><span class="pre">Parcel</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">mupcl</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp22effective_inflow_layerERN5sharp10lifter_cm1EA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp20storm_motion_bunkersEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE11HeightLayer11HeightLayerKbKb">
+<span id="_CPPv3N5sharp20storm_motion_bunkersEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE11HeightLayer11HeightLayerKbKb"></span><span id="_CPPv2N5sharp20storm_motion_bunkersEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE11HeightLayer11HeightLayerKbKb"></span><span id="sharp::storm_motion_bunkers__floatCA.floatCA.floatCA.floatCA.std::ptrdiff_tC.HeightLayer.HeightLayer.bC.bC"></span><span class="target" id="namespacesharp_1a74a735636c932467b4d2ced544e0cb51"></span><a class="reference internal" href="winds.html#_CPPv4N5sharp14WindComponentsE" title="sharp::WindComponents"><span class="n"><span class="pre">WindComponents</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">storm_motion_bunkers</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">u_wind</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">v_wind</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <a class="reference internal" href="layer.html#_CPPv4N5sharp11HeightLayerE" title="sharp::HeightLayer"><span class="n"><span class="pre">HeightLayer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">mean_wind_layer_agl</span></span>, <a class="reference internal" href="layer.html#_CPPv4N5sharp11HeightLayerE" title="sharp::HeightLayer"><span class="n"><span class="pre">HeightLayer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">wind_shear_layer_agl</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">leftMover</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressureWeighted</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp20storm_motion_bunkersEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE11HeightLayer11HeightLayerKbKb" title="Link to this definition">#</a><br /></dt>
+<dd><p>Estimates supercell storm motion using the Bunkers et al. 2000 method. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Estimates supercell storm motion using the Bunkers et al. 2000 method described in the following paper: <a class="reference external" href="https://doi.org/10.1175/1520-0434(2000)015%3C0061:PSMUAN%3E2.0.CO;2">https://doi.org/10.1175/1520-0434(2000)015%3C0061:PSMUAN%3E2.0.CO;2</a></p>
+<p>This does not use any of the updated methods described by Bunkers et al. 2014, which uses Effective Inflow Layer metricks to get better estimates of storm motion, especially when considering elevated convection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>height</strong> – (meters) </p></li>
+<li><p><strong>u_wind</strong> – (m/s) </p></li>
+<li><p><strong>v_wind</strong> – (m/s) </p></li>
+<li><p><strong>N</strong> – (length of arrays) </p></li>
+<li><p><strong>mean_wind_layer_agl</strong> – {bottom, top} </p></li>
+<li><p><strong>wind_shear_layer_agl</strong> – {bottom, top} </p></li>
+<li><p><strong>leftMover</strong> – (default=false) </p></li>
+<li><p><strong>pressureWeighted</strong> – (default=false)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>{storm_u, storm_v} </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp20storm_motion_bunkersEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE13PressureLayerRK6ParcelKb">
+<span id="_CPPv3N5sharp20storm_motion_bunkersEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE13PressureLayerRK6ParcelKb"></span><span id="_CPPv2N5sharp20storm_motion_bunkersEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE13PressureLayerRK6ParcelKb"></span><span id="sharp::storm_motion_bunkers__floatCA.floatCA.floatCA.floatCA.std::ptrdiff_tC.PressureLayer.ParcelCR.bC"></span><span class="target" id="namespacesharp_1a31d937d833aa80555a0a78890c370f42"></span><a class="reference internal" href="winds.html#_CPPv4N5sharp14WindComponentsE" title="sharp::WindComponents"><span class="n"><span class="pre">WindComponents</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">storm_motion_bunkers</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">u_wind</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">v_wind</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <a class="reference internal" href="layer.html#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">eff_infl_lyr</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="parcel.html#_CPPv4N5sharp6ParcelE" title="sharp::Parcel"><span class="n"><span class="pre">Parcel</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">mupcl</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">leftMover</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp20storm_motion_bunkersEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE13PressureLayerRK6ParcelKb" title="Link to this definition">#</a><br /></dt>
+<dd><p>Estimates supercell storm motion by using the Bunkers et al. 2014 method. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Estimates supercell storm motion using the Bunkers et al. 2014 method described in the following paper: <a class="reference external" href="http://dx.doi.org/10.15191/nwajom.2014.0211">http://dx.doi.org/10.15191/nwajom.2014.0211</a></p>
+<p>This method is parcel based, using a mean-wind vector defined as the pressure-weighted mean wind between the Effective Inflow Layer surface (see <a class="reference internal" href="#namespacesharp_1a2e6b7cd4a3594a8f2c2050b0e4784cce"><span class="std std-ref">sharp::effective_inflow_layer</span></a>) and 65% of the depth between that surface and the most-unstable parcel’s Equilibrium Level. This method produces the same storm motion estimate for surface based supercells, and captures the motion of elevated supercells much better than the Bunkers 2000 method.</p>
+<p>The input parameters eff_infl_lyr and mupcl (effective inflow layer bounds and the most unstable parcel, respectively) are required to be be precomputed and passed to this routine. These are expensive operations that are presumed to be computed at some other point in the analysis pipeline, so just pass those variables here.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>height</strong> – (meters) </p></li>
+<li><p><strong>u_wind</strong> – (m/s) </p></li>
+<li><p><strong>v_wind</strong> – (m/s) </p></li>
+<li><p><strong>N</strong> – (length of arrays) </p></li>
+<li><p><strong>eff_infl_lyr</strong> – {bottom, top} </p></li>
+<li><p><strong>mupcl</strong> – (Precomputed parcel) </p></li>
+<li><p><strong>leftMover</strong> – (default=false)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>{storm_u, storm_v} </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp18mcs_motion_corfidiEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE">
+<span id="_CPPv3N5sharp18mcs_motion_corfidiEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp18mcs_motion_corfidiEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE"></span><span id="sharp::mcs_motion_corfidi__floatCA.floatCA.floatCA.floatCA.std::ptrdiff_tC"></span><span class="target" id="namespacesharp_1a46632c91185e36c020a3870f863fa698"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="winds.html#_CPPv4N5sharp14WindComponentsE" title="sharp::WindComponents"><span class="n"><span class="pre">WindComponents</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="winds.html#_CPPv4N5sharp14WindComponentsE" title="sharp::WindComponents"><span class="n"><span class="pre">WindComponents</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">mcs_motion_corfidi</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">u_wind</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">v_wind</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp18mcs_motion_corfidiEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the Corfidi upshear and downshear MCS motion vectors. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Estimates mesoscale convective system (MCS) motion vectors for upshear and downshear propagating convective systems as in Corfidi et al. 2003. The method is based on observations that MCS motion is a function of 1) the advection of existing cells by the mean wind and 2) the propagation of new convection relative to existing storms.</p>
+<p><a class="reference external" href="https://www.spc.noaa.gov/publications/corfidi/mcs2003.pdf">https://www.spc.noaa.gov/publications/corfidi/mcs2003.pdf</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>height</strong> – (meters) </p></li>
+<li><p><strong>u_wind</strong> – (m/s) </p></li>
+<li><p><strong>v_wind</strong> – (m/s) </p></li>
+<li><p><strong>N</strong> – (length of arrays)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>{upshear, downshear} </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp30effective_bulk_wind_differenceEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tEN5sharp13PressureLayerEKf">
+<span id="_CPPv3N5sharp30effective_bulk_wind_differenceEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tEN5sharp13PressureLayerEKf"></span><span id="_CPPv2N5sharp30effective_bulk_wind_differenceEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tEN5sharp13PressureLayerEKf"></span><span id="sharp::effective_bulk_wind_difference__floatCA.floatCA.floatCA.floatCA.std::ptrdiff_tC.sharp::PressureLayer.floatC"></span><span class="target" id="namespacesharp_1acb59c2557ae8c60ae5acff36694deba6"></span><a class="reference internal" href="winds.html#_CPPv4N5sharp14WindComponentsE" title="sharp::WindComponents"><span class="n"><span class="pre">WindComponents</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">effective_bulk_wind_difference</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hght</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">u_wind</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">v_wind</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="layer.html#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">effective_inflow_lyr</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">equilibrium_level_pressure</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp30effective_bulk_wind_differenceEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tEN5sharp13PressureLayerEKf" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the Effective Bulk Wind Difference. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>The effective bulk wind difference is the wind shear between the bottom height of the effective inflow layer, and 50% of the equilibrium level depth. This is analogous to the usage of 0-6 km wind shear, but allows more flexibility for elevated convection. Returns <a class="reference internal" href="constants.html#namespacesharp_1af2ffcc858ff03be6e2ae2fe2ee20040d"><span class="std std-ref">sharp::MISSING</span></a> if the effective inflow layer or equilibrium level pressure are <a class="reference internal" href="constants.html#namespacesharp_1af2ffcc858ff03be6e2ae2fe2ee20040d"><span class="std std-ref">sharp::MISSING</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>height</strong> – (meters) </p></li>
+<li><p><strong>u_wind</strong> – (m/s) </p></li>
+<li><p><strong>v_wind</strong> – (m/s) </p></li>
+<li><p><strong>N</strong> – length of arrays </p></li>
+<li><p><strong>effective_inflow_lyr</strong> – {bottom, top} </p></li>
+<li><p><strong>equilibrium_level_pressure</strong> – (Pa)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Effective Bulk Wind Differce (m/s) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp21energy_helicity_indexEff">
+<span id="_CPPv3N5sharp21energy_helicity_indexEff"></span><span id="_CPPv2N5sharp21energy_helicity_indexEff"></span><span id="sharp::energy_helicity_index__float.float"></span><span class="target" id="namespacesharp_1ab89a7e3555a52f0fd9f4086d5aba7037"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">energy_helicity_index</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cape</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">helicity</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp21energy_helicity_indexEff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the Energy Helicity Index. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediciton Center</p>
+</dd>
+</dl>
+</p>
+<p>EHI is a composite parameter based on the premise that storm rotation should be maximized when CAPE is large and SRH is large. Typically, the layers used for helicity are either 0-1 km or 0-3 km.</p>
+<p><a class="reference external" href="https://doi.org/10.1175/1520-0434(2003)18%3C530:RSATFP%3E2.0.CO;2">https://doi.org/10.1175/1520-0434(2003)18%3C530:RSATFP%3E2.0.CO;2</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cape</strong> – Convective Available Potential Energy (J/kg) </p></li>
+<li><p><strong>helicity</strong> – Storm Relative Helicity (m^2/s^2)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>EHI (unitless) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp29supercell_composite_parameterEfff">
+<span id="_CPPv3N5sharp29supercell_composite_parameterEfff"></span><span id="_CPPv2N5sharp29supercell_composite_parameterEfff"></span><span id="sharp::supercell_composite_parameter__float.float.float"></span><span class="target" id="namespacesharp_1a7d1cb8e1918ad656aceef6a512151483"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">supercell_composite_parameter</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mu_cape</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eff_srh</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">eff_shear</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp29supercell_composite_parameterEfff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the Supercell Composite Parameter. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediciton Center</p>
+</dd>
+</dl>
+</p>
+<p>The supercell composite parameter is used to diagnose environments where supercells are favored. Requires computing most unstable CAPE, effective layer storm relative helicity, and effective bulk shear. Effective bulk shear is the vector difference between the winds at the bottom of the effective inflow layer, and 50% of the equilibrium level height. It is similar to the 0-6 km shear vector, but allows for elevated supercell thunderstorms.</p>
+<p>The left-moving supercell composite parameter can be computed by providing effective SRH calculated using the bunkers left-moving storm motion, and will return negative values.</p>
+<p>References: Thompson et al 2003: <a class="reference external" href="https://www.spc.noaa.gov/publications/thompson/ruc_waf.pdf">https://www.spc.noaa.gov/publications/thompson/ruc_waf.pdf</a></p>
+<p>Thompson et al 2007: <a class="reference external" href="https://www.spc.noaa.gov/publications/thompson/effective.pdf">https://www.spc.noaa.gov/publications/thompson/effective.pdf</a></p>
+<p>Thompson et al 2012: <a class="reference external" href="https://www.spc.noaa.gov/publications/thompson/waf-env.pdf">https://www.spc.noaa.gov/publications/thompson/waf-env.pdf</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mu_cape</strong> – Most Unstable CAPE (J/kg) </p></li>
+<li><p><strong>eff_srh</strong> – Effective Layer SRH (m^2/s^2) </p></li>
+<li><p><strong>eff_shear</strong> – Effective Bulk Shear (m/s)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>SCP </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp29significant_tornado_parameterE6Parcelfff">
+<span id="_CPPv3N5sharp29significant_tornado_parameterE6Parcelfff"></span><span id="_CPPv2N5sharp29significant_tornado_parameterE6Parcelfff"></span><span id="sharp::significant_tornado_parameter__Parcel.float.float.float"></span><span class="target" id="namespacesharp_1a6eeef5c5c9f1cbe1736996eaf8fe9ae5"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">significant_tornado_parameter</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="parcel.html#_CPPv4N5sharp6ParcelE" title="sharp::Parcel"><span class="n"><span class="pre">Parcel</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">pcl</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lcl_hght_agl</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">storm_relative_helicity</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bulk_wind_difference</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp29significant_tornado_parameterE6Parcelfff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the Significant Tornado Parameter. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>The Significant Tornado Parameter is used to diagnose environments where tornadoes are favored. STP traditionally comes in two flavors: fixed-layer, and effective-layer. Fixed-layer STP expects surface-based CAPE, the surface-based LCL, 0-1 km storm-relative helicity, the 0-6 km bulk wind difference, and the surface-based CINH. For the effective inflow layer based STP, use 100mb mixed-layer CAPE, 100mb mixed-layer LCL height AGL, effective-layer srh, the effective layer bulk wind difference, and the 100mb mixed-layer CINH. NOTE: The effective bulk wind difference is the shear between the bottom of the effective inflow layer and 50% of the height of the equilibrium level of the most unstable parcel.</p>
+<p>References: Thompson et al 2012: <a class="reference external" href="https://www.spc.noaa.gov/publications/thompson/waf-env.pdf">https://www.spc.noaa.gov/publications/thompson/waf-env.pdf</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pcl</strong> – a <a class="reference internal" href="parcel.html#structsharp_1_1Parcel"><span class="std std-ref">sharp::Parcel</span></a></p></li>
+<li><p><strong>lcl_hght_agl</strong> – The height of the LCL (meters AGL) </p></li>
+<li><p><strong>storm_relative_helicity</strong> – Right-moving supercell SRH (m^2/s^2) </p></li>
+<li><p><strong>bulk_wind_difference</strong> – (m/s)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>STP </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp26significant_hail_parameterERKN5sharp6ParcelEffff">
+<span id="_CPPv3N5sharp26significant_hail_parameterERKN5sharp6ParcelEffff"></span><span id="_CPPv2N5sharp26significant_hail_parameterERKN5sharp6ParcelEffff"></span><span id="sharp::significant_hail_parameter__sharp::ParcelCR.float.float.float.float"></span><span class="target" id="namespacesharp_1a2cc62883642729e449cee8a013845c52"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">significant_hail_parameter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="parcel.html#_CPPv4N5sharp6ParcelE" title="sharp::Parcel"><span class="n"><span class="pre">Parcel</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">mu_pcl</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lapse_rate_700_500mb</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tmpk_500mb</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">freezing_lvl_agl</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">shear_0_6km</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp26significant_hail_parameterERKN5sharp6ParcelEffff" title="Link to this definition">#</a><br /></dt>
+<dd><p>compute the Significant Hail Parameter </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p><p>Compute the Significant Hail Parameter, which was developed to delineate between significant (&gt;=2” diameter) and non-significant</p>
+<p>(&lt;2” diameter) hail environments.</p>
+</p>
+<p>The 0-6 km shear is confined to a range of 7-27 m/s, mixing ratio is confined to a range of 11-13.6 g/kg, and the 500mb temperature maximum is capped at -5.5C.</p>
+<p>After an initial calculation of SHIP, it undergoes the following modifications: 1) if MUCAPE &lt; 1300 J/kg, SHIP = SHIP * (MUCAPE/1300) 2) if 700-500 mb lapse rate &lt; 5.8 C/km, SHIP = SHIP * (lr75/5.8) 3) if the freezing level &lt; 2400 m AGL, SHIP = SHIP * (fzl/2400)</p>
+<p>It is important to note the SHIP is NOT a forecast hail size. Values of SHIP greater than 1 indicate a favorable environment for significant hail, and values greater than 4 are considered very high.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mu_pcl</strong> – <a class="reference internal" href="parcel.html#structsharp_1_1Parcel"><span class="std std-ref">sharp::Parcel</span></a>:most_unstable_parcel </p></li>
+<li><p><strong>lapse_rate_700_500mb</strong> – (K/km) </p></li>
+<li><p><strong>tmpk_500mb</strong> – (K) </p></li>
+<li><p><strong>freezing_lvl_agl</strong> – (meters) </p></li>
+<li><p><strong>shear_0_6km</strong> – (m/s)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Significant Hail Parameter </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp17hail_growth_layerEA_KfA_KfKNSt9ptrdiff_tE">
+<span id="_CPPv3N5sharp17hail_growth_layerEA_KfA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp17hail_growth_layerEA_KfA_KfKNSt9ptrdiff_tE"></span><span id="sharp::hail_growth_layer__floatCA.floatCA.std::ptrdiff_tC"></span><span class="target" id="namespacesharp_1aa20009e7c666c469ae2ee0e4febb5226"></span><a class="reference internal" href="layer.html#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">hail_growth_layer</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp17hail_growth_layerEA_KfA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Get the layer encompassing the lowest hail growth zone (-10 to -30 C) </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Search for and return the sharp::PressuerLayer of the lowest altitude hail growth zone. If none is found, the top and bottom pressure levels are set to <a class="reference internal" href="constants.html#namespacesharp_1af2ffcc858ff03be6e2ae2fe2ee20040d"><span class="std std-ref">sharp::MISSING</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>N</strong> – (length of arrays)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The top and bottom of the hail growth zone (Pa) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp18precipitable_waterE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE">
+<span id="_CPPv3N5sharp18precipitable_waterE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp18precipitable_waterE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE"></span><span id="sharp::precipitable_water__PressureLayer.floatCA.floatCA.std::ptrdiff_tC"></span><span class="target" id="namespacesharp_1af910931fdd9e0fe7d63ba7446743e354"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">precipitable_water</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="layer.html#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">layer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mixing_ratio</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp18precipitable_waterE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the precipitable water vapor content over a layer. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Given a <a class="reference internal" href="layer.html#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> to integrate over, compute the preciptable water from the given pressure and mixing ratio arrays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> – (Pa) </p></li>
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>mixing_ratio</strong> – (unitless) </p></li>
+<li><p><strong>N</strong> – (length of arrays)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>precipitable water (mm) </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="fire">
+<h2>Fire<a class="headerlink" href="#fire" title="Link to this heading">#</a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp28equilibrium_moisture_contentEff">
+<span id="_CPPv3N5sharp28equilibrium_moisture_contentEff"></span><span id="_CPPv2N5sharp28equilibrium_moisture_contentEff"></span><span id="sharp::equilibrium_moisture_content__float.float"></span><span class="target" id="namespacesharp_1adedbd405d38d761f6841a0074fab67da"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">equilibrium_moisture_content</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rel_humidity</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp28equilibrium_moisture_contentEff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the equilibrium moisture content for fuel. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halber - NSW Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Compute the equilibrium moisture content for fuel as in Simard (1968).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>rel_humidity</strong> – (fraction)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>EMC (fraction) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp18fosberg_fire_indexEfff">
+<span id="_CPPv3N5sharp18fosberg_fire_indexEfff"></span><span id="_CPPv2N5sharp18fosberg_fire_indexEfff"></span><span id="sharp::fosberg_fire_index__float.float.float"></span><span class="target" id="namespacesharp_1a8c49aa0308947db413abf101a3dc5fae"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">fosberg_fire_index</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rel_humidity</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wind_speed</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp18fosberg_fire_indexEfff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the Fosberg fire-weather index. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Compute the Fosberg Fire-Weather Index (FWWI) as in Fosberg (1978).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>rel_humidity</strong> – (fraction, unitless) </p></li>
+<li><p><strong>wind_speed</strong> – (m/s)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Fosberg Fire-Weather Index </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="winter">
+<h2>Winter<a class="headerlink" href="#winter" title="Link to this heading">#</a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp15dendritic_layerEA_KfA_KfKNSt9ptrdiff_tE">
+<span id="_CPPv3N5sharp15dendritic_layerEA_KfA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp15dendritic_layerEA_KfA_KfKNSt9ptrdiff_tE"></span><span id="sharp::dendritic_layer__floatCA.floatCA.std::ptrdiff_tC"></span><span class="target" id="namespacesharp_1ae179ed56eaa16f22b4bf3583c0c4d5c2"></span><a class="reference internal" href="layer.html#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">dendritic_layer</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp15dendritic_layerEA_KfA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Get the layer encompassing the lowest dendritic growth zone (-12 to -17 C) </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Search for and return the sharp::PressuerLayer of the lowest altitude dendritic growth zone. If none is found, the top and bottom pressure levels are set to <a class="reference internal" href="constants.html#namespacesharp_1af2ffcc858ff03be6e2ae2fe2ee20040d"><span class="std std-ref">sharp::MISSING</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>N</strong> – (length of arrays)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The top and bottom of the dendritic growth zone (Pa) </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="layer.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">layer</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="parcel.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">parcel</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#convective">Convective</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN5sharp22effective_inflow_layerE13PressureLayerR6LifterA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel"><code class="docutils literal notranslate"><span class="pre">effective_inflow_layer()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp22effective_inflow_layerERN5sharp12lifter_wobusEA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel"><code class="docutils literal notranslate"><span class="pre">effective_inflow_layer()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp22effective_inflow_layerERN5sharp10lifter_cm1EA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel"><code class="docutils literal notranslate"><span class="pre">effective_inflow_layer()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp20storm_motion_bunkersEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE11HeightLayer11HeightLayerKbKb"><code class="docutils literal notranslate"><span class="pre">storm_motion_bunkers()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp20storm_motion_bunkersEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE13PressureLayerRK6ParcelKb"><code class="docutils literal notranslate"><span class="pre">storm_motion_bunkers()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp18mcs_motion_corfidiEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">mcs_motion_corfidi()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp30effective_bulk_wind_differenceEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tEN5sharp13PressureLayerEKf"><code class="docutils literal notranslate"><span class="pre">effective_bulk_wind_difference()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp21energy_helicity_indexEff"><code class="docutils literal notranslate"><span class="pre">energy_helicity_index()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp29supercell_composite_parameterEfff"><code class="docutils literal notranslate"><span class="pre">supercell_composite_parameter()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp29significant_tornado_parameterE6Parcelfff"><code class="docutils literal notranslate"><span class="pre">significant_tornado_parameter()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp26significant_hail_parameterERKN5sharp6ParcelEffff"><code class="docutils literal notranslate"><span class="pre">significant_hail_parameter()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp17hail_growth_layerEA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">hail_growth_layer()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp18precipitable_waterE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">precipitable_water()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fire">Fire</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp28equilibrium_moisture_contentEff"><code class="docutils literal notranslate"><span class="pre">equilibrium_moisture_content()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp18fosberg_fire_indexEfff"><code class="docutils literal notranslate"><span class="pre">fosberg_fire_index()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#winter">Winter</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp15dendritic_layerEA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">dendritic_layer()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2025, NOAA/NWS/NCEP Storm Prediction Center.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

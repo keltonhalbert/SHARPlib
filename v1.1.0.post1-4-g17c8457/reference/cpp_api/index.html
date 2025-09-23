@@ -1,0 +1,696 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="dark">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>C++ API &#8212; SHARPlib v1.1.0.post1-4-g17c8457 Manual</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=b3e8092d"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/cpp_api/index';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://keltonhalbert.github.io/SHARPlib/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.1.0.post1-4-g17c8457';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="constants" href="constants.html" />
+    <link rel="prev" title="winds" href="../python_api/winds.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.0.post1-4-g17c8457" />
+    <meta name="docbuild:last-update" content="Sep 23, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="dark">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-dark" alt=""/>
+    <img src="../../_static/logo.png" class="logo__image only-light pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">SHARPlib</p>
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../faq.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/tree/main/examples/Python">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/releases">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Bluesky</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../faq.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/tree/main/examples/Python">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/releases">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Bluesky</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="constants.html">constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interp.html">interp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layer.html">layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parcel.html">parcel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermo.html">thermo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="winds.html">winds</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">C++ API</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="c-api">
+<h1>C++ API<a class="headerlink" href="#c-api" title="Link to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">constants</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="interp.html">interp</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="interp.html#_CPPv4N5sharp15interp_pressureEKfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">interp_pressure()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="interp.html#_CPPv4N5sharp13interp_heightEKfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">interp_height()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="interp.html#_CPPv4N5sharp19find_first_pressureEKfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">find_first_pressure()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="interp.html#_CPPv4N5sharp17find_first_heightEKfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">find_first_height()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="layer.html">layer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="layer.html#layer-definitions">Layer Definitions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="layer.html#_CPPv4N5sharp13PressureLayerE"><code class="docutils literal notranslate"><span class="pre">sharp::PressureLayer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="layer.html#_CPPv4N5sharp11HeightLayerE"><code class="docutils literal notranslate"><span class="pre">sharp::HeightLayer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="layer.html#_CPPv4N5sharp10LayerIndexE"><code class="docutils literal notranslate"><span class="pre">sharp::LayerIndex</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="layer.html#layer-conversions">Layer Conversions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="layer.html#_CPPv4N5sharp24pressure_layer_to_heightE13PressureLayerA_KfA_KfKNSt9ptrdiff_tEKb"><code class="docutils literal notranslate"><span class="pre">pressure_layer_to_height()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="layer.html#_CPPv4N5sharp24height_layer_to_pressureE11HeightLayerA_KfA_KfKNSt9ptrdiff_tEKb"><code class="docutils literal notranslate"><span class="pre">height_layer_to_pressure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="layer.html#_CPPv4N5sharp15get_layer_indexER13PressureLayerA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">get_layer_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="layer.html#_CPPv4N5sharp15get_layer_indexER11HeightLayerA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">get_layer_index()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="layer.html#layer-calculations">Layer Calculations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="layer.html#_CPPv4I0EN5sharp9layer_minEf1LA_KfA_KfKNSt9ptrdiff_tEPf"><code class="docutils literal notranslate"><span class="pre">layer_min()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="layer.html#_CPPv4I0EN5sharp9layer_maxEf1LA_KfA_KfKNSt9ptrdiff_tEPf"><code class="docutils literal notranslate"><span class="pre">layer_max()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="layer.html#_CPPv4N5sharp10layer_meanE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">layer_mean()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="layer.html#_CPPv4N5sharp10layer_meanE11HeightLayerA_KfA_KfA_KfKNSt9ptrdiff_tEKb"><code class="docutils literal notranslate"><span class="pre">layer_mean()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="layer.html#_CPPv4I0EN5sharp21integrate_layer_trapzEf1LA_KfA_KfKNSt9ptrdiff_tEKiKb"><code class="docutils literal notranslate"><span class="pre">integrate_layer_trapz()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="params.html">params</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="params.html#convective">Convective</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="params.html#_CPPv4I0EN5sharp22effective_inflow_layerE13PressureLayerR6LifterA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel"><code class="docutils literal notranslate"><span class="pre">effective_inflow_layer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="params.html#_CPPv4N5sharp22effective_inflow_layerERN5sharp12lifter_wobusEA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel"><code class="docutils literal notranslate"><span class="pre">effective_inflow_layer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="params.html#_CPPv4N5sharp22effective_inflow_layerERN5sharp10lifter_cm1EA_KfA_KfA_KfA_KfA_KfA_fA_fKNSt9ptrdiff_tEKfKfP6Parcel"><code class="docutils literal notranslate"><span class="pre">effective_inflow_layer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="params.html#_CPPv4N5sharp20storm_motion_bunkersEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE11HeightLayer11HeightLayerKbKb"><code class="docutils literal notranslate"><span class="pre">storm_motion_bunkers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="params.html#_CPPv4N5sharp20storm_motion_bunkersEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE13PressureLayerRK6ParcelKb"><code class="docutils literal notranslate"><span class="pre">storm_motion_bunkers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="params.html#_CPPv4N5sharp18mcs_motion_corfidiEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">mcs_motion_corfidi()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="params.html#_CPPv4N5sharp30effective_bulk_wind_differenceEA_KfA_KfA_KfA_KfKNSt9ptrdiff_tEN5sharp13PressureLayerEKf"><code class="docutils literal notranslate"><span class="pre">effective_bulk_wind_difference()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="params.html#_CPPv4N5sharp21energy_helicity_indexEff"><code class="docutils literal notranslate"><span class="pre">energy_helicity_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="params.html#_CPPv4N5sharp29supercell_composite_parameterEfff"><code class="docutils literal notranslate"><span class="pre">supercell_composite_parameter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="params.html#_CPPv4N5sharp29significant_tornado_parameterE6Parcelfff"><code class="docutils literal notranslate"><span class="pre">significant_tornado_parameter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="params.html#_CPPv4N5sharp26significant_hail_parameterERKN5sharp6ParcelEffff"><code class="docutils literal notranslate"><span class="pre">significant_hail_parameter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="params.html#_CPPv4N5sharp17hail_growth_layerEA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">hail_growth_layer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="params.html#_CPPv4N5sharp18precipitable_waterE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">precipitable_water()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="params.html#fire">Fire</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="params.html#_CPPv4N5sharp28equilibrium_moisture_contentEff"><code class="docutils literal notranslate"><span class="pre">equilibrium_moisture_content()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="params.html#_CPPv4N5sharp18fosberg_fire_indexEfff"><code class="docutils literal notranslate"><span class="pre">fosberg_fire_index()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="params.html#winter">Winter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="params.html#_CPPv4N5sharp15dendritic_layerEA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">dendritic_layer()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="parcel.html">parcel</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="parcel.html#parcel-lifters">Parcel Lifters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="parcel.html#_CPPv4N5sharp12lifter_wobusE"><code class="docutils literal notranslate"><span class="pre">sharp::lifter_wobus</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="parcel.html#_CPPv4N5sharp10lifter_cm1E"><code class="docutils literal notranslate"><span class="pre">sharp::lifter_cm1</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="parcel.html#parcels">Parcels</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="parcel.html#_CPPv4N5sharp3LPLE"><code class="docutils literal notranslate"><span class="pre">LPL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="parcel.html#_CPPv4N5sharp6ParcelE"><code class="docutils literal notranslate"><span class="pre">sharp::Parcel</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="parcel.html#_CPPv4N5sharp15DowndraftParcelE"><code class="docutils literal notranslate"><span class="pre">sharp::DowndraftParcel</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="thermo.html">thermo</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="thermo.html#dry-variables">Dry Variables</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp5thetaEfff"><code class="docutils literal notranslate"><span class="pre">theta()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp11theta_levelEff"><code class="docutils literal notranslate"><span class="pre">theta_level()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp10lapse_rateE11HeightLayerA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">lapse_rate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp10lapse_rateE13PressureLayerA_KfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">lapse_rate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp14lapse_rate_maxE11HeightLayerKfA_KfA_KfKNSt9ptrdiff_tEP11HeightLayer"><code class="docutils literal notranslate"><span class="pre">lapse_rate_max()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp14lapse_rate_maxE13PressureLayerKfA_KfA_KfA_KfKNSt9ptrdiff_tEP13PressureLayer"><code class="docutils literal notranslate"><span class="pre">lapse_rate_max()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="thermo.html#dry-ascent">Dry Ascent</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp7dryliftEfffRfRf"><code class="docutils literal notranslate"><span class="pre">drylift()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp15lcl_temperatureEff"><code class="docutils literal notranslate"><span class="pre">lcl_temperature()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="thermo.html#moist-variables">Moist Variables</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp8mixratioEf"><code class="docutils literal notranslate"><span class="pre">mixratio()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp8mixratioEff"><code class="docutils literal notranslate"><span class="pre">mixratio()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp12mixratio_iceEff"><code class="docutils literal notranslate"><span class="pre">mixratio_ice()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp14vapor_pressureEff"><code class="docutils literal notranslate"><span class="pre">vapor_pressure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp18vapor_pressure_iceEff"><code class="docutils literal notranslate"><span class="pre">vapor_pressure_ice()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp17specific_humidityEf"><code class="docutils literal notranslate"><span class="pre">specific_humidity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp17relative_humidityEfff"><code class="docutils literal notranslate"><span class="pre">relative_humidity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp23temperature_at_mixratioEff"><code class="docutils literal notranslate"><span class="pre">temperature_at_mixratio()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp19virtual_temperatureEffff"><code class="docutils literal notranslate"><span class="pre">virtual_temperature()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp8buoyancyEKfKf"><code class="docutils literal notranslate"><span class="pre">buoyancy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp8buoyancyEA_KfA_KfA_fNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">buoyancy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp6thetaeEfff"><code class="docutils literal notranslate"><span class="pre">thetae()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4I0EN5sharp7wetbulbEf3Lftfff"><code class="docutils literal notranslate"><span class="pre">wetbulb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp7wetbulbE12lifter_wobusfff"><code class="docutils literal notranslate"><span class="pre">wetbulb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp7wetbulbE10lifter_cm1fff"><code class="docutils literal notranslate"><span class="pre">wetbulb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4I0EN5sharp13theta_wetbulbEf3Lftfff"><code class="docutils literal notranslate"><span class="pre">theta_wetbulb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp13theta_wetbulbE12lifter_wobusfff"><code class="docutils literal notranslate"><span class="pre">theta_wetbulb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp13theta_wetbulbE10lifter_cm1fff"><code class="docutils literal notranslate"><span class="pre">theta_wetbulb()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="thermo.html#moist-ascent">Moist Ascent</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp7adiabatE"><code class="docutils literal notranslate"><span class="pre">adiabat</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp4wobfEf"><code class="docutils literal notranslate"><span class="pre">wobf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp7wetliftEffff"><code class="docutils literal notranslate"><span class="pre">wetlift()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp14saturated_liftEfff"><code class="docutils literal notranslate"><span class="pre">saturated_lift()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="thermo.html#_CPPv4N5sharp17moist_adiabat_cm1EfffRfRfRfRfff7adiabat"><code class="docutils literal notranslate"><span class="pre">moist_adiabat_cm1()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="winds.html">winds</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="winds.html#vectors-and-components">Vectors and Components</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="winds.html#_CPPv4N5sharp10WindVectorE"><code class="docutils literal notranslate"><span class="pre">sharp::WindVector</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="winds.html#_CPPv4N5sharp14WindComponentsE"><code class="docutils literal notranslate"><span class="pre">sharp::WindComponents</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="winds.html#_CPPv4N5sharp20components_to_vectorE14WindComponents"><code class="docutils literal notranslate"><span class="pre">components_to_vector()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="winds.html#_CPPv4N5sharp20components_to_vectorEff"><code class="docutils literal notranslate"><span class="pre">components_to_vector()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="winds.html#_CPPv4N5sharp20vector_to_componentsE10WindVector"><code class="docutils literal notranslate"><span class="pre">vector_to_components()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="winds.html#_CPPv4N5sharp20vector_to_componentsEff"><code class="docutils literal notranslate"><span class="pre">vector_to_components()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="winds.html#_CPPv4N5sharp16vector_magnitudeEff"><code class="docutils literal notranslate"><span class="pre">vector_magnitude()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="winds.html#_CPPv4N5sharp24vector_magnitude_preciseEff"><code class="docutils literal notranslate"><span class="pre">vector_magnitude_precise()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="winds.html#_CPPv4N5sharp12vector_angleEff"><code class="docutils literal notranslate"><span class="pre">vector_angle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="winds.html#_CPPv4N5sharp11u_componentEff"><code class="docutils literal notranslate"><span class="pre">u_component()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="winds.html#_CPPv4N5sharp11v_componentEff"><code class="docutils literal notranslate"><span class="pre">v_component()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="winds.html#kinematic-variables">Kinematic Variables</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="winds.html#_CPPv4I0EN5sharp8helicityEf1L14WindComponentsA_KfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">helicity()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="winds.html#_CPPv4I0EN5sharp10wind_shearE14WindComponents1LA_KfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">wind_shear()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="winds.html#_CPPv4N5sharp9mean_windE13PressureLayerA_KfA_KfA_KfKNSt9ptrdiff_tEKb"><code class="docutils literal notranslate"><span class="pre">mean_wind()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../python_api/winds.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">winds</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="constants.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">constants</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2025, NOAA/NWS/NCEP Storm Prediction Center.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
