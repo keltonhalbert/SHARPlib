@@ -47,9 +47,9 @@ if(NOT DEFINED ENV{CONDA_BUILD})
             parcel.pyi
             thermo.pyi
             winds.pyi
-        OUTPUT_PATH "${CMAKE_SOURCE_DIR}/nwsspc/sharp"
+        OUTPUT_PATH "${CMAKE_SOURCE_DIR}/src/nanobind/nwsspc/sharp"
         PYTHON_PATH "$<TARGET_FILE_DIR:calc>/../../"
-        MARKER_FILE "${CMAKE_SOURCE_DIR}/nwsspc/sharp/py.typed"
+        MARKER_FILE "${CMAKE_SOURCE_DIR}/src/nanobind/nwsspc/sharp/py.typed"
         DEPENDS calc
     )
 endif()
@@ -57,7 +57,7 @@ endif()
 install(TARGETS calc DESTINATION nwsspc/sharp)
 
 install(
-    DIRECTORY "${CMAKE_SOURCE_DIR}/nwsspc/sharp/"
+    DIRECTORY "${CMAKE_SOURCE_DIR}/src/nanobind/nwsspc/sharp/"
     DESTINATION "nwsspc/sharp"
     FILES_MATCHING
         PATTERN "*.pyi"
