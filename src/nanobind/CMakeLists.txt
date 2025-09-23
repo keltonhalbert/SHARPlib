@@ -34,28 +34,30 @@ set_target_properties(calc PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/nwsspc/sharp"
 )
 
-nanobind_add_stub(
-    calc_stub
-    RECURSIVE
-    MODULE nwsspc.sharp.calc
-    OUTPUT 
-        __init__.pyi 
-        interp.pyi 
-        layer.pyi
-        params.pyi 
-        parcel.pyi
-        thermo.pyi
-        winds.pyi
-    OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}/nwsspc/sharp"
-    PYTHON_PATH "$<TARGET_FILE_DIR:calc>/../../"
-    MARKER_FILE "${CMAKE_CURRENT_BINARY_DIR}/nwsspc/sharp/py.typed"
-    DEPENDS calc
-)
+if(NOT DEFINED ENV{CONDA_BUILD})
+    nanobind_add_stub(
+        calc_stub
+        RECURSIVE
+        MODULE nwsspc.sharp.calc
+        OUTPUT 
+            __init__.pyi 
+            interp.pyi 
+            layer.pyi
+            params.pyi 
+            parcel.pyi
+            thermo.pyi
+            winds.pyi
+        OUTPUT_PATH "${CMAKE_SOURCE_DIR}/nwsspc/sharp"
+        PYTHON_PATH "$<TARGET_FILE_DIR:calc>/../../"
+        MARKER_FILE "${CMAKE_SOURCE_DIR}/nwsspc/sharp/py.typed"
+        DEPENDS calc
+    )
+endif()
 
 install(TARGETS calc DESTINATION nwsspc/sharp)
 
 install(
-    DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/nwsspc/sharp/"
+    DIRECTORY "${CMAKE_SOURCE_DIR}/nwsspc/sharp/"
     DESTINATION "nwsspc/sharp"
     FILES_MATCHING
         PATTERN "*.pyi"
