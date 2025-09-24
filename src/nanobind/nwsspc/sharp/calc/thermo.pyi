@@ -633,6 +633,31 @@ def virtual_temperature(tmpk_arr: Annotated[NDArray[numpy.float32], dict(shape=(
     """
 
 @overload
+def density(pressure: float, temperature: float, wv_mixratio: float = 0.0) -> float:
+    """
+    Compute the density of air.
+
+    Computes the air density given pressure and temperature.
+
+    Parameters 
+    ----------
+    pressure : float 
+        The air pressure (Pa)
+    temperature : float 
+        The air temperature (K)
+    wv_mixratio : float, optional 
+        The water vapor mixing ratio (kg/kg). Default is 0.
+
+    Returns 
+    -------
+    float 
+        Air density (kg m^-3)
+    """
+
+@overload
+def density(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mixr_arr: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)] | None = None) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]: ...
+
+@overload
 def wetlift(pressure: float, temperature: float, lifted_pressure: float, converge: float = 0.0010000000474974513) -> float:
     """
     Compute the temperature of a parcel lifted moist adiabatically to a new level. 

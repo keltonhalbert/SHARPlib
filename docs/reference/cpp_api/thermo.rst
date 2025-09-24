@@ -28,6 +28,7 @@ Moist Variables
 .. doxygenfunction:: sharp::relative_humidity
 .. doxygenfunction:: sharp::temperature_at_mixratio
 .. doxygenfunction:: sharp::virtual_temperature
+.. doxygenfunction:: sharp::density
 .. doxygenfunction:: sharp::buoyancy(const float, const float)
 .. doxygenfunction:: sharp::buoyancy(const float[], const float[], float[], std::ptrdiff_t)
 .. doxygenfunction:: sharp::thetae

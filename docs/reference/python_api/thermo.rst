@@ -31,6 +31,7 @@ thermo
    .. autofunction:: nwsspc.sharp.calc.thermo.relative_humidity
    .. autofunction:: nwsspc.sharp.calc.thermo.temperature_at_mixratio
    .. autofunction:: nwsspc.sharp.calc.thermo.virtual_temperature
+   .. autofunction:: nwsspc.sharp.calc.thermo.density
    .. autofunction:: nwsspc.sharp.calc.thermo.buoyancy
    .. autofunction:: nwsspc.sharp.calc.thermo.thetae
    .. autofunction:: nwsspc.sharp.calc.thermo.wetbulb
