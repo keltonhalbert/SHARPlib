@@ -938,6 +938,108 @@ numpy.ndarray[dtype=float32]
 
     )pbdoc");
 
+    m_therm.def(
+        "density", 
+        &sharp::density,  
+        nb::arg("pressure"), 
+        nb::arg("temperature"), 
+        nb::arg("wv_mixratio") = 0.0, 
+        R"pbdoc(
+Compute the density of air.
+
+Computes the air density given pressure and temperature.
+
+Parameters 
+----------
+pressure : float 
+    The air pressure (Pa)
+temperature : float 
+    The air temperature (K)
+wv_mixratio : float, optional 
+    The water vapor mixing ratio (kg/kg). Default is 0.
+
+Returns 
+-------
+float 
+    Air density (kg m^-3)
+    )pbdoc"
+        );
+
+    m_therm.def(
+        "density",
+        [](
+            const_prof_arr_t pres_arr, 
+            const_prof_arr_t tmpk_arr,
+            const_prof_arr_t mixr_arr
+        ){
+            const auto pres = pres_arr.view();
+            const auto tmpk = tmpk_arr.view();
+            const auto mixr = mixr_arr.view();
+            if (mixr_arr.is_valid()) {
+                if (
+                    (pres_arr.shape(0) != tmpk_arr.shape(0)) || 
+                    (pres_arr.shape(0) != mixr_arr.shape(0))) {
+                    throw nb::buffer_error(
+                        "pres_arr, tmpk_arr, and mixr_arr must have the "
+                        "same sizes!");
+                }
+
+                float* rho = new float[pres.shape(0)];
+
+                for (std::ptrdiff_t k = 0; k < pres.shape(0); ++k) {
+                    rho[k] = sharp::density(pres(k), tmpk(k), mixr(k));
+                }
+
+                nb::capsule owner(rho,
+                                [](void *p) noexcept { delete[] (float *)p; });
+
+                return out_arr_t(rho, {tmpk.shape(0)}, owner);
+            }
+            else {
+                if (
+                    (pres_arr.shape(0) != tmpk_arr.shape(0))) {
+                    throw nb::buffer_error(
+                        "pres_arr and tmpk_arr must have the "
+                        "same sizes!");
+                }
+
+                float* rho = new float[pres.shape(0)];
+
+                for (std::ptrdiff_t k = 0; k < pres.shape(0); ++k) {
+                    rho[k] = sharp::density(pres(k), tmpk(k));
+                }
+
+                nb::capsule owner(rho,
+                                [](void *p) noexcept { delete[] (float *)p; });
+
+                return out_arr_t(rho, {tmpk.shape(0)}, owner);
+
+            }
+        },
+        nb::arg("pressure"),
+        nb::arg("temperature"),
+        nb::arg("mixr_arr") = nb::none(),
+        R"pbdoc(
+Compute the density of air.
+
+Computes the air density given pressure and temperature.
+
+Parameters 
+----------
+pressure : float 
+    The air pressure (Pa)
+temperature : float 
+    The air temperature (K)
+wv_mixratio : float, optional 
+    The water vapor mixing ratio (kg/kg). Default is 0.
+
+Returns 
+-------
+float 
+    Air density (kg m^-3)
+    )pbdoc"
+    );
+
     // Skipping saturated_lift, because I don't intend
     // for it to be called from Python directly.
 

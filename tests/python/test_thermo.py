@@ -242,6 +242,23 @@ def test_virtemp():
     assert (vtmpk.mean() == pytest.approx(238.928))
 
 
+def test_density():
+    rho = thermo.density(101325.0, 288.15)
+    assert (rho == pytest.approx(1.225, abs=1e-3))
+
+    rho = thermo.density(
+        snd_data["pres"],
+        snd_data["tmpk"],
+        snd_data["mixr"]
+    )
+    assert (rho[0] == pytest.approx(1.066, abs=1e-3))
+    rho = thermo.density(
+        snd_data["pres"],
+        snd_data["tmpk"],
+    )
+    assert (rho[0] == pytest.approx(1.0755, abs=1e-3))
+
+
 def test_drylift():
     lcl_p, lcl_t = thermo.drylift(constants.MISSING, 300.0, 297.0)
     assert (lcl_p == constants.MISSING)

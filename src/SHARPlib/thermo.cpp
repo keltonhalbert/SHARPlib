@@ -179,6 +179,17 @@ float virtual_temperature(float temperature, float rv, float rl, float ri) {
     return (temperature * ((1.0 + (rv / EPSILON)) / (1.0 + rv + rl + ri)));
 }
 
+float density(float pressure, float temperature, float wv_mixratio) {
+#ifndef NO_QC
+    if ((pressure == MISSING) || (temperature == MISSING)) {
+        return MISSING;
+    }
+    if (wv_mixratio == MISSING) wv_mixratio = 0.0f;
+#endif
+    return pressure /
+           (RDGAS * sharp::virtual_temperature(temperature, wv_mixratio));
+}
+
 float saturated_lift(float pressure, float theta_sat, float converge) {
 #ifndef NO_QC
     if ((pressure == MISSING) || (theta_sat == MISSING)) {

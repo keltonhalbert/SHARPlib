@@ -310,6 +310,21 @@ enum class adiabat : int {
                                         float rl = 0.0f, float ri = 0.0f);
 
 /**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Compute the density of air.
+ *
+ * Computes the air density given pressure and temperature.
+ *
+ * \param   pressure        (Pa)
+ * \param   temperature     (K)
+ *
+ * \return  density (rho)   (kg m^-3)
+ */
+[[nodiscard]] float density(float pressure, float temperature,
+                            float wv_mixratio = 0.0f);
+
+/**
  * \author John Hart - NSSFC KCMO / NWSSPC OUN
  *
  * \brief Compute the temperature along a moist adiabat <!--
