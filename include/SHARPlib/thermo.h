@@ -697,6 +697,24 @@ void buoyancy(const float pcl_temperature[], const float env_temperature[],
                                                 const float mse_bar,
                                                 const float saturation_mse);
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Computes rainwater mixing ratio evaporation rate.
+ *
+ * Computes the rainwater mixing ratio tendency from evaporation
+ * as in Klemp and Wilhelmson 1978.
+ *
+ * \param   pressure            (Pa)
+ * \param   temperature         (K)
+ * \param   rho (density)       (kg/m^3)
+ * \param   wv_mixratio         (kg/kg)
+ * \param   rainwater_mixratio  (kg/kg)
+ */
+[[nodiscard]] float rainfall_evaporation_rate(float pressure, float temperature,
+                                              float rho, float wv_mixratio,
+                                              float rainwater_mixratio);
+
 }  // end namespace sharp
 
 #endif  // SHARP_THERMP_H

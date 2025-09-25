@@ -12,7 +12,11 @@
  */
 
 #include <SHARPlib/constants.h>
+#include <SHARPlib/interp.h>
+#include <SHARPlib/layer.h>
 #include <SHARPlib/params/fire.h>
+#include <SHARPlib/parcel.h>
+#include <SHARPlib/thermo.h>
 
 #include <algorithm>
 #include <cmath>
@@ -66,6 +70,64 @@ float fosberg_fire_index(float temperature, float rel_humidity,
     const float fwwi =
         eta * std::sqrt(1.0f + std::pow(wind_speed, 2)) / 0.3002f;
     return std::min(fwwi, 100.f);
+}
+
+float rainfall_velocity(float rho, float rho_0, float rainwater_mixratio) {
+#ifndef NO_QC
+    if ((rho == MISSING) || (rho_0 == MISSING) ||
+        (rainwater_mixratio == MISSING)) {
+        return MISSING;
+    }
+#endif
+
+    float term1 = 0.001f * rho * rainwater_mixratio;
+    float term2 = rho_0 / rho;
+    return 36.34 * powf(term1, 0.1364f) * powf(term2, 0.5f);
+}
+
+float rainfall_efficiency(const float pressure[], const float height[],
+                          const float temperature[], const float mixr[],
+                          std::ptrdiff_t N, const Parcel& pcl,
+                          float rainwater_mixratio) {
+    if (pcl.lcl_pressure == MISSING) return MISSING;
+    PressureLayer subcloud_layer = {pressure[0], pcl.lcl_pressure};
+    HeightLayer subloud_layer_hght =
+        pressure_layer_to_height(subcloud_layer, pressure, height, N);
+
+    const float rho0 = density(pressure[0], temperature[0]);
+    const float rl0 = rainwater_mixratio;
+
+    float pres_top = pcl.lcl_pressure;
+    float tmpk_top =
+        interp_pressure(subcloud_layer.top, pressure, temperature, N);
+    float rho_top = density(subcloud_layer.top, tmpk_top);
+
+    const float dt = 10;  // seconds
+    float V = rainfall_velocity(rho_top, rho0, rainwater_mixratio);
+    float hght_bot = subloud_layer_hght.top - V * dt;
+
+    while (hght_bot > height[0]) {
+        float pres_bot = interp_height(hght_bot, height, pressure, N);
+        float tmpk_bot = interp_height(hght_bot, height, temperature, N);
+        float mixr_bot = interp_height(hght_bot, height, mixr, N);
+        float rho_bot = density(pres_bot, tmpk_bot);
+
+        float rho_bar = (rho_top + rho_bot) / 2.0;
+        float pres_bar = (pres_top + pres_bot) / 2.0;
+
+        float evap_rate = rainfall_evaporation_rate(
+            pres_bar, tmpk_bot, rho_bar, mixr_bot, rainwater_mixratio);
+
+        rainwater_mixratio = rainwater_mixratio + (evap_rate * dt);
+        V = rainfall_velocity(rho_bar, rho0, rainwater_mixratio);
+        hght_bot = hght_bot - V * dt;
+
+        pres_top = pres_bot;
+        tmpk_top = tmpk_bot;
+        rho_top = rho_bot;
+    }
+
+    return rainwater_mixratio / rl0;
 }
 
 }  // namespace sharp

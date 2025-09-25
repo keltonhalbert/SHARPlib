@@ -761,6 +761,77 @@ Returns
 numpy.ndarray[dtype=float32]
     Fosberg Fire-Weather Index
     )pbdoc");
+
+    m_params.def("rainfall_velocity", &sharp::rainfall_velocity, nb::arg("rho"),
+                 nb::arg("rho_0"), nb::arg("rainwater_mixratio"),
+                 R"pbdoc(
+Computes the estimated rainfall terminal velocity. 
+
+Computes the estimated rainfall terminal velocity as formulated 
+by Klemp and Wilhelmson 1978. 
+
+Parameters
+----------
+rho : float 
+    Air density (kg/m^3)
+rho_0 : float 
+    Air density at the surface (kg/m^3)
+rainwater_mixratio : float
+    Rainwater mixing ratio (kg/kg)
+
+Returns 
+-------
+float
+    Rainfall velocity (m/s)
+       )pbdoc");
+
+    m_params.def(
+        "rainfall_efficiency",
+        [](const_prof_arr_t pres_arr, const_prof_arr_t hght_arr,
+           const_prof_arr_t tmpk_arr, const_prof_arr_t mixr_arr,
+           const sharp::Parcel& pcl, float rainwater_mixratio) {
+            if ((pres_arr.shape(0) != hght_arr.shape(0)) ||
+                (pres_arr.shape(0) != tmpk_arr.shape(0)) ||
+                (pres_arr.shape(0) != mixr_arr.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must be the same size!");
+            }
+        },
+        nb::arg("pressure"), nb::arg("height"), nb::arg("temperature"),
+        nb::arg("mixr"), nb::arg("pcl"), nb::arg("rainwater_mixratio"),
+        R"pbdoc(
+Computes an estimated rainfall efficiency.
+
+Computes an estimated rainfall efficiency, using formulations of 
+rainfall terminal velocity and evaporation rate as in Klemp and 
+Wilhelmson 1978.
+
+Starting from the parcel's lifted condensation level, it integrates 
+downward to the surface while evaporating water content and updating 
+the velocity between steps. Once it reaches the surface, it computes 
+the final fraction of rainwater mixing ratio relative to the starting 
+rainwater mixing ratio.
+
+Parameters
+----------
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure (Pa)
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of height (Pa)
+temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of temperature (K)
+mixr : numpy.ndarray[dtype=float32]
+    1D NumPy array of water vapor mixing ratio (kg/kg)
+pcl : nwsspc.sharp.calc.parcel.Parcel 
+    A Parcel with a defined LCL pressure
+rainwater_mixratio : float
+    Rainwater mixing ratio (kg/kg)
+
+Returns
+-------
+float
+    The fraction of precipitation that reaches the surface.
+    )pbdoc");
 }
 
 #endif

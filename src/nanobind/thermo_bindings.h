@@ -1861,6 +1861,40 @@ numpy.ndarray[dtype=float32]
     1D NumPy array of buoyancy values (m/s^2)
     )pbdoc"
     );
+
+    m_therm.def(
+        "rainfall_evaporation_rate",
+        &sharp::rainfall_evaporation_rate,
+        nb::arg("pressure"), 
+        nb::arg("temperature"),
+        nb::arg("rho"),
+        nb::arg("wv_mixratio"),
+        nb::arg("rainwater_mixratio"),
+        R"pbdoc(
+Computes rainwater mixing ratio evaporation rate.
+
+Computes the rainwater mixing ratio rendency from evaporation 
+as in Klemp and Wilhelmson 1978.
+
+Parameters 
+----------
+pressure : float 
+    Air pressure (Pa)
+temperature : float 
+    Air temperature (K)
+rho : float 
+    Air density (kg/m^3)
+wv_mixratio : float 
+    Water vapor mixing ratio (kg/kg)
+rainwater_mixratio : float
+    Rain water mixing ratio (kg/kg)
+
+Returns 
+-------
+float 
+    The rainwater mixing ratio evaporation rate (kg/kg/s)
+    )pbdoc"
+    );
 }
 
 #endif

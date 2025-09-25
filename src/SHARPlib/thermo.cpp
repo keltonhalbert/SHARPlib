@@ -577,4 +577,26 @@ float buoyancy_dilution_potential(float temperature, float mse_bar,
            (mse_bar - saturation_mse);
 }
 
+float rainfall_evaporation_rate(float pressure, float temperature, float rho,
+                                float wv_mixratio, float rainwater_mixratio) {
+#ifndef NO_QC
+    if ((temperature == MISSING) || (wv_mixratio == MISSING) ||
+        (rainwater_mixratio == MISSING) || (pressure == MISSING)) {
+        return MISSING;
+    }
+#endif
+
+    if (rho < 1e-6) return MISSING;
+    static constexpr float C1 = 2.030e4f;
+    static constexpr float C2 = 9.584e6f;
+    const float rho_rain = rho * rainwater_mixratio;
+    const float C = 1.6 + 30.3922 * powf((rho_rain), 0.2046f);
+    float wv_satmixratio = mixratio(pressure, temperature);
+    float wv_frac = wv_mixratio / wv_satmixratio;
+
+    float term1 = (1.0f - wv_frac) * C * powf(rho_rain, 0.525f);
+    float term2 = (C1 + C2 / (wv_satmixratio * pressure));
+    return (1.f / rho) * (term1 / term2);
+}
+
 }  // end namespace sharp
