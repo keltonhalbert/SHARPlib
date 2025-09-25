@@ -118,7 +118,7 @@ float rainfall_efficiency(const float pressure[], const float height[],
         float evap_rate = rainfall_evaporation_rate(
             pres_bar, tmpk_bot, rho_bar, mixr_bot, rainwater_mixratio);
 
-        rainwater_mixratio = rainwater_mixratio + (evap_rate * dt);
+        rainwater_mixratio = rainwater_mixratio - (evap_rate * dt);
         V = rainfall_velocity(rho_bar, rho0, rainwater_mixratio);
         hght_bot = hght_bot - V * dt;
 

@@ -797,7 +797,7 @@ float
                     "All input arrays must be the same size!");
             }
 
-            sharp::rainfall_efficiency(
+            return sharp::rainfall_efficiency(
                 pres_arr.data(), hght_arr.data(), tmpk_arr.data(),
                 mixr_arr.data(), pres_arr.shape(0), pcl, rainwater_mixratio);
         },

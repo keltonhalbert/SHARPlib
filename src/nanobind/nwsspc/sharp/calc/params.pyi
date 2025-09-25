@@ -546,7 +546,7 @@ def rainfall_velocity(rho: float, rho_0: float, rainwater_mixratio: float) -> fl
         Rainfall velocity (m/s)
     """
 
-def rainfall_efficiency(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mixr: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], pcl: nwsspc.sharp.calc.parcel.Parcel, rainwater_mixratio: float) -> None:
+def rainfall_efficiency(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mixr: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], pcl: nwsspc.sharp.calc.parcel.Parcel, rainwater_mixratio: float) -> float:
     """
     Computes an estimated rainfall efficiency.
 

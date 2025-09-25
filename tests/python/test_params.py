@@ -358,3 +358,43 @@ def test_fwwi():
 
     fwwi = params.fosberg_fire_index(tmpk, relh, wspd)
     assert (fwwi == np.array([100.0, 100.0, 100.0], dtype='float32')).all()
+
+
+def test_rainfall_velocity():
+    v = params.rainfall_velocity(
+        1.0,
+        1.225,
+        0.01
+    )
+    print(v)
+
+
+def test_rainfall_efficiency():
+    mix_lyr = layer.PressureLayer(
+        snd_data["pres"][0], snd_data["pres"][0] - 10000.0)
+    theta = thermo.theta(snd_data["pres"], snd_data["tmpk"])
+    pcl = parcel.Parcel.mixed_layer_parcel(
+        mix_lyr,
+        snd_data["pres"],
+        theta,
+        snd_data["mixr"]
+    )
+    lifter = parcel.lifter_cm1()
+    lifter.ma_type = thermo.adiabat.pseudo_liq
+    vtmpk = pcl.lift_parcel(lifter, snd_data["pres"])
+    buoy = thermo.buoyancy(vtmpk, snd_data["vtmp"])
+    cape, cinh = pcl.cape_cinh(snd_data["pres"], snd_data["hght"], buoy)
+    lcl_t = interp.interp_pressure(
+        pcl.lcl_pressure, snd_data["pres"], snd_data["tmpk"])
+    rl = thermo.mixratio(pcl.lcl_pressure, lcl_t)
+
+    precip_eff = params.rainfall_efficiency(
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["tmpk"],
+        snd_data["mixr"],
+        pcl,
+        rl
+    )
+
+    print(precip_eff)
