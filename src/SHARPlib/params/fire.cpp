@@ -127,7 +127,7 @@ float rainfall_efficiency(const float pressure[], const float height[],
         rho_top = rho_bot;
     }
 
-    return rainwater_mixratio / rl0;
+    return std::max(0.0f, rainwater_mixratio / rl0);
 }
 
 }  // namespace sharp
