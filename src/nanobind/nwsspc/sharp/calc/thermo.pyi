@@ -1187,3 +1187,29 @@ def buoyancy(parcel_temperature: Annotated[NDArray[numpy.float32], dict(shape=(N
     numpy.ndarray[dtype=float32]
         1D NumPy array of buoyancy values (m/s^2)
     """
+
+def rainfall_evaporation_rate(pressure: float, temperature: float, rho: float, wv_mixratio: float, rainwater_mixratio: float) -> float:
+    """
+    Computes rainwater mixing ratio evaporation rate.
+
+    Computes the rainwater mixing ratio rendency from evaporation 
+    as in Klemp and Wilhelmson 1978.
+
+    Parameters 
+    ----------
+    pressure : float 
+        Air pressure (Pa)
+    temperature : float 
+        Air temperature (K)
+    rho : float 
+        Air density (kg/m^3)
+    wv_mixratio : float 
+        Water vapor mixing ratio (kg/kg)
+    rainwater_mixratio : float
+        Rain water mixing ratio (kg/kg)
+
+    Returns 
+    -------
+    float 
+        The rainwater mixing ratio evaporation rate (kg/kg/s)
+    """
