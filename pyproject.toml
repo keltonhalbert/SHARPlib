@@ -17,6 +17,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Atmospheric Science",
     "Intended Audience :: Science/Research",
@@ -33,7 +34,7 @@ keywords = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "numpy>=1.23.0"
+    "numpy>=2.0.0"
 ]
 
 [project.optional-dependencies]
