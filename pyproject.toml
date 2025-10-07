@@ -77,7 +77,7 @@ enable = []
 manylinux-x86_64-image = "manylinux_2_28"
 manylinux-aarch64-image = "manylinux_2_28"
 
-test-command = "pytest {project}/tests/python"
+test-command = "unset SETUPTOOLS_SCM_PRETEND_VERSION && pytest {project}/tests/python"
 test-requires = ["pytest", "pandas", "fastparquet"]
 
 [tool.pyright]
