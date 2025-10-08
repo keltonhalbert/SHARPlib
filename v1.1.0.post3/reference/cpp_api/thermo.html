@@ -1,0 +1,1328 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="dark">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>thermo &#8212; SHARPlib v1.1.0.post3 Manual</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=b3e8092d"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/cpp_api/thermo';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://keltonhalbert.github.io/SHARPlib/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.1.0.post3';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="winds" href="winds.html" />
+    <link rel="prev" title="parcel" href="parcel.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.0.post3" />
+    <meta name="docbuild:last-update" content="Oct 08, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="dark">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-dark" alt=""/>
+    <img src="../../_static/logo.png" class="logo__image only-light pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">SHARPlib</p>
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../faq.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/tree/main/examples/Python">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/releases">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Bluesky</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../faq.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/tree/main/examples/Python">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/releases">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Bluesky</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="constants.html">constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interp.html">interp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layer.html">layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parcel.html">parcel</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">thermo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="winds.html">winds</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">C++ API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">thermo</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="thermo">
+<h1>thermo<a class="headerlink" href="#thermo" title="Link to this heading">#</a></h1>
+<section id="dry-variables">
+<h2>Dry Variables<a class="headerlink" href="#dry-variables" title="Link to this heading">#</a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp5thetaEfff">
+<span id="_CPPv3N5sharp5thetaEfff"></span><span id="_CPPv2N5sharp5thetaEfff"></span><span id="sharp::theta__float.float.float"></span><span class="target" id="namespacesharp_1acfd0143ab72871c4aabc95c1140ee8fb"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">theta</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ref_pressure</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="constants.html#_CPPv4N5sharp18THETA_REF_PRESSUREE" title="sharp::THETA_REF_PRESSURE"><span class="n"><span class="pre">THETA_REF_PRESSURE</span></span></a><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp5thetaEfff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the potential temperature. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>John Hart - NSSFC KCMO / NWSSPC OUN</p>
+</dd>
+</dl>
+</p>
+<p>Returns the potential temperature in Kelvin of a parcel given its pressure in Pascals and temperature in Kelvin. The final argument is the reference level, which is usually 100000.0 Pa, conveniently also called <a class="reference internal" href="constants.html#namespacesharp_1ab4bb52918c53f75e2175d67840111600"><span class="std std-ref">sharp::THETA_REF_PRESSURE</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>ref_pressure</strong> – (Pa)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>potential_temperature (K) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp11theta_levelEff">
+<span id="_CPPv3N5sharp11theta_levelEff"></span><span id="_CPPv2N5sharp11theta_levelEff"></span><span id="sharp::theta_level__float.float"></span><span class="target" id="namespacesharp_1ab50b565bcba73d207dc1433dee5b03c9"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">theta_level</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">potential_temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp11theta_levelEff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Comute the pressure level given potential temperature and temperature. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>John Hart - NSSFC KCMO / NWSSPC OUN</p>
+</dd>
+</dl>
+</p>
+<p>Returns the pressure level in Pascals (Pa) of a parcel given the potential temperature in Kelvin and the temperature of the parcel in Kelvin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>potential_temperature</strong> – (K) </p></li>
+<li><p><strong>temperature</strong> – (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pressure (Pa) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp10lapse_rateE11HeightLayerA_KfA_KfKNSt9ptrdiff_tE">
+<span id="_CPPv3N5sharp10lapse_rateE11HeightLayerA_KfA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp10lapse_rateE11HeightLayerA_KfA_KfKNSt9ptrdiff_tE"></span><span id="sharp::lapse_rate__HeightLayer.floatCA.floatCA.std::ptrdiff_tC"></span><span class="target" id="namespacesharp_1a43a01274768ee388a983046651a230d3"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">lapse_rate</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="layer.html#_CPPv4N5sharp11HeightLayerE" title="sharp::HeightLayer"><span class="n"><span class="pre">HeightLayer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">layer_agl</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp10lapse_rateE11HeightLayerA_KfA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>compute the lapse rate over the given <a class="reference internal" href="layer.html#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a> (AGL) </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Computes the lapse rate over a given <a class="reference internal" href="layer.html#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a> above-ground-level. This routine handles converting AGL to MSL by adding the surface height value to the layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer_agl</strong> – (meters AGL) </p></li>
+<li><p><strong>height</strong> – (meters MSL) </p></li>
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>N</strong> – (length of arrays)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Temperature Lapse Rate (K/km) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp10lapse_rateE13PressureLayerA_KfA_KfA_KfKNSt9ptrdiff_tE">
+<span id="_CPPv3N5sharp10lapse_rateE13PressureLayerA_KfA_KfA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp10lapse_rateE13PressureLayerA_KfA_KfA_KfKNSt9ptrdiff_tE"></span><span id="sharp::lapse_rate__PressureLayer.floatCA.floatCA.floatCA.std::ptrdiff_tC"></span><span class="target" id="namespacesharp_1aa4e86da659bfca2eae1f0baddb84a303"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">lapse_rate</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="layer.html#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">layer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp10lapse_rateE13PressureLayerA_KfA_KfA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>compute the lapse rate over the given <a class="reference internal" href="layer.html#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a></p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Computes the lapse rate over a given <a class="reference internal" href="layer.html#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a>. This routine handles converting the pressure layer into a height layer, and then calles the <a class="reference internal" href="layer.html#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a> implementation of this routine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> – (Pa) </p></li>
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>height</strong> – (meters MSL) </p></li>
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>N</strong> – (length of arrays)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Temperature Lapse Rate (K/km) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp14lapse_rate_maxE11HeightLayerKfA_KfA_KfKNSt9ptrdiff_tEP11HeightLayer">
+<span id="_CPPv3N5sharp14lapse_rate_maxE11HeightLayerKfA_KfA_KfKNSt9ptrdiff_tEP11HeightLayer"></span><span id="_CPPv2N5sharp14lapse_rate_maxE11HeightLayerKfA_KfA_KfKNSt9ptrdiff_tEP11HeightLayer"></span><span id="sharp::lapse_rate_max__HeightLayer.floatC.floatCA.floatCA.std::ptrdiff_tC.HeightLayerP"></span><span class="target" id="namespacesharp_1abd0d1a28608e145c455ace03e787e33b"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">lapse_rate_max</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="layer.html#_CPPv4N5sharp11HeightLayerE" title="sharp::HeightLayer"><span class="n"><span class="pre">HeightLayer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">layer_agl</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">depth</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <a class="reference internal" href="layer.html#_CPPv4N5sharp11HeightLayerE" title="sharp::HeightLayer"><span class="n"><span class="pre">HeightLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">max_lyr</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp14lapse_rate_maxE11HeightLayerKfA_KfA_KfKNSt9ptrdiff_tEP11HeightLayer" title="Link to this definition">#</a><br /></dt>
+<dd><p>Find the maximum lapse rate within a specified layer/depth (AGL). </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Given a layer of the atmosphere (e.g. 2 - 6 km), find the maximum lapse rate over the provided depth (e.g. 2 km) within that given layer. Returns the maximum lapse rate, with the optional ability to return the layer that lapse rate exists within.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer_agl</strong> – (meters AGL) </p></li>
+<li><p><strong>depth</strong> – (meters) </p></li>
+<li><p><strong>height</strong> – (meters MSL) </p></li>
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>N</strong> – (length of arrays) </p></li>
+<li><p><strong>max_lyr</strong> – (The <a class="reference internal" href="layer.html#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a> of the max lapse rate)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Maximum Temperature Lapse Rate (K/km) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp14lapse_rate_maxE13PressureLayerKfA_KfA_KfA_KfKNSt9ptrdiff_tEP13PressureLayer">
+<span id="_CPPv3N5sharp14lapse_rate_maxE13PressureLayerKfA_KfA_KfA_KfKNSt9ptrdiff_tEP13PressureLayer"></span><span id="_CPPv2N5sharp14lapse_rate_maxE13PressureLayerKfA_KfA_KfA_KfKNSt9ptrdiff_tEP13PressureLayer"></span><span id="sharp::lapse_rate_max__PressureLayer.floatC.floatCA.floatCA.floatCA.std::ptrdiff_tC.PressureLayerP"></span><span class="target" id="namespacesharp_1af6c026b54a5c0c2e1bd24d35cb20b11a"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">lapse_rate_max</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="layer.html#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">layer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">depth</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <a class="reference internal" href="layer.html#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">max_lyr</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp14lapse_rate_maxE13PressureLayerKfA_KfA_KfA_KfKNSt9ptrdiff_tEP13PressureLayer" title="Link to this definition">#</a><br /></dt>
+<dd><p>Find the maximum lapse rate within a specified layer/depth (Pres) </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Given a layer of the atmisphere (e.g. 800 hPa - 500 hPa), find the maximum lapse rate over the provided depth (e.g. 100 hPa) within that given layer. Returns the maximum lapse rate, with the optional ability to return the layer that lapse rate exists within.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> – (Pa) </p></li>
+<li><p><strong>depth</strong> – (Pa) </p></li>
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>height</strong> – (meters MSL) </p></li>
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>N</strong> – (length of arrays) </p></li>
+<li><p><strong>max_lyr</strong> – (The <a class="reference internal" href="layer.html#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> of the max lapse rate)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Maximum Temperature Lapse Rate (K/km) </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="dry-ascent">
+<h2>Dry Ascent<a class="headerlink" href="#dry-ascent" title="Link to this heading">#</a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp7dryliftEfffRfRf">
+<span id="_CPPv3N5sharp7dryliftEfffRfRf"></span><span id="_CPPv2N5sharp7dryliftEfffRfRf"></span><span id="sharp::drylift__float.float.float.floatR.floatR"></span><span class="target" id="namespacesharp_1ae4385866921cd7286946d9ffdd65c25e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">drylift</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">pressure_at_lcl</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">temperature_at_lcl</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp7dryliftEfffRfRf" title="Link to this definition">#</a><br /></dt>
+<dd><p>Lift a parcel dry adiabatically to its Lifted Condensation Level (LCL). </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>John Hart - NSSFC KCMO / NWSSPC OUN</p>
+</dd>
+</dl>
+</p>
+<p>Given a parcel’s initial pressure (Pa), temperature (K), and dewpoint temperature (K), lift the parcel dry adiabatically to its Lifted Condensation Level and store the resulting LCL pressure (Pa) and LCL temperature (K) in the variables passed by reference to the routine.</p>
+<p>The LCL temperature is computed using an approximation. See the <a class="reference internal" href="#namespacesharp_1af016701e4a46d5c04d26c0a09c0aad38"><span class="std std-ref">sharp::lcl_temperature</span></a> documentation for more information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>dewpoint</strong> – (K) </p></li>
+<li><p><strong>pressure_at_lcl</strong> – (Pa)</p></li>
+<li><p><strong>temperature_at_lcl</strong> – (K) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp15lcl_temperatureEff">
+<span id="_CPPv3N5sharp15lcl_temperatureEff"></span><span id="_CPPv2N5sharp15lcl_temperatureEff"></span><span id="sharp::lcl_temperature__float.float"></span><span class="target" id="namespacesharp_1af016701e4a46d5c04d26c0a09c0aad38"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">lcl_temperature</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp15lcl_temperatureEff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the temperature of the LCL. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Computes the temperature of a parcels LCL in degres Kelvin given the parcel temperature and dewpoint in Kelvin.</p>
+<p>This is implemented as in Bolton (1980) eq 15, and is considered to be within a 10th of a degree of the more exact iterative formula.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>dewpoint</strong> – (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>lcl_temperature (K) </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="moist-variables">
+<h2>Moist Variables<a class="headerlink" href="#moist-variables" title="Link to this heading">#</a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp8mixratioEf">
+<span id="_CPPv3N5sharp8mixratioEf"></span><span id="_CPPv2N5sharp8mixratioEf"></span><span id="sharp::mixratio__float"></span><span class="target" id="namespacesharp_1ac38870166f07ac30aadbc46b81340cc4"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">mixratio</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">q</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp8mixratioEf" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the water vapor mixing ratio from specific humidity. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Returns the water vapor mixing ratio in kg/kg given the specific humidity in kg/kg.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>q</strong> – (kg/kg)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>mixratio (kg/kg) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp8mixratioEff">
+<span id="_CPPv3N5sharp8mixratioEff"></span><span id="_CPPv2N5sharp8mixratioEff"></span><span id="sharp::mixratio__float.float"></span><span class="target" id="namespacesharp_1a9edcf0847c46e877689081848c58e3f4"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">mixratio</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp8mixratioEff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the water vapor mixing ratio. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Returns the water vapor mixing ratio in kg/kg given the environmental pressure in Pascals (Pa) and a temperature (dry-bulb or dewpoint) in Kelvin.</p>
+<p>This is computed by calling <a class="reference internal" href="#namespacesharp_1a3e31a1a145fc25f07d6326481993b2c2"><span class="std std-ref">sharp::vapor_pressure</span></a>, which uses the Bolton (1980) equations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>temperature</strong> – (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>mixratio (kg/kg) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp12mixratio_iceEff">
+<span id="_CPPv3N5sharp12mixratio_iceEff"></span><span id="_CPPv2N5sharp12mixratio_iceEff"></span><span id="sharp::mixratio_ice__float.float"></span><span class="target" id="namespacesharp_1a0ebcad18ef9939ff56f23d49c35dd04c"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">mixratio_ice</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp12mixratio_iceEff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the ice water mixing ratio. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Returns the ice water mixing ratio in kg/kg given the environmental pressure in Pascals (Pa) and a temperature (dry-bulb or dewpoint) in Kelvin.</p>
+<p>This is computed by calling <a class="reference internal" href="#namespacesharp_1aaf448e4ec9a4f7ac7edc9b960f656fd8"><span class="std std-ref">sharp::vapor_pressure_ice</span></a>, which uses the Bolton (1980) equations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>temperature</strong> – (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>mixratio (kg/kg) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp14vapor_pressureEff">
+<span id="_CPPv3N5sharp14vapor_pressureEff"></span><span id="_CPPv2N5sharp14vapor_pressureEff"></span><span id="sharp::vapor_pressure__float.float"></span><span class="target" id="namespacesharp_1a3e31a1a145fc25f07d6326481993b2c2"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">vapor_pressure</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp14vapor_pressureEff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the vapor pressure over liquid water. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Computes the vapor pressure (or saturation vapor pressure) in Pascals (Pa) over liquid water given the temperature in Kelvin (or dewpoint temperature in Kelvin). The air pressure is used as a minimum floor for extremely cold temperatures and low pressures.</p>
+<p>This function uses the formulation by Bolton (1980), and is accurate to 0.3% for the temperature range of -35C &lt;= T &lt;= 35 C</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>temperature</strong> – (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>vapor_pressure (Pa) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp18vapor_pressure_iceEff">
+<span id="_CPPv3N5sharp18vapor_pressure_iceEff"></span><span id="_CPPv2N5sharp18vapor_pressure_iceEff"></span><span id="sharp::vapor_pressure_ice__float.float"></span><span class="target" id="namespacesharp_1aaf448e4ec9a4f7ac7edc9b960f656fd8"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">vapor_pressure_ice</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp18vapor_pressure_iceEff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the vapor pressure over ice. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Computes the vapor pressure (or saturation vapor pressure) in Pascals (Pa) over ice given the temperature in Kelvin (or dewpoint temperature in Kelvin). The air pressure is used as a minimum floor for extremely cold temperatures and low pressures.</p>
+<p>This function uses the formulation by Bolton (1980), and is accurate to 0.3% for the temperature range of -35C &lt;= T &lt;= 35C</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>temperature</strong> – (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>vapor_pressure (Pa) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp17specific_humidityEf">
+<span id="_CPPv3N5sharp17specific_humidityEf"></span><span id="_CPPv2N5sharp17specific_humidityEf"></span><span id="sharp::specific_humidity__float"></span><span class="target" id="namespacesharp_1a792a4a2a9f9243a82fb44cb77c2ee561"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">specific_humidity</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp17specific_humidityEf" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute specific humidity from a mixing ratio. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Returns the specific humidity given the mixing ratio.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rv</strong> – (kg/kg)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>specific_humidity (unitless) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp17relative_humidityEfff">
+<span id="_CPPv3N5sharp17relative_humidityEfff"></span><span id="_CPPv2N5sharp17relative_humidityEfff"></span><span id="sharp::relative_humidity__float.float.float"></span><span class="target" id="namespacesharp_1ae6ffc299f3f13dc27df417f6e8fdfc2d"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">relative_humidity</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp17relative_humidityEfff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the relative humidity of water vapor with respect to liquid. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Compute the relative humidity with respect to liquid water given an input pressure (Pa), temperature (K), and dewpoint temperature (K). NOTE: The presssure value is only used to ensure sane values of vapor pressure at extremely cold temperatures/low pressures. If you do not want or need this behavior, you can pass in something like <a class="reference internal" href="constants.html#namespacesharp_1ab4bb52918c53f75e2175d67840111600"><span class="std std-ref">sharp::THETA_REF_PRESSURE</span></a> instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>dewpoint</strong> – (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Relative Humidity (fraction, unitless) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp23temperature_at_mixratioEff">
+<span id="_CPPv3N5sharp23temperature_at_mixratioEff"></span><span id="_CPPv2N5sharp23temperature_at_mixratioEff"></span><span id="sharp::temperature_at_mixratio__float.float"></span><span class="target" id="namespacesharp_1a90a9ae3f1a154cecbcf65d7dbf19233f"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">temperature_at_mixratio</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wv_mixratio</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp23temperature_at_mixratioEff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the temperature at a given water vapor mixing ratio and pressure level. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Computes the temperature in Kelvin of air at the given water vapor mixing ratio in kg/kg and the air pressure in Pa.</p>
+<p>The routine is implemented as in Bolton (1980) eq 11, and is considered to be accurate to 0.03 for -35C &lt;= T &lt;= 35C</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wv_mixratio</strong> – (kg/kg) </p></li>
+<li><p><strong>pressure</strong> – (Pa)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>temperature (K) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp19virtual_temperatureEffff">
+<span id="_CPPv3N5sharp19virtual_temperatureEffff"></span><span id="_CPPv2N5sharp19virtual_temperatureEffff"></span><span id="sharp::virtual_temperature__float.float.float.float"></span><span class="target" id="namespacesharp_1a46e2f332f68747fee1eb817f7bd3a00b"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">virtual_temperature</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rv</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rl</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0f</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ri</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0f</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp19virtual_temperatureEffff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the full virtual temperature. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Returns the virtual temperature in Kelvin given the dry-bulb temperature in Kelvin, the water vapor mixing ratio (rv) in kg/kg, the liquid water mixing ratio (rl) in kg/kg, and the ice water mixing ratio (ri) in kg/kg.</p>
+<p>For convenience, the rl and ri terms have a default value of zero to easily support returning just the virtual temperature from water vapor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>rv</strong> – (kg/kg) </p></li>
+<li><p><strong>rl</strong> – (kg/kg) </p></li>
+<li><p><strong>ri</strong> – (kg/kg)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>virtual_temperature (K) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp8buoyancyEKfKf">
+<span id="_CPPv3N5sharp8buoyancyEKfKf"></span><span id="_CPPv2N5sharp8buoyancyEKfKf"></span><span id="sharp::buoyancy__floatC.floatC"></span><span class="target" id="namespacesharp_1aae31e8a18568ec26222b603e629c5598"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">buoyancy</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pcl_temperature</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">env_temperature</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp8buoyancyEKfKf" title="Link to this definition">#</a><br /></dt>
+<dd><p>compute buoyancy given parcel and environment temperatures </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pcl_temperature</strong> – (K) </p></li>
+<li><p><strong>env_temperature</strong> – (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>buoyancy (m/s^2) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp8buoyancyEA_KfA_KfA_fNSt9ptrdiff_tE">
+<span id="_CPPv3N5sharp8buoyancyEA_KfA_KfA_fNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp8buoyancyEA_KfA_KfA_fNSt9ptrdiff_tE"></span><span id="sharp::buoyancy__floatCA.floatCA.floatA.std::ptrdiff_t"></span><span class="target" id="namespacesharp_1a02c8d90f07b87e0051b2d117da66d11c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">buoyancy</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pcl_temperature</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">env_temperature</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">buoy_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp8buoyancyEA_KfA_KfA_fNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute buoyancy given arrays of parcel &amp; environment temperatures. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pcl_temperature</strong> – (K) </p></li>
+<li><p><strong>env_temperature</strong> – (K) </p></li>
+<li><p><strong>buoy_arr</strong> – Output array to fill with buoyancy </p></li>
+<li><p><strong>N</strong> – Length of arrays </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6thetaeEfff">
+<span id="_CPPv3N5sharp6thetaeEfff"></span><span id="_CPPv2N5sharp6thetaeEfff"></span><span id="sharp::thetae__float.float.float"></span><span class="target" id="namespacesharp_1ab06f16aa1caac3136e863db8cd61e2e9"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">thetae</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp6thetaeEfff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the equivalent potential temperature. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>John Hart - NSSFC KCMO / NWSSPC OUN</p>
+</dd>
+</dl>
+</p>
+<p>Compute the equivalent potential temperature (K) given the pressure (Pa), temperature (K), and dewpoint (K). The equivalent potential temperature is computed as in Bolton 1980. It was found in Davies-Jones 2009 that this is the most accurate non-iterative formulation of ThetaE.</p>
+<p>Bolton 1980: <a class="reference external" href="https://doi.org/10.1175/1520-0493(1980)108%3C1046:TCOEPT%3E2.0.CO;2">https://doi.org/10.1175/1520-0493(1980)108%3C1046:TCOEPT%3E2.0.CO;2</a> Davies-Jones 2009: <a class="reference external" href="https://doi.org/10.1175/2009MWR2774.1">https://doi.org/10.1175/2009MWR2774.1</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>dewpoint</strong> – (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>equivalent_potential_temperature (K) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5sharp7wetbulbEf3Lftfff">
+<span id="_CPPv3I0EN5sharp7wetbulbE3Lftfff"></span><span id="_CPPv2I0EN5sharp7wetbulbE3Lftfff"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Lft</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacesharp_1accda9c75278f1a32978bbfd662492822"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">wetbulb</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5sharp7wetbulbEf3Lftfff" title="sharp::wetbulb::Lft"><span class="n"><span class="pre">Lft</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lifter</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5sharp7wetbulbEf3Lftfff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the wetbulb temperature. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>John Hart - NSSFC KCMO / NWSSPC OUN</p>
+</dd>
+</dl>
+</p>
+<p>Compute the wet bulb temperature (K) given the pressure (Pa), temperature (K), and dewpoint (K).</p>
+<p>First, it lifts a parcel with the given pressure, temperature, and dewpoint temperature to its Lifted Condensation Level (LCL). To compute the temperature and pressure of the LCL, an approximation is used. See the <a class="reference internal" href="#namespacesharp_1af016701e4a46d5c04d26c0a09c0aad38"><span class="std std-ref">sharp::lcl_temperature</span></a> documentation for more information.</p>
+<p>After the parcel has reached the LCL, the lifter passed in lowers the parcel to its initial pressure level along a moist adiabat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> – (cm1, wobf) </p></li>
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>dewpoint</strong> – (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>wetbulb_temperature (K) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp7wetbulbE12lifter_wobusfff">
+<span id="_CPPv3N5sharp7wetbulbE12lifter_wobusfff"></span><span id="_CPPv2N5sharp7wetbulbE12lifter_wobusfff"></span><span id="sharp::wetbulb__lifter_wobus.float.float.float"></span><span class="target" id="namespacesharp_1a5301da4223bbde718f7e5b2e8f14e420"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">wetbulb</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="parcel.html#_CPPv4N5sharp12lifter_wobusE" title="sharp::lifter_wobus"><span class="n"><span class="pre">lifter_wobus</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lifter</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp7wetbulbE12lifter_wobusfff" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp7wetbulbE10lifter_cm1fff">
+<span id="_CPPv3N5sharp7wetbulbE10lifter_cm1fff"></span><span id="_CPPv2N5sharp7wetbulbE10lifter_cm1fff"></span><span id="sharp::wetbulb__lifter_cm1.float.float.float"></span><span class="target" id="namespacesharp_1abb48d1954c4d2cd29e2575bff749a34e"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">wetbulb</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="parcel.html#_CPPv4N5sharp10lifter_cm1E" title="sharp::lifter_cm1"><span class="n"><span class="pre">lifter_cm1</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lifter</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp7wetbulbE10lifter_cm1fff" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5sharp13theta_wetbulbEf3Lftfff">
+<span id="_CPPv3I0EN5sharp13theta_wetbulbE3Lftfff"></span><span id="_CPPv2I0EN5sharp13theta_wetbulbE3Lftfff"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Lft</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacesharp_1a5e3156aa7f5bafbd908184c7f51927ee"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">theta_wetbulb</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5sharp13theta_wetbulbEf3Lftfff" title="sharp::theta_wetbulb::Lft"><span class="n"><span class="pre">Lft</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lifter</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5sharp13theta_wetbulbEf3Lftfff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the wetbulb potential temperature. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>John Hart - NSSFC KCMO / NWSSPC OUN</p>
+</dd>
+</dl>
+</p>
+<p>Compute the wet bulb potential temperature (K) given the pressure (Pa), temperature (K), and dewpoint (K).</p>
+<p>First, it lifts a parcel with the given pressure, temperature, and dewpoint temperature to its Lifted Condensation Level (LCL). To compute the temperature and pressure of the LCL, an approximation is used. See the <a class="reference internal" href="#namespacesharp_1af016701e4a46d5c04d26c0a09c0aad38"><span class="std std-ref">sharp::lcl_temperature</span></a> documentation for more information.</p>
+<p>After the parcel has reached the LCL, the lifter passed in lowers the parcel to the standard reference pressure level (1000.0 hPa) along a moist adiabat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> – (wobf, cm1) </p></li>
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>dewpoint</strong> – (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>wetbulb_potential_temperature (K) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp13theta_wetbulbE12lifter_wobusfff">
+<span id="_CPPv3N5sharp13theta_wetbulbE12lifter_wobusfff"></span><span id="_CPPv2N5sharp13theta_wetbulbE12lifter_wobusfff"></span><span id="sharp::theta_wetbulb__lifter_wobus.float.float.float"></span><span class="target" id="namespacesharp_1a4a24e90b43358dfbdac50c9008de657c"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">theta_wetbulb</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="parcel.html#_CPPv4N5sharp12lifter_wobusE" title="sharp::lifter_wobus"><span class="n"><span class="pre">lifter_wobus</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lifter</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp13theta_wetbulbE12lifter_wobusfff" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp13theta_wetbulbE10lifter_cm1fff">
+<span id="_CPPv3N5sharp13theta_wetbulbE10lifter_cm1fff"></span><span id="_CPPv2N5sharp13theta_wetbulbE10lifter_cm1fff"></span><span id="sharp::theta_wetbulb__lifter_cm1.float.float.float"></span><span class="target" id="namespacesharp_1a514db8e8d5e4925dd56fd773fdd9ef55"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">theta_wetbulb</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="parcel.html#_CPPv4N5sharp10lifter_cm1E" title="sharp::lifter_cm1"><span class="n"><span class="pre">lifter_cm1</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lifter</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dewpoint</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp13theta_wetbulbE10lifter_cm1fff" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</section>
+<section id="moist-ascent">
+<h2>Moist Ascent<a class="headerlink" href="#moist-ascent" title="Link to this heading">#</a></h2>
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp7adiabatE">
+<span id="_CPPv3N5sharp7adiabatE"></span><span id="_CPPv2N5sharp7adiabatE"></span><span class="target" id="namespacesharp_1ad39fcd09ffea548c2aa8468c7d834d81"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">adiabat</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><a class="headerlink" href="#_CPPv4N5sharp7adiabatE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Defines the kinds of moist adiabats used by <a class="reference internal" href="#namespacesharp_1aa258841692c25171d3f3b2e8b1f52079"><span class="std std-ref">sharp::moist_adiabat_cm1</span></a>. </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp7adiabat10pseudo_liqE">
+<span id="_CPPv3N5sharp7adiabat10pseudo_liqE"></span><span id="_CPPv2N5sharp7adiabat10pseudo_liqE"></span><span class="target" id="namespacesharp_1ad39fcd09ffea548c2aa8468c7d834d81a2950b2ab4ab4c2d385ff16dfae8003c0"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pseudo_liq</span></span></span><a class="headerlink" href="#_CPPv4N5sharp7adiabat10pseudo_liqE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Pseudoadiabatic considering only liquid water. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp7adiabat9adiab_liqE">
+<span id="_CPPv3N5sharp7adiabat9adiab_liqE"></span><span id="_CPPv2N5sharp7adiabat9adiab_liqE"></span><span class="target" id="namespacesharp_1ad39fcd09ffea548c2aa8468c7d834d81ab7604476f4061e16c1a5abd1bf70bcb4"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">adiab_liq</span></span></span><a class="headerlink" href="#_CPPv4N5sharp7adiabat9adiab_liqE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Adiabatic considering only liquid water. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp7adiabat10pseudo_iceE">
+<span id="_CPPv3N5sharp7adiabat10pseudo_iceE"></span><span id="_CPPv2N5sharp7adiabat10pseudo_iceE"></span><span class="target" id="namespacesharp_1ad39fcd09ffea548c2aa8468c7d834d81ad4a63946bf6f9aa1165238e71094024a"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pseudo_ice</span></span></span><a class="headerlink" href="#_CPPv4N5sharp7adiabat10pseudo_iceE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Pseudoadiabatic considering liquid water + ice. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp7adiabat9adiab_iceE">
+<span id="_CPPv3N5sharp7adiabat9adiab_iceE"></span><span id="_CPPv2N5sharp7adiabat9adiab_iceE"></span><span class="target" id="namespacesharp_1ad39fcd09ffea548c2aa8468c7d834d81a8c43e5a2312127e6576ccd8030da6692"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">adiab_ice</span></span></span><a class="headerlink" href="#_CPPv4N5sharp7adiabat9adiab_iceE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Adiabatic considering liquid water + ice. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp7adiabat3ENDE">
+<span id="_CPPv3N5sharp7adiabat3ENDE"></span><span id="_CPPv2N5sharp7adiabat3ENDE"></span><span class="target" id="namespacesharp_1ad39fcd09ffea548c2aa8468c7d834d81ab1a326c06d88bf042f73d70f50197905"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">END</span></span></span><a class="headerlink" href="#_CPPv4N5sharp7adiabat3ENDE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp4wobfEf">
+<span id="_CPPv3N5sharp4wobfEf"></span><span id="_CPPv2N5sharp4wobfEf"></span><span id="sharp::wobf__float"></span><span class="target" id="namespacesharp_1ab535b8214969a50771219a275ebb7f4d"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">wobf</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp4wobfEf" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the difference between the wet-bulb potential temperatures for saturated and dry air given the temperature. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>John Hart - NSSFC KCMO / NWSSPC OUN</p>
+</dd>
+</dl>
+</p>
+<p>The Wobus Function (wobf) is defined as the difference between the wet-bulb potential temperature for saturated air (WBPTS) and the wet-bulb potential temperature for dry air (WBPTD) given an input temperature in Kelvin.</p>
+<p>WOBF(T) := WBPTS - WBPTD</p>
+<p>Although WBPTS and WBPTD are functions of both pressure and temperature, it is assumed their difference is a function of temperature only. The difference is also proportional to the heat imparted to a parcel.</p>
+<p>This function uses a polynomial approximation to the wobus function, fitted to values in Table 78 of PP.319-322 of the Smithsonian Meteorological Tables by Roland List (6th Revised Edition). Herman Wobus, a mathematician for the Navy Weather Research Facility in Norfolk, VA computed these coefficients a very long time ago, as he was retired as of the time of the documentation found on this routine written in 1981.</p>
+<p>It was shown by Robert Davies-Jones (2007) that the Wobus function has a slight dependence on pressure, which results in errors of up to 1.2 Kelvin in the temperature of a lifted parcel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>temperature</strong> – (K)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>wobf (K) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp7wetliftEffff">
+<span id="_CPPv3N5sharp7wetliftEffff"></span><span id="_CPPv2N5sharp7wetliftEffff"></span><span id="sharp::wetlift__float.float.float.float"></span><span class="target" id="namespacesharp_1af50c69b629718ef1260e8448af645843"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">wetlift</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lifted_pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">converge</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.001f</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp7wetliftEffff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the temperature of a parcel lifted moist adiabatically to a new level. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>John Hart - NSSFC KCMO / NWSSPC OUN</p>
+</dd>
+</dl>
+</p>
+<p>With a given parcel defined by a pressure and temperature (in Pascals and Kelvin), lift it moist adiabatically to a new pressure level (in Pascals) and return the temperture of the parcel at that level.</p>
+<p>This function relies on the Wobus Function ( <a class="reference internal" href="#namespacesharp_1ab535b8214969a50771219a275ebb7f4d"><span class="std std-ref">sharp::wobf</span></a> ), and it was shown by Robert Davies-Jones (2007) that the Wobus function has a slight dependence on pressure, which results in errors of up to 1.2 Kelvin in the temperature of a lifted parcel. This function also takes an optional argument that defines the iterative convergence criteria for the solver (default: 0.001 K).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>lifted_pressure</strong> – (Pa) </p></li>
+<li><p><strong>converge</strong> – (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>lifted_temperature (K) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp14saturated_liftEfff">
+<span id="_CPPv3N5sharp14saturated_liftEfff"></span><span id="_CPPv2N5sharp14saturated_liftEfff"></span><span id="sharp::saturated_lift__float.float.float"></span><span class="target" id="namespacesharp_1ab8a75ed92a2c2062162264a54f3a5338"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">saturated_lift</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">theta_sat</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">converge</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.001f</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp14saturated_liftEfff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the temperature along a moist adiabat (wet-bulb potential temperature) at a given pressure. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>John Hart - NSSFC KCMO / NWSSPC OUN</p>
+</dd>
+</dl>
+</p>
+<p>Compute the temperature at which the moist adiabat intersects a line of constant pressure on a Skew-T log-P diagram. The wet-bulb potential temperature, given by theta_sat, defines a moist adiabat in Kelvin, and the temperature at the given pressure level in Pascals (Pa) is returned.</p>
+<p>This function relies on the Wobus Function ( <a class="reference internal" href="#namespacesharp_1ab535b8214969a50771219a275ebb7f4d"><span class="std std-ref">sharp::wobf</span></a> ), and it was shown by Robert Davies-Jones (2007) that the Wobus function has a slight dependence on pressure, which results in errors of up to 1.2 Kelvin in the temperature of a lifted parcel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>theta_sat</strong> – (K) </p></li>
+<li><p><strong>converge</strong> – (convergence criteria; default = 0.001f)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>lifted_temperature (K) </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp17moist_adiabat_cm1EfffRfRfRfRfff7adiabat">
+<span id="_CPPv3N5sharp17moist_adiabat_cm1EfffRfRfRfRfff7adiabat"></span><span id="_CPPv2N5sharp17moist_adiabat_cm1EfffRfRfRfRfff7adiabat"></span><span id="sharp::moist_adiabat_cm1__float.float.float.floatR.floatR.floatR.floatR.float.float.adiabat"></span><span class="target" id="namespacesharp_1aa258841692c25171d3f3b2e8b1f52079"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">moist_adiabat_cm1</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">new_pressure</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rv_total</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rv</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rl</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">ri</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pres_incr</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">converge</span></span>, <a class="reference internal" href="#_CPPv4N5sharp7adiabatE" title="sharp::adiabat"><span class="n"><span class="pre">adiabat</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">ma_type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp17moist_adiabat_cm1EfffRfRfRfRfff7adiabat" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the temperature of a parcel lifted moist adiabatically to a new level. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>With a given parcel defined by a pressure and temperature (in Pascals and Kelvin), lift it moist adiabatically to a new pressure level (in Pascals) and return the temperature of the parcel at that level.</p>
+<p>This function is based on/ripped from George Byran’s (NCAR) routine in CM1. It has several options for convergence criteria, pressure increments, and the type of moist adiabat/assumptions (i.e. pseudoadiabatic, adiabatic, liquid, liquid+ice). The <a class="reference internal" href="#namespacesharp_1ad39fcd09ffea548c2aa8468c7d834d81"><span class="std std-ref">sharp::adiabat</span></a> defines the types of adiabats, and the float references to qv, ql, and qi are used to keep budgets of the moisture variables.</p>
+<p>NOTE: rv_total should most likely be the water vapor mixing ratio either at the parcel’s <a class="reference internal" href="parcel.html#namespacesharp_1a03664f85e552919899eefba1c4a7997f"><span class="std std-ref">sharp::LPL</span></a>, or the water vapor mixing ratio at the LCL (these are going to be the same value). Essentially, the total water vapor before condensation.</p>
+<p>If the internal solver reaches 100 iterations without converging, it will return the last computed value and print a warning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>temperature</strong> – (K) </p></li>
+<li><p><strong>new_pressure</strong> – (Pa) </p></li>
+<li><p><strong>rv_total</strong> – (kg/kg) </p></li>
+<li><p><strong>rv</strong> – (kg/kg) </p></li>
+<li><p><strong>rl</strong> – (kg/kg) </p></li>
+<li><p><strong>ri</strong> – (kg/kg) </p></li>
+<li><p><strong>pres_incr</strong> – (Pa) </p></li>
+<li><p><strong>converge</strong> – (precision) </p></li>
+<li><p><strong>ma_type</strong> – (<a class="reference internal" href="#namespacesharp_1ad39fcd09ffea548c2aa8468c7d834d81"><span class="std std-ref">sharp::adiabat</span></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pcl_temperature (K) </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="parcel.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">parcel</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="winds.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">winds</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dry-variables">Dry Variables</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp5thetaEfff"><code class="docutils literal notranslate"><span class="pre">theta()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp11theta_levelEff"><code class="docutils literal notranslate"><span class="pre">theta_level()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp10lapse_rateE11HeightLayerA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">lapse_rate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp10lapse_rateE13PressureLayerA_KfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">lapse_rate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp14lapse_rate_maxE11HeightLayerKfA_KfA_KfKNSt9ptrdiff_tEP11HeightLayer"><code class="docutils literal notranslate"><span class="pre">lapse_rate_max()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp14lapse_rate_maxE13PressureLayerKfA_KfA_KfA_KfKNSt9ptrdiff_tEP13PressureLayer"><code class="docutils literal notranslate"><span class="pre">lapse_rate_max()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dry-ascent">Dry Ascent</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp7dryliftEfffRfRf"><code class="docutils literal notranslate"><span class="pre">drylift()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp15lcl_temperatureEff"><code class="docutils literal notranslate"><span class="pre">lcl_temperature()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moist-variables">Moist Variables</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp8mixratioEf"><code class="docutils literal notranslate"><span class="pre">mixratio()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp8mixratioEff"><code class="docutils literal notranslate"><span class="pre">mixratio()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp12mixratio_iceEff"><code class="docutils literal notranslate"><span class="pre">mixratio_ice()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp14vapor_pressureEff"><code class="docutils literal notranslate"><span class="pre">vapor_pressure()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp18vapor_pressure_iceEff"><code class="docutils literal notranslate"><span class="pre">vapor_pressure_ice()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp17specific_humidityEf"><code class="docutils literal notranslate"><span class="pre">specific_humidity()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp17relative_humidityEfff"><code class="docutils literal notranslate"><span class="pre">relative_humidity()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp23temperature_at_mixratioEff"><code class="docutils literal notranslate"><span class="pre">temperature_at_mixratio()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp19virtual_temperatureEffff"><code class="docutils literal notranslate"><span class="pre">virtual_temperature()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp8buoyancyEKfKf"><code class="docutils literal notranslate"><span class="pre">buoyancy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp8buoyancyEA_KfA_KfA_fNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">buoyancy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6thetaeEfff"><code class="docutils literal notranslate"><span class="pre">thetae()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN5sharp7wetbulbEf3Lftfff"><code class="docutils literal notranslate"><span class="pre">wetbulb()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp7wetbulbE12lifter_wobusfff"><code class="docutils literal notranslate"><span class="pre">wetbulb()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp7wetbulbE10lifter_cm1fff"><code class="docutils literal notranslate"><span class="pre">wetbulb()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN5sharp13theta_wetbulbEf3Lftfff"><code class="docutils literal notranslate"><span class="pre">theta_wetbulb()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp13theta_wetbulbE12lifter_wobusfff"><code class="docutils literal notranslate"><span class="pre">theta_wetbulb()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp13theta_wetbulbE10lifter_cm1fff"><code class="docutils literal notranslate"><span class="pre">theta_wetbulb()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moist-ascent">Moist Ascent</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp7adiabatE"><code class="docutils literal notranslate"><span class="pre">adiabat</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp7adiabat10pseudo_liqE"><code class="docutils literal notranslate"><span class="pre">pseudo_liq</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp7adiabat9adiab_liqE"><code class="docutils literal notranslate"><span class="pre">adiab_liq</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp7adiabat10pseudo_iceE"><code class="docutils literal notranslate"><span class="pre">pseudo_ice</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp7adiabat9adiab_iceE"><code class="docutils literal notranslate"><span class="pre">adiab_ice</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp7adiabat3ENDE"><code class="docutils literal notranslate"><span class="pre">END</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp4wobfEf"><code class="docutils literal notranslate"><span class="pre">wobf()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp7wetliftEffff"><code class="docutils literal notranslate"><span class="pre">wetlift()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp14saturated_liftEfff"><code class="docutils literal notranslate"><span class="pre">saturated_lift()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp17moist_adiabat_cm1EfffRfRfRfRfff7adiabat"><code class="docutils literal notranslate"><span class="pre">moist_adiabat_cm1()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2025, NOAA/NWS/NCEP Storm Prediction Center.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
