@@ -731,7 +731,7 @@ struct DowndraftParcel {
             float mean_thetae = sharp::layer_mean(mn_lyr, pressure, thetae, N);
             if (mean_thetae < min_thetae) {
                 min_thetae = mean_thetae;
-                pres_of_min = mn_lyr.bottom - (mean_depth / 2.0f);
+                pres_of_min = pressure[k];
             }
         }
 
