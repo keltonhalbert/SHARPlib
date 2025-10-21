@@ -21,14 +21,19 @@ namespace sharp {
 
 PressureLayer dendritic_layer(const float pressure[], const float temperature[],
                               const std::ptrdiff_t N) {
-    sharp::PressureLayer dgz = {sharp::MISSING, sharp::MISSING};
-
-    dgz.bottom =
+    float bottom =
         find_first_pressure(-12.0f + ZEROCNK, pressure, temperature, N);
-    dgz.top = find_first_pressure(-17.0f + ZEROCNK, pressure, temperature, N);
+    float top = find_first_pressure(-17.0f + ZEROCNK, pressure, temperature, N);
 
-    // do_stuff
-    return dgz;
+    if (top == MISSING) {
+        return {MISSING, MISSING};
+    }
+
+    if (bottom == MISSING) {
+        bottom = pressure[0];
+    }
+
+    return {bottom, top};
 }
 
 }  // namespace sharp
