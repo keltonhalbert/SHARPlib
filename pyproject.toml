@@ -64,7 +64,7 @@ sdist.include = [
 BUILD_PYBIND = true
 
 [tool.setuptools_scm]  # Section required
-write_to = "src/nanobind/_version.py"
+version_file = "src/nanobind/_version.py"
 
 [tool.pytest.ini_options]
 testpaths = ["tests/python"]
