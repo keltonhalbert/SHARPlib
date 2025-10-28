@@ -1,0 +1,1011 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="dark">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>layer &#8212; SHARPlib v1.1.1.post1 Manual</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=d727d969"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/cpp_api/layer';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://keltonhalbert.github.io/SHARPlib/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.1.1.post1';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="params" href="params.html" />
+    <link rel="prev" title="interp" href="interp.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.1.1.post1" />
+    <meta name="docbuild:last-update" content="Oct 28, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="dark">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-dark" alt=""/>
+    <img src="../../_static/logo.png" class="logo__image only-light pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">SHARPlib</p>
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../faq.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/tree/main/examples/Python">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/releases">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Bluesky</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../faq.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/tree/main/examples/Python">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/releases">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Bluesky</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="constants.html">constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interp.html">interp</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parcel.html">parcel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermo.html">thermo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="winds.html">winds</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">C++ API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">layer</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="layer">
+<h1>layer<a class="headerlink" href="#layer" title="Link to this heading">#</a></h1>
+<section id="layer-definitions">
+<h2>Layer Definitions<a class="headerlink" href="#layer-definitions" title="Link to this heading">#</a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp13PressureLayerE">
+<span id="_CPPv3N5sharp13PressureLayerE"></span><span id="_CPPv2N5sharp13PressureLayerE"></span><span id="sharp::PressureLayer"></span><span class="target" id="structsharp_1_1PressureLayer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PressureLayer</span></span></span><a class="headerlink" href="#_CPPv4N5sharp13PressureLayerE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A simple structure of two named floats that represent a pressure layer. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center </p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp13PressureLayer13PressureLayerEv">
+<span id="_CPPv3N5sharp13PressureLayer13PressureLayerEv"></span><span id="_CPPv2N5sharp13PressureLayer13PressureLayerEv"></span><span id="sharp::PressureLayer::PressureLayer"></span><span class="target" id="structsharp_1_1PressureLayer_1a6bc466eb89b05447dd0d1f36a04b2de7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PressureLayer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp13PressureLayer13PressureLayerEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct an empty <a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a>. </p>
+<p>Sets the top and bottom to <a class="reference internal" href="constants.html#namespacesharp_1af2ffcc858ff03be6e2ae2fe2ee20040d"><span class="std std-ref">sharp::MISSING</span></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp13PressureLayer13PressureLayerEfff">
+<span id="_CPPv3N5sharp13PressureLayer13PressureLayerEfff"></span><span id="_CPPv2N5sharp13PressureLayer13PressureLayerEfff"></span><span id="sharp::PressureLayer::PressureLayer__float.float.float"></span><span class="target" id="structsharp_1_1PressureLayer_1abf54d15a85f0ccdc9ea0f85d916aed52"></span><span class="sig-name descname"><span class="n"><span class="pre">PressureLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bot</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">top</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">delta</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">1000.0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp13PressureLayer13PressureLayerEfff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Constructs a <a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bot</strong> – (bottom of layer, Pa) </p></li>
+<li><p><strong>top</strong> – (top of layer, Pa) </p></li>
+<li><p><strong>delta</strong> – (pressure increment, Pa) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp13PressureLayer6bottomE">
+<span id="_CPPv3N5sharp13PressureLayer6bottomE"></span><span id="_CPPv2N5sharp13PressureLayer6bottomE"></span><span id="sharp::PressureLayer::bottom__float"></span><span class="target" id="structsharp_1_1PressureLayer_1a22a8b0e57b0b2e23f87a1f23e6b2cf96"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bottom</span></span></span><a class="headerlink" href="#_CPPv4N5sharp13PressureLayer6bottomE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The bottom of the pressure layer (Pa) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp13PressureLayer3topE">
+<span id="_CPPv3N5sharp13PressureLayer3topE"></span><span id="_CPPv2N5sharp13PressureLayer3topE"></span><span id="sharp::PressureLayer::top__float"></span><span class="target" id="structsharp_1_1PressureLayer_1adb2306e425e88885902cde3e8f84531a"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">top</span></span></span><a class="headerlink" href="#_CPPv4N5sharp13PressureLayer3topE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The top of the pressure layer (Pa) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp13PressureLayer5deltaE">
+<span id="_CPPv3N5sharp13PressureLayer5deltaE"></span><span id="_CPPv2N5sharp13PressureLayer5deltaE"></span><span id="sharp::PressureLayer::delta__float"></span><span class="target" id="structsharp_1_1PressureLayer_1a4444597984491f09fa0f4ae92c7984de"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">delta</span></span></span><a class="headerlink" href="#_CPPv4N5sharp13PressureLayer5deltaE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The pressure interval with which to iterate over the layer (Pa) </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp13PressureLayer5coordE">
+<span id="_CPPv3N5sharp13PressureLayer5coordE"></span><span id="_CPPv2N5sharp13PressureLayer5coordE"></span><span id="sharp::PressureLayer::coord__LayerCoordinate"></span><span class="target" id="structsharp_1_1PressureLayer_1a361e987d6981cd01311b78aa60abe54a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">LayerCoordinate</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">coord</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">LayerCoordinate</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pressure</span></span><a class="headerlink" href="#_CPPv4N5sharp13PressureLayer5coordE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The coordinate system of the layer. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp11HeightLayerE">
+<span id="_CPPv3N5sharp11HeightLayerE"></span><span id="_CPPv2N5sharp11HeightLayerE"></span><span id="sharp::HeightLayer"></span><span class="target" id="structsharp_1_1HeightLayer"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HeightLayer</span></span></span><a class="headerlink" href="#_CPPv4N5sharp11HeightLayerE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A simple structure of named floats that represent a height layer. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center </p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp11HeightLayer11HeightLayerEv">
+<span id="_CPPv3N5sharp11HeightLayer11HeightLayerEv"></span><span id="_CPPv2N5sharp11HeightLayer11HeightLayerEv"></span><span id="sharp::HeightLayer::HeightLayer"></span><span class="target" id="structsharp_1_1HeightLayer_1a4e5ac92e2dc99c9cb1fed343deea0fc6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HeightLayer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp11HeightLayer11HeightLayerEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct an empty <a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a>. </p>
+<p>Sets the top and bottom to <a class="reference internal" href="constants.html#namespacesharp_1af2ffcc858ff03be6e2ae2fe2ee20040d"><span class="std std-ref">sharp::MISSING</span></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp11HeightLayer11HeightLayerEfff">
+<span id="_CPPv3N5sharp11HeightLayer11HeightLayerEfff"></span><span id="_CPPv2N5sharp11HeightLayer11HeightLayerEfff"></span><span id="sharp::HeightLayer::HeightLayer__float.float.float"></span><span class="target" id="structsharp_1_1HeightLayer_1a325dbeae6bc031de694cee249945cee7"></span><span class="sig-name descname"><span class="n"><span class="pre">HeightLayer</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">bot</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">top</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">delta</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100.0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp11HeightLayer11HeightLayerEfff" title="Link to this definition">#</a><br /></dt>
+<dd><p>Constructs a <a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a>. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bot</strong> – (bottom of layer, meters) </p></li>
+<li><p><strong>top</strong> – (top of layer, meters) </p></li>
+<li><p><strong>delta</strong> – (height increment, meters) </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp11HeightLayer6bottomE">
+<span id="_CPPv3N5sharp11HeightLayer6bottomE"></span><span id="_CPPv2N5sharp11HeightLayer6bottomE"></span><span id="sharp::HeightLayer::bottom__float"></span><span class="target" id="structsharp_1_1HeightLayer_1a0e1207130406a14e4362a933a72e6588"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bottom</span></span></span><a class="headerlink" href="#_CPPv4N5sharp11HeightLayer6bottomE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The bottom of the height layer (meters) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp11HeightLayer3topE">
+<span id="_CPPv3N5sharp11HeightLayer3topE"></span><span id="_CPPv2N5sharp11HeightLayer3topE"></span><span id="sharp::HeightLayer::top__float"></span><span class="target" id="structsharp_1_1HeightLayer_1a482aa23d807be5d28d98ac96dc6434d0"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">top</span></span></span><a class="headerlink" href="#_CPPv4N5sharp11HeightLayer3topE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The top of the height layer (meters) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp11HeightLayer5deltaE">
+<span id="_CPPv3N5sharp11HeightLayer5deltaE"></span><span id="_CPPv2N5sharp11HeightLayer5deltaE"></span><span id="sharp::HeightLayer::delta__float"></span><span class="target" id="structsharp_1_1HeightLayer_1af1d902f92c79d012f2ee545219383af4"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">delta</span></span></span><a class="headerlink" href="#_CPPv4N5sharp11HeightLayer5deltaE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The height interval with which to iterate over the layer (meters) </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp11HeightLayer5coordE">
+<span id="_CPPv3N5sharp11HeightLayer5coordE"></span><span id="_CPPv2N5sharp11HeightLayer5coordE"></span><span id="sharp::HeightLayer::coord__LayerCoordinate"></span><span class="target" id="structsharp_1_1HeightLayer_1a3dc8637983c2575b2fb972335714fa38"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="n"><span class="pre">LayerCoordinate</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">coord</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">LayerCoordinate</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">height</span></span><a class="headerlink" href="#_CPPv4N5sharp11HeightLayer5coordE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The coordinate system of the layer. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp10LayerIndexE">
+<span id="_CPPv3N5sharp10LayerIndexE"></span><span id="_CPPv2N5sharp10LayerIndexE"></span><span id="sharp::LayerIndex"></span><span class="target" id="structsharp_1_1LayerIndex"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LayerIndex</span></span></span><a class="headerlink" href="#_CPPv4N5sharp10LayerIndexE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A simple structure of two named integer indices for the top and bottom of a layer. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center </p>
+</dd>
+</dl>
+</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp10LayerIndex4kbotE">
+<span id="_CPPv3N5sharp10LayerIndex4kbotE"></span><span id="_CPPv2N5sharp10LayerIndex4kbotE"></span><span id="sharp::LayerIndex::kbot__std::ptrdiff_t"></span><span class="target" id="structsharp_1_1LayerIndex_1a29cd85832f403659b88daab19abac1ca"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">kbot</span></span></span><a class="headerlink" href="#_CPPv4N5sharp10LayerIndex4kbotE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The array index of the bottom of the layer. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp10LayerIndex4ktopE">
+<span id="_CPPv3N5sharp10LayerIndex4ktopE"></span><span id="_CPPv2N5sharp10LayerIndex4ktopE"></span><span id="sharp::LayerIndex::ktop__std::ptrdiff_t"></span><span class="target" id="structsharp_1_1LayerIndex_1a849a04de93753261c91c58b590e60ee2"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ktop</span></span></span><a class="headerlink" href="#_CPPv4N5sharp10LayerIndex4ktopE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The array index of the top of the layer. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</section>
+<section id="layer-conversions">
+<h2>Layer Conversions<a class="headerlink" href="#layer-conversions" title="Link to this heading">#</a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp24pressure_layer_to_heightE13PressureLayerA_KfA_KfKNSt9ptrdiff_tEKb">
+<span id="_CPPv3N5sharp24pressure_layer_to_heightE13PressureLayerA_KfA_KfKNSt9ptrdiff_tEKb"></span><span id="_CPPv2N5sharp24pressure_layer_to_heightE13PressureLayerA_KfA_KfKNSt9ptrdiff_tEKb"></span><span id="sharp::pressure_layer_to_height__PressureLayer.floatCA.floatCA.std::ptrdiff_tC.bC"></span><span class="target" id="namespacesharp_1a31da980f398c9f6a5960ddf868101a94"></span><a class="reference internal" href="#_CPPv4N5sharp11HeightLayerE" title="sharp::HeightLayer"><span class="n"><span class="pre">HeightLayer</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">pressure_layer_to_height</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">layer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">toAGL</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp24pressure_layer_to_heightE13PressureLayerA_KfA_KfKNSt9ptrdiff_tEKb" title="Link to this definition">#</a><br /></dt>
+<dd><p>Converts a <a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> to a <a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Converts a <a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> to a <a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a> via interpolation, with the option of returning the layer in meters AGL or MSL. If for some strange reason you provide a <a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">PressureLayer</span></a> that is out of the bounds of pressure[], then the bottom and top of the output layer will be set to <a class="reference internal" href="constants.html#namespacesharp_1af2ffcc858ff03be6e2ae2fe2ee20040d"><span class="std std-ref">sharp::MISSING</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> – (Pa) </p></li>
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>height</strong> – (meters) </p></li>
+<li><p><strong>N</strong> – (Length of arrays) </p></li>
+<li><p><strong>toAGL</strong> – Flag whether to return meters AGL or MSL (default: false)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>{bottom, top} </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp24height_layer_to_pressureE11HeightLayerA_KfA_KfKNSt9ptrdiff_tEKb">
+<span id="_CPPv3N5sharp24height_layer_to_pressureE11HeightLayerA_KfA_KfKNSt9ptrdiff_tEKb"></span><span id="_CPPv2N5sharp24height_layer_to_pressureE11HeightLayerA_KfA_KfKNSt9ptrdiff_tEKb"></span><span id="sharp::height_layer_to_pressure__HeightLayer.floatCA.floatCA.std::ptrdiff_tC.bC"></span><span class="target" id="namespacesharp_1ab77e344c7462c9615b0ddac228bc2193"></span><a class="reference internal" href="#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">height_layer_to_pressure</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5sharp11HeightLayerE" title="sharp::HeightLayer"><span class="n"><span class="pre">HeightLayer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">layer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">isAGL</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp24height_layer_to_pressureE11HeightLayerA_KfA_KfKNSt9ptrdiff_tEKb" title="Link to this definition">#</a><br /></dt>
+<dd><p>Converts a <a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a> to a <a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Converts a <a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a> to a <a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> via interpolation, with a flag to signal whether the input layer is in meters AGL or meters MSL. If for some strange reason you provide a <a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">HeightLayer</span></a> that is out of the bounds of height[], then the bottom and top of the output layer will be set to <a class="reference internal" href="constants.html#namespacesharp_1af2ffcc858ff03be6e2ae2fe2ee20040d"><span class="std std-ref">sharp::MISSING</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> – (meters) </p></li>
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>height</strong> – (meters) </p></li>
+<li><p><strong>N</strong> – (Length of arrays) </p></li>
+<li><p><strong>isAGL</strong> – Whether the input layer is AGL / MSL (default: false)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>{bottom, top} </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp15get_layer_indexER13PressureLayerA_KfKNSt9ptrdiff_tE">
+<span id="_CPPv3N5sharp15get_layer_indexER13PressureLayerA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp15get_layer_indexER13PressureLayerA_KfKNSt9ptrdiff_tE"></span><span id="sharp::get_layer_index__PressureLayerR.floatCA.std::ptrdiff_tC"></span><span class="target" id="namespacesharp_1ac2f381378ac4ec13ad83d2ec92b2abcc"></span><a class="reference internal" href="#_CPPv4N5sharp10LayerIndexE" title="sharp::LayerIndex"><span class="n"><span class="pre">LayerIndex</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_layer_index</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">layer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp15get_layer_indexER13PressureLayerA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Finds the array indices corresponding to the given <a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Returns the array indices corresponding to the given <a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a>, and performs bounds checking on the layer. As part of the bounds checking, the <a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> is modified if the bottom or top of the layer is out of bounds, which is why it gets passed as a reference.</p>
+<p>If the exact values of the top and bottom of the layer are present, their indices are ignored. The default behavior is that the bottom and top of a layer is computed by interpolation by default, since it may or may not be present in the native data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> – {bottom, top} </p></li>
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>N</strong> – (length of array)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>{kbot, ktop} </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp15get_layer_indexER11HeightLayerA_KfKNSt9ptrdiff_tE">
+<span id="_CPPv3N5sharp15get_layer_indexER11HeightLayerA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp15get_layer_indexER11HeightLayerA_KfKNSt9ptrdiff_tE"></span><span id="sharp::get_layer_index__HeightLayerR.floatCA.std::ptrdiff_tC"></span><span class="target" id="namespacesharp_1a4a8e42ed2ba834a1436242e320492bbc"></span><a class="reference internal" href="#_CPPv4N5sharp10LayerIndexE" title="sharp::LayerIndex"><span class="n"><span class="pre">LayerIndex</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">get_layer_index</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5sharp11HeightLayerE" title="sharp::HeightLayer"><span class="n"><span class="pre">HeightLayer</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">layer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp15get_layer_indexER11HeightLayerA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Finds the array indices corresponding to the given <a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Returns the array indices corresponding to the given <a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a>, and performs bounds checking on the layer. As part of the bounds checking, the <a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a> is modified if the bottom or top of the layer is out of bounds, which is why it gets passed as a reference.</p>
+<p>If the exact values of the top and bottom of the layer are present, their indices are ignored. The default behavior is that the bottom and top of a layer is computed by interpolation by default, since it may or may not be present in the native data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> – {bottom, top} </p></li>
+<li><p><strong>height</strong> – (meters) </p></li>
+<li><p><strong>N</strong> – (length of array)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>{kbot, ktop} </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="layer-calculations">
+<h2>Layer Calculations<a class="headerlink" href="#layer-calculations" title="Link to this heading">#</a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5sharp9layer_minEf1LA_KfA_KfKNSt9ptrdiff_tEPf">
+<span id="_CPPv3I0EN5sharp9layer_minE1LA_KfA_KfKNSt9ptrdiff_tEPf"></span><span id="_CPPv2I0EN5sharp9layer_minE1LA_KfA_KfKNSt9ptrdiff_tEPf"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">L</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacesharp_1a01a9880c937f63e551893797253da4f7"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">layer_min</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5sharp9layer_minEf1LA_KfA_KfKNSt9ptrdiff_tEPf" title="sharp::layer_min::L"><span class="n"><span class="pre">L</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">layer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">coord_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lvl_of_min</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5sharp9layer_minEf1LA_KfA_KfKNSt9ptrdiff_tEPf" title="Link to this definition">#</a><br /></dt>
+<dd><p>Returns the minimum value in the given layer. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Returns the minimum value observed within the given data array over the given <a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> or <a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a>. The function bounds checks the layer by calling sharp::get_layer_index.</p>
+<p>If lvl_of_min is not a nullptr, then the pointer will be dereferenced and filled with the coordinate of the minimum value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> – (<a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> or <a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a>) </p></li>
+<li><p><strong>coord_arr</strong> – (coordinate units; Pa or meters) </p></li>
+<li><p><strong>data_arr</strong> – (data array to find min on) </p></li>
+<li><p><strong>N</strong> – (length of arrays) </p></li>
+<li><p><strong>lvl_of_min</strong> – (level of min val)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>layer_min </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5sharp9layer_maxEf1LA_KfA_KfKNSt9ptrdiff_tEPf">
+<span id="_CPPv3I0EN5sharp9layer_maxE1LA_KfA_KfKNSt9ptrdiff_tEPf"></span><span id="_CPPv2I0EN5sharp9layer_maxE1LA_KfA_KfKNSt9ptrdiff_tEPf"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">L</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacesharp_1a6170e3f412ab95b3ba8d9a93ae55dc67"></span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">layer_max</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5sharp9layer_maxEf1LA_KfA_KfKNSt9ptrdiff_tEPf" title="sharp::layer_max::L"><span class="n"><span class="pre">L</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">layer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">coord_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lvl_of_max</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5sharp9layer_maxEf1LA_KfA_KfKNSt9ptrdiff_tEPf" title="Link to this definition">#</a><br /></dt>
+<dd><p>Returns the maximim value in the given layer. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Returns the maximum value observed within the given data array over the given <a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> or <a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a>. The function bounds checks the layer by calling sharp::get_layer_index.</p>
+<p>If lvl_of_max is not a nullptr, then the pointer will be dereferenced and filled with the coordinate of the maximum value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> – (<a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> or <a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a>) </p></li>
+<li><p><strong>coord_arr</strong> – (coordinate units; Pa or meters) </p></li>
+<li><p><strong>data_arr</strong> – (data array to find max on) </p></li>
+<li><p><strong>N</strong> – (length of arrays) </p></li>
+<li><p><strong>lvl_of_max</strong> – (level of max val)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>layer_max </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp10layer_meanE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE">
+<span id="_CPPv3N5sharp10layer_meanE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp10layer_meanE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE"></span><span id="sharp::layer_mean__PressureLayer.floatCA.floatCA.std::ptrdiff_tC"></span><span class="target" id="namespacesharp_1a298e2c96c389f2c5177d3626c908927e"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">layer_mean</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">layer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp10layer_meanE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the mass-weighted mean value of a field over a given pressure layer. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Computes the mass-weighted mean value of given arrays of data and corresponding pressure coordinates over the given <a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> – (<a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a>) </p></li>
+<li><p><strong>pressure</strong> – (vertical pressure array; Pa) </p></li>
+<li><p><strong>data_arr</strong> – (The data for which to compute a mean) </p></li>
+<li><p><strong>N</strong> – (length of pressure and data arrays)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>layer_mean </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp10layer_meanE11HeightLayerA_KfA_KfA_KfKNSt9ptrdiff_tEKb">
+<span id="_CPPv3N5sharp10layer_meanE11HeightLayerA_KfA_KfA_KfKNSt9ptrdiff_tEKb"></span><span id="_CPPv2N5sharp10layer_meanE11HeightLayerA_KfA_KfA_KfKNSt9ptrdiff_tEKb"></span><span id="sharp::layer_mean__HeightLayer.floatCA.floatCA.floatCA.std::ptrdiff_tC.bC"></span><span class="target" id="namespacesharp_1aa0726266b4777806bae4e8054e01684c"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">layer_mean</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5sharp11HeightLayerE" title="sharp::HeightLayer"><span class="n"><span class="pre">HeightLayer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">layer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">data_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">isAGL</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp10layer_meanE11HeightLayerA_KfA_KfA_KfKNSt9ptrdiff_tEKb" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the mass-weighted mean value of a field over a given height layer. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Computes the mass-weighted mean value of given arrays of data and corresponding height coordinates over the given <a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a>. This is really just a fancy wrapper around the implementation that uses <a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> – (<a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a>) </p></li>
+<li><p><strong>height</strong> – (vertical height array; meters) </p></li>
+<li><p><strong>pressure</strong> – (vertical pressure array; Pa) </p></li>
+<li><p><strong>data_arr</strong> – (The data for which to compute a mean) </p></li>
+<li><p><strong>N</strong> – (length of pressure and data arrays) </p></li>
+<li><p><strong>isAGL</strong> – (whether or not intput is in AGL or MSL)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>layer_mean </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5sharp21integrate_layer_trapzEf1LA_KfA_KfKNSt9ptrdiff_tEKiKb">
+<span id="_CPPv3I0EN5sharp21integrate_layer_trapzE1LA_KfA_KfKNSt9ptrdiff_tEKiKb"></span><span id="_CPPv2I0EN5sharp21integrate_layer_trapzE1LA_KfA_KfKNSt9ptrdiff_tEKiKb"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">L</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacesharp_1a7acec1642f27591dc988bf9e48b4612d"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">integrate_layer_trapz</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5sharp21integrate_layer_trapzEf1LA_KfA_KfKNSt9ptrdiff_tEKiKb" title="sharp::integrate_layer_trapz::L"><span class="n"><span class="pre">L</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">layer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">var_array</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">coord_array</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">integ_sign</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weighted</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5sharp21integrate_layer_trapzEf1LA_KfA_KfKNSt9ptrdiff_tEKiKb" title="Link to this definition">#</a><br /></dt>
+<dd><p>Returns a trapezoidal integration of the given layer. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Returns a trapezoidal integration of the given data array over the given <a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> or <a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a>. There is an additional default argument that determines whether this is a weighted average or not. The sign of the integration may be passed as well, i.e. integrating only positive or negative values, by passing a 1 or -1 to integ_sign.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> – (<a class="reference internal" href="#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> or <a class="reference internal" href="#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a>) </p></li>
+<li><p><strong>var_array</strong> – (data array to integrate) </p></li>
+<li><p><strong>coord_array</strong> – (coordinate array to integrate over) </p></li>
+<li><p><strong>N</strong> – (length of arrays) </p></li>
+<li><p><strong>weighted</strong> – (bool; default=false) </p></li>
+<li><p><strong>integ_sign</strong> – (int; default=0)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>integrated_value </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="interp.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">interp</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="params.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">params</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#layer-definitions">Layer Definitions</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp13PressureLayerE"><code class="docutils literal notranslate"><span class="pre">sharp::PressureLayer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp13PressureLayer13PressureLayerEv"><code class="docutils literal notranslate"><span class="pre">PressureLayer()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp13PressureLayer13PressureLayerEfff"><code class="docutils literal notranslate"><span class="pre">PressureLayer()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp13PressureLayer6bottomE"><code class="docutils literal notranslate"><span class="pre">bottom</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp13PressureLayer3topE"><code class="docutils literal notranslate"><span class="pre">top</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp13PressureLayer5deltaE"><code class="docutils literal notranslate"><span class="pre">delta</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp13PressureLayer5coordE"><code class="docutils literal notranslate"><span class="pre">coord</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp11HeightLayerE"><code class="docutils literal notranslate"><span class="pre">sharp::HeightLayer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp11HeightLayer11HeightLayerEv"><code class="docutils literal notranslate"><span class="pre">HeightLayer()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp11HeightLayer11HeightLayerEfff"><code class="docutils literal notranslate"><span class="pre">HeightLayer()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp11HeightLayer6bottomE"><code class="docutils literal notranslate"><span class="pre">bottom</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp11HeightLayer3topE"><code class="docutils literal notranslate"><span class="pre">top</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp11HeightLayer5deltaE"><code class="docutils literal notranslate"><span class="pre">delta</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp11HeightLayer5coordE"><code class="docutils literal notranslate"><span class="pre">coord</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp10LayerIndexE"><code class="docutils literal notranslate"><span class="pre">sharp::LayerIndex</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp10LayerIndex4kbotE"><code class="docutils literal notranslate"><span class="pre">kbot</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp10LayerIndex4ktopE"><code class="docutils literal notranslate"><span class="pre">ktop</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#layer-conversions">Layer Conversions</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp24pressure_layer_to_heightE13PressureLayerA_KfA_KfKNSt9ptrdiff_tEKb"><code class="docutils literal notranslate"><span class="pre">pressure_layer_to_height()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp24height_layer_to_pressureE11HeightLayerA_KfA_KfKNSt9ptrdiff_tEKb"><code class="docutils literal notranslate"><span class="pre">height_layer_to_pressure()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp15get_layer_indexER13PressureLayerA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">get_layer_index()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp15get_layer_indexER11HeightLayerA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">get_layer_index()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#layer-calculations">Layer Calculations</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN5sharp9layer_minEf1LA_KfA_KfKNSt9ptrdiff_tEPf"><code class="docutils literal notranslate"><span class="pre">layer_min()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN5sharp9layer_maxEf1LA_KfA_KfKNSt9ptrdiff_tEPf"><code class="docutils literal notranslate"><span class="pre">layer_max()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp10layer_meanE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">layer_mean()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp10layer_meanE11HeightLayerA_KfA_KfA_KfKNSt9ptrdiff_tEKb"><code class="docutils literal notranslate"><span class="pre">layer_mean()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN5sharp21integrate_layer_trapzEf1LA_KfA_KfKNSt9ptrdiff_tEKiKb"><code class="docutils literal notranslate"><span class="pre">integrate_layer_trapz()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2025, NOAA/NWS/NCEP Storm Prediction Center.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
