@@ -18,6 +18,11 @@
     {
         "version": "v1.1.0.post3",
         "url": "https://keltonhalbert.github.io/SHARPlib/v1.1.0.post3",
+        "is_latest": false
+    },
+    {
+        "version": "v1.1.1.post1",
+        "url": "https://keltonhalbert.github.io/SHARPlib/v1.1.1.post1",
         "is_latest": true
     }
 ]
