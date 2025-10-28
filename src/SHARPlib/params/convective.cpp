@@ -392,14 +392,19 @@ float precipitable_water(PressureLayer layer, const float pressure[],
 PressureLayer hail_growth_layer(const float pressure[],
                                 const float temperature[],
                                 const std::ptrdiff_t N) {
-    sharp::PressureLayer hgz = {sharp::MISSING, sharp::MISSING};
-
-    hgz.bottom =
+    float bottom =
         find_first_pressure(-10.0f + ZEROCNK, pressure, temperature, N);
-    hgz.top = find_first_pressure(-30.0f + ZEROCNK, pressure, temperature, N);
+    float top = find_first_pressure(-30.0f + ZEROCNK, pressure, temperature, N);
 
-    // do_stuff
-    return hgz;
+    if (top == MISSING) {
+        return {MISSING, MISSING};
+    }
+
+    if (bottom == MISSING) {
+        bottom = pressure[0];
+    }
+
+    return {bottom, top};
 }
 
 }  // end namespace sharp
