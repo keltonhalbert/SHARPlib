@@ -71,6 +71,7 @@ testpaths = ["tests/python"]
 
 [tool.cibuildwheel]
 build-verbosity = 1 
+before-build = "git clean -fdx";
 archs = ["auto64"]
 skip = ["pp*", "*i686", "*win32", "*musllinux*"]
 enable = []
