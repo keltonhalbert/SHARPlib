@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>params &#8212; SHARPlib v1.2.0.dev0-1-g6450826 Manual</title>
+    <title>params &#8212; SHARPlib v1.2.0.dev0-2-g6d34310 Manual</title>
   
   
   
@@ -56,7 +56,7 @@
     <link rel="prev" title="layer" href="layer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.0.dev0-1-g6450826" />
+  <meta name="docsearch:version" content="1.2.0.dev0-2-g6d34310" />
     <meta name="docbuild:last-update" content="Oct 29, 2025"/>
   </head>
   
@@ -730,6 +730,32 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp27derecho_composite_parameterEKfKfKfKf">
+<span id="_CPPv3N5sharp27derecho_composite_parameterEKfKfKfKf"></span><span id="_CPPv2N5sharp27derecho_composite_parameterEKfKfKfKf"></span><span id="sharp::derecho_composite_parameter__floatC.floatC.floatC.floatC"></span><span class="target" id="namespacesharp_1ac9525fa19c0005958eb7ef01800d2548"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">derecho_composite_parameter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dcape</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mucape</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">shear_0_6km</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mean_wind_0_6km</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp27derecho_composite_parameterEKfKfKfKf" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the Derecho Composite Parameter (DCP) </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>The Derecho Composite Parameter is based on a dataset of 113 derecho events compiled by the Evans and Doswell (2001) study. It is intended to highlight environments favorable for cold pool/outflow driven convective events. The phsysical mechamisms behind this parameter focus on cold pool production (DCAPE), ability to sustain strong convection (MUCAPE), convective organization (0 - 6 km shear), and sufficient deep-layer flow within the environment.</p>
+<p>References: Evans and Doswell 2001: <a class="reference external" href="https://doi.org/10.1175/1520-0434(2001)016%3C0329:EODEUP%3E2.0.CO;2">https://doi.org/10.1175/1520-0434(2001)016%3C0329:EODEUP%3E2.0.CO;2</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dcape</strong> – (J/kg) </p></li>
+<li><p><strong>mucape</strong> – (J/kg) </p></li>
+<li><p><strong>shear_0_6km</strong> – (m/s) </p></li>
+<li><p><strong>mean_wind_0_6km</strong> – (m/s)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Derecho Composite Parameter </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp17hail_growth_layerEA_KfA_KfKNSt9ptrdiff_tE">
 <span id="_CPPv3N5sharp17hail_growth_layerEA_KfA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp17hail_growth_layerEA_KfA_KfKNSt9ptrdiff_tE"></span><span id="sharp::hail_growth_layer__floatCA.floatCA.std::ptrdiff_tC"></span><span class="target" id="namespacesharp_1aa20009e7c666c469ae2ee0e4febb5226"></span><a class="reference internal" href="layer.html#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">hail_growth_layer</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp17hail_growth_layerEA_KfA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
 <dd><p>Get the layer encompassing the lowest hail growth zone (-10 to -30 C) </p>
@@ -917,6 +943,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp29supercell_composite_parameterEfff"><code class="docutils literal notranslate"><span class="pre">supercell_composite_parameter()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp29significant_tornado_parameterE6Parcelfff"><code class="docutils literal notranslate"><span class="pre">significant_tornado_parameter()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp26significant_hail_parameterERKN5sharp6ParcelEffff"><code class="docutils literal notranslate"><span class="pre">significant_hail_parameter()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp27derecho_composite_parameterEKfKfKfKf"><code class="docutils literal notranslate"><span class="pre">derecho_composite_parameter()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp17hail_growth_layerEA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">hail_growth_layer()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp18precipitable_waterE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">precipitable_water()</span></code></a></li>
 </ul>
