@@ -39,6 +39,31 @@ namespace sharp {
 [[nodiscard]] PressureLayer dendritic_layer(const float pressure[],
                                             const float temperature[],
                                             const std::ptrdiff_t N);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Computes the Snow Squall Parameter
+ *
+ * The Snow Squall Parameter is a non-dimensional parameter that
+ * combines several ingredients believed to be benefician for
+ * identifying snow squall environments by identifying the overlap
+ * of low-level potential instability, sufficient moisture, and
+ * strong low-level winds.
+ *
+ * References:
+ * Banacos et al. 2014:
+ * https://www.weather.gov/media/btv/research/Snow%20Squalls%20Forecasting%20and%20Hazard%20Mitigation.pdf
+ *
+ * \param    mean_relh_0_2km     (fraction)
+ * \param    delta_thetae_0_2km  (K)
+ * \param    mean_wind_0_2km     (m/s)
+ *
+ * \return The Snow Squall Parameter
+ */
+[[nodiscard]] float snow_squall_parameter(const float mean_relh_0_2km,
+                                          const float delta_thetae_0_2km,
+                                          const float mean_wind_0_2km);
 }  // namespace sharp
 
 #endif  // SHARP_PARAMS_WINTER_H
