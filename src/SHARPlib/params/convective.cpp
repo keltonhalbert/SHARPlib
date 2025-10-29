@@ -383,8 +383,8 @@ float significant_hail_parameter(const sharp::Parcel &mu_pcl,
 float derecho_composite_parameter(const float dcape, const float mucape,
                                   const float shear_0_6km,
                                   const float mean_wind_0_6km) {
-    return (dcape / 980.0f) * (mucape / 2000.0f) * (shear_0_6km / 10.2889f) *
-           (mean_wind_0_6km / 8.23111f);
+    return (std::abs(dcape) / 980.0f) * (mucape / 2000.0f) *
+           (shear_0_6km / 10.2889f) * (mean_wind_0_6km / 8.23111f);
 }
 
 float precipitable_water(PressureLayer layer, const float pressure[],
