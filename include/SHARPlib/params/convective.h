@@ -7,7 +7,7 @@
  *     Email: kelton.halbert@noaa.gov  \n
  * \date 2022-10-13
  *
- * Written for the NWS Storm Predidiction Center \n
+ * Written for the NWS Storm Prediction Center \n
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
@@ -277,7 +277,7 @@ template <typename Lifter>
                                      const std::ptrdiff_t N, Parcel* pcl);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediciton Center
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compute the Energy Helicity Index
  *
@@ -296,7 +296,7 @@ template <typename Lifter>
 [[nodiscard]] float energy_helicity_index(float cape, float helicity);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediciton Center
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compute the Supercell Composite Parameter
  *
@@ -405,13 +405,42 @@ template <typename Lifter>
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
  *
+ * \brief Computes the Derecho Composite Parameter (DCP)
+ *
+ * The Derecho Composite Parameter is based on a dataset of 113 derecho
+ * events compiled by the Evans and Doswell (2001) study. It is intended
+ * to highlight environments favorable for cold pool/outflow driven
+ * convective events. The phsysical mechamisms behind this parameter
+ * focus on cold pool production (DCAPE), ability to sustain strong
+ * convection (MUCAPE), convective organization (0 - 6 km shear), and
+ * sufficient deep-layer flow within the environment.
+ *
+ * References:
+ * Evans and Doswell 2001:
+ * https://doi.org/10.1175/1520-0434(2001)016%3C0329:EODEUP%3E2.0.CO;2
+ *
+ * \param   dcape               (J/kg)
+ * \param   mucape              (J/kg)
+ * \param   shear_0_6km         (m/s)
+ * \param   mean_wind_0_6km     (m/s)
+ *
+ * \return Derecho Composite Parameter
+ */
+[[nodiscard]] float derecho_composite_parameter(const float dcape,
+                                                const float mucape,
+                                                const float shear_0_6km,
+                                                const float mean_wind_0_6km);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
  * \brief Computes the precipitable water vapor content over a layer
  *
  * Given a sharp::PressureLayer to integrate over, compute the preciptable
  * water from the given pressure and mixing ratio arrays.
  *
  * \param   layer           (Pa)
- * \param   pressure       (Pa)
+ * \param   pressure        (Pa)
  * \param   mixing_ratio    (unitless)
  * \param   N               (length of arrays)
  *

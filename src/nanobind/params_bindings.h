@@ -552,6 +552,40 @@ float
     The significant hail parameter
     )pbdoc");
 
+    m_params.def("derecho_composite_parameter",
+                 &sharp::derecho_composite_parameter, nb::arg("dcape"),
+                 nb::arg("mucape"), nb::arg("shear_0_6km"),
+                 nb::arg("mean_wind_0_6km"),
+                 R"pbdoc(
+The Derecho Composite Parameter (DCP) is based on a dataset of 113 derecho 
+events compiled by the Evans and Boswell (2001) study. It is intended to 
+hightlight environments favorable for cold pool/outflow driven convective 
+events. The physical mechanisms behind this parameter focus on cold pool 
+production (DCAPE), ability to sustain strong convection (MUCAPE), 
+convective organization (0 - 6 km shear), and sufficient deep-layer flow 
+within the environment.
+
+References
+----------
+Evans and Doswell 2001: https://doi.org/10.1175/1520-0434(2001)016%3C0329:EODEUP%3E2.0.CO;2
+
+Parameters
+----------
+dcape : float 
+    Downdraft Convective Available Potential Energy (J/kg)
+mucape : float 
+    Most Unstable Parcel Convective Available Potential Energy (J/kg)
+shear_0_6km : float 
+    Shear magnitude in the 0 - 6 km layer AGL (m/s)
+mean_wind_0_6km : float 
+    Mean wind magnitude in the 0 - 6 km layer AGL (m/s)
+
+Returns
+-------
+float 
+    The Derecho Composite Parameter
+)pbdoc");
+
     m_params.def(
         "precipitable_water",
         [](sharp::PressureLayer& layer, const_prof_arr_t pres,
