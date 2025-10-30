@@ -31,3 +31,4 @@ params
    Winter-weather parameters.
 
    .. autofunction:: nwsspc.sharp.calc.params.dendritic_layer
+   .. autofunction:: nwsspc.sharp.calc.params.snow_squall_parameter

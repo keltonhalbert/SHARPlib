@@ -477,6 +477,33 @@ def dendritic_layer(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None
         The PressureLayer containing the dendritic growth zone
     """
 
+def snow_squall_parameter(mean_relh_0_2km: float, delta_thetae_0_2km: float, mean_wind_0_2km: float) -> float:
+    """
+    The Snow Squall Parameter is a non-dimensional parameter that combines 
+    several ingredients believed to be beneficial for identifying snow squall 
+    environments by identifying the overlap of low-level potential instability, 
+    sufficient moisture, and strong low-level winds.
+
+
+    References
+    ----------
+    Banacos et al. 2014: https://www.weather.gov/media/btv/research/Snow%20Squalls%20Forecasting%20and%20Hazard%20Mitigation.pdf
+
+    Parameters 
+    ----------
+    mean_relh_0_2km : float 
+        The mean relative humidity between the surface and 2 km AGL (fraction)
+    delta_thetae_0_2km : float 
+        The difference in equivalent potential temperature between 2 km AGL and the surface (K)
+    mean_wind_0_2km : float 
+        The mean wind speed between the surface and 2 km AGL (m/s)
+
+    Returns 
+    -------
+    float 
+        The Snow Squall Parameter
+    """
+
 @overload
 def equilibrium_moisture_content(temperature: float, rel_humidity: float) -> float:
     """

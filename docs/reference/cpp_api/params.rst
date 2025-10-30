@@ -29,4 +29,5 @@ Winter
 ------
 
 .. doxygenfunction:: sharp::dendritic_layer
+.. doxygenfunction:: sharp::snow_squall_parameter
 
