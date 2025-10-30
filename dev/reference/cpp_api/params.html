@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>params &#8212; SHARPlib v1.2.0.dev0-9-gc879e56 Manual</title>
+    <title>params &#8212; SHARPlib v1.2.0.dev0-11-g00a95ff Manual</title>
   
   
   
@@ -56,7 +56,7 @@
     <link rel="prev" title="layer" href="layer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.0.dev0-9-gc879e56" />
+  <meta name="docsearch:version" content="1.2.0.dev0-11-g00a95ff" />
     <meta name="docbuild:last-update" content="Oct 30, 2025"/>
   </head>
   
@@ -882,8 +882,8 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5sharp21snow_squall_parameterEKfKfKf">
-<span id="_CPPv3N5sharp21snow_squall_parameterEKfKfKf"></span><span id="_CPPv2N5sharp21snow_squall_parameterEKfKfKf"></span><span id="sharp::snow_squall_parameter__floatC.floatC.floatC"></span><span class="target" id="namespacesharp_1ab79e5f55a3b2bb7f15c1662da44ed1b1"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">snow_squall_parameter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mean_relh_0_2km</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">delta_thetae_0_2km</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mean_wind_0_2km</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp21snow_squall_parameterEKfKfKf" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp21snow_squall_parameterEKfKfKfKf">
+<span id="_CPPv3N5sharp21snow_squall_parameterEKfKfKfKf"></span><span id="_CPPv2N5sharp21snow_squall_parameterEKfKfKfKf"></span><span id="sharp::snow_squall_parameter__floatC.floatC.floatC.floatC"></span><span class="target" id="namespacesharp_1ab2c2a1c797b130233a7afda3eb69265c"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">snow_squall_parameter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">wetbulb_2m</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mean_relh_0_2km</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">delta_thetae_0_2km</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mean_wind_0_2km</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp21snow_squall_parameterEKfKfKfKf" title="Link to this definition">#</a><br /></dt>
 <dd><p>Computes the Snow Squall Parameter. </p>
 <p><dl class="simple">
 <dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
@@ -895,6 +895,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>wetbulb_2m</strong> – (K) </p></li>
 <li><p><strong>mean_relh_0_2km</strong> – (fraction) </p></li>
 <li><p><strong>delta_thetae_0_2km</strong> – (K) </p></li>
 <li><p><strong>mean_wind_0_2km</strong> – (m/s)</p></li>
@@ -980,7 +981,7 @@
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#winter">Winter</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp15dendritic_layerEA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">dendritic_layer()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp21snow_squall_parameterEKfKfKf"><code class="docutils literal notranslate"><span class="pre">snow_squall_parameter()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp21snow_squall_parameterEKfKfKfKf"><code class="docutils literal notranslate"><span class="pre">snow_squall_parameter()</span></code></a></li>
 </ul>
 </li>
 </ul>
