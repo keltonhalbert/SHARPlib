@@ -46,7 +46,7 @@ namespace sharp {
  * \brief Computes the Snow Squall Parameter
  *
  * The Snow Squall Parameter is a non-dimensional parameter that
- * combines several ingredients believed to be benefician for
+ * combines several ingredients believed to be beneficial for
  * identifying snow squall environments by identifying the overlap
  * of low-level potential instability, sufficient moisture, and
  * strong low-level winds.
