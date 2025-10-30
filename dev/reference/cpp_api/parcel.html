@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>parcel &#8212; SHARPlib v1.2.0.dev0-5-gf2e1b1e Manual</title>
+    <title>parcel &#8212; SHARPlib v1.2.0.dev0-6-g2b3cd8b Manual</title>
   
   
   
@@ -56,7 +56,7 @@
     <link rel="prev" title="params" href="params.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.0.dev0-5-gf2e1b1e" />
+  <meta name="docsearch:version" content="1.2.0.dev0-6-g2b3cd8b" />
     <meta name="docbuild:last-update" content="Oct 30, 2025"/>
   </head>
   
@@ -795,6 +795,33 @@
 </dl>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp6Parcel12lifted_indexEKfA_KfA_KfA_KfKNSt9ptrdiff_tE">
+<span id="_CPPv3N5sharp6Parcel12lifted_indexEKfA_KfA_KfA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp6Parcel12lifted_indexEKfA_KfA_KfA_KfKNSt9ptrdiff_tE"></span><span id="sharp::Parcel::lifted_index__floatC.floatCA.floatCA.floatCA.std::ptrdiff_tC"></span><span class="target" id="structsharp_1_1Parcel_1a937e824d4923a369457f5bd57e47d05b"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lifted_index</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pres_lev</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pres_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">vtmpk_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pcl_vtmpk_arr</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp6Parcel12lifted_indexEKfA_KfA_KfA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the Lifted Index for the <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">sharp::Parcel</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Assuming that <a class="reference internal" href="#structsharp_1_1Parcel_1a9523de2b8b4c28ca49fba3013f94cb06"><span class="std std-ref">sharp::Parcel::lift_parcel</span></a> has been called, this routine will compute the lifted index at the requested pressure level.</p>
+<p>The lifted index is the difference between the environment virtual temperature and the parcel virtual temperature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pres_lev</strong> – Pressure level for LI (Pa) </p></li>
+<li><p><strong>pres_arr</strong> – Array of pressure (Pa) </p></li>
+<li><p><strong>vtmpk_arr</strong> – Array of environment virtual temperature (K) </p></li>
+<li><p><strong>pcl_vtmpk_arr</strong> – Array of parcel virtual temperature (K) </p></li>
+<li><p><strong>N</strong> – Length of arrays</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Lifted Index (K) </p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
@@ -1159,6 +1186,7 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel11find_lfc_elEA_KfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">find_lfc_el()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel20maximum_parcel_levelEA_KfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">maximum_parcel_level()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel9cape_cinhEA_KfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">cape_cinh()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel12lifted_indexEKfA_KfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">lifted_index()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel4presE"><code class="docutils literal notranslate"><span class="pre">pres</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel4tmpkE"><code class="docutils literal notranslate"><span class="pre">tmpk</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp6Parcel4dwpkE"><code class="docutils literal notranslate"><span class="pre">dwpk</span></code></a></li>
