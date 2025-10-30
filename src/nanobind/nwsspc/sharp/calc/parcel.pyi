@@ -432,6 +432,30 @@ class Parcel:
             (CAPE, CINH)
         """
 
+    def lifted_index(self, pres_lev: float, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], parcel_virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> None:
+        """
+        Using the parcel and environment virtual temperature, compute the lifted index 
+        at the given level. The pressure level typically used is 500 hPa. The lifted index 
+        is the difference between the environment and parcel virtual temperatures at the 
+        requested level. 
+
+        Parameters
+        ----------
+        pres_lev : float 
+            The pressure level (Pa) to compute the lifted index at
+        pressure : numpy.ndarray[dtype=float32]
+            1D NumPy array of pressure values (Pa)
+        virtual_temperature : numpy.ndarray[dtype=float32]
+            1D NumPy array of environment virtual temperature values (K)
+        parcel_virtual_temperature : numpy.ndarray[dtype=float32]
+            1D NumPy array of parcel virtual temperature values (K)
+
+        Returns 
+        -------
+        float 
+            The lifted index
+        """
+
     @staticmethod
     def surface_parcel(pressure: float, temperature: float, dewpoint: float) -> Parcel:
         """
