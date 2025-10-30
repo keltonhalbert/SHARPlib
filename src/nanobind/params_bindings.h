@@ -676,8 +676,8 @@ nwsspc.sharp.calc.layer.PressureLayer
     )pbdoc");
 
     m_params.def("snow_squall_parameter", &sharp::snow_squall_parameter,
-                 nb::arg("mean_relh_0_2km"), nb::arg("delta_thetae_0_2km"),
-                 nb::arg("mean_wind_0_2km"),
+                 nb::arg("wetbulb_2m"), nb::arg("mean_relh_0_2km"),
+                 nb::arg("delta_thetae_0_2km"), nb::arg("mean_wind_0_2km"),
                  R"pbdoc(
 The Snow Squall Parameter is a non-dimensional parameter that combines 
 several ingredients believed to be beneficial for identifying snow squall 
@@ -691,6 +691,8 @@ Banacos et al. 2014: https://www.weather.gov/media/btv/research/Snow%20Squalls%2
                 
 Parameters 
 ----------
+wetbulb_2m : float 
+    The surface wetbulb temperature, used to mask the parameter (K)
 mean_relh_0_2km : float 
     The mean relative humidity between the surface and 2 km AGL (fraction)
 delta_thetae_0_2km : float 

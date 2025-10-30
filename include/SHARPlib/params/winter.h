@@ -55,6 +55,7 @@ namespace sharp {
  * Banacos et al. 2014:
  * https://www.weather.gov/media/btv/research/Snow%20Squalls%20Forecasting%20and%20Hazard%20Mitigation.pdf
  *
+ * \param    wetbulb_2m          (K)
  * \param    mean_relh_0_2km     (fraction)
  * \param    delta_thetae_0_2km  (K)
  * \param    mean_wind_0_2km     (m/s)
