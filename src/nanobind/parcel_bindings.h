@@ -432,7 +432,13 @@ tuple[float, float]
             "lifted_index",
             [](sharp::Parcel& pcl, const float plev, const_prof_arr_t pres,
                const_prof_arr_t vtmpk, const_prof_arr_t pcl_vtmpk) {
-
+                if ((pres.shape(0) != vtmpk.shape(0)) ||
+                    (pres.shape(0) != pcl_vtmpk.shape(0))) {
+                    throw nb::buffer_error(
+                        "All input arrays must have the same size!");
+                }
+                return pcl.lifted_index(plev, pres.data(), vtmpk.data(),
+                                        pcl_vtmpk.data(), pres.size());
             },
             nb::arg("pres_lev"), nb::arg("pressure"),
             nb::arg("virtual_temperature"),

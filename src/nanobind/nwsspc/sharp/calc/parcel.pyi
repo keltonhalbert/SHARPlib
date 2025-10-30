@@ -432,7 +432,7 @@ class Parcel:
             (CAPE, CINH)
         """
 
-    def lifted_index(self, pres_lev: float, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], parcel_virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> None:
+    def lifted_index(self, pres_lev: float, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], parcel_virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> float:
         """
         Using the parcel and environment virtual temperature, compute the lifted index 
         at the given level. The pressure level typically used is 500 hPa. The lifted index 
