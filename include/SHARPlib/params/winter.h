@@ -62,7 +62,8 @@ namespace sharp {
  *
  * \return The Snow Squall Parameter
  */
-[[nodiscard]] float snow_squall_parameter(const float mean_relh_0_2km,
+[[nodiscard]] float snow_squall_parameter(const float wetbulb_2m,
+                                          const float mean_relh_0_2km,
                                           const float delta_thetae_0_2km,
                                           const float mean_wind_0_2km);
 }  // namespace sharp
