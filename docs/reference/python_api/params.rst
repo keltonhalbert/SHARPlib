@@ -16,6 +16,7 @@ params
    .. autofunction:: nwsspc.sharp.calc.params.supercell_composite_parameter
    .. autofunction:: nwsspc.sharp.calc.params.significant_hail_parameter
    .. autofunction:: nwsspc.sharp.calc.params.derecho_composite_parameter
+   .. autofunction:: nwsspc.sharp.calc.params.large_hail_parameter
    .. autofunction:: nwsspc.sharp.calc.params.hail_growth_layer
    .. autofunction:: nwsspc.sharp.calc.params.precipitable_water
 
