@@ -399,6 +399,7 @@ float large_hail_parameter(const Parcel mu_pcl,
     const float shr_spd_0_6km = vector_magnitude(shr_0_6km.u, shr_0_6km.v);
 
     if ((shr_spd_0_6km < 14.f) || mu_pcl.cape < 400) return 0.0f;
+    if (mu_pcl.eql_pressure == MISSING) return 0.0f;
 
     HeightLayer hgz_hght =
         pressure_layer_to_height(hail_growth_zone, pressure, height, N, true);
