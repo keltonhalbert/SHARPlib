@@ -587,6 +587,61 @@ float
 )pbdoc");
 
     m_params.def(
+        "large_hail_parameter",
+        [](const sharp::Parcel& mu_pcl, const float lapse_rate_700_500mb,
+           sharp::PressureLayer hail_growth_zone,
+           const sharp::WindComponents storm_motion, const_prof_arr_t pres,
+           const_prof_arr_t hght, const_prof_arr_t uwin,
+           const_prof_arr_t vwin) {
+            if ((pres.shape(0) != hght.shape(0)) ||
+                (pres.shape(0) != uwin.shape(0)) ||
+                (pres.shape(0) != vwin.shape(0))) {
+                throw nb::buffer_error(
+                    "pressure, height, u_wind, and v_wind must have the "
+                    "same sizes!");
+            }
+
+            return sharp::large_hail_parameter(
+                mu_pcl, lapse_rate_700_500mb, hail_growth_zone, storm_motion,
+                pres.data(), hght.data(), uwin.data(), vwin.data(),
+                pres.size());
+        },
+        nb::arg("mu_pcl"), nb::arg("lapse_rate_700_500mb"),
+        nb::arg("hail_growth_zone"), nb::arg("storm_motion"),
+        nb::arg("pressure"), nb::arg("height"), nb::arg("u_wind"),
+        nb::arg("v_wind"),
+        R"pbdoc(
+Computes the Large Hail Parameter (LHP). The LHP is a multi-ingredient, 
+composite index that includes thermodynamics and kinematics to attempt 
+to detect environments that support very large hail. LHP has shown skill 
+when differentiationg environments that support hail >= 3.5 in from those 
+with < 2.0 in.
+
+References
+----------
+Johnson and Sugden 2014: https://ejssm.org/archives/wp-content/uploads/2021/09/vol9-5.pdf
+
+Parameters 
+----------
+mu_pcl : nwsspc.sharp.calc.parcel.Parcel 
+    A previously computed most unstable parcel with CAPE and an equilibrium level
+lapse_rate_700_500mb : float 
+    700 - 500 hPa Lapse Rate (K)
+hail_growth_zone : nwsspc.sharp.calc.layer.PressureLayer
+    The layer of the atmosphere encompasing the Hail Growth Zone (Pa)
+storm_motion : nwsspc.sharp.calc.winds.WindComponents 
+    The storm motion vector to be used (m/s)
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of height values (m)
+u_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of u_wind values (m/s)
+v_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of v_wind values (m/s)
+    )pbdoc");
+
+    m_params.def(
         "precipitable_water",
         [](sharp::PressureLayer& layer, const_prof_arr_t pres,
            const_prof_arr_t mixr) {
