@@ -446,7 +446,9 @@ float large_hail_parameter(const Parcel mu_pcl,
         ((vector_magnitude(shear_el.u, shear_el.v) - 25.0f) / 5.0f) + grw_term +
         ((srw_alpha_mid - 80.0f) / 10.0f);
 
-    return (TermA * TermB) + 5.0f;
+    if ((TermA < 0.0f) && (TermB < 0.0f)) return 0.0f;
+
+    return std::max(0.0f, (TermA * TermB) + 5.0f);
 }
 
 float precipitable_water(PressureLayer layer, const float pressure[],
