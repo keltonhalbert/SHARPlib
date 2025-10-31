@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>params &#8212; SHARPlib v1.2.0.dev0-14-ge0c226b Manual</title>
+    <title>params &#8212; SHARPlib v1.2.0.dev0-17-g45b9eb9 Manual</title>
   
   
   
@@ -56,7 +56,7 @@
     <link rel="prev" title="layer" href="layer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.0.dev0-14-ge0c226b" />
+  <meta name="docsearch:version" content="1.2.0.dev0-17-g45b9eb9" />
     <meta name="docbuild:last-update" content="Oct 31, 2025"/>
   </head>
   
@@ -835,6 +835,32 @@ within the environment.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.params.large_hail_parameter">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.params.</span></span><span class="sig-name descname"><span class="pre">large_hail_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">mu_pcl:</span> <span class="pre">nwsspc.sharp.calc.parcel.Parcel,</span> <span class="pre">lapse_rate_700_500mb:</span> <span class="pre">float,</span> <span class="pre">hail_growth_zone:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">storm_motion:</span> <span class="pre">nwsspc.sharp.calc.winds.WindComponents,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">u_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">v_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.params.large_hail_parameter" title="Link to this definition">#</a></dt>
+<dd><p>Computes the Large Hail Parameter (LHP). The LHP is a multi-ingredient,
+composite index that includes thermodynamics and kinematics to attempt
+to detect environments that support very large hail. LHP has shown skill
+when differentiationg environments that support hail &gt;= 3.5 in from those
+with &lt; 2.0 in.</p>
+<p class="rubric">References</p>
+<p>Johnson and Sugden 2014: <a class="reference external" href="https://ejssm.org/archives/wp-content/uploads/2021/09/vol9-5.pdf">https://ejssm.org/archives/wp-content/uploads/2021/09/vol9-5.pdf</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mu_pcl</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.Parcel" title="nwsspc.sharp.calc.parcel.Parcel"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.Parcel</span></code></a>) – A previously computed most unstable parcel with CAPE and an equilibrium level</p></li>
+<li><p><strong>lapse_rate_700_500mb</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – 700 - 500 hPa Lapse Rate (K)</p></li>
+<li><p><strong>hail_growth_zone</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a>) – The layer of the atmosphere encompasing the Hail Growth Zone (Pa)</p></li>
+<li><p><strong>storm_motion</strong> (<a class="reference internal" href="winds.html#nwsspc.sharp.calc.winds.WindComponents" title="nwsspc.sharp.calc.winds.WindComponents"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.winds.WindComponents</span></code></a>) – The storm motion vector to be used (m/s)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure values (Pa)</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of height values (m)</p></li>
+<li><p><strong>u_wind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of u_wind values (m/s)</p></li>
+<li><p><strong>v_wind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of v_wind values (m/s)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.params.hail_growth_layer">
 <span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.params.</span></span><span class="sig-name descname"><span class="pre">hail_growth_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></a></span></span><a class="headerlink" href="#nwsspc.sharp.calc.params.hail_growth_layer" title="Link to this definition">#</a></dt>
 <dd><p>Search for and return the PressureLayer of the lowest altitude
@@ -1083,6 +1109,7 @@ sufficient moisture, and strong low-level winds.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.supercell_composite_parameter"><code class="docutils literal notranslate"><span class="pre">supercell_composite_parameter</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.significant_hail_parameter"><code class="docutils literal notranslate"><span class="pre">significant_hail_parameter</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.derecho_composite_parameter"><code class="docutils literal notranslate"><span class="pre">derecho_composite_parameter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.large_hail_parameter"><code class="docutils literal notranslate"><span class="pre">large_hail_parameter</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.hail_growth_layer"><code class="docutils literal notranslate"><span class="pre">hail_growth_layer</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.precipitable_water"><code class="docutils literal notranslate"><span class="pre">precipitable_water</span></code></a></li>
 </ul>

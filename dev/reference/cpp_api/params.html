@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>params &#8212; SHARPlib v1.2.0.dev0-14-ge0c226b Manual</title>
+    <title>params &#8212; SHARPlib v1.2.0.dev0-17-g45b9eb9 Manual</title>
   
   
   
@@ -56,7 +56,7 @@
     <link rel="prev" title="layer" href="layer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.0.dev0-14-ge0c226b" />
+  <meta name="docsearch:version" content="1.2.0.dev0-17-g45b9eb9" />
     <meta name="docbuild:last-update" content="Oct 31, 2025"/>
   </head>
   
@@ -756,6 +756,37 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp20large_hail_parameterEK6ParcelKfK13PressureLayerK14WindComponentsA_KfA_KfA_KfA_KfNSt9ptrdiff_tE">
+<span id="_CPPv3N5sharp20large_hail_parameterEK6ParcelKfK13PressureLayerK14WindComponentsA_KfA_KfA_KfA_KfNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp20large_hail_parameterEK6ParcelKfK13PressureLayerK14WindComponentsA_KfA_KfA_KfA_KfNSt9ptrdiff_tE"></span><span id="sharp::large_hail_parameter__ParcelC.floatC.PressureLayerC.WindComponentsC.floatCA.floatCA.floatCA.floatCA.std::ptrdiff_t"></span><span class="target" id="namespacesharp_1a90db17edaeff3988120f9cba52ab7b30"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">large_hail_parameter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="parcel.html#_CPPv4N5sharp6ParcelE" title="sharp::Parcel"><span class="n"><span class="pre">Parcel</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">mu_pcl</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lapse_rate_700_500mb</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="layer.html#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">hail_growth_zone</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="winds.html#_CPPv4N5sharp14WindComponentsE" title="sharp::WindComponents"><span class="n"><span class="pre">WindComponents</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">storm_motion</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">u_wind</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">v_wind</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp20large_hail_parameterEK6ParcelKfK13PressureLayerK14WindComponentsA_KfA_KfA_KfA_KfNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Computes the Large Hail Parameter. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>The Large Hail Parameter (LHP) is a multi-ingredient, composite index that includes thermodynamics and kinematics to attempt to detect environments that support very large hail. LHP has shown skill when differentiating environments that suppor hail &gt;= 3.5 in from those with &lt; 2.0 in.</p>
+<p>References: Johnson and Sugden 2014: <a class="reference external" href="https://ejssm.org/archives/wp-content/uploads/2021/09/vol9-5.pdf">https://ejssm.org/archives/wp-content/uploads/2021/09/vol9-5.pdf</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mu_pcl</strong> – (<a class="reference internal" href="parcel.html#structsharp_1_1Parcel_1aa258d27992d22d8b80cb221e6e2a6c19"><span class="std std-ref">sharp::Parcel::most_unstable_parcel</span></a>) </p></li>
+<li><p><strong>lapse_rate_700_500mb</strong> – (K) </p></li>
+<li><p><strong>hail_growth_zone</strong> – ({Pa, Pa}) </p></li>
+<li><p><strong>storm_motion</strong> – ({m/s, m/s}) </p></li>
+<li><p><strong>pressure</strong> – (Pa) </p></li>
+<li><p><strong>height</strong> – (m) </p></li>
+<li><p><strong>u_wind</strong> – (m/s) </p></li>
+<li><p><strong>v_wind</strong> – (m/s) </p></li>
+<li><p><strong>N</strong> – (length of arrays)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Large Hail Parameter </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp17hail_growth_layerEA_KfA_KfKNSt9ptrdiff_tE">
 <span id="_CPPv3N5sharp17hail_growth_layerEA_KfA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp17hail_growth_layerEA_KfA_KfKNSt9ptrdiff_tE"></span><span id="sharp::hail_growth_layer__floatCA.floatCA.std::ptrdiff_tC"></span><span class="target" id="namespacesharp_1aa20009e7c666c469ae2ee0e4febb5226"></span><a class="reference internal" href="layer.html#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">hail_growth_layer</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">temperature</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp17hail_growth_layerEA_KfA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
 <dd><p>Get the layer encompassing the lowest hail growth zone (-10 to -30 C) </p>
@@ -970,6 +1001,7 @@
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp29significant_tornado_parameterE6Parcelfff"><code class="docutils literal notranslate"><span class="pre">significant_tornado_parameter()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp26significant_hail_parameterERKN5sharp6ParcelEffff"><code class="docutils literal notranslate"><span class="pre">significant_hail_parameter()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp27derecho_composite_parameterEKfKfKfKf"><code class="docutils literal notranslate"><span class="pre">derecho_composite_parameter()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp20large_hail_parameterEK6ParcelKfK13PressureLayerK14WindComponentsA_KfA_KfA_KfA_KfNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">large_hail_parameter()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp17hail_growth_layerEA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">hail_growth_layer()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp18precipitable_waterE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">precipitable_water()</span></code></a></li>
 </ul>
