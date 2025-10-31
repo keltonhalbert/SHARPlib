@@ -387,6 +387,67 @@ float derecho_composite_parameter(const float dcape, const float mucape,
            (shear_0_6km / 10.2889f) * (mean_wind_0_6km / 8.23111f);
 }
 
+float large_hail_parameter(const Parcel mu_pcl,
+                           const float lapse_rate_700_500mb,
+                           const PressureLayer hail_growth_zone,
+                           const WindComponents storm_motion,
+                           const float pressure[], const float height[],
+                           const float u_wind[], const float v_wind[],
+                           std::ptrdiff_t N) {
+    HeightLayer lyr_0_6km = {0.0f, 6000.0f};
+    WindComponents shr_0_6km = wind_shear(lyr_0_6km, height, u_wind, v_wind, N);
+    const float shr_spd_0_6km = vector_magnitude(shr_0_6km.u, shr_0_6km.v);
+
+    if ((shr_spd_0_6km < 14.f) || mu_pcl.cape < 400) return 0.0f;
+
+    HeightLayer hgz_hght =
+        pressure_layer_to_height(hail_growth_zone, pressure, height, N, true);
+    const float hgz_depth = hgz_hght.top - hgz_hght.bottom;
+    const float TermA = ((mu_pcl.cape - 2000.0f) / 1000.0f) +
+                        ((3200.0f - hgz_depth) / 500.0f) +
+                        ((lapse_rate_700_500mb - 6.5f) / 2.f);
+
+    HeightLayer lyr_0_1km = {0.0, 1000.0};
+    HeightLayer lyr_3_6km = {3000.0, 6000.0};
+    const float el_hght =
+        interp_pressure(mu_pcl.eql_pressure, pressure, height, N);
+    HeightLayer el_lyr = {el_hght - 1500.0f, el_hght};
+    PressureLayer el_lyr_pres =
+        height_layer_to_pressure(el_lyr, pressure, height, N);
+    PressureLayer lyr_0_1km_pres =
+        height_layer_to_pressure(lyr_0_1km, pressure, height, N, true);
+    PressureLayer lyr_3_6km_pres =
+        height_layer_to_pressure(lyr_3_6km, pressure, height, N, true);
+    const WindComponents mw_el =
+        mean_wind(el_lyr_pres, pressure, u_wind, v_wind, N, false);
+    const WindComponents mw_0_1km =
+        mean_wind(lyr_0_1km_pres, pressure, u_wind, v_wind, N, false);
+    const WindComponents mw_3_6km =
+        mean_wind(lyr_3_6km_pres, pressure, u_wind, v_wind, N, false);
+    const WindComponents shear_el = {mw_el.u - u_wind[0], mw_el.v - v_wind[0]};
+    const WindComponents srw_3_6km = {mw_3_6km.u - storm_motion.u,
+                                      mw_3_6km.v - storm_motion.v};
+    const WindComponents srw_0_1km = {mw_0_1km.u - storm_motion.u,
+                                      mw_0_1km.v - storm_motion.v};
+    const WindVector shear_el_vec = components_to_vector(shear_el);
+    const WindVector mw_3_6km_vec = components_to_vector(mw_3_6km);
+    const WindVector srw_0_1km_vec = components_to_vector(srw_0_1km);
+    const WindVector srw_3_6km_vec = components_to_vector(srw_3_6km);
+
+    const float grw_alpha_el = shear_el_vec.direction - mw_3_6km_vec.direction;
+    const float srw_alpha_mid =
+        srw_3_6km_vec.direction - srw_0_1km_vec.direction;
+
+    const float grw_term =
+        (grw_alpha_el > 180.0) ? -10 : ((grw_alpha_el + 5.0f) / 20.0f);
+
+    const float TermB =
+        ((vector_magnitude(shear_el.u, shear_el.v) - 25.0f) / 5.0f) + grw_term +
+        ((srw_alpha_mid - 80.0f) / 10.0f);
+
+    return (TermA * TermB) + 5.0f;
+}
+
 float precipitable_water(PressureLayer layer, const float pressure[],
                          const float mixing_ratio[], const std::ptrdiff_t N) {
     float pwat =

@@ -430,6 +430,38 @@ template <typename Lifter>
                                                 const float mucape,
                                                 const float shear_0_6km,
                                                 const float mean_wind_0_6km);
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Computes the Large Hail Parameter
+ *
+ * The Large Hail Parameter (LHP) is a multi-ingredient, composite
+ * index that includes thermodynamics and kinematics to attempt to
+ * detect environments that support very large hail. LHP has shown
+ * skill when differentiating environments that suppor hail
+ * >= 3.5 in from those with < 2.0 in.
+ *
+ * References:
+ * Johnson and Sugden 2014:
+ * https://ejssm.org/archives/wp-content/uploads/2021/09/vol9-5.pdf
+ *
+ * \param   mu_pcl                  (sharp::Parcel::most_unstable_parcel)
+ * \param   lapse_rate_700_500mb    (K)
+ * \param   hail_growth_zone        ({Pa, Pa})
+ * \param   storm_motion            ({m/s, m/s})
+ * \param   pressure                (Pa)
+ * \param   height                  (m)
+ * \param   u_wind                  (m/s)
+ * \param   v_wind                  (m/s)
+ * \param   N                       (length of arrays)
+ *
+ * \return Large Hail Parameter
+ */
+[[nodiscard]] float large_hail_parameter(
+    const Parcel mu_pcl, const float lapse_rate_700_500mb,
+    const PressureLayer hail_growth_zone, const WindComponents storm_motion,
+    const float pressure[], const float height[], const float u_wind[],
+    const float v_wind[], std::ptrdiff_t N);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
