@@ -195,7 +195,7 @@ def test_effective_bulk_wind():
     assert (ebwd == pytest.approx(19.764, abs=1e-3))
 
 
-def test_stp_scp_ship_dcp():
+def test_stp_scp_ship_dcp_lhp():
     lifter = parcel.lifter_cm1()
     lifter.ma_type = thermo.adiabat.pseudo_liq
     # get the mixed-layer parcel
@@ -311,6 +311,19 @@ def test_stp_scp_ship_dcp():
     mw06 = winds.vector_magnitude(mw06.u, mw06.v)
     dcp = params.derecho_composite_parameter(dcape, mupcl.cape, shr06, mw06)
     assert (dcp == pytest.approx(7.63, abs=1e-1))
+
+    hgz = params.hail_growth_layer(snd_data["pres"], snd_data["tmpk"])
+    lhp = params.large_hail_parameter(
+        mupcl, 
+        lr75, 
+        hgz, 
+        storm_mtn, 
+        snd_data["pres"], 
+        snd_data["hght"], 
+        snd_data["uwin"], 
+        snd_data["vwin"]
+    )
+    assert (lhp == pytest.approx(13.98, abs=1e-2))
 
 
 def test_ehi():
