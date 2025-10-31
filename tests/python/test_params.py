@@ -20,10 +20,10 @@ def load_parquet(filename):
     snd_df = snd_df[snd_df["relh"].notna()]
     snd_df = snd_df[snd_df["pres"] >= 50.0]
 
-    pres = snd_df["pres"].to_numpy().astype('float32')*100.0
+    pres = snd_df["pres"].to_numpy().astype('float32')*np.float32(100.0)
     hght = snd_df["hght"].to_numpy().astype('float32')
-    tmpk = snd_df["tmpc"].to_numpy().astype('float32')+273.15
-    dwpk = snd_df["dwpc"].to_numpy().astype('float32')+273.15
+    tmpk = snd_df["tmpc"].to_numpy().astype('float32')+np.float32(273.15)
+    dwpk = snd_df["dwpc"].to_numpy().astype('float32')+np.float32(273.15)
     relh = snd_df["relh"].to_numpy().astype('float32')
     wdir = snd_df["wdir"].to_numpy().astype('float32')
     wspd = snd_df["wspd"].to_numpy().astype('float32')
@@ -38,11 +38,17 @@ def load_parquet(filename):
     # vwin = np.empty(wspd.shape, dtype="float32")
     mixr = thermo.mixratio(pres, dwpk)
     vtmp = thermo.virtual_temperature(tmpk, mixr)
+    thetae = thermo.thetae(
+        pres,
+        tmpk,
+        dwpk
+    )
 
     return {
         "pres": pres, "hght": hght,
         "tmpk": tmpk, "mixr": mixr,
         "relh": relh,
+        "thetae": thetae,
         "vtmp": vtmp, "dwpk": dwpk,
         "wdir": wdir, "wspd": wspd,
         "uwin": uwin, "vwin": vwin
@@ -189,7 +195,9 @@ def test_effective_bulk_wind():
     assert (ebwd == pytest.approx(19.764, abs=1e-3))
 
 
-def test_stp_scp_ship():
+def test_stp_scp_ship_dcp_lhp():
+    lifter = parcel.lifter_cm1()
+    lifter.ma_type = thermo.adiabat.pseudo_liq
     # get the mixed-layer parcel
     mix_lyr = layer.PressureLayer(
         snd_data["pres"][0], snd_data["pres"][0] - 10000.0)
@@ -201,9 +209,26 @@ def test_stp_scp_ship():
         snd_data["mixr"]
     )
 
+    search_layer = layer.PressureLayer(
+        snd_data["pres"][0],
+        snd_data["pres"][0] - 40000.0
+    )
+
+    dcape_pcl = parcel.DowndraftParcel.min_thetae(
+        search_layer,
+        snd_data["pres"],
+        snd_data["tmpk"],
+        snd_data["dwpk"],
+        snd_data["thetae"]
+    )
+
+    dpcl_t = dcape_pcl.lower_parcel(lifter, snd_data["pres"])
+    dpcl_buoy = thermo.buoyancy(dpcl_t, snd_data["tmpk"])
+
+    dcape, dcinh = dcape_pcl.cape_cinh(
+        snd_data["pres"], snd_data["hght"], dpcl_buoy)
+
     # lift the parcel and get CAPE
-    lifter = parcel.lifter_cm1()
-    lifter.ma_type = thermo.adiabat.pseudo_liq
     vtmpk = pcl.lift_parcel(lifter, snd_data["pres"])
     buoy = thermo.buoyancy(vtmpk, snd_data["vtmp"])
     cape, cinh = pcl.cape_cinh(snd_data["pres"], snd_data["hght"], buoy)
@@ -278,6 +303,27 @@ def test_stp_scp_ship():
     shr06 = winds.vector_magnitude(shr06.u, shr06.v)
     ship = params.significant_hail_parameter(mupcl, lr75, t500, fzl, shr06)
     assert (ship == pytest.approx(1.9521, abs=1e-3))
+
+    hlyr_in_p = layer.height_layer_to_pressure(hlyr, snd_data["pres"], snd_data["hght"])
+    mw06 = winds.mean_wind(
+        hlyr_in_p, snd_data["pres"], snd_data["uwin"], snd_data["vwin"]
+    )
+    mw06 = winds.vector_magnitude(mw06.u, mw06.v)
+    dcp = params.derecho_composite_parameter(dcape, mupcl.cape, shr06, mw06)
+    assert (dcp == pytest.approx(7.63, abs=1e-1))
+
+    hgz = params.hail_growth_layer(snd_data["pres"], snd_data["tmpk"])
+    lhp = params.large_hail_parameter(
+        mupcl, 
+        lr75, 
+        hgz, 
+        storm_mtn, 
+        snd_data["pres"], 
+        snd_data["hght"], 
+        snd_data["uwin"], 
+        snd_data["vwin"]
+    )
+    assert (lhp == pytest.approx(13.98, abs=1e-2))
 
 
 def test_ehi():

@@ -428,6 +428,43 @@ Returns
 tuple[float, float]
     (CAPE, CINH)
         )pbdoc")
+        .def(
+            "lifted_index",
+            [](sharp::Parcel& pcl, const float plev, const_prof_arr_t pres,
+               const_prof_arr_t vtmpk, const_prof_arr_t pcl_vtmpk) {
+                if ((pres.shape(0) != vtmpk.shape(0)) ||
+                    (pres.shape(0) != pcl_vtmpk.shape(0))) {
+                    throw nb::buffer_error(
+                        "All input arrays must have the same size!");
+                }
+                return pcl.lifted_index(plev, pres.data(), vtmpk.data(),
+                                        pcl_vtmpk.data(), pres.size());
+            },
+            nb::arg("pres_lev"), nb::arg("pressure"),
+            nb::arg("virtual_temperature"),
+            nb::arg("parcel_virtual_temperature"),
+            R"pbdoc(
+Using the parcel and environment virtual temperature, compute the lifted index 
+at the given level. The pressure level typically used is 500 hPa. The lifted index 
+is the difference between the environment and parcel virtual temperatures at the 
+requested level. 
+
+Parameters
+----------
+pres_lev : float 
+    The pressure level (Pa) to compute the lifted index at
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure values (Pa)
+virtual_temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of environment virtual temperature values (K)
+parcel_virtual_temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of parcel virtual temperature values (K)
+
+Returns 
+-------
+float 
+    The lifted index
+        )pbdoc")
         .def_static("surface_parcel", &sharp::Parcel::surface_parcel,
                     nb::arg("pressure"), nb::arg("temperature"),
                     nb::arg("dewpoint"), R"pbdoc(

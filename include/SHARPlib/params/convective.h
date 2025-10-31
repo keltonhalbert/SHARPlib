@@ -7,7 +7,7 @@
  *     Email: kelton.halbert@noaa.gov  \n
  * \date 2022-10-13
  *
- * Written for the NWS Storm Predidiction Center \n
+ * Written for the NWS Storm Prediction Center \n
  * Based on NSHARP routines originally written by
  * John Hart and Rich Thompson at SPC.
  */
@@ -277,7 +277,7 @@ template <typename Lifter>
                                      const std::ptrdiff_t N, Parcel* pcl);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediciton Center
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compute the Energy Helicity Index
  *
@@ -296,7 +296,7 @@ template <typename Lifter>
 [[nodiscard]] float energy_helicity_index(float cape, float helicity);
 
 /**
- * \author Kelton Halbert - NWS Storm Prediciton Center
+ * \author Kelton Halbert - NWS Storm Prediction Center
  *
  * \brief Compute the Supercell Composite Parameter
  *
@@ -405,13 +405,74 @@ template <typename Lifter>
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
  *
+ * \brief Computes the Derecho Composite Parameter (DCP)
+ *
+ * The Derecho Composite Parameter is based on a dataset of 113 derecho
+ * events compiled by the Evans and Doswell (2001) study. It is intended
+ * to highlight environments favorable for cold pool/outflow driven
+ * convective events. The phsysical mechamisms behind this parameter
+ * focus on cold pool production (DCAPE), ability to sustain strong
+ * convection (MUCAPE), convective organization (0 - 6 km shear), and
+ * sufficient deep-layer flow within the environment.
+ *
+ * References:
+ * Evans and Doswell 2001:
+ * https://doi.org/10.1175/1520-0434(2001)016%3C0329:EODEUP%3E2.0.CO;2
+ *
+ * \param   dcape               (J/kg)
+ * \param   mucape              (J/kg)
+ * \param   shear_0_6km         (m/s)
+ * \param   mean_wind_0_6km     (m/s)
+ *
+ * \return Derecho Composite Parameter
+ */
+[[nodiscard]] float derecho_composite_parameter(const float dcape,
+                                                const float mucape,
+                                                const float shear_0_6km,
+                                                const float mean_wind_0_6km);
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Computes the Large Hail Parameter
+ *
+ * The Large Hail Parameter (LHP) is a multi-ingredient, composite
+ * index that includes thermodynamics and kinematics to attempt to
+ * detect environments that support very large hail. LHP has shown
+ * skill when differentiating environments that suppor hail
+ * >= 3.5 in from those with < 2.0 in.
+ *
+ * References:
+ * Johnson and Sugden 2014:
+ * https://ejssm.org/archives/wp-content/uploads/2021/09/vol9-5.pdf
+ *
+ * \param   mu_pcl                  (sharp::Parcel::most_unstable_parcel)
+ * \param   lapse_rate_700_500mb    (K)
+ * \param   hail_growth_zone        ({Pa, Pa})
+ * \param   storm_motion            ({m/s, m/s})
+ * \param   pressure                (Pa)
+ * \param   height                  (m)
+ * \param   u_wind                  (m/s)
+ * \param   v_wind                  (m/s)
+ * \param   N                       (length of arrays)
+ *
+ * \return Large Hail Parameter
+ */
+[[nodiscard]] float large_hail_parameter(
+    const Parcel mu_pcl, const float lapse_rate_700_500mb,
+    const PressureLayer hail_growth_zone, const WindComponents storm_motion,
+    const float pressure[], const float height[], const float u_wind[],
+    const float v_wind[], std::ptrdiff_t N);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
  * \brief Computes the precipitable water vapor content over a layer
  *
  * Given a sharp::PressureLayer to integrate over, compute the preciptable
  * water from the given pressure and mixing ratio arrays.
  *
  * \param   layer           (Pa)
- * \param   pressure       (Pa)
+ * \param   pressure        (Pa)
  * \param   mixing_ratio    (unitless)
  * \param   N               (length of arrays)
  *

@@ -389,6 +389,69 @@ def significant_hail_parameter(mu_pcl: nwsspc.sharp.calc.parcel.Parcel, lapse_ra
         The significant hail parameter
     """
 
+def derecho_composite_parameter(dcape: float, mucape: float, shear_0_6km: float, mean_wind_0_6km: float) -> float:
+    """
+    The Derecho Composite Parameter (DCP) is based on a dataset of 113 derecho 
+    events compiled by the Evans and Boswell (2001) study. It is intended to 
+    hightlight environments favorable for cold pool/outflow driven convective 
+    events. The physical mechanisms behind this parameter focus on cold pool 
+    production (DCAPE), ability to sustain strong convection (MUCAPE), 
+    convective organization (0 - 6 km shear), and sufficient deep-layer flow 
+    within the environment.
+
+    References
+    ----------
+    Evans and Doswell 2001: https://doi.org/10.1175/1520-0434(2001)016%3C0329:EODEUP%3E2.0.CO;2
+
+    Parameters
+    ----------
+    dcape : float 
+        Downdraft Convective Available Potential Energy (J/kg)
+    mucape : float 
+        Most Unstable Parcel Convective Available Potential Energy (J/kg)
+    shear_0_6km : float 
+        Shear magnitude in the 0 - 6 km layer AGL (m/s)
+    mean_wind_0_6km : float 
+        Mean wind magnitude in the 0 - 6 km layer AGL (m/s)
+
+    Returns
+    -------
+    float 
+        The Derecho Composite Parameter
+    """
+
+def large_hail_parameter(mu_pcl: nwsspc.sharp.calc.parcel.Parcel, lapse_rate_700_500mb: float, hail_growth_zone: nwsspc.sharp.calc.layer.PressureLayer, storm_motion: nwsspc.sharp.calc.winds.WindComponents, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], u_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], v_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> float:
+    """
+    Computes the Large Hail Parameter (LHP). The LHP is a multi-ingredient, 
+    composite index that includes thermodynamics and kinematics to attempt 
+    to detect environments that support very large hail. LHP has shown skill 
+    when differentiationg environments that support hail >= 3.5 in from those 
+    with < 2.0 in.
+
+    References
+    ----------
+    Johnson and Sugden 2014: https://ejssm.org/archives/wp-content/uploads/2021/09/vol9-5.pdf
+
+    Parameters 
+    ----------
+    mu_pcl : nwsspc.sharp.calc.parcel.Parcel 
+        A previously computed most unstable parcel with CAPE and an equilibrium level
+    lapse_rate_700_500mb : float 
+        700 - 500 hPa Lapse Rate (K)
+    hail_growth_zone : nwsspc.sharp.calc.layer.PressureLayer
+        The layer of the atmosphere encompasing the Hail Growth Zone (Pa)
+    storm_motion : nwsspc.sharp.calc.winds.WindComponents 
+        The storm motion vector to be used (m/s)
+    pressure : numpy.ndarray[dtype=float32]
+        1D NumPy array of pressure values (Pa)
+    height : numpy.ndarray[dtype=float32]
+        1D NumPy array of height values (m)
+    u_wind : numpy.ndarray[dtype=float32]
+        1D NumPy array of u_wind values (m/s)
+    v_wind : numpy.ndarray[dtype=float32]
+        1D NumPy array of v_wind values (m/s)
+    """
+
 def precipitable_water(layer: nwsspc.sharp.calc.layer.PressureLayer, pres: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mixr: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> float:
     """
     Given a PressureLayer to integrate over, compute the precipitable water 
@@ -444,6 +507,35 @@ def dendritic_layer(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None
     -------
     nwsspc.sharp.calc.layer.PressureLayer
         The PressureLayer containing the dendritic growth zone
+    """
+
+def snow_squall_parameter(wetbulb_2m: float, mean_relh_0_2km: float, delta_thetae_0_2km: float, mean_wind_0_2km: float) -> float:
+    """
+    The Snow Squall Parameter is a non-dimensional parameter that combines 
+    several ingredients believed to be beneficial for identifying snow squall 
+    environments by identifying the overlap of low-level potential instability, 
+    sufficient moisture, and strong low-level winds.
+
+
+    References
+    ----------
+    Banacos et al. 2014: https://www.weather.gov/media/btv/research/Snow%20Squalls%20Forecasting%20and%20Hazard%20Mitigation.pdf
+
+    Parameters 
+    ----------
+    wetbulb_2m : float 
+        The surface wetbulb temperature, used to mask the parameter (K)
+    mean_relh_0_2km : float 
+        The mean relative humidity between the surface and 2 km AGL (fraction)
+    delta_thetae_0_2km : float 
+        The difference in equivalent potential temperature between 2 km AGL and the surface (K)
+    mean_wind_0_2km : float 
+        The mean wind speed between the surface and 2 km AGL (m/s)
+
+    Returns 
+    -------
+    float 
+        The Snow Squall Parameter
     """
 
 @overload
