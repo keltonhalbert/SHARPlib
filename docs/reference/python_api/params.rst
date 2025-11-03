@@ -15,6 +15,8 @@ params
    .. autofunction:: nwsspc.sharp.calc.params.significant_tornado_parameter
    .. autofunction:: nwsspc.sharp.calc.params.supercell_composite_parameter
    .. autofunction:: nwsspc.sharp.calc.params.significant_hail_parameter
+   .. autofunction:: nwsspc.sharp.calc.params.derecho_composite_parameter
+   .. autofunction:: nwsspc.sharp.calc.params.large_hail_parameter
    .. autofunction:: nwsspc.sharp.calc.params.hail_growth_layer
    .. autofunction:: nwsspc.sharp.calc.params.precipitable_water
 
@@ -30,3 +32,4 @@ params
    Winter-weather parameters.
 
    .. autofunction:: nwsspc.sharp.calc.params.dendritic_layer
+   .. autofunction:: nwsspc.sharp.calc.params.snow_squall_parameter
