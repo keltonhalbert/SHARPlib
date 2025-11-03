@@ -1,0 +1,1869 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="dark">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>thermo &#8212; SHARPlib v1.2.0 Manual</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=84a24d03"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/python_api/thermo';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://keltonhalbert.github.io/SHARPlib/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.2.0';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="winds" href="winds.html" />
+    <link rel="prev" title="parcel" href="parcel.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="1.2.0" />
+    <meta name="docbuild:last-update" content="Nov 03, 2025"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="dark">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-dark" alt=""/>
+    <img src="../../_static/logo.png" class="logo__image only-light pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">SHARPlib</p>
+  
+</a></div>
+    
+      <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../faq.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/tree/main/examples/Python">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/releases">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Bluesky</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../faq.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/tree/main/examples/Python">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/keltonhalbert/SHARPlib/releases">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Bluesky</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Python API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="interp.html">interp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="layer.html">layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parcel.html">parcel</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">thermo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="winds.html">winds</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../cpp_api/index.html">C++ API</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Python API</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">thermo</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-nwsspc.sharp.calc.thermo">
+<span id="thermo"></span><h1>thermo<a class="headerlink" href="#module-nwsspc.sharp.calc.thermo" title="Link to this heading">#</a></h1>
+<p>Sounding and Hodograph Analysis and Research Program Library (SHARPlib) :: Thermodynamic Routines</p>
+<section id="dry-variables">
+<h2>Dry Variables<a class="headerlink" href="#dry-variables" title="Link to this heading">#</a></h2>
+<p>Dry thermodynamic variables.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.theta">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100000.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.theta" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pres_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">ref_pressure:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">100000.0</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">theta(pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">ref_pressure:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">100000.0)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Computes the potential temperature (K), or theta, given the air pressure (Pa), air temperature (K),
+and a reference pressure (default value is 100000 Pa).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The air pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The air temperature (K)</p></li>
+<li><p><strong>ref_pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <em>optional</em>) – The reference pressure (default 100000.0 Pa)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The potential temperature (K), or theta</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">theta(pres_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">ref_pressure:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">100000.0)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Computes the potential temperature (K), or theta, given the air pressure (Pa), air temperature (K),
+and a reference pressure (default value is 100000 Pa).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of air pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of air temperature (K)</p></li>
+<li><p><strong>ref_pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <em>optional</em>) – The reference pressure (default 100000.0 Pa)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The 1D array of potential temperature (K), or theta</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.theta_level">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">potential_temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.theta_level" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">theta_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">theta_level(potential_temperature:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Computes the pressure level (Pa) of a parcel given the potential temperature (K) and air
+temperature (K).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>potential_temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The potential temperature, or theta (K)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The air temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The pressure level (Pa) corresponding to the potential temperature and air temperature.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">theta_level(theta_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Computes the pressure level (Pa) of a parcel given the potential temperature (K) and air
+temperature (K).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of potential temperature, or theta (K)</p></li>
+<li><p><strong>tmpk_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of air temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The 1D pressure level (Pa) corresponding to the potential temperature and air temperature.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.lapse_rate">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">lapse_rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer_agl:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.lapse_rate" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">lapse_rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lapse_rate(layer_agl:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Computes the lapse rate over a given HeightLayer (meters AGL).
+This routine handles converting the height AGL to MSL by adding
+the surface height value to the HeightLayer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer_agl</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.HeightLayer" title="nwsspc.sharp.calc.layer.HeightLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer</span></code></a>) – a HeightLayer (meters AGL) to compute the lapse rate over</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of height values (meters)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of temperature values (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The temperature lapse rate (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">lapse_rate(layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Computes the lapse rate over a given PressureLayer (Pa).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a>) – a PressureLayer (Pa) to compute the lapse rate over</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure values (Pa)</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of height values (meters)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of temperature values (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The temperature lapse rate (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.lapse_rate_max">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">lapse_rate_max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">depth:</span> <span class="pre">float,</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.HeightLayer" title="nwsspc.sharp.calc.layer.HeightLayer"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.lapse_rate_max" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">lapse_rate_max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">depth:</span> <span class="pre">float,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></a><span class="p"><span class="pre">]</span></span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lapse_rate_max(layer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">depth:</span> <span class="pre">float,</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">tuple[float,</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer]</span></code></p></li>
+</ol>
+<p>Given a layer of the atmosphere (e.g. 2 - 6 km), find the maximum
+lapse rate over the provided depth (e.g. 2 km) within that given layer.
+Returns the maximum lapse rate, as well as the layer it was found in.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.HeightLayer" title="nwsspc.sharp.calc.layer.HeightLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer</span></code></a>) – a HeightLayer to search for the maximum lapse lapse_rate (meters AGL)</p></li>
+<li><p><strong>depth</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the depth used to compute a lapse rate within a layer (meters)</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of height values (meters)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of temperature values (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the maximum lapse rate and the layer it was found in</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple[float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer]</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">lapse_rate_max(layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">depth:</span> <span class="pre">float,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">tuple[float,</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer]</span></code></p></li>
+</ol>
+<p>Given a layer of the atmosphere (e.g. 800 hPa - 500 hPa), find the maximum
+lapse rate over the provided depth (e.g. 100 hPa) within that given layer.
+Returns the maximum lapse rate, as well as the layer it was found in.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a>) – a PressureLayer to search for the maximum lapse lapse_rate (Pa)</p></li>
+<li><p><strong>depth</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the depth used to compute a lapse rate within a layer (Pa)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure values (Pa)</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of height values (meters)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of temperature values (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the maximum lapse rate and the layer it was found in</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple[float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="dry-ascent">
+<h2>Dry Ascent<a class="headerlink" href="#dry-ascent" title="Link to this heading">#</a></h2>
+<p>Dry thermodynamic routines that are directly related to vertical ascent.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.drylift">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">drylift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.drylift" title="Link to this definition">#</a></dt>
+<dd><p>Given a parcel’s initial pressure (Pa), temperature (K), and
+dewpoint temperature (K), lift the parcel dry adiabaitically to its
+Lifted Condensation Level and return the resulting LCL pressure (Pa)
+and temperature (K).</p>
+<p>The LCL temperature is computed using an approximation. See the
+lcl_temperature function documentation for more information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Parcel starting pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Parcel starting temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Parcel starting dewpoint temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple of (lcl_pres, lcl_temperature)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple[float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.lcl_temperature">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">lcl_temperature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.lcl_temperature" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">lcl_temperature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dwpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lcl_temperature(temperature:</span> <span class="pre">float,</span> <span class="pre">dewpoint:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the Lifted Condensation Level (LCL) temperature (Kelvin)
+given an air temperature (Kelvin) and dewpoint temperature (Kelvin).</p>
+<p>The LCL temperature is computed as in Bolton (1980) eq 15, and is
+considered to be within a 10th of a degree of the more exact
+iterative formula.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The air temperature (Kelvin)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The dewpoint temperature (Kelvin)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The LCL temperature (Kelvin)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">lcl_temperature(tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dwpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the Lifted Condensation Level (LCL) temperature (Kelvin)
+given an array of air temperatures (Kelvin) and dewpoint
+temperatures (Kelvin).</p>
+<p>The LCL temperatures are computed as in Bolton (1980) eq 15, and is
+considered to be within a 10th of a degree of the more exact
+iterative formula.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tmpk_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D air temperature array (Kelvin)</p></li>
+<li><p><strong>dwpk_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D dewpoint temperature array (Kelvin)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The 1D array of LCL temperatures (Kelvin)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="moist-variables">
+<h2>Moist Variables<a class="headerlink" href="#moist-variables" title="Link to this heading">#</a></h2>
+<p>Moist thermodynamic variables.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.mixratio">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">mixratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.mixratio" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">mixratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">mixratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">spfh_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">mixratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pres_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mixratio(q:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the water vapor mixing ratio (kg/kg) from specific humidity (kg/kg).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>q</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The specific humidity (kg/kg)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The water vapor mixing ratio (kg/kg)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">mixratio(pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the water vapor mixing ratio (kg/kg) from the air pressure (Pa) and temperature (K).
+If given the air temperature, this is the saturation mixing ratio. If given the dewpoint
+temperature, tis is the mixing ratio.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The air pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The air temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The water vapor mixing ratio (kg/kg)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="3">
+<li><p><code class="docutils literal notranslate"><span class="pre">mixratio(spfh_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the water vapor mixing ratio (kg/kg) from the specific humidity (kg/kg).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>spfh_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of specific humidity (kg/kg)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The 1D array of water vapor mixing ratio (kg/kg)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="4">
+<li><p><code class="docutils literal notranslate"><span class="pre">mixratio(pres_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the water vapor mixing ratio (kg/kg) from the air pressure (Pa) and temperature (K).
+If given the air temperature, this is the saturation mixing ratio. If given the dewpoint
+temperature, this is the mixing ratio.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pres_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of air pressure (Pa)</p></li>
+<li><p><strong>tmpk_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of air temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The 1D array of water vapor mixing ratio (kg/kg)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.mixratio_ice">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">mixratio_ice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.mixratio_ice" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">mixratio_ice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pres_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mixratio_ice(pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the ice water mixing ratio (kg/kg) from the air pressure (Pa) and temperature (K).
+If given the air temperatuer, this is the saturation mixing ratio. If given the dewpoint
+temperature, this is the mixing ratio.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The air pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The air temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The ice water mixing ratio (kg/kg)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">mixratio_ice(pres_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the ice water mixing ratio (kg/kg) from the air pressure (Pa) and temperature (K).
+If given the air temperatuer, this is the saturation mixing ratio. If given the dewpoint
+temperature, this is the mixing ratio.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pres_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of air pressure (Pa)</p></li>
+<li><p><strong>tmpl_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of air temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The ice water mixing ratio (kg/kg)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.vapor_pressure">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">vapor_pressure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.vapor_pressure" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">vapor_pressure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pres_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">vapor_pressure(pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the vapor pressure with respect to liquid water.</p>
+<p>The vapor pressure (or saturation vapor pressure) is computed with
+respect to liquid water when the dewpoint temperature (or air temperature)
+is passed (in Kelvin), along with the air pressure (Pa). The air pressure
+is used as a minimum floor value for extremely cold temperatures at low
+pressures, and is consistent with how vapor pressure is treated in CM1.</p>
+<p>This function uses the formulation by Bolton (1980), and is
+accurate to within 0.3% for the temperature range of -35C &lt;= T &lt;= 35C.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The air pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The air temperature (K) or dewpoint temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The vapor pressure (Pa) given dewpoint temperature, or the
+saturation vapor pressure given the air temperature.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">vapor_pressure(pres_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the vapor pressure with respect to liquid water.</p>
+<p>The vapor pressure (or saturation vapor pressure) is computed with
+respect to liquid water when the dewpoint temperature (or air temperature)
+is passed (in Kelvin), along with the air pressure (Pa). The air pressure
+is used as a minimum floor value for extremely cold temperatures at low
+pressures, and is consistent with how vapor pressure is treated in CM1.</p>
+<p>This function uses the formulation by Bolton (1980), and is
+accurate to within 0.3% for the temperature range of -35C &lt;= T &lt;= 35C.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pres_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of air pressure (Pa)</p></li>
+<li><p><strong>tmpk_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of air temperature (K) or dewpoint temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The 1D array of vapor pressure (Pa) given dewpoint temperature, or the
+saturation vapor pressure given the air temperature.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.vapor_pressure_ice">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">vapor_pressure_ice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.vapor_pressure_ice" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">vapor_pressure_ice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pres_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">vapor_pressure_ice(pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the vapor pressure with respect to ice.</p>
+<p>The vapor pressure (or saturation vapor pressure) is computed with
+respect to ice when the dewpoint temperature (or air temperature)
+is passed (in Kelvin), along with the air pressure (Pa). The air pressure
+is used as a minimum floor value for extremely cold temperatures at low
+pressures, and is consistent with how vapor pressure is treated in CM1.</p>
+<p>This function uses the formulation by Bolton (1980), and is
+accurate to within 0.3% for the temperature range of -35C &lt;= T &lt;= 35C.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The air pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The air temperature (K) or dewpoint temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The vapor pressure (Pa) given dewpoint temperature, or the
+saturation vapor pressure given the air temperature.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">vapor_pressure_ice(pres_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the vapor pressure with respect to ice.</p>
+<p>The vapor pressure (or saturation vapor pressure) is computed with
+respect to ice when the dewpoint temperature (or air temperature)
+is passed (in Kelvin), along with the air pressure (Pa). The air pressure
+is used as a minimum floor value for extremely cold temperatures at low
+pressures, and is consistent with how vapor pressure is treated in CM1.</p>
+<p>This function uses the formulation by Bolton (1980), and is
+accurate to within 0.3% for the temperature range of -35C &lt;= T &lt;= 35C.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pres_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of air pressure (Pa)</p></li>
+<li><p><strong>tmpk_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of air temperature (K) or dewpoint temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The 1D array of vapor pressure (Pa) given dewpoint temperature, or the
+saturation vapor pressure given the air temperature.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.specific_humidity">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">specific_humidity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.specific_humidity" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">specific_humidity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">mixr_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">specific_humidity(rv:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the specific humidity (kg/kg) from a mixing ratio (kg/kg).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rv</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The water vapor mixing ratio (kg/kg)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The specific humidity (kg/kg)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">specific_humidity(mixr_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the specific humidity (kg/kg) from a mixing ratio (kg/kg).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mixr_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of water vapor mixing ratios (kg/kg)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1D NumPy array of specific humidity (unitless)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.relative_humidity">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">relative_humidity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.relative_humidity" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">relative_humidity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">relative_humidity(pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">dewpoint:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the relative humidity of water vapor with respect to liquid water.
+NOTE: The pressure variable is only used as a sanity check when computing
+vapor pressure at extremely low pressures and temperatures. If you do not
+want or need this behavior, you can pass the THETA_REF_PRESSURE constant
+in place of an air pressure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient dewpoint temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Relative Humidity (fraction, unitless)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">relative_humidity(pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the relative humidity of water vapor with respect to liquid water.
+NOTE: The pressure variable is only used as a sanity check when computing
+vapor pressure at extremely low pressures and temperatures. If you do not
+want or need this behavior, you canpass in an array of THETA_REF_PRESSURE
+in place of air pressure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air pressure Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1D NumPy array of relative humidity values (fraction, unitless)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.temperature_at_mixratio">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">temperature_at_mixratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wv_mixratio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.temperature_at_mixratio" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">temperature_at_mixratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">mixr_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">pres_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature_at_mixratio(wv_mixratio:</span> <span class="pre">float,</span> <span class="pre">pressure:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Computes the temperature (K) of air at the given water vapor mixing ratio
+(kg/kg) and air pressure (Pa). Can be used to compute the dewpoint temperature
+from mixing ratio.</p>
+<p>The routine is implemented as in Bolton (1980) eq 11, and is considered to be
+accurate to 0.03 K for -35C &lt;= T &lt;= 35C.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wv_mixratio</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The water vapor mixing ratio (kg/kg)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The air pressure (Pa)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The temperature (K) of an air parcel at a given mixing ratio and pressure.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature_at_mixratio(mixr_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">pres_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Computes the temperature (K) of air at the given water vapor mixing ratio
+(kg/kg) and air pressure (Pa). Can be used to compute the dewpoint temperature
+from mixing ratio.</p>
+<p>The routine is implemented as in Bolton (1980) eq 11, and is considered to be
+accurate to 0.03 K for -35C &lt;= T &lt;= 35C.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mixr_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of water vapor mixing ratio (kg/kg)</p></li>
+<li><p><strong>pres_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of air pressure (Pa)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The 1D array of temperature (K) of an air parcel at a given mixing ratio and pressure.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.virtual_temperature">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">virtual_temperature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.virtual_temperature" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">virtual_temperature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">rv_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">rl_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">ri_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">virtual_temperature(temperature:</span> <span class="pre">float,</span> <span class="pre">rv:</span> <span class="pre">float,</span> <span class="pre">rl:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0,</span> <span class="pre">ri:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Returns the virtual temperature in Kelvin given the dry-bulb
+temperature (Kelvin), the water vapor mixing ratio (kg/kg), the
+liquid water mixing ratio (kg/kg), and the ice water mixing ratios
+(kg/kg). The liquid and ice water mixing ratios have default values
+of zero, if unspecified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The dry-bulb temperature (K)</p></li>
+<li><p><strong>rv</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The water vapor mixing ratio (kg/kg)</p></li>
+<li><p><strong>rl</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The liquid water mixing ratio (kg/kg)</p></li>
+<li><p><strong>ri</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ice water mixing ratio (kg/kg)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The virtual temperature (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">virtual_temperature(tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">rv_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">rl_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">ri_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Returns the virtual temperature in Kelvin given the dry-bulb
+temperature (Kelvin), the water vapor mixing ratio (kg/kg), the
+liquid water mixing ratio (kg/kg), and the ice water mixing ratios
+(kg/kg). The liquid and ice water mixing ratios have default values
+of zero, if unspecified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tmpk_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of dry-bulb temperature (K)</p></li>
+<li><p><strong>rv_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of water vapor mixing ratio (kg/kg)</p></li>
+<li><p><strong>rl_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>, <em>optional</em>) – The 1D array of liquid water mixing ratio (kg/kg)</p></li>
+<li><p><strong>ri_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>, <em>optional</em>) – The 1D array of ice water mixing ratio (kg/kg)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The 1D array of virtual temperature (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.buoyancy">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">buoyancy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parcel_temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environment_temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.buoyancy" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">buoyancy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">parcel_temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">environment_temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">buoyancy(parcel_temperature:</span> <span class="pre">float,</span> <span class="pre">environment_temperature:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute buoyancy given parcel &amp; environment temperatures.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parcel_temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – parcel temperature (K)</p></li>
+<li><p><strong>environment_temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – environment temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Buoyancy (m/s^2)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">buoyancy(parcel_temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">environment_temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute buoyancy given arrays of parcel &amp; environment temperatures.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parcel_temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of parcel temperatures (K)</p></li>
+<li><p><strong>environment_temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of environment temperatures (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1D NumPy array of buoyancy values (m/s^2)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.thetae">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">thetae</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.thetae" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">thetae</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">thetae(pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">dewpoint:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the equivalent potential temperature (K) given the
+air pressure (Pa), air temperature (K), and dewpoint temperature (K).
+The equivalent potential temperature is computed as in Bolton 1980.
+It was found in Davies-Jones 2009 to be the most accurate non-iterative
+formulation of theta-e.</p>
+<p class="rubric">References</p>
+<p>Bolton 1980: <a class="reference external" href="https://doi.org/10.1175/1520-0493(1980)108%3C1046:TCOEPT%3E2.0.CO;2">https://doi.org/10.1175/1520-0493(1980)108%3C1046:TCOEPT%3E2.0.CO;2</a></p>
+<p>Davies-Jones 2009: <a class="reference external" href="https://doi.org/10.1175/2009MWR2774.1">https://doi.org/10.1175/2009MWR2774.1</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the dewpoint temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The equivalent potential temperature (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">thetae(pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the equivalent potential temperature (K) given the
+air pressure (Pa), air temperature (K), and dewpoint temperature (K).
+The equivalent potential temperature is computed as in Bolton 1980.
+It was found in Davies-Jones 2009 to be the most accurate non-iterative
+formulation of theta-e.</p>
+<p class="rubric">References</p>
+<p>Bolton 1980: <a class="reference external" href="https://doi.org/10.1175/1520-0493(1980)108%3C1046:TCOEPT%3E2.0.CO;2">https://doi.org/10.1175/1520-0493(1980)108%3C1046:TCOEPT%3E2.0.CO;2</a></p>
+<p>Davies-Jones 2009: <a class="reference external" href="https://doi.org/10.1175/2009MWR2774.1">https://doi.org/10.1175/2009MWR2774.1</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of dewpoint temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1D NumPy array of equivalent potential temperature (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.wetbulb">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_wobus" title="nwsspc.sharp.calc.parcel.lifter_wobus"><span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.wetbulb" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1" title="nwsspc.sharp.calc.parcel.lifter_cm1"><span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">dewpoint:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the wet bulb temperature (K) given the ambient pressure (Pa),
+temperature (K), and dewpoint temperature (K).</p>
+<p>First, it lifts a parcel with the given pressure, temperature, and
+dewpoint temperature to its Lifted Condensation Level (LCL). To compute the
+temperature and pressure of the LCL, an approximation is used. See the
+lcl_temperature function for further detail.</p>
+<p>After the parcel has reached the LCL, the lifter passed to the function
+lowers the parcel to its initial pressure level along a moist adiabat or
+pseudoadiabat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_wobus" title="nwsspc.sharp.calc.parcel.lifter_wobus"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient dewpoint temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The wetbulb temperature (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1,</span> <span class="pre">pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">dewpoint:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the wet bulb temperature (K) given the ambient pressure (Pa),
+temperature (K), and dewpoint temperature (K).</p>
+<p>First, it lifts a parcel with the given pressure, temperature, and
+dewpoint temperature to its Lifted Condensation Level (LCL). To compute the
+temperature and pressure of the LCL, an approximation is used. See the
+lcl_temperature function for further detail.</p>
+<p>After the parcel has reached the LCL, the lifter passed to the function
+lowers the parcel to its initial pressure level along a moist adiabat or
+pseudoadiabat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1" title="nwsspc.sharp.calc.parcel.lifter_cm1"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient dewpoint temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The wetbulb temperature (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="3">
+<li><p><code class="docutils literal notranslate"><span class="pre">wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the wet bulb temperature (K) given the ambient pressure (Pa),
+temperature (K), and dewpoint temperature (K).</p>
+<p>First, it lifts a parcel with the given pressure, temperature, and
+dewpoint temperature to its Lifted Condensation Level (LCL). To compute the
+temperature and pressure of the LCL, an approximation is used. See the
+lcl_temperature function for further detail.</p>
+<p>After the parcel has reached the LCL, the lifter passed to the function
+lowers the parcel to its initial pressure level along a moist adiabat or
+pseudoadiabat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_wobus" title="nwsspc.sharp.calc.parcel.lifter_wobus"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient pressures (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient temperatureds (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperatures (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1D NumPy array of wetbulb temperatures (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="4">
+<li><p><code class="docutils literal notranslate"><span class="pre">wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the wet bulb temperature (K) given the ambient pressure (Pa),
+temperature (K), and dewpoint temperature (K).</p>
+<p>First, it lifts a parcel with the given pressure, temperature, and
+dewpoint temperature to its Lifted Condensation Level (LCL). To compute the
+temperature and pressure of the LCL, an approximation is used. See the
+lcl_temperature function for further detail.</p>
+<p>After the parcel has reached the LCL, the lifter passed to the function
+lowers the parcel to its initial pressure level along a moist adiabat or
+pseudoadiabat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1" title="nwsspc.sharp.calc.parcel.lifter_cm1"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient pressures (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient temperatureds (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperatures (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1D NumPy array of wetbulb temperatures (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.theta_wetbulb">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_wobus" title="nwsspc.sharp.calc.parcel.lifter_wobus"><span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.theta_wetbulb" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1" title="nwsspc.sharp.calc.parcel.lifter_cm1"><span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">theta_wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">dewpoint:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the wet-bulb potential temperature (K) given the pressure (Pa),
+temperature (K), and dewpoint temperature (K).</p>
+<p>First, it lifts a parcel with the given pressure, temperature,
+and dewpoint temperature to its Lifted Condensation Level (LCL).
+To compute the temperature and pressure of the LCL, an approximation
+is used. See the lcl_temperature fuction for further detail.</p>
+<p>After the parcel has reached the LCL, the lifted passed to the function
+lowers the parcel to the standard parcel reference pressure level
+(1000 hPa) along a moist adiabat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_wobus" title="nwsspc.sharp.calc.parcel.lifter_wobus"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient dewpoint temperature</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The wet-bulb potential temperature (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">theta_wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1,</span> <span class="pre">pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">dewpoint:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the wet-bulb potential temperature (K) given the pressure (Pa),
+temperature (K), and dewpoint temperature (K).</p>
+<p>First, it lifts a parcel with the given pressure, temperature,
+and dewpoint temperature to its Lifted Condensation Level (LCL).
+To compute the temperature and pressure of the LCL, an approximation
+is used. See the lcl_temperature fuction for further detail.</p>
+<p>After the parcel has reached the LCL, the lifted passed to the function
+lowers the parcel to the standard parcel reference pressure level
+(1000 hPa) along a moist adiabat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1" title="nwsspc.sharp.calc.parcel.lifter_cm1"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient dewpoint temperature</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The wet-bulb potential temperature (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="3">
+<li><p><code class="docutils literal notranslate"><span class="pre">theta_wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the wet-bulb potential temperature (K) given the pressure (Pa),
+temperature (K), and dewpoint temperature (K).</p>
+<p>First, it lifts a parcel with the given pressure, temperature,
+and dewpoint temperature to its Lifted Condensation Level (LCL).
+To compute the temperature and pressure of the LCL, an approximation
+is used. See the lcl_temperature fuction for further detail.</p>
+<p>After the parcel has reached the LCL, the lifted passed to the function
+lowers the parcel to the standard parcel reference pressure level
+(1000 hPa) along a moist adiabat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_wobus" title="nwsspc.sharp.calc.parcel.lifter_wobus"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperature</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1D NumPy array of wet-bulb potential temperatures (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="4">
+<li><p><code class="docutils literal notranslate"><span class="pre">theta_wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the wet-bulb potential temperature (K) given the pressure (Pa),
+temperature (K), and dewpoint temperature (K).</p>
+<p>First, it lifts a parcel with the given pressure, temperature,
+and dewpoint temperature to its Lifted Condensation Level (LCL).
+To compute the temperature and pressure of the LCL, an approximation
+is used. See the lcl_temperature fuction for further detail.</p>
+<p>After the parcel has reached the LCL, the lifted passed to the function
+lowers the parcel to the standard parcel reference pressure level
+(1000 hPa) along a moist adiabat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1" title="nwsspc.sharp.calc.parcel.lifter_cm1"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperature</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1D NumPy array of wet-bulb potential temperatures (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="moist-ascent">
+<h2>Moist Ascent<a class="headerlink" href="#moist-ascent" title="Link to this heading">#</a></h2>
+<p>Moist thermodunamic routines directly related to vertical ascent.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.adiabat">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">adiabat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.adiabat" title="Link to this definition">#</a></dt>
+<dd><p>An enum class used to flag which type of parcel ascent is desired for nwsspc.sharp.calc.parcel.lifter_cm1</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.adiabat.pseudo_liq">
+<span class="sig-name descname"><span class="pre">pseudo_liq</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#nwsspc.sharp.calc.thermo.adiabat.pseudo_liq" title="Link to this definition">#</a></dt>
+<dd><p>Pseudoadiabatic liquid-only parcel ascent.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.adiabat.pseudo_ice">
+<span class="sig-name descname"><span class="pre">pseudo_ice</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#nwsspc.sharp.calc.thermo.adiabat.pseudo_ice" title="Link to this definition">#</a></dt>
+<dd><p>Pseudoadiabatic liquid and ice based parcel ascent.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.adiabat.adiab_liq">
+<span class="sig-name descname"><span class="pre">adiab_liq</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#nwsspc.sharp.calc.thermo.adiabat.adiab_liq" title="Link to this definition">#</a></dt>
+<dd><p>Adiabatic liquid-only parcel ascent.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.adiabat.adiab_ice">
+<span class="sig-name descname"><span class="pre">adiab_ice</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#nwsspc.sharp.calc.thermo.adiabat.adiab_ice" title="Link to this definition">#</a></dt>
+<dd><p>Adiabatic liquid and ice based parcel ascent.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.wobf">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wobf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.wobf" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wobf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">wobf(temperature:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Computes the difference between the wet-bulb potential temperatures
+(Kelvin) for saturated and dry air, given the temperature (Kelvin).</p>
+<p>The Wobus Function (wobf) is defined as the difference between the
+wet-bulb potential temperature for saturated air (WBPTS) and the
+wet-bulb potential temperature for dry air (WBPTD) given an iput
+air temperature. This function is used in the computation of moist
+adiabatic ascent as part of the Wobus parcel lifter (lifter_wobus).</p>
+<p>WOBF(T) := WBPTS - WBPTD</p>
+<p>Although WBPTS and WBPTD are functions of both pressure and
+temperature, it is assumed their difference is a function of
+temperature only. The difference is also proportional to the
+heat imparted to a parcel of air.</p>
+<p>This function uses a polynomial approximation to the wobus function,
+fitted to value in Table 78 of PP.319-322 of the Smithsonian Meteorological
+Table by Rolan List (6th Revised Edition). Herman Wobus, a mathematician
+for the Navy Weather Research Facility in Norfolk, VA computed these
+coefficients a very long time ago, as he was retired as of the time of
+the documentation found on this routine written in 1981.</p>
+<p>It was shown by Robert Davies-Jones (2007) that the Wobus function has
+a slight dependence on pressure, which results in errors of up to 1.2
+Kelvin in the temperature of a lifted parcel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The air temperature (Kelvin)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Wobus function temperature (Kelvin)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">wobf(tmpk_arr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Computes the difference between the wet-bulb potential temperatures
+(Kelvin) for saturated and dry air, given the temperature (Kelvin).</p>
+<p>The Wobus Function (wobf) is defined as the difference between the
+wet-bulb potential temperature for saturated air (WBPTS) and the
+wet-bulb potential temperature for dry air (WBPTD) given an iput
+air temperature. This function is used in the computation of moist
+adiabatic ascent as part of the Wobus parcel lifter (lifter_wobus).</p>
+<p>WOBF(T) := WBPTS - WBPTD</p>
+<p>Although WBPTS and WBPTD are functions of both pressure and
+temperature, it is assumed their difference is a function of
+temperature only. The difference is also proportional to the
+heat imparted to a parcel of air.</p>
+<p>This function uses a polynomial approximation to the wobus function,
+fitted to value in Table 78 of PP.319-322 of the Smithsonian Meteorological
+Table by Rolan List (6th Revised Edition). Herman Wobus, a mathematician
+for the Navy Weather Research Facility in Norfolk, VA computed these
+coefficients a very long time ago, as he was retired as of the time of
+the documentation found on this routine written in 1981.</p>
+<p>It was shown by Robert Davies-Jones (2007) that the Wobus function has
+a slight dependence on pressure, which results in errors of up to 1.2
+Kelvin in the temperature of a lifted parcel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tmpk_arr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of air temperatures (Kelvin)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The 1D array of Wobus function temperatures (Kelvin)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.wetlift">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetlift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lifted_pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">converge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0010000000474974513</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.wetlift" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetlift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">arg0:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">arg1:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">arg2:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">/</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">wetlift(pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">lifted_pressure:</span> <span class="pre">float,</span> <span class="pre">converge:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0010000000474974513)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the temperature of a parcel lifted moist adiabatically to a new level.</p>
+<p>With a given parcel defined by a pressure (Pa) and temperature (K), lift it
+moist adiabatically to a new pressure level (Pa) and return the temperature of
+the parcel at that level.</p>
+<p>This function relies on the Wobus Function (thermo.wobf), and it was shown by
+Robert Davies-Jones (2007) that the WObus function has a slight dependence on
+pressure, which results in errors of up to 1.2 K in the temperature of a lifted
+parcel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The air pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The saturated air temperature (K)</p></li>
+<li><p><strong>lifted_pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The new pressure level to lift to (Pa)</p></li>
+<li><p><strong>converge</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The iterative convergence criteria (K; default = 0.001)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The new temperature (K) when lifted moist adiabatically to the new pressure level</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">wetlift(arg0:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">arg1:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">arg2:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">/)</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the temperature of a parcel lifted moist adiabatically to a new level.</p>
+<p>With a given parcel defined by a pressure (Pa) and temperature (K), lift it
+moist adiabatically to a new pressure level (Pa) and return the temperature of
+the parcel at that level.</p>
+<p>This function relies on the Wobus Function (thermo.wobf), and it was shown by
+Robert Davies-Jones (2007) that the WObus function has a slight dependence on
+pressure, which results in errors of up to 1.2 K in the temperature of a lifted
+parcel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of air pressures (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of saturated air temperatures (K)</p></li>
+<li><p><strong>lifted_pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – The 1D array of new pressure levels to lift to (Pa)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The 1D array of new temperatures (K) when lifted moist adiabatically to the new pressure levels</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="parcel.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">parcel</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="winds.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">winds</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dry-variables">Dry Variables</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.theta"><code class="docutils literal notranslate"><span class="pre">theta</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.theta_level"><code class="docutils literal notranslate"><span class="pre">theta_level</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.lapse_rate"><code class="docutils literal notranslate"><span class="pre">lapse_rate</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.lapse_rate_max"><code class="docutils literal notranslate"><span class="pre">lapse_rate_max</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dry-ascent">Dry Ascent</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.drylift"><code class="docutils literal notranslate"><span class="pre">drylift</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.lcl_temperature"><code class="docutils literal notranslate"><span class="pre">lcl_temperature</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moist-variables">Moist Variables</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.mixratio"><code class="docutils literal notranslate"><span class="pre">mixratio</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.mixratio_ice"><code class="docutils literal notranslate"><span class="pre">mixratio_ice</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.vapor_pressure"><code class="docutils literal notranslate"><span class="pre">vapor_pressure</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.vapor_pressure_ice"><code class="docutils literal notranslate"><span class="pre">vapor_pressure_ice</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.specific_humidity"><code class="docutils literal notranslate"><span class="pre">specific_humidity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.relative_humidity"><code class="docutils literal notranslate"><span class="pre">relative_humidity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.temperature_at_mixratio"><code class="docutils literal notranslate"><span class="pre">temperature_at_mixratio</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.virtual_temperature"><code class="docutils literal notranslate"><span class="pre">virtual_temperature</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.buoyancy"><code class="docutils literal notranslate"><span class="pre">buoyancy</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.thetae"><code class="docutils literal notranslate"><span class="pre">thetae</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.wetbulb"><code class="docutils literal notranslate"><span class="pre">wetbulb</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.theta_wetbulb"><code class="docutils literal notranslate"><span class="pre">theta_wetbulb</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#moist-ascent">Moist Ascent</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.adiabat"><code class="docutils literal notranslate"><span class="pre">adiabat</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.adiabat.pseudo_liq"><code class="docutils literal notranslate"><span class="pre">adiabat.pseudo_liq</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.adiabat.pseudo_ice"><code class="docutils literal notranslate"><span class="pre">adiabat.pseudo_ice</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.adiabat.adiab_liq"><code class="docutils literal notranslate"><span class="pre">adiabat.adiab_liq</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.adiabat.adiab_ice"><code class="docutils literal notranslate"><span class="pre">adiabat.adiab_ice</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.wobf"><code class="docutils literal notranslate"><span class="pre">wobf</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.thermo.wetlift"><code class="docutils literal notranslate"><span class="pre">wetlift</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2025, NOAA/NWS/NCEP Storm Prediction Center.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
