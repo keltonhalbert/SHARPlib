@@ -471,6 +471,30 @@ struct Parcel {
     /**
      * \author Kelton Halbert - NWS Storm Prediction Center
      *
+     * \brief Computes the Lifted Index for the sharp::Parcel
+     *
+     * Assuming that sharp::Parcel::lift_parcel has been called,
+     * this routine will compute the lifted index at the requested
+     * pressure level.
+     *
+     * The lifted index is the difference between the environment
+     * virtual temperature and the parcel virtual temperature.
+     *
+     * \param   pres_lev        Pressure level for LI (Pa)
+     * \param   pres_arr        Array of pressure (Pa)
+     * \param   vtmpk_arr       Array of environment virtual temperature (K)
+     * \param   pcl_vtmpk_arr   Array of parcel virtual temperature (K)
+     * \param   N               Length of arrays
+     *
+     * \return  Lifted Index (K)
+     */
+    float lifted_index(const float pres_lev, const float pres_arr[],
+                       const float vtmpk_arr[], const float pcl_vtmpk_arr[],
+                       const std::ptrdiff_t N);
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
      * \brief Construct and return a surface-based Parcel
      *
      * Given input values of surface pressure, temperature,

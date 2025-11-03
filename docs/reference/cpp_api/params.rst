@@ -15,6 +15,8 @@ Convective
 .. doxygenfunction:: sharp::supercell_composite_parameter
 .. doxygenfunction:: sharp::significant_tornado_parameter
 .. doxygenfunction:: sharp::significant_hail_parameter
+.. doxygenfunction:: sharp::derecho_composite_parameter
+.. doxygenfunction:: sharp::large_hail_parameter
 .. doxygenfunction:: sharp::hail_growth_layer
 .. doxygenfunction:: sharp::precipitable_water
 
@@ -28,4 +30,5 @@ Winter
 ------
 
 .. doxygenfunction:: sharp::dendritic_layer
+.. doxygenfunction:: sharp::snow_squall_parameter
 

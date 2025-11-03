@@ -17,6 +17,9 @@
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/thermo.h>
 
+#include <algorithm>
+#include <cstddef>
+
 namespace sharp {
 
 Parcel::Parcel() {}
@@ -242,6 +245,23 @@ void Parcel::cape_cinh(const float pres_arr[], const float hght_arr[],
             integrate_layer_trapz(lpl_lfc_ht, buoy_arr, hght_arr, N, -1);
         this->cape = integrate_layer_trapz(lfc_el_ht, buoy_arr, hght_arr, N, 1);
     }
+}
+
+float Parcel::lifted_index(const float pres_lev, const float pres_arr[],
+                           const float vtmpk_arr[], const float pcl_vtmpk_arr[],
+                           const std::ptrdiff_t N) {
+    if ((pres_lev > pres_arr[0]) || (pres_lev < pres_arr[N - 1])) {
+        return MISSING;
+    }
+
+    const float pcl_t =
+        sharp::interp_pressure(pres_lev, pres_arr, pcl_vtmpk_arr, N);
+    const float env_t =
+        sharp::interp_pressure(pres_lev, pres_arr, vtmpk_arr, N);
+
+    if ((pcl_t == MISSING) || (env_t == MISSING)) return MISSING;
+
+    return env_t - pcl_t;
 }
 
 DowndraftParcel::DowndraftParcel() {}
