@@ -28,6 +28,11 @@
     {
         "version": "v1.2.0-3-gd483684",
         "url": "https://keltonhalbert.github.io/SHARPlib/v1.2.0-3-gd483684",
+        "is_latest": false
+    },
+    {
+        "version": "v1.2.0-4-g1b6909c",
+        "url": "https://keltonhalbert.github.io/SHARPlib/v1.2.0-4-g1b6909c",
         "is_latest": true
     }
 ]
