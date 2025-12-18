@@ -475,6 +475,10 @@ PressureLayer hail_growth_layer(const float pressure[],
         bottom = pressure[0];
     }
 
+    if (bottom < top) {
+        return {MISSING, MISSING};
+    }
+
     return {bottom, top};
 }
 

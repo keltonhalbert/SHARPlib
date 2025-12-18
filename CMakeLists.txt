@@ -1,11 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ version selection")
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+project(SHARPLIB LANGUAGES CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include(GitVersion)
 
+include(GitVersion)
 get_project_version()
 
 configure_file(
@@ -13,85 +11,100 @@ configure_file(
     include/SHARPlib/version.h
 )
 
-project(SHARPlib VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH} LANGUAGES CXX )
+if(NOT PROJECT_VERSION)
+    set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+endif()
+
+include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 include(CTest)
 
 option(BUILD_PYBIND "Build python bindings with nanobind" OFF)
 option(NO_QC "Disable QC checks for missing/NaN values in SHARPlib" OFF)
-set(NO_QC ${NO_QC} CACHE BOOL "Disable QC checks for missing/NaN values in SHARPlib tests" FORCE)
+option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON) 
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-## add all CPP files as sources
-file(GLOB SOURCES "src/SHARPlib/*.cpp" "src/SHARPlib/params/*.cpp")
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS 
+    "src/SHARPlib/*.cpp" 
+)
 
-## Add the library build command
-## The library target is SHARP, we are building a static lib,
-## and the sources are proviced
-add_library(SHARPlib STATIC ${SOURCES})
+add_library(SHARPlib ${SOURCES})
 
-target_include_directories(SHARPlib PUBLIC include external/fmt/include)
+target_include_directories(SHARPlib PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/external/fmt/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
 
-## We are telling the build process that the SHARP library
-## should use the C++ linker, and setting compile options
-set_target_properties(SHARPlib PROPERTIES LINKER_LANGUAGE CXX)
-set_target_properties(SHARPlib PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_compile_features(SHARPlib PUBLIC cxx_std_17)
+set_target_properties(SHARPlib PROPERTIES 
+    POSITION_INDEPENDENT_CODE ON
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
+)
 
-## Compiler-specific options
-if (MSVC) # For MSVC (cl) compiler
-    # Add compile options for MSVC
+if(MSVC)
     target_compile_options(SHARPlib PRIVATE
-        /W3           # Warning level 3
-        /WX           # Treat warnings as errors
-        /utf-8        # Set source and execution character set to UTF-8
-        /wd4244       # Disable warning C4244 (possible loss of data)
-        /wd4305       # Disable warning C4305 (truncation from double to float)
+        /W3 /utf-8 /fp:precise
+        /wd4244 /wd4305
+        $<$<BOOL:${WARNINGS_AS_ERRORS}>:/WX>
     )
-
-    # Add debug and release specific options
+else()
     target_compile_options(SHARPlib PRIVATE
-        $<$<CONFIG:Debug>:/Zi /Od /MDd>      # Debug: Enable debug info, disable optimization, debug runtime
-        $<$<CONFIG:Release>:/O2 /MD /DNDEBUG> # Release: Optimize for speed, release runtime, disable assertions
+        -Wall -Wextra -Wpedantic
+        $<$<BOOL:${WARNINGS_AS_ERRORS}>:-Werror>
+        $<$<CONFIG:Release>:-ftree-vectorize -funroll-loops>
     )
-else() # For GCC/Clang
-    # Add compile options for GCC/Clang
-    target_compile_options(SHARPlib PRIVATE
-        -Wall           # Enable common warnings
-        -Wextra         # Enable extra warnings
-        -Wpedantic      # Enforce strict compliance with standard
-        -Werror         # Treat warnings as errors
-    )
-
-    # Add debug and release specific options
-    target_compile_options(SHARPlib PRIVATE
-        $<$<CONFIG:Debug>:-g -O3 -ftree-vectorize -funroll-loops> # Debug: Enable debug info, optimizations, vectorization
-        $<$<CONFIG:Release>:-O3 -ftree-vectorize -funroll-loops> # Release: Optimize, vectorize, generate PIC
-    )
-endif()
-
-## Check if the build type is set and default to
-## release, and then set the compiler flags
-## for release and debug
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
+    
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|IntelLLVM")
+        target_compile_options(SHARPlib PRIVATE -ffp-model=precise)
+    endif()
 endif()
 
 if(NO_QC)
     target_compile_definitions(SHARPlib PRIVATE NO_QC)
 endif()
 
-## If an install prefix hasn't been set, use the 
-## current source directory
-if (NOT CMAKE_INSTALL_PREFIX) 
-    set(LOCAL_PREFIX "${CMAKE_SOURCE_DIR}")
-    set(CMAKE_INSTALL_PREFIX "${LOCAL_PREFIX}")
-endif()
+install(TARGETS SHARPlib
+    EXPORT SHARPlibTargets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
 
-install(TARGETS SHARPlib DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(DIRECTORY include/SHARPlib 
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
 
-## This ensures that tests and python bindings arent 
-## unintentionally added or built by other CMake projects
-## that link to this library
-if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+install(EXPORT SHARPlibTargets
+    FILE SHARPlibTargets.cmake
+    NAMESPACE SHARPlib::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SHARPlib
+)
+
+set(PKG_CONFIG_FILE "${CMAKE_CURRENT_BINARY_DIR}/SHARPlibConfig.cmake")
+set(PKG_VER_FILE    "${CMAKE_CURRENT_BINARY_DIR}/SHARPlibConfigVersion.cmake")
+
+write_basic_package_version_file(
+    "${PKG_VER_FILE}"
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/SHARPlibConfig.cmake.in"
+    "${PKG_CONFIG_FILE}"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SHARPlib
+)
+
+install(FILES 
+    "${PKG_CONFIG_FILE}" 
+    "${PKG_VER_FILE}"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SHARPlib
+)
+
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
+    enable_testing()
     add_subdirectory(tests/unit)
     add_subdirectory(tests/benchmark)
 endif()
@@ -99,5 +112,3 @@ endif()
 if (BUILD_PYBIND)
     add_subdirectory(src/nanobind)
 endif()
-
-enable_testing()

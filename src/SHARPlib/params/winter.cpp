@@ -33,6 +33,12 @@ PressureLayer dendritic_layer(const float pressure[], const float temperature[],
         bottom = pressure[0];
     }
 
+    // in the event of an inverstion, these
+    // can be sqapped...
+    if (bottom < top) {
+        std::swap(bottom, top);
+    }
+
     return {bottom, top};
 }
 
