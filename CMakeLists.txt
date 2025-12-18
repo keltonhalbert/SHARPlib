@@ -1,12 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ version selection")
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+project(SHARPLIB LANGUAGES CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include(GitVersion)
 
+include(GitVersion)
 get_project_version()
 
 configure_file(
@@ -14,87 +11,100 @@ configure_file(
     include/SHARPlib/version.h
 )
 
-project(SHARPlib VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH} LANGUAGES CXX)
+if(NOT PROJECT_VERSION)
+    set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+endif()
+
+include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 include(CTest)
 
-# Options
 option(BUILD_PYBIND "Build python bindings with nanobind" OFF)
 option(NO_QC "Disable QC checks for missing/NaN values in SHARPlib" OFF)
-set(NO_QC ${NO_QC} CACHE BOOL "Disable QC checks for missing/NaN values in SHARPlib tests" FORCE)
+option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON) 
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Sources
-file(GLOB SOURCES "src/SHARPlib/*.cpp" "src/SHARPlib/params/*.cpp")
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS 
+    "src/SHARPlib/*.cpp" 
+)
 
-add_library(SHARPlib STATIC ${SOURCES})
+add_library(SHARPlib ${SOURCES})
 
-target_include_directories(SHARPlib PUBLIC include external/fmt/include)
+target_include_directories(SHARPlib PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/external/fmt/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
 
-set_target_properties(SHARPlib PROPERTIES LINKER_LANGUAGE CXX)
-set_target_properties(SHARPlib PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_compile_features(SHARPlib PUBLIC cxx_std_17)
+set_target_properties(SHARPlib PROPERTIES 
+    POSITION_INDEPENDENT_CODE ON
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
+)
 
 if(MSVC)
     target_compile_options(SHARPlib PRIVATE
-        /W3 /WX
-        /utf-8
+        /W3 /utf-8 /fp:precise
         /wd4244 /wd4305
-        /fp:precise 
+        $<$<BOOL:${WARNINGS_AS_ERRORS}>:/WX>
+    )
+else()
+    target_compile_options(SHARPlib PRIVATE
+        -Wall -Wextra -Wpedantic
+        $<$<BOOL:${WARNINGS_AS_ERRORS}>:-Werror>
+        $<$<CONFIG:Release>:-ftree-vectorize -funroll-loops>
     )
     
-    target_compile_options(SHARPlib PRIVATE
-        $<$<CONFIG:Debug>:/Zi /Od /MDd>
-        $<$<CONFIG:Release>:/O2 /MD /DNDEBUG>
-    )
-
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "IntelLLVM")
-    target_compile_options(SHARPlib PRIVATE
-        -Wall -Wextra -Wpedantic -Werror
-        -fp-model=precise 
-        -ftree-vectorize
-        -funroll-loops
-    )
-
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    target_compile_options(SHARPlib PRIVATE
-        -Wall -Wextra -Wpedantic -Werror
-        -ffp-model=precise 
-        -ftree-vectorize
-        -funroll-loops
-    )
-
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(SHARPlib PRIVATE
-        -Wall -Wextra -Wpedantic -Werror
-        -ftree-vectorize
-        -funroll-loops
-    )
-
-endif()
-
-if(NOT MSVC)
-    target_compile_options(SHARPlib PRIVATE
-        $<$<CONFIG:Debug>:-g -O0> 
-        $<$<CONFIG:Release>:-O3>
-    )
-endif()
-
-
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|IntelLLVM")
+        target_compile_options(SHARPlib PRIVATE -ffp-model=precise)
+    endif()
 endif()
 
 if(NO_QC)
     target_compile_definitions(SHARPlib PRIVATE NO_QC)
 endif()
 
-if (NOT CMAKE_INSTALL_PREFIX) 
-    set(LOCAL_PREFIX "${CMAKE_SOURCE_DIR}")
-    set(CMAKE_INSTALL_PREFIX "${LOCAL_PREFIX}")
-endif()
+install(TARGETS SHARPlib
+    EXPORT SHARPlibTargets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
 
-install(TARGETS SHARPlib DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(DIRECTORY include/SHARPlib 
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
 
-if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+install(EXPORT SHARPlibTargets
+    FILE SHARPlibTargets.cmake
+    NAMESPACE SHARPlib::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SHARPlib
+)
+
+set(PKG_CONFIG_FILE "${CMAKE_CURRENT_BINARY_DIR}/SHARPlibConfig.cmake")
+set(PKG_VER_FILE    "${CMAKE_CURRENT_BINARY_DIR}/SHARPlibConfigVersion.cmake")
+
+write_basic_package_version_file(
+    "${PKG_VER_FILE}"
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/SHARPlibConfig.cmake.in"
+    "${PKG_CONFIG_FILE}"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SHARPlib
+)
+
+install(FILES 
+    "${PKG_CONFIG_FILE}" 
+    "${PKG_VER_FILE}"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SHARPlib
+)
+
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
+    enable_testing()
     add_subdirectory(tests/unit)
     add_subdirectory(tests/benchmark)
 endif()
@@ -102,5 +112,3 @@ endif()
 if (BUILD_PYBIND)
     add_subdirectory(src/nanobind)
 endif()
-
-enable_testing()
