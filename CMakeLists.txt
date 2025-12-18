@@ -59,12 +59,15 @@ else() # For GCC/Clang
         -Wextra         # Enable extra warnings
         -Wpedantic      # Enforce strict compliance with standard
         -Werror         # Treat warnings as errors
+        -fp-model=precise
+        -ftree-vectorize
+        -funroll-loops
     )
 
     # Add debug and release specific options
     target_compile_options(SHARPlib PRIVATE
-        $<$<CONFIG:Debug>:-g -O3 -ftree-vectorize -funroll-loops> # Debug: Enable debug info, optimizations, vectorization
-        $<$<CONFIG:Release>:-O3 -ftree-vectorize -funroll-loops> # Release: Optimize, vectorize, generate PIC
+        $<$<CONFIG:Debug>:-g -O3> # Debug: Enable debug info, optimizations, vectorization
+        $<$<CONFIG:Release>:-O3> # Release: Optimize, vectorize, generate PIC
     )
 endif()
 
