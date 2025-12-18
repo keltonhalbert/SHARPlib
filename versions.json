@@ -48,6 +48,11 @@
     {
         "version": "v1.2.0-8-g9af6a62",
         "url": "https://keltonhalbert.github.io/SHARPlib/v1.2.0-8-g9af6a62",
+        "is_latest": false
+    },
+    {
+        "version": "v1.2.1",
+        "url": "https://keltonhalbert.github.io/SHARPlib/v1.2.1",
         "is_latest": true
     }
 ]
