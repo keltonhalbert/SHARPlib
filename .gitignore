@@ -48,13 +48,18 @@ _deps
 *.app
 
 # Ignore the build directory
-build
-.cache
+build/
+dist/
+*.egg-info/
+var/
+.cache/
 
 # Ignore built docs
 docs/_build
 docs/doxyxml
 
 # Python
-__pycache__
+__pycache__/
+.pyd
+.pytest_cache/
 src/nanobind/_version.py
