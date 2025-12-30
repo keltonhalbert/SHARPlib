@@ -56,7 +56,6 @@ jobs:
         env:
           CIBW_PLATFORM: ${{ matrix.platform }}
           CIBW_ARCHS: ${{ matrix.archs }}
-          CIBW_BEFORE_BUILD: rm -rf {package}/build {package}/*.egg-info
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ github.event.inputs.post_release_version }}
         # Can also be configured directly, using `with:`
         # with:
