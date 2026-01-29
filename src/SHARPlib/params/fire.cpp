@@ -68,4 +68,23 @@ float fosberg_fire_index(float temperature, float rel_humidity,
     return std::min(fwwi, 100.f);
 }
 
+float pft_plume_potential_temperature(float theta_env, float beta) {
+#ifndef NO_QC
+    if (theta_env == MISSING) {
+        return MISSING;
+    }
+#endif
+    return (beta + 1.0f) * theta_env;
+}
+
+float pft_plume_mixratio(float theta_env, float mixr_env, float beta,
+                         float phi) {
+#ifndef NO_QC
+    if ((theta_env == MISSING) || (mixr_env == MISSING)) {
+        return MISSING;
+    }
+#endif
+    return mixr_env + (beta * phi * theta_env);
+}
+
 }  // namespace sharp
