@@ -87,6 +87,7 @@ namespace sharp {
  * moisture to potential temperature increment ratio.
  *
  * References:
+ * Tory et al. 2018
  * https://journals.ametsoc.org/view/journals/mwre/146/8/mwr-d-17-0377.1.xml
  *
  * \param theta_env (K)
