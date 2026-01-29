@@ -14,6 +14,10 @@
 #ifndef SHARP_PARAMS_FIRE_H
 #define SHARP_PARAMS_FIRE_H
 
+#include <SHARPlib/layer.h>
+
+#include <cstddef>
+
 namespace sharp {
 
 /**
@@ -65,13 +69,13 @@ namespace sharp {
  * References:
  * https://journals.ametsoc.org/view/journals/mwre/146/8/mwr-d-17-0377.1.xml
  *
- * \param theta_env (K)
- * \param beta      (unitless)
+ * \param theta_env                     (K)
+ * \param beta                          (unitless)
  *
- * \return Plume potential temperature
+ * \return Plume potential temperature  (K)
  */
 [[nodiscard]] float pft_plume_potential_temperature(float theta_env,
-                                                    float beta = 0.05);
+                                                    float beta);
 
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
@@ -87,18 +91,57 @@ namespace sharp {
  * moisture to potential temperature increment ratio.
  *
  * References:
- * Tory et al. 2018
+ * Tory et al. 2018:
  * https://journals.ametsoc.org/view/journals/mwre/146/8/mwr-d-17-0377.1.xml
  *
- * \param theta_env (K)
- * \param mixr_env  (kg/kg)
- * \param beta      (unitless)
- * \param phi       (kg/(kg*K))
+ * \param theta_env             (K)
+ * \param mixr_env              (kg/kg)
+ * \param beta                  (unitless)
+ * \param phi                   (kg/(kg*K))
  *
- * \return Plume mixing ratio
+ * \return Plume mixing ratio   (kg/kg)
  */
 [[nodiscard]] float pft_plume_mixratio(float theta_env, float mixr_env,
-                                       float beta = 0.05, float phi = 6.6e-5);
+                                       float beta, float phi);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Computes the Pyrocumulonimbus Firepower Threshold (PFT)
+ *
+ * Computes the Pyrocumulonimbus Firepower Threshold (PFT), or the minimum
+ * amount of firepower required to generate pyrocumulonimbus clouds for a
+ * given atmospheric profile. Reqires a HeightLayer to define a mixing layer
+ * used to average values of potential temperature, mixing ratio, and wind
+ * speed. The beta increment determines how to vary the plume buoyancy factor,
+ * with smaller values resulting in more iteration steps. Phi is the fire
+ * moisture to potential temperature increment ratio.
+ *
+ * References:
+ * Tory et al. 2018:
+ * https://journals.ametsoc.org/view/journals/mwre/146/8/mwr-d-17-0377.1.xml
+ * Tory et al. 2021:
+ * https://journals.ametsoc.org/view/journals/wefo/36/2/WAF-D-20-0027.1.xml
+ *
+ * \param mix_layer                             {bottom, top}
+ * \param pressure                              (Pa)
+ * \param height                                (meters)
+ * \param potential_temperature                 (K)
+ * \param mixratio                              (kg/kg)
+ * \param uwin                                  (m/s)
+ * \param vwin                                  (m/s)
+ * \param N                                     (length of arrays)
+ * \param beta_incr                             (unitless)
+ * \param phi                                   (kg/(kg*K))
+ *
+ * \return Pyrocumulonimbus Firepower Threshold (W)
+ */
+[[nodiscard]] float pyrocumulonimbus_firepower_threshold(
+    PressureLayer mix_layer, const float pressure[], const float height[],
+    const float temperature[], const float mixratio[], const float virtemp[],
+    const float uwin[], const float vwin[], const float potential_temperature[],
+    float pcl_vtmpk_arr[], float pcl_buoy_arr[], std::ptrdiff_t N,
+    float beta_incr = 0.0025, float phi = 6.67e-5);
 
 }  // namespace sharp
 

@@ -12,10 +12,16 @@
  */
 
 #include <SHARPlib/constants.h>
+#include <SHARPlib/layer.h>
 #include <SHARPlib/params/fire.h>
+#include <SHARPlib/parcel.h>
+#include <SHARPlib/winds.h>
 
 #include <algorithm>
 #include <cmath>
+
+#include "SHARPlib/interp.h"
+#include "SHARPlib/thermo.h"
 
 namespace sharp {
 
@@ -85,6 +91,71 @@ float pft_plume_mixratio(float theta_env, float mixr_env, float beta,
     }
 #endif
     return mixr_env + (beta * phi * theta_env);
+}
+
+float pyrocumulonimbus_firepower_threshold(
+    PressureLayer mix_layer, const float pressure[], const float height[],
+    const float temperature[], const float mixratio[], const float virtemp[],
+    const float uwin[], const float vwin[], const float potential_temperature[],
+    float pcl_vtmpk_arr[], float pcl_buoy_arr[], std::ptrdiff_t N,
+    float beta_incr, float phi) {
+    lifter_cm1 lifter;
+    lifter.ma_type = adiabat::pseudo_liq;
+
+    float mean_theta =
+        layer_mean(mix_layer, pressure, potential_temperature, N);
+    float mean_mixr = layer_mean(mix_layer, pressure, mixratio, N);
+    WindComponents mean_uv =
+        mean_wind(mix_layer, pressure, uwin, vwin, N, false);
+    float mean_wspd = sharp::vector_magnitude(mean_uv.u, mean_uv.v);
+
+    float z_fc = sharp::MISSING;
+    float delta_theta = 0.0;
+    float eql_tmpk = mean_theta;
+
+    float beta_max = 0.1;
+    float beta_val = 0.0;
+    while (beta_val <= beta_max) {
+        float plume_theta =
+            pft_plume_potential_temperature(mean_theta, beta_val);
+        float plume_mixr =
+            pft_plume_mixratio(mean_theta, mean_mixr, beta_val, phi);
+
+        float plume_tmpk = theta(THETA_REF_PRESSURE, plume_theta, pressure[0]);
+        float plume_dwpk = temperature_at_mixratio(plume_mixr, pressure[0]);
+
+        Parcel fire_pcl = Parcel(pressure[0], plume_tmpk, plume_dwpk, LPL::USR);
+        fire_pcl.lift_parcel(lifter, pressure, pcl_vtmpk_arr, N);
+        buoyancy(pcl_vtmpk_arr, virtemp, pcl_buoy_arr, N);
+        fire_pcl.cape_cinh(pressure, height, pcl_buoy_arr, N);
+        if (fire_pcl.eql_pressure != MISSING) {
+            eql_tmpk = interp_pressure(fire_pcl.eql_pressure, pressure,
+                                       temperature, N);
+        }
+
+        if ((fire_pcl.lfc_pressure == fire_pcl.lcl_pressure) &&
+            (fire_pcl.cape > 0) && (eql_tmpk <= 253.15)) {
+            z_fc = interp_pressure(fire_pcl.lfc_pressure, pressure, height, N);
+            float theta_fc = interp_pressure(fire_pcl.lfc_pressure, pressure,
+                                             potential_temperature, N);
+            delta_theta = theta_fc - mean_theta;
+            break;
+        }
+
+        beta_val += beta_incr;
+    }
+
+    if (z_fc == MISSING) return MISSING;
+
+    constexpr float beta_prime = 0.4;
+    constexpr float alpha_prime = 0.32;
+    constexpr float big_const =
+        (PI * CP_DRYAIR) * (beta_prime / (1 + (alpha_prime * beta_prime)));
+
+    float PFT = std::pow(big_const, 2.0f) * mean_wspd * std::pow(z_fc, 2.0f) *
+                delta_theta;
+
+    return PFT;
 }
 
 }  // namespace sharp
