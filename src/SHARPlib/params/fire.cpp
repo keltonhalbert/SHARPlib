@@ -90,7 +90,9 @@ float pft_plume_mixratio(float theta_env, float mixr_env, float beta,
         return MISSING;
     }
 #endif
-    return mixr_env + (beta * phi * theta_env);
+    float spfh_env = specific_humidity(mixr_env);
+    float spfh_plume = spfh_env + (beta * phi * theta_env);
+    return mixratio(spfh_plume);
 }
 
 float pyrocumulonimbus_firepower_threshold(
@@ -128,6 +130,7 @@ float pyrocumulonimbus_firepower_threshold(
         fire_pcl.lift_parcel(lifter, pressure, pcl_vtmpk_arr, N);
         buoyancy(pcl_vtmpk_arr, virtemp, pcl_buoy_arr, N);
         fire_pcl.cape_cinh(pressure, height, pcl_buoy_arr, N);
+
         if (fire_pcl.eql_pressure != MISSING) {
             eql_tmpk = interp_pressure(fire_pcl.eql_pressure, pressure,
                                        temperature, N);
