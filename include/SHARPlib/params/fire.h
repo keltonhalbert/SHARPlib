@@ -15,6 +15,7 @@
 #define SHARP_PARAMS_FIRE_H
 
 #include <SHARPlib/layer.h>
+#include <SHARPlib/parcel.h>
 
 #include <cstddef>
 
@@ -117,6 +118,8 @@ namespace sharp {
  * with smaller values resulting in more iteration steps. Phi is the fire
  * moisture to potential temperature increment ratio.
  *
+ * Default values for beta_incr and phi are 0.0025 and 6.67e-5, respectively.
+ *
  * References:
  * Tory et al. 2018:
  * https://journals.ametsoc.org/view/journals/mwre/146/8/mwr-d-17-0377.1.xml
@@ -135,6 +138,7 @@ namespace sharp {
  * \param pcl_vtmpk_arr                         (K)
  * \param pcl_buoy_arr                          (K)
  * \param N                                     (length of arrays)
+ * \param pcl                                   A fire parcel to return
  * \param beta_incr                             (unitless)
  * \param phi                                   (kg/(kg*K))
  *
@@ -145,7 +149,7 @@ namespace sharp {
     const float temperature[], const float mixratio[], const float virtemp[],
     const float uwin[], const float vwin[], const float potential_temperature[],
     float pcl_vtmpk_arr[], float pcl_buoy_arr[], std::ptrdiff_t N,
-    float beta_incr = 0.0025, float phi = 6.67e-5);
+    Parcel* pcl = nullptr, float beta_incr = 0.0025, float phi = 6.67e-5);
 
 }  // namespace sharp
 

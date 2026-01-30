@@ -100,7 +100,7 @@ float pyrocumulonimbus_firepower_threshold(
     PressureLayer mix_layer, const float pressure[], const float height[],
     const float temperature[], const float mixratio[], const float virtemp[],
     const float uwin[], const float vwin[], const float potential_temperature[],
-    float pcl_vtmpk_arr[], float pcl_buoy_arr[], std::ptrdiff_t N,
+    float pcl_vtmpk_arr[], float pcl_buoy_arr[], std::ptrdiff_t N, Parcel* pcl,
     float beta_incr, float phi) {
     lifter_cm1 lifter;
     lifter.ma_type = adiabat::pseudo_liq;
@@ -167,14 +167,11 @@ float pyrocumulonimbus_firepower_threshold(
 
     float rho = (pres_pl_c / (sharp::RDGAS * theta_pl_c)) *
                 std::pow(sharp::THETA_REF_PRESSURE / pres_pl_c, sharp::ROCP);
-    fmt::println("const: {}", big_const);
-    fmt::println("rho: {} wspd: {} z_fc: {} d_theta: {}", rho, mean_wspd, z_fc,
-                 delta_theta);
 
     float PFT =
         big_const * rho * std::pow(z_fc, 2.0f) * mean_wspd * delta_theta;
-    fmt::println("{} GW", PFT / 1e9);
-    fmt::println("{} J/kg", fire_pcl.cape);
+
+    if (pcl) *pcl = fire_pcl;
 
     return PFT;
 }
