@@ -111,7 +111,7 @@ namespace sharp {
  *
  * Computes the Pyrocumulonimbus Firepower Threshold (PFT), or the minimum
  * amount of firepower required to generate pyrocumulonimbus clouds for a
- * given atmospheric profile. Reqires a HeightLayer to define a mixing layer
+ * given atmospheric profile. Reqires a PressureLayer to define a mixing layer
  * used to average values of potential temperature, mixing ratio, and wind
  * speed. The beta increment determines how to vary the plume buoyancy factor,
  * with smaller values resulting in more iteration steps. Phi is the fire
@@ -126,10 +126,14 @@ namespace sharp {
  * \param mix_layer                             {bottom, top}
  * \param pressure                              (Pa)
  * \param height                                (meters)
- * \param potential_temperature                 (K)
+ * \param temperature                           (K)
  * \param mixratio                              (kg/kg)
+ * \param virtemp                               (K)
  * \param uwin                                  (m/s)
  * \param vwin                                  (m/s)
+ * \param potential_temperature                 (K)
+ * \param pcl_vtmpk_arr                         (K)
+ * \param pcl_buoy_arr                          (K)
  * \param N                                     (length of arrays)
  * \param beta_incr                             (unitless)
  * \param phi                                   (kg/(kg*K))
