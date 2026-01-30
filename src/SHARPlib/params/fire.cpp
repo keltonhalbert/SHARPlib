@@ -12,16 +12,17 @@
  */
 
 #include <SHARPlib/constants.h>
+#include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
 #include <SHARPlib/params/fire.h>
 #include <SHARPlib/parcel.h>
+#include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
+#define FMT_HEADER_ONLY
+#include <fmt/core.h>
 
 #include <algorithm>
 #include <cmath>
-
-#include "SHARPlib/interp.h"
-#include "SHARPlib/thermo.h"
 
 namespace sharp {
 
@@ -91,7 +92,7 @@ float pft_plume_mixratio(float theta_env, float mixr_env, float beta,
     }
 #endif
     float spfh_env = specific_humidity(mixr_env);
-    float spfh_plume = spfh_env + (beta * phi * theta_env);
+    float spfh_plume = std::max(0.0f, spfh_env + (beta * phi * theta_env));
     return mixratio(spfh_plume);
 }
 
@@ -113,11 +114,12 @@ float pyrocumulonimbus_firepower_threshold(
 
     float z_fc = sharp::MISSING;
     float delta_theta = 0.0;
-    float eql_tmpk = mean_theta;
 
     float beta_max = 0.1;
     float beta_val = 0.0;
+    Parcel fire_pcl;
     while (beta_val <= beta_max) {
+        float eql_tmpk = 999.0;
         float plume_theta =
             pft_plume_potential_temperature(mean_theta, beta_val);
         float plume_mixr =
@@ -126,7 +128,7 @@ float pyrocumulonimbus_firepower_threshold(
         float plume_tmpk = theta(THETA_REF_PRESSURE, plume_theta, pressure[0]);
         float plume_dwpk = temperature_at_mixratio(plume_mixr, pressure[0]);
 
-        Parcel fire_pcl = Parcel(pressure[0], plume_tmpk, plume_dwpk, LPL::USR);
+        fire_pcl = Parcel(pressure[0], plume_tmpk, plume_dwpk, LPL::USR);
         fire_pcl.lift_parcel(lifter, pressure, pcl_vtmpk_arr, N);
         buoyancy(pcl_vtmpk_arr, virtemp, pcl_buoy_arr, N);
         fire_pcl.cape_cinh(pressure, height, pcl_buoy_arr, N);
@@ -136,8 +138,8 @@ float pyrocumulonimbus_firepower_threshold(
                                        temperature, N);
         }
 
-        if ((fire_pcl.lfc_pressure == fire_pcl.lcl_pressure) &&
-            (fire_pcl.cape > 0) && (eql_tmpk <= 253.15)) {
+        if ((fire_pcl.cinh >= -sharp::TOL) && (fire_pcl.cape > 0) &&
+            (eql_tmpk <= 253.15)) {
             z_fc = interp_pressure(fire_pcl.lfc_pressure, pressure, height, N);
             float theta_fc = interp_pressure(fire_pcl.lfc_pressure, pressure,
                                              potential_temperature, N);
@@ -149,14 +151,30 @@ float pyrocumulonimbus_firepower_threshold(
     }
 
     if (z_fc == MISSING) return MISSING;
+    z_fc = z_fc - height[0];
 
     constexpr float beta_prime = 0.4;
     constexpr float alpha_prime = 0.32;
-    constexpr float big_const =
-        (PI * CP_DRYAIR) * (beta_prime / (1 + (alpha_prime * beta_prime)));
+    const float big_const =
+        (PI * CP_DRYAIR) *
+        std::pow((beta_prime / (1 + (alpha_prime * beta_prime))), 2.0f);
 
-    float PFT = std::pow(big_const, 2.0f) * mean_wspd * std::pow(z_fc, 2.0f) *
-                delta_theta;
+    float pres_pl_c = ((fire_pcl.lfc_pressure - fire_pcl.pres) /
+                       (1 + (alpha_prime * beta_prime))) +
+                      pressure[0];
+    float theta_pl_c =
+        sharp::interp_pressure(pres_pl_c, pressure, potential_temperature, N);
+
+    float rho = (pres_pl_c / (sharp::RDGAS * theta_pl_c)) *
+                std::pow(sharp::THETA_REF_PRESSURE / pres_pl_c, sharp::ROCP);
+    fmt::println("const: {}", big_const);
+    fmt::println("rho: {} wspd: {} z_fc: {} d_theta: {}", rho, mean_wspd, z_fc,
+                 delta_theta);
+
+    float PFT =
+        big_const * rho * std::pow(z_fc, 2.0f) * mean_wspd * delta_theta;
+    fmt::println("{} GW", PFT / 1e9);
+    fmt::println("{} J/kg", fire_pcl.cape);
 
     return PFT;
 }
