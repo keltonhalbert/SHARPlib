@@ -101,7 +101,7 @@ float pyrocumulonimbus_firepower_threshold(
     const float temperature[], const float mixratio[], const float virtemp[],
     const float uwin[], const float vwin[], const float potential_temperature[],
     float pcl_vtmpk_arr[], float pcl_buoy_arr[], std::ptrdiff_t N, Parcel* pcl,
-    float beta_incr, float phi) {
+    float phi, float beta_incr) {
     lifter_cm1 lifter;
     lifter.ma_type = adiabat::pseudo_liq;
 
@@ -118,7 +118,9 @@ float pyrocumulonimbus_firepower_threshold(
     float beta_max = 0.1;
     float beta_val = 0.0;
     Parcel fire_pcl;
+    int n_iters = 0;
     while (beta_val <= beta_max) {
+        n_iters += 1;
         float eql_tmpk = 999.0;
         float plume_theta =
             pft_plume_potential_temperature(mean_theta, beta_val);
@@ -149,6 +151,7 @@ float pyrocumulonimbus_firepower_threshold(
 
         beta_val += beta_incr;
     }
+    fmt::println("beta_incr: {} n_iters: {}", beta_incr, n_iters);
 
     if (z_fc == MISSING) return MISSING;
     z_fc = z_fc - height[0];

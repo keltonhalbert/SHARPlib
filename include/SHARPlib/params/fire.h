@@ -139,8 +139,8 @@ namespace sharp {
  * \param pcl_buoy_arr                          (K)
  * \param N                                     (length of arrays)
  * \param pcl                                   A fire parcel to return
- * \param beta_incr                             (unitless)
  * \param phi                                   (kg/(kg*K))
+ * \param beta_incr                             (unitless)
  *
  * \return Pyrocumulonimbus Firepower Threshold (W)
  */
@@ -149,7 +149,7 @@ namespace sharp {
     const float temperature[], const float mixratio[], const float virtemp[],
     const float uwin[], const float vwin[], const float potential_temperature[],
     float pcl_vtmpk_arr[], float pcl_buoy_arr[], std::ptrdiff_t N,
-    Parcel* pcl = nullptr, float beta_incr = 0.0025, float phi = 6.67e-5);
+    Parcel* pcl = nullptr, float phi = 6.67e-5, float beta_incr = 0.005);
 
 }  // namespace sharp
 
