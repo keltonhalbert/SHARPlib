@@ -118,9 +118,8 @@ float pyrocumulonimbus_firepower_threshold(
     float beta_max = 0.1;
     float beta_val = 0.0;
     Parcel fire_pcl;
-    int n_iters = 0;
+    bool found = false;
     while (beta_val <= beta_max) {
-        n_iters += 1;
         float eql_tmpk = 999.0;
         float plume_theta =
             pft_plume_potential_temperature(mean_theta, beta_val);
@@ -146,14 +145,20 @@ float pyrocumulonimbus_firepower_threshold(
             float theta_fc = interp_pressure(fire_pcl.lfc_pressure, pressure,
                                              potential_temperature, N);
             delta_theta = theta_fc - mean_theta;
+            found = true;
             break;
         }
 
         beta_val += beta_incr;
     }
-    fmt::println("beta_incr: {} n_iters: {}", beta_incr, n_iters);
 
-    if (z_fc == MISSING) return MISSING;
+    if ((z_fc == MISSING) || !found) {
+        std::fill_n(&pcl_vtmpk_arr[0], N, sharp::MISSING);
+        std::fill_n(&pcl_buoy_arr[0], N, sharp::MISSING);
+        if (pcl) *pcl = Parcel();
+        return MISSING;
+    };
+
     z_fc = z_fc - height[0];
 
     constexpr float beta_prime = 0.4;
