@@ -235,7 +235,7 @@ template <typename Lifter>
  * or equilibrium level pressure are sharp::MISSING.
  *
  * \param   pressure                        (Pa)
- * \param   hght                            (meters)
+ * \param   height                          (meters)
  * \param   u_wind                          (m/s)
  * \param   v_wind                          (m/s)
  * \param   N                               length of arrays
@@ -245,7 +245,7 @@ template <typename Lifter>
  * \return  Effective Bulk Wind Differce    (m/s)
  */
 [[nodiscard]] WindComponents effective_bulk_wind_difference(
-    const float pressure[], const float hght[], const float u_wind[],
+    const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const std::ptrdiff_t N,
     sharp::PressureLayer effective_inflow_lyr,
     const float equilibrium_level_pressure);
