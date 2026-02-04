@@ -64,5 +64,10 @@
         "version": "v1.2.1.post1-9-g4418efd",
         "url": "https://keltonhalbert.github.io/SHARPlib/v1.2.1.post1-9-g4418efd",
         "is_latest": true
+    },
+    {
+        "version": "v1.2.1.post1-10-g1fe7840",
+        "url": "https://keltonhalbert.github.io/SHARPlib/v1.2.1.post1-10-g1fe7840",
+        "is_latest": false
     }
 ]
