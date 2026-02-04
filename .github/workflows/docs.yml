@@ -55,34 +55,34 @@ jobs:
           pip install sphinx pydata-sphinx-theme breathe numpy .
 
       - name: Get Documentation Version 
-          id: version_check 
-          run: |
-            python -c "
-            import os
-            import nwsspc.sharp.calc as sharplib
+        id: version_check 
+        run: |
+          python -c "
+          import os
+          import nwsspc.sharp.calc as sharplib
 
-            # Check the Git ref directly to see if we are on the develop branch
-            github_ref = os.environ.get('GITHUB_REF', '')
+          # Check the Git ref directly to see if we are on the develop branch
+          github_ref = os.environ.get('GITHUB_REF', '')
 
-            # If we are on the develop branch, force 'dev'
-            if github_ref == 'refs/heads/develop':
-                doc_ver = 'dev'
-            else:
-                # Otherwise (it's a tag), use the package version
-                version = sharplib.__version__
-                print(f'Detected version: {version}')
-                
-                # Keep your safety check, just in case
-                if 'dev' in version:
-                    doc_ver = 'dev'
-                else:
-                    doc_ver = f'v{version}'
+          # If we are on the develop branch, force 'dev'
+          if github_ref == 'refs/heads/develop':
+              doc_ver = 'dev'
+          else:
+              # Otherwise (it's a tag), use the package version
+              version = sharplib.__version__
+              print(f'Detected version: {version}')
+              
+              # Keep your safety check, just in case
+              if 'dev' in version:
+                  doc_ver = 'dev'
+              else:
+                  doc_ver = f'v{version}'
 
-            print(f'Target documentation folder: {doc_ver}')
+          print(f'Target documentation folder: {doc_ver}')
 
-            with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-                f.write(f'doc_ver={doc_ver}\\n')
-            "
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f'doc_ver={doc_ver}\\n')
+          "
 
       - name: Sphinx Build
         run: |
