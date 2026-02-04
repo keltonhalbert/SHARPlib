@@ -235,7 +235,7 @@ template <typename Lifter>
  * or equilibrium level pressure are sharp::MISSING.
  *
  * \param   pressure                        (Pa)
- * \param   height                          (meters)
+ * \param   hght                            (meters)
  * \param   u_wind                          (m/s)
  * \param   v_wind                          (m/s)
  * \param   N                               length of arrays

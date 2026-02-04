@@ -78,8 +78,8 @@ template <typename _Fp>
  * This linear interpolation guarantees the following:
  *
  * 1. Exactness: lerp(a,b,0)==a & lerp(a,b,1)==b
- * 2. Monotonicity: cmp(lerp(a,b,t2), lerp(a,b,t1)) * cmp(t2, t1) <!--
- * -->* cmp(b,a) >= 0, where cmp is an arithmetic three-way comparison function
+ * 2. Monotonicity: cmp(lerp(a,b,t2), lerp(a,b,t1)) * cmp(t2, t1) *
+ cmp(b,a) >= 0, where cmp is an arithmetic three-way comparison function
  * 3. Determinacy: result of NaN only for lerp(a,a,INFINITY)
  * 4. Boundedness: t<0 || t>1 || isfinite(lerp(a,b,t))
  * 5. Consistency: lerp(a,a,t) == a
