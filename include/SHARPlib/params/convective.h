@@ -505,19 +505,18 @@ template <typename Lifter>
 template <typename Lifter>
 [[nodiscard]] float convective_temperature(
     Lifter& lifter, const float pressure[], const float height[],
-    const float temperature[], const float mixratio[], float pcl_virtemp[],
-    float pcl_buoyancy[], const std::ptrdiff_t N, float cinh_thresh = -50.0f) {
+    const float temperature[], const float virtemp[], const float mixratio[],
+    float pcl_virtemp[], float pcl_buoyancy[], const std::ptrdiff_t N,
+    float cinh_thresh = -50.0f) {
     PressureLayer mix_layer = {pressure[0], pressure[0] - 100.0f};
     float mean_mixratio = layer_mean(mix_layer, pressure, mixratio, N);
     float pres_sfc = pressure[0];
     float tmpk_sfc = temperature[0];
     float dwpk_sfc = temperature_at_mixratio(mean_mixratio, pres_sfc);
 
-    std::fill(pcl_virtemp, pcl_virtemp + N, 0.0f);
-    std::fill(pcl_buoyancy, pcl_buoyancy + N, 0.0f);
-
     Parcel pcl = Parcel(pres_sfc, tmpk_sfc + 25.0f, dwpk_sfc, LPL::USR);
     pcl.lift_parcel(lifter, pressure, pcl_virtemp, N);
+    buoyancy(pcl_virtemp, virtemp, pcl_buoyancy, N);
     pcl.cape_cinh(pressure, height, pcl_buoyancy, N);
     if ((pcl.cape == 0.0) || (pcl.cinh < cinh_thresh)) {
         return MISSING;
@@ -528,11 +527,9 @@ template <typename Lifter>
         tmpk_sfc = tmpk_sfc + excess + 4.0f;
     }
 
-    std::fill(pcl_virtemp, pcl_virtemp + N, 0.0f);
-    std::fill(pcl_buoyancy, pcl_buoyancy + N, 0.0f);
-
     pcl = Parcel(pres_sfc, tmpk_sfc, dwpk_sfc, LPL::USR);
     pcl.lift_parcel(lifter, pressure, pcl_virtemp, N);
+    buoyancy(pcl_virtemp, virtemp, pcl_buoyancy, N);
     pcl.cape_cinh(pressure, height, pcl_buoyancy, N);
 
     if (pcl.cape == 0.0) {
@@ -545,10 +542,10 @@ template <typename Lifter>
         } else {
             tmpk_sfc += 0.5f;
         }
-        std::fill(pcl_virtemp, pcl_virtemp + N, 0.0f);
-        std::fill(pcl_buoyancy, pcl_buoyancy + N, 0.0f);
+
         pcl = Parcel(pres_sfc, tmpk_sfc, dwpk_sfc, LPL::USR);
         pcl.lift_parcel(lifter, pressure, pcl_virtemp, N);
+        buoyancy(pcl_virtemp, virtemp, pcl_buoyancy, N);
         pcl.cape_cinh(pressure, height, pcl_buoyancy, N);
         if (pcl.cape == 0.0) {
             pcl.cinh = sharp::MISSING;
