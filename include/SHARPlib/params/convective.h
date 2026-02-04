@@ -513,6 +513,9 @@ template <typename Lifter>
     float tmpk_sfc = temperature[0];
     float dwpk_sfc = temperature_at_mixratio(mean_mixratio, pres_sfc);
 
+    std::fill(pcl_virtemp, pcl_virtemp + N, 0.0f);
+    std::fill(pcl_buoyancy, pcl_buoyancy + N, 0.0f);
+
     Parcel pcl = Parcel(pres_sfc, tmpk_sfc + 25.0f, dwpk_sfc, LPL::USR);
     pcl.lift_parcel(lifter, pressure, pcl_virtemp, N);
     pcl.cape_cinh(pressure, height, pcl_buoyancy, N);
@@ -524,6 +527,9 @@ template <typename Lifter>
     if (excess > 0.0f) {
         tmpk_sfc = tmpk_sfc + excess + 4.0f;
     }
+
+    std::fill(pcl_virtemp, pcl_virtemp + N, 0.0f);
+    std::fill(pcl_buoyancy, pcl_buoyancy + N, 0.0f);
 
     pcl = Parcel(pres_sfc, tmpk_sfc, dwpk_sfc, LPL::USR);
     pcl.lift_parcel(lifter, pressure, pcl_virtemp, N);
@@ -539,6 +545,8 @@ template <typename Lifter>
         } else {
             tmpk_sfc += 0.5f;
         }
+        std::fill(pcl_virtemp, pcl_virtemp + N, 0.0f);
+        std::fill(pcl_buoyancy, pcl_buoyancy + N, 0.0f);
         pcl = Parcel(pres_sfc, tmpk_sfc, dwpk_sfc, LPL::USR);
         pcl.lift_parcel(lifter, pressure, pcl_virtemp, N);
         pcl.cape_cinh(pressure, height, pcl_buoyancy, N);
