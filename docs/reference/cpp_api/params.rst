@@ -25,6 +25,8 @@ Fire
 
 .. doxygenfunction:: sharp::equilibrium_moisture_content
 .. doxygenfunction:: sharp::fosberg_fire_index
+.. doxygenfunction:: sharp::pft_plume_potential_temperature
+.. doxygenfunction:: sharp::pft_plume_mixratio
 .. doxygenfunction:: sharp::pyrocumulonimbus_firepower_threshold
 
 Winter
