@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>winds &#8212; SHARPlib v1.2.0.dev0-17-g45b9eb9 Manual</title>
+    <title>winds &#8212; SHARPlib v1.2.1.post1-16-g762ecee Manual</title>
   
   
   
@@ -39,14 +39,14 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=84a24d03"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/documentation_options.js?v=e06d9d47"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/python_api/winds';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://keltonhalbert.github.io/SHARPlib/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.2.1.post1-16-g762ecee';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -56,8 +56,8 @@
     <link rel="prev" title="thermo" href="thermo.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.0.dev0-17-g45b9eb9" />
-    <meta name="docbuild:last-update" content="Oct 31, 2025"/>
+  <meta name="docsearch:version" content="1.2.1.post1-16-g762ecee" />
+    <meta name="docbuild:last-update" content="Feb 04, 2026"/>
   </head>
   
   
@@ -461,18 +461,18 @@
 <p>Representations of atmospheric winds as vectors (speed, angle) or components (u, v), their magnitudes, and the various operatins to convert between representations.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.winds.WindVector">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.winds.</span></span><span class="sig-name descname"><span class="pre">WindVector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nwsspc.sharp.calc.winds.WindVector" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.winds.</span></span><span class="sig-name descname"><span class="pre">WindVector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nwsspc.sharp.calc.winds.WindVector" title="Link to this definition">#</a></dt>
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.winds.</span></span><span class="sig-name descname"><span class="pre">WindVector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.winds.</span></span><span class="sig-name descname"><span class="pre">WindVector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span></dt>
 <dd><dl class="py property">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.winds.WindVector.direction">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">direction</span></span><a class="headerlink" href="#nwsspc.sharp.calc.winds.WindVector.direction" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">direction</span></span><a class="headerlink" href="#nwsspc.sharp.calc.winds.WindVector.direction" title="Link to this definition">#</a></dt>
 <dd><p>Wind Direction (degrees from North)</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.winds.WindVector.speed">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">speed</span></span><a class="headerlink" href="#nwsspc.sharp.calc.winds.WindVector.speed" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">speed</span></span><a class="headerlink" href="#nwsspc.sharp.calc.winds.WindVector.speed" title="Link to this definition">#</a></dt>
 <dd><p>Wind Speed (m/s)</p>
 </dd></dl>
 
@@ -480,18 +480,18 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.winds.WindComponents">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.winds.</span></span><span class="sig-name descname"><span class="pre">WindComponents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nwsspc.sharp.calc.winds.WindComponents" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.winds.</span></span><span class="sig-name descname"><span class="pre">WindComponents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nwsspc.sharp.calc.winds.WindComponents" title="Link to this definition">#</a></dt>
 <dt class="sig sig-object py">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.winds.</span></span><span class="sig-name descname"><span class="pre">WindComponents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_comp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_comp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.winds.</span></span><span class="sig-name descname"><span class="pre">WindComponents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_comp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_comp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span></dt>
 <dd><dl class="py property">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.winds.WindComponents.u">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">u</span></span><a class="headerlink" href="#nwsspc.sharp.calc.winds.WindComponents.u" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">u</span></span><a class="headerlink" href="#nwsspc.sharp.calc.winds.WindComponents.u" title="Link to this definition">#</a></dt>
 <dd><p>U wind component (m/s)</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.winds.WindComponents.v">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">v</span></span><a class="headerlink" href="#nwsspc.sharp.calc.winds.WindComponents.v" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">v</span></span><a class="headerlink" href="#nwsspc.sharp.calc.winds.WindComponents.v" title="Link to this definition">#</a></dt>
 <dd><p>V wind component (m/s)</p>
 </dd></dl>
 
@@ -1054,7 +1054,7 @@ arrays of pressure, U-wind, and V-wind components.</p>
 
   <p class="copyright">
     
-      © Copyright 2024-2025, NOAA/NWS/NCEP Storm Prediction Center.
+      © Copyright 2024-2026, NOAA/NWS/NCEP Storm Prediction Center.
       <br/>
     
   </p>
@@ -1063,7 +1063,7 @@ arrays of pressure, U-wind, and V-wind components.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     <br/>
   </p>
 </div>
