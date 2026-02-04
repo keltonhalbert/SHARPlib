@@ -12,11 +12,10 @@
  * John Hart and Rich Thompson at SPC.
  */
 
-#include "SHARPlib/params/convective.h"
-
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
+#include <SHARPlib/params/convective.h>
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
@@ -481,5 +480,17 @@ PressureLayer hail_growth_layer(const float pressure[],
 
     return {bottom, top};
 }
+
+float convective_temperature(lifter_wobus &lifter, const float pressure[],
+                             const float height[], const float temperature[],
+                             const float mixratio[], float pcl_virtemp[],
+                             float pcl_buoyancy[], const std::ptrdiff_t N,
+                             float cinh_thresh = -50.0f);
+
+float convective_temperature(lifter_cm1 &lifter, const float pressure[],
+                             const float height[], const float temperature[],
+                             const float mixratio[], float pcl_virtemp[],
+                             float pcl_buoyancy[], const std::ptrdiff_t N,
+                             float cinh_thresh = -50.0f);
 
 }  // end namespace sharp

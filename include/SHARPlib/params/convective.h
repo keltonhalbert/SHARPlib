@@ -502,6 +502,54 @@ template <typename Lifter>
                                               const float temperature[],
                                               const std::ptrdiff_t N);
 
+template <typename Lifter>
+[[nodiscard]] float convective_temperature(
+    Lifter& lifter, const float pressure[], const float height[],
+    const float temperature[], const float mixratio[], float pcl_virtemp[],
+    float pcl_buoyancy[], const std::ptrdiff_t N, float cinh_thresh = -50.0f) {
+    PressureLayer mix_layer = {pressure[0], pressure[0] - 100.0f};
+    float mean_mixratio = layer_mean(mix_layer, pressure, mixratio, N);
+    float pres_sfc = pressure[0];
+    float tmpk_sfc = temperature[0];
+    float dwpk_sfc = temperature_at_mixratio(mean_mixratio, pres_sfc);
+
+    Parcel pcl = Parcel(pres_sfc, tmpk_sfc + 25.0f, dwpk_sfc, LPL::USR);
+    pcl.lift_parcel(lifter, pressure, pcl_virtemp, N);
+    pcl.cape_cinh(pressure, height, pcl_buoyancy, N);
+    if ((pcl.cape == 0.0) || (pcl.cinh < cinh_thresh)) {
+        return MISSING;
+    }
+
+    float excess = dwpk_sfc - tmpk_sfc;
+    if (excess > 0.0f) {
+        tmpk_sfc = tmpk_sfc + excess + 4.0f;
+    }
+
+    pcl = Parcel(pres_sfc, tmpk_sfc, dwpk_sfc, LPL::USR);
+    pcl.lift_parcel(lifter, pressure, pcl_virtemp, N);
+    pcl.cape_cinh(pressure, height, pcl_buoyancy, N);
+
+    if (pcl.cape == 0.0) {
+        pcl.cinh = sharp::MISSING;
+    }
+
+    while (pcl.cinh < cinh_thresh) {
+        if (pcl.cinh < -100.0f) {
+            tmpk_sfc += 2.0f;
+        } else {
+            tmpk_sfc += 0.5f;
+        }
+        pcl = Parcel(pres_sfc, tmpk_sfc, dwpk_sfc, LPL::USR);
+        pcl.lift_parcel(lifter, pressure, pcl_virtemp, N);
+        pcl.cape_cinh(pressure, height, pcl_buoyancy, N);
+        if (pcl.cape == 0.0) {
+            pcl.cinh = sharp::MISSING;
+        }
+    }
+
+    return tmpk_sfc;
+}
+
 }  // end namespace sharp
 
 #endif  // SHARP_PARAMS_H
