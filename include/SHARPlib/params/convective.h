@@ -509,7 +509,7 @@ template <typename Lifter>
  *
  * Iteratively lifts parcels from the surface using a lowest 100 hPa
  * mean mixing ratio and increasing surface temperatures to find the
- * first parcen that reaches the CINH threshold. The first guess is
+ * first parcel that reaches the CINH threshold. The first guess is
  * the current surface temperature.
  *
  * \param   lifter          (e.g. cm1, wobus)
@@ -517,7 +517,7 @@ template <typename Lifter>
  * \param   height          (m)
  * \param   temperature     (K)
  * \param   virtemp         (K)
- * \param   mixratio        (kg/kg)
+ * \param   mixratio        (g/g)
  * \oaram   pcl_virtemp     (K)
  * \param   pcl_buoyancy    (m/s2)
  * \param   N               (length of arrays)
