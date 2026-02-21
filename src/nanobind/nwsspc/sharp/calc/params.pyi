@@ -452,6 +452,66 @@ def large_hail_parameter(mu_pcl: nwsspc.sharp.calc.parcel.Parcel, lapse_rate_700
         1D NumPy array of v_wind values (m/s)
     """
 
+@overload
+def convective_temperature(lifter: nwsspc.sharp.calc.parcel.lifter_wobus, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mixratio: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], cinh_thresh: float = -1.0) -> float:
+    """
+    Computes the convective temperature by iteratively lifting parcels from 
+    the surface using a lowest 100 hPa mean mixing ratio and increasing 
+    surface temperatures to find the first parcel that reaches the CINH 
+    threshold. The first guess is the current surface temperature.
+
+    Parameters 
+    ----------
+    lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+    pressure : numpy.ndarray[dtype=float32]
+        A 1D NumPy array of pressure values (Pa)
+    height : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of height values (Pa)
+    temperature : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of temperature values (K)
+    virtemp : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of virtual temperature values (K)
+    mixratio : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of water vapor mixing ratio values (g/g)
+    cinh_thresh : float, default = -1.0 
+        The CINH threshold used to compute the convective temperature (J/kg)
+
+    Returns
+    -------
+    float
+        The convective temperature (K)
+    """
+
+@overload
+def convective_temperature(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mixratio: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], cinh_thresh: float = -1.0) -> float:
+    """
+    Computes the convective temperature by iteratively lifting parcels from 
+    the surface using a lowest 100 hPa mean mixing ratio and increasing 
+    surface temperatures to find the first parcel that reaches the CINH 
+    threshold. The first guess is the current surface temperature.
+
+    Parameters 
+    ----------
+    lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
+    pressure : numpy.ndarray[dtype=float32]
+        A 1D NumPy array of pressure values (Pa)
+    height : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of height values (Pa)
+    temperature : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of temperature values (K)
+    virtemp : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of virtual temperature values (K)
+    mixratio : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of water vapor mixing ratio values (g/g)
+    cinh_thresh : float, default = -1.0 
+        The CINH threshold used to compute the convective temperature (J/kg)
+
+    Returns
+    -------
+    float
+        The convective temperature (K)
+    """
+
 def precipitable_water(layer: nwsspc.sharp.calc.layer.PressureLayer, pres: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mixr: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> float:
     """
     Given a PressureLayer to integrate over, compute the precipitable water 
