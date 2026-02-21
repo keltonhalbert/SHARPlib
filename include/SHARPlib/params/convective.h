@@ -518,7 +518,7 @@ template <typename Lifter>
  * \param   temperature     (K)
  * \param   virtemp         (K)
  * \param   mixratio        (g/g)
- * \oaram   pcl_virtemp     (K)
+ * \param   pcl_virtemp     (K)
  * \param   pcl_buoyancy    (m/s2)
  * \param   N               (length of arrays)
  * \param   cinh_thresh     (J/kg)
