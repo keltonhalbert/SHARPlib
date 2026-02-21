@@ -18,6 +18,7 @@ Convective
 .. doxygenfunction:: sharp::derecho_composite_parameter
 .. doxygenfunction:: sharp::large_hail_parameter
 .. doxygenfunction:: sharp::hail_growth_layer
+.. doxygenfunction:: sharp::convective_temperature
 .. doxygenfunction:: sharp::precipitable_water
 
 Fire
