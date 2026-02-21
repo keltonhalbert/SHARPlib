@@ -502,12 +502,36 @@ template <typename Lifter>
                                               const float temperature[],
                                               const std::ptrdiff_t N);
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediciton Center
+ *
+ * \brief Compute the Convective Temperature
+ *
+ * Iteratively lifts parcels from the surface using a lowest 100 hPa
+ * mean mixing ratio and increasing surface temperatures to find the
+ * first parcen that reaches the CINH threshold. The first guess is
+ * the current surface temperature.
+ *
+ * \param   lifter          (e.g. cm1, wobus)
+ * \param   pressure        (Pa)
+ * \param   height          (m)
+ * \param   temperature     (K)
+ * \param   virtemp         (K)
+ * \param   mixratio        (kg/kg)
+ * \oaram   pcl_virtemp     (K)
+ * \param   pcl_buoyancy    (m/s2)
+ * \param   N               (length of arrays)
+ * \param   cinh_thresh     (J/kg)
+ *
+ * \return convective temperature (K)
+ *
+ */
 template <typename Lifter>
 [[nodiscard]] float convective_temperature(
     Lifter& lifter, const float pressure[], const float height[],
     const float temperature[], const float virtemp[], const float mixratio[],
     float pcl_virtemp[], float pcl_buoyancy[], const std::ptrdiff_t N,
-    float cinh_thresh = -50.0f) {
+    float cinh_thresh = -1.0f) {
     PressureLayer mix_layer = {pressure[0], pressure[0] - 100.0f};
     float mean_mixratio = layer_mean(mix_layer, pressure, mixratio, N);
     float pres_sfc = pressure[0];
