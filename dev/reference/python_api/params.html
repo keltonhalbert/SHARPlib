@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>params &#8212; SHARPlib v1.2.1.post1-24-gdd7d7ad Manual</title>
+    <title>params &#8212; SHARPlib v1.2.1.post1-25-g291b8b5 Manual</title>
   
   
   
@@ -46,7 +46,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://keltonhalbert.github.io/SHARPlib/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.2.1.post1-24-gdd7d7ad';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.2.1.post1-25-g291b8b5';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -56,7 +56,7 @@
     <link rel="prev" title="layer" href="layer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.1.post1-24-gdd7d7ad" />
+  <meta name="docsearch:version" content="1.2.1.post1-25-g291b8b5" />
     <meta name="docbuild:last-update" content="Feb 21, 2026"/>
   </head>
   
@@ -879,6 +879,66 @@ PressureLayer are set to MISSING.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.params.convective_temperature">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.params.</span></span><span class="sig-name descname"><span class="pre">convective_temperature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">virtual_temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">mixratio:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">cinh_thresh:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">-1.0</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.params.convective_temperature" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.params.</span></span><span class="sig-name descname"><span class="pre">convective_temperature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">virtual_temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">mixratio:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">cinh_thresh:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">-1.0</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">convective_temperature(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">virtual_temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">mixratio:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">cinh_thresh:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">-1.0)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Computes the convective temperature by iteratively lifting parcels from
+the surface using a lowest 100 hPa mean mixing ratio and increasing
+surface temperatures to find the first parcel that reaches the CINH
+threshold. The first guess is the current surface temperature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_wobus" title="nwsspc.sharp.calc.parcel.lifter_wobus"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus</span></code></a>)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – A 1D NumPy array of pressure values (Pa)</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – A 1D NumPy array of height values (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – A 1D NumPy array of temperature values (K)</p></li>
+<li><p><strong>virtemp</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – A 1D NumPy array of virtual temperature values (K)</p></li>
+<li><p><strong>mixratio</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – A 1D NumPy array of water vapor mixing ratio values (g/g)</p></li>
+<li><p><strong>cinh_thresh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <em>default</em> <code class="xref py py-class docutils literal notranslate"><span class="pre">=</span> <span class="pre">-1.0</span></code>) – The CINH threshold used to compute the convective temperature (J/kg)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The convective temperature (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">convective_temperature(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">virtual_temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">mixratio:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">cinh_thresh:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">-1.0)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Computes the convective temperature by iteratively lifting parcels from
+the surface using a lowest 100 hPa mean mixing ratio and increasing
+surface temperatures to find the first parcel that reaches the CINH
+threshold. The first guess is the current surface temperature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1" title="nwsspc.sharp.calc.parcel.lifter_cm1"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1</span></code></a>)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – A 1D NumPy array of pressure values (Pa)</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – A 1D NumPy array of height values (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – A 1D NumPy array of temperature values (K)</p></li>
+<li><p><strong>virtemp</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – A 1D NumPy array of virtual temperature values (K)</p></li>
+<li><p><strong>mixratio</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – A 1D NumPy array of water vapor mixing ratio values (g/g)</p></li>
+<li><p><strong>cinh_thresh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <em>default</em> <code class="xref py py-class docutils literal notranslate"><span class="pre">=</span> <span class="pre">-1.0</span></code>) – The CINH threshold used to compute the convective temperature (J/kg)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The convective temperature (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.params.precipitable_water">
 <span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.params.</span></span><span class="sig-name descname"><span class="pre">precipitable_water</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pres:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">mixr:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.params.precipitable_water" title="Link to this definition">#</a></dt>
 <dd><p>Given a PressureLayer to integrate over, compute the precipitable water
@@ -1111,6 +1171,7 @@ sufficient moisture, and strong low-level winds.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.derecho_composite_parameter"><code class="docutils literal notranslate"><span class="pre">derecho_composite_parameter</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.large_hail_parameter"><code class="docutils literal notranslate"><span class="pre">large_hail_parameter</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.hail_growth_layer"><code class="docutils literal notranslate"><span class="pre">hail_growth_layer</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.convective_temperature"><code class="docutils literal notranslate"><span class="pre">convective_temperature</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.precipitable_water"><code class="docutils literal notranslate"><span class="pre">precipitable_water</span></code></a></li>
 </ul>
 </li>

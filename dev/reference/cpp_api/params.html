@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>params &#8212; SHARPlib v1.2.1.post1-24-gdd7d7ad Manual</title>
+    <title>params &#8212; SHARPlib v1.2.1.post1-25-g291b8b5 Manual</title>
   
   
   
@@ -46,7 +46,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://keltonhalbert.github.io/SHARPlib/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.2.1.post1-24-gdd7d7ad';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.2.1.post1-25-g291b8b5';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -56,7 +56,7 @@
     <link rel="prev" title="layer" href="layer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.1.post1-24-gdd7d7ad" />
+  <meta name="docsearch:version" content="1.2.1.post1-25-g291b8b5" />
     <meta name="docbuild:last-update" content="Feb 21, 2026"/>
   </head>
   
@@ -810,6 +810,17 @@
 </dl>
 </dd></dl>
 
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Unable to resolve function “sharp::convective_temperature” with arguments None in doxygen xml output for project “SHARPlib” from directory: doxyxml/.
+Potential matches:
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="nb">float</span> <span class="n">convective_temperature</span><span class="p">(</span><span class="n">lifter_cm1</span> <span class="o">&amp;</span><span class="n">lifter</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">pressure</span><span class="p">[],</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">height</span><span class="p">[],</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">temperature</span><span class="p">[],</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">mixratio</span><span class="p">[],</span> <span class="nb">float</span> <span class="n">pcl_virtemp</span><span class="p">[],</span> <span class="nb">float</span> <span class="n">pcl_buoyancy</span><span class="p">[],</span> <span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">ptrdiff_t</span> <span class="n">N</span><span class="p">,</span> <span class="nb">float</span> <span class="n">cinh_thresh</span> <span class="o">=</span> <span class="o">-</span><span class="mf">50.0</span><span class="n">f</span><span class="p">)</span>
+<span class="o">-</span> <span class="nb">float</span> <span class="n">convective_temperature</span><span class="p">(</span><span class="n">lifter_wobus</span> <span class="o">&amp;</span><span class="n">lifter</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">pressure</span><span class="p">[],</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">height</span><span class="p">[],</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">temperature</span><span class="p">[],</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">mixratio</span><span class="p">[],</span> <span class="nb">float</span> <span class="n">pcl_virtemp</span><span class="p">[],</span> <span class="nb">float</span> <span class="n">pcl_buoyancy</span><span class="p">[],</span> <span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">ptrdiff_t</span> <span class="n">N</span><span class="p">,</span> <span class="nb">float</span> <span class="n">cinh_thresh</span> <span class="o">=</span> <span class="o">-</span><span class="mf">50.0</span><span class="n">f</span><span class="p">)</span>
+<span class="o">-</span> <span class="n">template</span><span class="o">&lt;</span><span class="n">typename</span> <span class="n">Lifter</span><span class="o">&gt;</span> <span class="nb">float</span> <span class="n">convective_temperature</span><span class="p">(</span><span class="n">Lifter</span> <span class="o">&amp;</span><span class="n">lifter</span><span class="p">,</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">pressure</span><span class="p">[],</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">height</span><span class="p">[],</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">temperature</span><span class="p">[],</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">virtemp</span><span class="p">[],</span> <span class="n">const</span> <span class="nb">float</span> <span class="n">mixratio</span><span class="p">[],</span> <span class="nb">float</span> <span class="n">pcl_virtemp</span><span class="p">[],</span> <span class="nb">float</span> <span class="n">pcl_buoyancy</span><span class="p">[],</span> <span class="n">const</span> <span class="n">std</span><span class="p">::</span><span class="n">ptrdiff_t</span> <span class="n">N</span><span class="p">,</span> <span class="nb">float</span> <span class="n">cinh_thresh</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp18precipitable_waterE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE">
 <span id="_CPPv3N5sharp18precipitable_waterE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE"></span><span id="_CPPv2N5sharp18precipitable_waterE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE"></span><span id="sharp::precipitable_water__PressureLayer.floatCA.floatCA.std::ptrdiff_tC"></span><span class="target" id="namespacesharp_1af910931fdd9e0fe7d63ba7446743e354"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">precipitable_water</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="layer.html#_CPPv4N5sharp13PressureLayerE" title="sharp::PressureLayer"><span class="n"><span class="pre">PressureLayer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">layer</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pressure</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mixing_ratio</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp18precipitable_waterE13PressureLayerA_KfA_KfKNSt9ptrdiff_tE" title="Link to this definition">#</a><br /></dt>
