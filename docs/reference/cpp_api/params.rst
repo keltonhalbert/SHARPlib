@@ -18,7 +18,9 @@ Convective
 .. doxygenfunction:: sharp::derecho_composite_parameter
 .. doxygenfunction:: sharp::large_hail_parameter
 .. doxygenfunction:: sharp::hail_growth_layer
-.. doxygenfunction:: sharp::convective_temperature
+.. doxygenfunction:: sharp::convective_temperature(Lifter&, const float[], const float[], const float[], const float[], const float[], const float[], const loat[], const std::ptrdiff_t, float)
+.. doxygenfunction:: sharp::convective_temperature(sharp::lifter_wobus&, const float[], const float[], const float[], const float[], const float[], const float[], const loat[], const std::ptrdiff_t, float)
+.. doxygenfunction:: sharp::convective_temperature(sharp::lifter_cm1&, const float[], const float[], const float[], const float[], const float[], const float[], const loat[], const std::ptrdiff_t, float)
 .. doxygenfunction:: sharp::precipitable_water
 
 Fire
