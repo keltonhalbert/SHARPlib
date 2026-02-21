@@ -304,7 +304,8 @@ def test_stp_scp_ship_dcp_lhp():
     ship = params.significant_hail_parameter(mupcl, lr75, t500, fzl, shr06)
     assert (ship == pytest.approx(1.9521, abs=1e-3))
 
-    hlyr_in_p = layer.height_layer_to_pressure(hlyr, snd_data["pres"], snd_data["hght"])
+    hlyr_in_p = layer.height_layer_to_pressure(
+        hlyr, snd_data["pres"], snd_data["hght"])
     mw06 = winds.mean_wind(
         hlyr_in_p, snd_data["pres"], snd_data["uwin"], snd_data["vwin"]
     )
@@ -314,13 +315,13 @@ def test_stp_scp_ship_dcp_lhp():
 
     hgz = params.hail_growth_layer(snd_data["pres"], snd_data["tmpk"])
     lhp = params.large_hail_parameter(
-        mupcl, 
-        lr75, 
-        hgz, 
-        storm_mtn, 
-        snd_data["pres"], 
-        snd_data["hght"], 
-        snd_data["uwin"], 
+        mupcl,
+        lr75,
+        hgz,
+        storm_mtn,
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["uwin"],
         snd_data["vwin"]
     )
     assert (lhp == pytest.approx(13.98, abs=1e-2))
@@ -369,6 +370,20 @@ def test_ehi():
 
     ehi = params.energy_helicity_index(pcl.cape, srh)
     assert (ehi == pytest.approx(4.41228, abs=1e-5))
+
+
+def test_convective_temperature():
+    lifter = parcel.lifter_cm1()
+    lifter.ma_type = thermo.adiabat.pseudo_liq
+    cnvtv_tmpk = params.convective_temperature(
+        lifter,
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["tmpk"],
+        snd_data["vtmp"],
+        snd_data["mixr"]
+    )
+    assert (cnvtv_tmpk == pytest.approx(304.65, abs=0.5))
 
 
 def test_precipitable_water():
