@@ -8,11 +8,13 @@
 // clang-format on
 #include <SHARPlib/layer.h>
 #include <SHARPlib/params/convective.h>
+#include <SHARPlib/params/fire.h>
+#include <SHARPlib/params/winter.h>
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/winds.h>
 
-#include "SHARPlib/params/fire.h"
-#include "SHARPlib/params/winter.h"
+#include <cstddef>
+
 #include "sharplib_types.h"
 
 namespace nb = nanobind;
@@ -640,6 +642,116 @@ u_wind : numpy.ndarray[dtype=float32]
 v_wind : numpy.ndarray[dtype=float32]
     1D NumPy array of v_wind values (m/s)
     )pbdoc");
+
+    m_params.def(
+        "convective_temperature",
+        [](sharp::lifter_wobus& lifter, const_prof_arr_t pres,
+           const_prof_arr_t hght, const_prof_arr_t tmpk, const_prof_arr_t vtmpk,
+           const_prof_arr_t mixr, float cinh_thresh) {
+            if ((pres.shape(0) != hght.shape(0)) ||
+                (pres.shape(0) != tmpk.shape(0)) ||
+                (pres.shape(0) != mixr.shape(0)) ||
+                (pres.shape(0) != vtmpk.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
+            float* pcl_vtmp = new float[hght.size()];
+            float* pcl_buoy = new float[hght.size()];
+
+            float cnvtv_tmpk = sharp::convective_temperature(
+                lifter, pres.data(), hght.data(), tmpk.data(), vtmpk.data(),
+                mixr.data(), pcl_vtmp, pcl_buoy, pres.size());
+
+            delete[] pcl_vtmp;
+            delete[] pcl_buoy;
+
+            return cnvtv_tmpk;
+        },
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("height"),
+        nb::arg("temperature"), nb::arg("virtual_temperature"),
+        nb::arg("mixratio"), nb::arg("cinh_thresh") = -1.0,
+        R"pbdoc(
+Computes the convective temperature by iteratively lifting parcels from 
+the surface using a lowest 100 hPa mean mixing ratio and increasing 
+surface temperatures to find the first parcel that reaches the CINH 
+threshold. The first guess is the current surface temperature.
+
+Parameters 
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+pressure : numpy.ndarray[dtype=float32]
+    A 1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of height values (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of temperature values (K)
+virtemp : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of virtual temperature values (K)
+mixratio : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of water vapor mixing ratio values (g/g)
+cinh_thresh : float, default = -1.0 
+    The CINH threshold used to compute the convective temperature (J/kg)
+
+Returns
+-------
+float
+    The convective temperature (K)
+)pbdoc");
+
+    m_params.def(
+        "convective_temperature",
+        [](sharp::lifter_cm1& lifter, const_prof_arr_t pres,
+           const_prof_arr_t hght, const_prof_arr_t tmpk, const_prof_arr_t vtmpk,
+           const_prof_arr_t mixr, float cinh_thresh) {
+            if ((pres.shape(0) != hght.shape(0)) ||
+                (pres.shape(0) != tmpk.shape(0)) ||
+                (pres.shape(0) != mixr.shape(0)) ||
+                (pres.shape(0) != vtmpk.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
+            float* pcl_vtmp = new float[hght.size()];
+            float* pcl_buoy = new float[hght.size()];
+
+            float cnvtv_tmpk = sharp::convective_temperature(
+                lifter, pres.data(), hght.data(), tmpk.data(), vtmpk.data(),
+                mixr.data(), pcl_vtmp, pcl_buoy, pres.size());
+
+            delete[] pcl_vtmp;
+            delete[] pcl_buoy;
+
+            return cnvtv_tmpk;
+        },
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("height"),
+        nb::arg("temperature"), nb::arg("virtual_temperature"),
+        nb::arg("mixratio"), nb::arg("cinh_thresh") = -1.0,
+        R"pbdoc(
+Computes the convective temperature by iteratively lifting parcels from 
+the surface using a lowest 100 hPa mean mixing ratio and increasing 
+surface temperatures to find the first parcel that reaches the CINH 
+threshold. The first guess is the current surface temperature.
+
+Parameters 
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
+pressure : numpy.ndarray[dtype=float32]
+    A 1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of height values (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of temperature values (K)
+virtemp : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of virtual temperature values (K)
+mixratio : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of water vapor mixing ratio values (g/g)
+cinh_thresh : float, default = -1.0 
+    The CINH threshold used to compute the convective temperature (J/kg)
+
+Returns
+-------
+float
+    The convective temperature (K)
+)pbdoc");
 
     m_params.def(
         "precipitable_water",
