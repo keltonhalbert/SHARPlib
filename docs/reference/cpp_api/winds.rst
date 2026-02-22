@@ -26,4 +26,5 @@ Kinematic Variables
 .. doxygenfunction:: sharp::helicity
 .. doxygenfunction:: sharp::wind_shear
 .. doxygenfunction:: sharp::mean_wind
-.. doxygenfunction:: sharp::max_wind
+.. doxygenfunction:: sharp::max_wind(PressureLayer lyr, const float pressure[], const float uwin[], const float vwin[], const std::ptrdiff_t N, std::size_t* lvl_max)
+.. doxygenfunction:: sharp::max_wind(HeightLayer lyr, const float pressure[], const float uwin[], const float vwin[], const std::ptrdiff_t N, std::size_t* lvl_max)
