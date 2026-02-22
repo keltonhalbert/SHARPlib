@@ -5,8 +5,8 @@ Convective
 ----------
 
 .. doxygenfunction:: sharp::effective_inflow_layer(Lifter&, const float[], const float[], const float[], const float[], const float[], float[], float[], const std::ptrdiff_t, const float, const float, Parcel*)
-.. doxygenfunction:: sharp::effective_inflow_layer(lifter_wobus&, const float[], const float[], const float[], const float[], const float[], float[], float[], const std::ptrdiff_t, const float, const float, Parcel*)
-.. doxygenfunction:: sharp::effective_inflow_layer(lifter_cm1&, const float[], const float[], const float[], const float[], const float[], float[], float[], const std::ptrdiff_t, const float, const float, Parcel*)
+.. doxygenfunction:: sharp::effective_inflow_layer(sharp::lifter_wobus&, const float[], const float[], const float[], const float[], const float[], float[], float[], const std::ptrdiff_t, const float, const float, Parcel*)
+.. doxygenfunction:: sharp::effective_inflow_layer(sharp::lifter_cm1&, const float[], const float[], const float[], const float[], const float[], float[], float[], const std::ptrdiff_t, const float, const float, Parcel*)
 .. doxygenfunction:: sharp::storm_motion_bunkers(const float[], const float[], const float[], const float[], const std::ptrdiff_t, HeightLayer, HeightLayer, const bool, const bool)
 .. doxygenfunction:: sharp::storm_motion_bunkers(const float[], const float[], const float[], const float[], const std::ptrdiff_t, PressureLayer, const Parcel&, const bool)
 .. doxygenfunction:: sharp::mcs_motion_corfidi
@@ -19,8 +19,8 @@ Convective
 .. doxygenfunction:: sharp::large_hail_parameter
 .. doxygenfunction:: sharp::hail_growth_layer
 .. doxygenfunction:: sharp::convective_temperature(Lifter&, const float[], const float[], const float[], const float[], const float[], float[], float[], const std::ptrdiff_t, float)
-.. doxygenfunction:: sharp::convective_temperature(lifter_wobus&, const float[], const float[], const float[], const float[], const float[], float[], float[], const std::ptrdiff_t, float)
-.. doxygenfunction:: sharp::convective_temperature(lifter_cm1&, const float[], const float[], const float[], const float[], const float[], float[], float[], const std::ptrdiff_t, float)
+.. doxygenfunction:: sharp::convective_temperature(sharp::lifter_wobus&, const float[], const float[], const float[], const float[], const float[], float[], float[], const std::ptrdiff_t, float)
+.. doxygenfunction:: sharp::convective_temperature(sharp::lifter_cm1&, const float[], const float[], const float[], const float[], const float[], float[], float[], const std::ptrdiff_t, float)
 .. doxygenfunction:: sharp::precipitable_water
 
 Fire
