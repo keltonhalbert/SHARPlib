@@ -235,24 +235,52 @@ struct WindComponents {
                                        const std::ptrdiff_t N,
                                        const bool weighted);
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Compute the max wind over a height or pressure layer
+ *
+ * Finds the maximum wind speed over a given sharp::PressureLayer or
+ * sharp::HeightLayer, returning the vector components.
+ *
+ * \param   layer       {bottom, top}
+ * \param   coordinate  (pressure (Pa) or height (m))
+ * \param   u_wind      (m/s)
+ * \param   v_wind      (m/s)
+ * \param   N           (length of arrays)
+ * \param   lvl_max     (index of max)
+ *
+ * \return {max_u, max_v}
+ */
 template <typename Layer>
 [[nodiscard]] WindComponents max_wind(Layer lyr, const float coordinate[],
-                                      const float uwin[], const float vwin[],
-                                      const std::ptrdiff_t N) {
+                                      const float u_wind[],
+                                      const float v_wind[],
+                                      const std::ptrdiff_t N,
+                                      std::size_t* lvl_max = nullptr) {
     LayerIndex lyr_idx = get_layer_index(lyr, coordinate, N);
 
     float max = 0;
     std::size_t max_idx = 0;
     for (std::ptrdiff_t idx = lyr_idx.kbot; idx <= lyr_idx.ktop; ++idx) {
-        float wspd = vector_magnitude(uwin[idx], vwin[idx]);
+        float wspd = vector_magnitude(u_wind[idx], v_wind[idx]);
         if (wspd > max) {
             max = wspd;
             max_idx = idx;
         }
     }
+    if (lvl_max) *lvl_max = max_idx;
 
-    return {uwin[max_idx], vwin[max_idx]};
+    return {u_wind[max_idx], v_wind[max_idx]};
 }
+
+extern template WindComponents max_wind<PressureLayer>(
+    PressureLayer lyr, const float coordinate[], const float u_wind[],
+    const float v_wind[], const std::ptrdiff_t N, std::size_t* lvl_max);
+
+extern template WindComponents max_wind<HeightLayer>(
+    HeightLayer lyr, const float coordinate[], const float u_wind[],
+    const float v_wind[], const std::ptrdiff_t N, std::size_t* lvl_max);
 
 /**
  *
