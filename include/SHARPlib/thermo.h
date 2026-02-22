@@ -678,6 +678,26 @@ void buoyancy(const float pcl_temperature[], const float env_temperature[],
 [[nodiscard]] float moist_static_energy(float height_agl, float temperature,
                                         float specific_humidity);
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Compute the index of the top of the Planetary Boundary Layer (PBL)
+ *
+ * Computes the array index corresponding to the top of the Planetary Boundary
+ * Layer (PBL). Uses the method described by Stull (1988), by which the the
+ * virtual potential temperature is used. The offset determines the termination
+ * threshold above the surface.
+ *
+ * \param   pressure    (Pa)
+ * \param   virtemp     (K)
+ * \param   N           (length of arrays)
+ * \param   offset      (K)
+ *
+ * \return index of PBL top
+ */
+[[nodiscard]] std::size_t pbl_top(const float pressure[], const float virtemp[],
+                                  const std::ptrdiff_t N, float offset = 0.5);
+
 [[nodiscard]] float buoyancy_dilution_potential(const float temperature,
                                                 const float mse_bar,
                                                 const float saturation_mse);

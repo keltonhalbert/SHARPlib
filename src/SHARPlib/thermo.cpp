@@ -18,6 +18,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <cstdio>
 
 namespace sharp {
@@ -552,6 +553,23 @@ float moist_static_energy(float height_agl, float temperature,
 
     return (CP_DRYAIR * temperature) + (EXP_LV * specific_humidity) +
            (GRAVITY * height_agl);
+}
+
+std::size_t pbl_top(const float pressure[], const float virtemp[],
+                    const std::ptrdiff_t N, float offset) {
+    float thetav_sfc = theta(pressure[0], virtemp[0]);
+
+    std::size_t pbl_idx = 0;
+    for (std::ptrdiff_t idx = 1; idx < N; ++idx) {
+        float thetav = sharp::theta(pressure[idx], virtemp[idx]);
+
+        if (thetav > thetav_sfc + offset) {
+            pbl_idx = idx;
+            break;
+        }
+    }
+
+    return pbl_idx;
 }
 
 float buoyancy_dilution_potential(float temperature, float mse_bar,
