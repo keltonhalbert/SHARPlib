@@ -38,6 +38,7 @@ def load_parquet(filename):
     # vwin = np.empty(wspd.shape, dtype="float32")
     mixr = thermo.mixratio(pres, dwpk)
     vtmp = thermo.virtual_temperature(tmpk, mixr)
+    theta = thermo.theta(pres, tmpk)
     thetae = thermo.thetae(
         pres,
         tmpk,
@@ -48,6 +49,7 @@ def load_parquet(filename):
         "pres": pres, "hght": hght,
         "tmpk": tmpk, "mixr": mixr,
         "relh": relh,
+        "theta": theta,
         "thetae": thetae,
         "vtmp": vtmp, "dwpk": dwpk,
         "wdir": wdir, "wspd": wspd,
@@ -419,3 +421,20 @@ def test_fwwi():
 
     fwwi = params.fosberg_fire_index(tmpk, relh, wspd)
     assert (fwwi == np.array([100.0, 100.0, 100.0], dtype='float32')).all()
+
+
+def test_pft():
+    mix_layer = layer.PressureLayer(
+        snd_data["pres"][0], snd_data["pres"][0] - 10000.0)
+    pft = params.pyrocumulonimbus_firepower_threshold(
+        mix_layer,
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["tmpk"],
+        snd_data["mixr"],
+        snd_data["vtmp"],
+        snd_data["uwin"],
+        snd_data["vwin"],
+        snd_data["theta"]
+    )
+    assert (pft == pytest.approx(153856147456.0, abs=1e6))
