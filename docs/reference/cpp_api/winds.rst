@@ -26,3 +26,4 @@ Kinematic Variables
 .. doxygenfunction:: sharp::helicity
 .. doxygenfunction:: sharp::wind_shear
 .. doxygenfunction:: sharp::mean_wind
+.. doxygenfunction:: sharp::max_wind
