@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>winds &#8212; SHARPlib v1.2.1.post1-51-g391b934 Manual</title>
+    <title>winds &#8212; SHARPlib v1.2.1.post1-52-g6ade217 Manual</title>
   
   
   
@@ -46,7 +46,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://keltonhalbert.github.io/SHARPlib/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.2.1.post1-51-g391b934';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.2.1.post1-52-g6ade217';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -56,7 +56,7 @@
     <link rel="prev" title="thermo" href="thermo.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.1.post1-51-g391b934" />
+  <meta name="docsearch:version" content="1.2.1.post1-52-g6ade217" />
     <meta name="docbuild:last-update" content="Feb 22, 2026"/>
   </head>
   
@@ -797,30 +797,33 @@
 </dl>
 </dd></dl>
 
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve function “sharp::max_wind” with arguments “(Layer, const float[], const float[], const float[], const std::ptrdiff_t, std::size_t*)”.
-Candidate function could not be parsed. Parsing error is
-Invalid C++ declaration: Expected ‘&lt;’ after ‘template’ [error at 9]
-  template WindComponents max_wind (PressureLayer lyr, const float pressure[], const float uwin[], const float vwin[], const std::ptrdiff_t N, std::size_t *lvl_max)
-  ———^</p>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve function “sharp::max_wind” with arguments “(PressureLayer, const float[], const float[], const float[], const std::ptrdiff_t, std::size_t*)”.
-Candidate function could not be parsed. Parsing error is
-Invalid C++ declaration: Expected ‘&lt;’ after ‘template’ [error at 9]
-  template WindComponents max_wind (PressureLayer lyr, const float pressure[], const float uwin[], const float vwin[], const std::ptrdiff_t N, std::size_t *lvl_max)
-  ———^</p>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>doxygenfunction: Unable to resolve function “sharp::max_wind” with arguments “(HeightLayer, const float[], const float[], const float[], const std::ptrdiff_t, std::size_t*)”.
-Candidate function could not be parsed. Parsing error is
-Invalid C++ declaration: Expected ‘&lt;’ after ‘template’ [error at 9]
-  template WindComponents max_wind (PressureLayer lyr, const float pressure[], const float uwin[], const float vwin[], const std::ptrdiff_t N, std::size_t *lvl_max)
-  ———^</p>
-</div>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5sharp8max_windE14WindComponents5LayerA_KfA_KfA_KfKNSt9ptrdiff_tEPNSt6size_tE">
+<span id="_CPPv3I0EN5sharp8max_windE5LayerA_KfA_KfA_KfKNSt9ptrdiff_tEPNSt6size_tE"></span><span id="_CPPv2I0EN5sharp8max_windE5LayerA_KfA_KfA_KfKNSt9ptrdiff_tEPNSt6size_tE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Layer</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacesharp_1a678e05530d134ebc63cb2ff40a1453cb"></span><a class="reference internal" href="#_CPPv4N5sharp14WindComponentsE" title="sharp::WindComponents"><span class="n"><span class="pre">WindComponents</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="constants.html#_CPPv45sharp" title="sharp"><span class="n"><span class="pre">sharp</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">max_wind</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5sharp8max_windE14WindComponents5LayerA_KfA_KfA_KfKNSt9ptrdiff_tEPNSt6size_tE" title="sharp::max_wind::Layer"><span class="n"><span class="pre">Layer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lyr</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">coordinate</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">u_wind</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">v_wind</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">lvl_max</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN5sharp8max_windE14WindComponents5LayerA_KfA_KfA_KfKNSt9ptrdiff_tEPNSt6size_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compute the max wind over a height or pressure layer. </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Finds the maximum wind speed over a given <a class="reference internal" href="layer.html#structsharp_1_1PressureLayer"><span class="std std-ref">sharp::PressureLayer</span></a> or <a class="reference internal" href="layer.html#structsharp_1_1HeightLayer"><span class="std std-ref">sharp::HeightLayer</span></a>, returning the vector components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layer</strong> – {bottom, top} </p></li>
+<li><p><strong>coordinate</strong> – (pressure (Pa) or height (m)) </p></li>
+<li><p><strong>u_wind</strong> – (m/s) </p></li>
+<li><p><strong>v_wind</strong> – (m/s) </p></li>
+<li><p><strong>N</strong> – (length of arrays) </p></li>
+<li><p><strong>lvl_max</strong> – (index of max)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>{max_u, max_v} </p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -897,6 +900,7 @@ Invalid C++ declaration: Expected ‘&lt;’ after ‘template’ [error at 9]
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN5sharp8helicityEf1L14WindComponentsA_KfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">helicity()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN5sharp10wind_shearE14WindComponents1LA_KfA_KfA_KfKNSt9ptrdiff_tE"><code class="docutils literal notranslate"><span class="pre">wind_shear()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp9mean_windE13PressureLayerA_KfA_KfA_KfKNSt9ptrdiff_tEKb"><code class="docutils literal notranslate"><span class="pre">mean_wind()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN5sharp8max_windE14WindComponents5LayerA_KfA_KfA_KfKNSt9ptrdiff_tEPNSt6size_tE"><code class="docutils literal notranslate"><span class="pre">max_wind()</span></code></a></li>
 </ul>
 </li>
 </ul>
