@@ -689,6 +689,11 @@ def pyrocumulonimbus_firepower_threshold(mix_layer: nwsspc.sharp.calc.layer.Pres
     Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
     If a parcel is passed, the values will be set with the PFT fire parcel.
 
+    References 
+    ----------
+    Tory et al. 2018: https://journals.ametsoc.org/view/journals/mwre/146/8/mwr-d-17-0377.1.xml
+    Tory et al. 2021: https://journals.ametsoc.org/view/journals/wefo/36/2/WAF-D-20-0027.1.xml
+
     Parameters 
     ----------
     mix_layer : nwsspc.sharp.calc.layer.PressureLayer
