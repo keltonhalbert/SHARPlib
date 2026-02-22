@@ -17,6 +17,7 @@
 #include <SHARPlib/winds.h>
 
 #include <cmath>
+#include <cstddef>
 
 namespace sharp {
 
@@ -128,5 +129,13 @@ WindComponents mean_wind(PressureLayer layer, const float pressure[],
     const float mean_v = v_sum / weight;
     return {mean_u, mean_v};
 }
+
+WindComponents max_wind(PressureLayer lyr, const float pressure[],
+                        const float uwin[], const float vwin[],
+                        const std::ptrdiff_t N);
+
+WindComponents max_wind(HeightLayer lyr, const float pressure[],
+                        const float uwin[], const float vwin[],
+                        const std::ptrdiff_t N);
 
 }  // end namespace sharp

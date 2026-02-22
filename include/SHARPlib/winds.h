@@ -235,6 +235,25 @@ struct WindComponents {
                                        const std::ptrdiff_t N,
                                        const bool weighted);
 
+template <typename Layer>
+[[nodiscard]] WindComponents max_wind(Layer lyr, const float coordinate[],
+                                      const float uwin[], const float vwin[],
+                                      const std::ptrdiff_t N) {
+    LayerIndex lyr_idx = get_layer_index(lyr, coordinate, N);
+
+    float max = 0;
+    std::size_t max_idx = 0;
+    for (std::ptrdiff_t idx = lyr_idx.kbot; idx <= lyr_idx.ktop; ++idx) {
+        float wspd = vector_magnitude(uwin[idx], vwin[idx]);
+        if (wspd > max) {
+            max = wspd;
+            max_idx = idx;
+        }
+    }
+
+    return {uwin[max_idx], vwin[max_idx]};
+}
+
 /**
  *
  * \author Kelton Halbert - NWS Storm Prediction Center
