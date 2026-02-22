@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>params &#8212; SHARPlib v1.2.1.post1-36-gf2326cd Manual</title>
+    <title>params &#8212; SHARPlib v1.2.1.post1-37-g3d36e6f Manual</title>
   
   
   
@@ -46,7 +46,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://keltonhalbert.github.io/SHARPlib/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.2.1.post1-36-gf2326cd';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.2.1.post1-37-g3d36e6f';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -56,7 +56,7 @@
     <link rel="prev" title="layer" href="layer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.1.post1-36-gf2326cd" />
+  <meta name="docsearch:version" content="1.2.1.post1-37-g3d36e6f" />
     <meta name="docbuild:last-update" content="Feb 22, 2026"/>
   </head>
   
@@ -491,7 +491,7 @@ be returned.</p>
 <li><p><strong>virtemp</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – A 1D NumPy array of virtual temperature values (K)</p></li>
 <li><p><strong>cape_thresh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <em>default</em> <code class="xref py py-class docutils literal notranslate"><span class="pre">=</span> <span class="pre">100.0</span></code>) – The CAPE threshold used to compute the Effective Inflow Layer</p></li>
 <li><p><strong>cinh_thresh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <em>default</em> <code class="xref py py-class docutils literal notranslate"><span class="pre">=</span> <span class="pre">-250.0</span></code>) – The CINH threshold used to compute the Effective Inflow Layer</p></li>
-<li><p><strong>muplc</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code> or <a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.Parcel" title="nwsspc.sharp.calc.parcel.Parcel"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.Parcel</span></code></a>, <em>optional</em>)</p></li>
+<li><p><strong>mupcl</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code> or <a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.Parcel" title="nwsspc.sharp.calc.parcel.Parcel"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.Parcel</span></code></a>, <em>optional</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -527,7 +527,7 @@ be returned.</p>
 <li><p><strong>virtemp</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – A 1D NumPy array of virtual temperature values (K)</p></li>
 <li><p><strong>cape_thresh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <em>default</em> <code class="xref py py-class docutils literal notranslate"><span class="pre">=</span> <span class="pre">100.0</span></code>) – The CAPE threshold used to compute the Effective Inflow Layer</p></li>
 <li><p><strong>cinh_thresh</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <em>default</em> <code class="xref py py-class docutils literal notranslate"><span class="pre">=</span> <span class="pre">-250.0</span></code>) – The CINH threshold used to compute the Effective Inflow Layer</p></li>
-<li><p><strong>muplc</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code> or <a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.Parcel" title="nwsspc.sharp.calc.parcel.Parcel"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.Parcel</span></code></a>, <em>optional</em>)</p></li>
+<li><p><strong>mupcl</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code> or <a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.Parcel" title="nwsspc.sharp.calc.parcel.Parcel"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.Parcel</span></code></a>, <em>optional</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1056,6 +1056,44 @@ as in Simard (1968).</p>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="nwsspc.sharp.calc.params.pyrocumulonimbus_firepower_threshold">
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.params.</span></span><span class="sig-name descname"><span class="pre">pyrocumulonimbus_firepower_threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">mix_layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">mixratio:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">virtual_temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">u_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">v_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">potential_temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">pcl:</span> <span class="pre">nwsspc.sharp.calc.parcel.Parcel</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">phi:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">6.67e-05,</span> <span class="pre">beta_incr:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.005</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.params.pyrocumulonimbus_firepower_threshold" title="Link to this definition">#</a></dt>
+<dd><p>Computes the Pyrocumulonimbus Firepower Threshold (PFT), or the minimum
+amount of firepower required to generate pyrocumulonimbus clouds for a
+given atmospheric profile. Requires a PressureLayer to define a mixing
+layer used to average values of potential temperature, mixing ratio,
+and wind speed. The beta increment determines how to vary the plume
+buoyancy factor, with smaller values resulting in more iteration steps.
+Phi is the fire moisture to potential temperature increment ratio.</p>
+<p>Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
+If a parcel is passed, the values will be set with the PFT fire parcel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mix_layer</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a>) – A mixing layer to take average values of the environment from</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – A 1D NumPy array of pressure values (Pa)</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – A 1D NumPy array of height values (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – A 1D NumPy array of temperature values (K)</p></li>
+<li><p><strong>mixratio</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – A 1D NumPy array of water vapor mixing ratio values (g/g)</p></li>
+<li><p><strong>virtual_temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – A 1D NumPy array of virtual temperature values (K)</p></li>
+<li><p><strong>u_wind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of U wind component values (m/s)</p></li>
+<li><p><strong>v_wind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of V wind compnent values (m/s)</p></li>
+<li><p><strong>potential_temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of potential temperature values (K)</p></li>
+<li><p><strong>pcl</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code> or <a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.Parcel" title="nwsspc.sharp.calc.parcel.Parcel"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.Parcel</span></code></a>, <em>optional</em>) – If a parcel is provided, returns the parcel for the PFT</p></li>
+<li><p><strong>phi</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The fire moisture to potential temperature increment ratio (kg/(kg*K))</p></li>
+<li><p><strong>beta_incr</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The fire plume buoyancy factor (unitless)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The PyroCB Firepower Threshold (Watts)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="winter">
 <h2>Winter<a class="headerlink" href="#winter" title="Link to this heading">#</a></h2>
@@ -1178,6 +1216,7 @@ sufficient moisture, and strong low-level winds.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fire">Fire</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.equilibrium_moisture_content"><code class="docutils literal notranslate"><span class="pre">equilibrium_moisture_content</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.fosberg_fire_index"><code class="docutils literal notranslate"><span class="pre">fosberg_fire_index</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#nwsspc.sharp.calc.params.pyrocumulonimbus_firepower_threshold"><code class="docutils literal notranslate"><span class="pre">pyrocumulonimbus_firepower_threshold</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#winter">Winter</a><ul class="visible nav section-nav flex-column">
