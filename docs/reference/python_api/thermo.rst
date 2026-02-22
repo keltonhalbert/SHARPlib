@@ -64,7 +64,7 @@ thermo
    .. autofunction:: nwsspc.sharp.calc.thermo.wetlift
 
    Miscellaneous
-   ------------
+   -------------
    Miscellaneous themodynamic routines 
 
    .. autofunction:: nwsspc.sharp.calc.thermo.pbl_top
