@@ -274,14 +274,6 @@ template <typename Layer>
     return {u_wind[max_idx], v_wind[max_idx]};
 }
 
-extern template WindComponents max_wind<PressureLayer>(
-    PressureLayer lyr, const float coordinate[], const float u_wind[],
-    const float v_wind[], const std::ptrdiff_t N, std::size_t* lvl_max);
-
-extern template WindComponents max_wind<HeightLayer>(
-    HeightLayer lyr, const float coordinate[], const float u_wind[],
-    const float v_wind[], const std::ptrdiff_t N, std::size_t* lvl_max);
-
 /**
  *
  * \author Kelton Halbert - NWS Storm Prediction Center

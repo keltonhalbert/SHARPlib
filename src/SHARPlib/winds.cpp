@@ -130,12 +130,4 @@ WindComponents mean_wind(PressureLayer layer, const float pressure[],
     return {mean_u, mean_v};
 }
 
-template WindComponents max_wind(PressureLayer lyr, const float pressure[],
-                                 const float uwin[], const float vwin[],
-                                 const std::ptrdiff_t N, std::size_t* lvl_max);
-
-template WindComponents max_wind(HeightLayer lyr, const float pressure[],
-                                 const float uwin[], const float vwin[],
-                                 const std::ptrdiff_t N, std::size_t* lvl_max);
-
 }  // end namespace sharp
