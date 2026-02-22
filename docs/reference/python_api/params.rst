@@ -27,6 +27,7 @@ params
 
    .. autofunction:: nwsspc.sharp.calc.params.equilibrium_moisture_content
    .. autofunction:: nwsspc.sharp.calc.params.fosberg_fire_index
+   .. autofunction:: nwsspc.sharp.calc.params.pyrocumulonimbus_firepower_threshold
 
    Winter
    ------

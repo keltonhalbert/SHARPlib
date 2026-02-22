@@ -44,7 +44,7 @@ def effective_inflow_layer(lifter: nwsspc.sharp.calc.parcel.lifter_wobus, pressu
         The CAPE threshold used to compute the Effective Inflow Layer 
     cinh_thresh : float, default = -250.0 
         The CINH threshold used to compute the Effective Inflow Layer
-    muplc : None or nwsspc.sharp.calc.parcel.Parcel, optional
+    mupcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
 
     Returns 
     -------
@@ -88,7 +88,7 @@ def effective_inflow_layer(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure
         The CAPE threshold used to compute the Effective Inflow Layer 
     cinh_thresh : float, default = -250.0 
         The CINH threshold used to compute the Effective Inflow Layer
-    muplc : None or nwsspc.sharp.calc.parcel.Parcel, optional
+    mupcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
 
     Returns 
     -------
@@ -674,4 +674,50 @@ def fosberg_fire_index(temperature: Annotated[NDArray[numpy.float32], dict(shape
     -------
     numpy.ndarray[dtype=float32]
         Fosberg Fire-Weather Index
+    """
+
+def pyrocumulonimbus_firepower_threshold(mix_layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mixratio: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], u_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], v_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], potential_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], pcl: nwsspc.sharp.calc.parcel.Parcel | None = None, phi: float = 6.67e-05, beta_incr: float = 0.005) -> float:
+    """
+    Computes the Pyrocumulonimbus Firepower Threshold (PFT), or the minimum 
+    amount of firepower required to generate pyrocumulonimbus clouds for a 
+    given atmospheric profile. Requires a PressureLayer to define a mixing 
+    layer used to average values of potential temperature, mixing ratio, 
+    and wind speed. The beta increment determines how to vary the plume 
+    buoyancy factor, with smaller values resulting in more iteration steps. 
+    Phi is the fire moisture to potential temperature increment ratio.
+
+    Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
+    If a parcel is passed, the values will be set with the PFT fire parcel.
+
+    Parameters 
+    ----------
+    mix_layer : nwsspc.sharp.calc.layer.PressureLayer
+        A mixing layer to take average values of the environment from
+    pressure : numpy.ndarray[dtype=float32]
+        A 1D NumPy array of pressure values (Pa)
+    height : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of height values (Pa)
+    temperature : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of temperature values (K)
+    mixratio : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of water vapor mixing ratio values (g/g)
+    virtual_temperature : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of virtual temperature values (K)
+    u_wind : numpy.ndarray[dtype=float32]
+        1D NumPy array of U wind component values (m/s)
+    v_wind : numpy.ndarray[dtype=float32]
+        1D NumPy array of V wind compnent values (m/s)
+    potential_temperature : numpy.ndarray[dtype=float32]
+        1D NumPy array of potential temperature values (K)
+    pcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
+        If a parcel is provided, returns the parcel for the PFT
+    phi : float 
+        The fire moisture to potential temperature increment ratio (kg/(kg*K))
+    beta_incr : float 
+        The fire plume buoyancy factor (unitless)
+
+    Returns 
+    -------
+    float 
+        The PyroCB Firepower Threshold (Watts)
     """

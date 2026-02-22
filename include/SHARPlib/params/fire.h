@@ -118,7 +118,7 @@ namespace sharp {
  * with smaller values resulting in more iteration steps. Phi is the fire
  * moisture to potential temperature increment ratio.
  *
- * Default values for beta_incr and phi are 0.0025 and 6.67e-5, respectively.
+ * Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
  *
  * References:
  * Tory et al. 2018:
