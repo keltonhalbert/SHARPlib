@@ -452,3 +452,8 @@ def test_buoyancy():
     assert (buoy.min() == pytest.approx(-2.956675, abs=1e-4))
     assert (buoy.max() == pytest.approx(0.46333456, abs=1e-4))
     assert (buoy.mean() == pytest.approx(-0.3561962, abs=5e-4))
+
+
+def test_pbl_top():
+    pbl_top = thermo.pbl_top(snd_data["pres"], snd_data["vtmp"])
+    assert (pbl_top == 217)

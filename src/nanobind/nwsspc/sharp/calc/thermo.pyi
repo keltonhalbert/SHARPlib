@@ -1162,3 +1162,25 @@ def buoyancy(parcel_temperature: Annotated[NDArray[numpy.float32], dict(shape=(N
     numpy.ndarray[dtype=float32]
         1D NumPy array of buoyancy values (m/s^2)
     """
+
+def pbl_top(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], offset: float = 0.5) -> int:
+    """
+    Compute the array index of the top of the Planetary Boundary Layer (PBL). 
+    Uses the method described by Stull (1988), by which the virtual potential 
+    temperature is used. The offset determines the termination condition above 
+    the surface.
+
+    Parameters 
+    ----------
+    pressure : numpy.ndarray[dtype=float32] 
+        1D NumPy array of pressure values (Pa)
+    virtual_temperature : numpy.ndarray[dtype=float32] 
+        1D NumPy array of virtual temperature values (K)
+    offset : float 
+        The virtual potential temperature offset (K)
+
+    Returns 
+    -------
+    int 
+        The index of the PBL top
+    """

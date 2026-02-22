@@ -684,8 +684,8 @@ void buoyancy(const float pcl_temperature[], const float env_temperature[],
  * \brief Compute the index of the top of the Planetary Boundary Layer (PBL)
  *
  * Computes the array index corresponding to the top of the Planetary Boundary
- * Layer (PBL). Uses the method described by Stull (1988), by which the the
- * virtual potential temperature is used. The offset determines the termination
+ * Layer (PBL). Uses the method described by Stull (1988), by which the virtual
+ * potential temperature is used. The offset determines the termination
  * threshold above the surface.
  *
  * \param   pressure    (Pa)
