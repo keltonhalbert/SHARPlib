@@ -19,6 +19,7 @@ Dry Ascent
 
 Moist Variables 
 ---------------
+
 .. doxygenfunction:: sharp::mixratio(float)
 .. doxygenfunction:: sharp::mixratio(float, float)
 .. doxygenfunction:: sharp::mixratio_ice
@@ -47,4 +48,7 @@ Moist Ascent
 .. doxygenfunction:: sharp::saturated_lift 
 .. doxygenfunction:: sharp::moist_adiabat_cm1
 
+Miscellaneous
+-------------
+.. doxygenfunction:: sharp::pbl_top
 
