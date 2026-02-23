@@ -21,6 +21,8 @@ namespace sharp {
 
 PressureLayer dendritic_layer(const float pressure[], const float temperature[],
                               const std::ptrdiff_t N) {
+    float last_p = MISSING;
+    float last_t = MISSING;
     float dgz_bot = MISSING;
     float dgz_top = MISSING;
     const float minus_17 = -17.0f + ZEROCNK;
@@ -31,9 +33,6 @@ PressureLayer dendritic_layer(const float pressure[], const float temperature[],
         if (w >= 1.0f) return p2;
         return std::exp(std::log(p1) + w * (std::log(p2) - std::log(p1)));
     };
-
-    float last_p = MISSING;
-    float last_t = MISSING;
 
     for (std::ptrdiff_t idx = N - 1; idx >= 0; --idx) {
         float p_curr = pressure[idx];
