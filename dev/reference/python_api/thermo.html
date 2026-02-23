@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>thermo &#8212; SHARPlib v1.2.1.post1-59-g7a15e07 Manual</title>
+    <title>thermo &#8212; SHARPlib v1.2.1.post1-60-g276efed Manual</title>
   
   
   
@@ -46,7 +46,7 @@
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://keltonhalbert.github.io/SHARPlib/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.2.1.post1-59-g7a15e07';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.2.1.post1-60-g276efed';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -56,7 +56,7 @@
     <link rel="prev" title="parcel" href="parcel.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.2.1.post1-59-g7a15e07" />
+  <meta name="docsearch:version" content="1.2.1.post1-60-g276efed" />
     <meta name="docbuild:last-update" content="Feb 23, 2026"/>
   </head>
   
@@ -1723,8 +1723,8 @@ parcel.</p>
 <p>Miscellaneous themodynamic routines</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.pbl_top">
-<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">pbl_top</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">virtual_temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">offset:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.pbl_top" title="Link to this definition">#</a></dt>
-<dd><p>Compute the array index of the top of the Planetary Boundary Layer (PBL).
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">pbl_top</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">thetav:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">offset:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.5</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.pbl_top" title="Link to this definition">#</a></dt>
+<dd><p>Compute the pressure of the top of the Planetary Boundary Layer (PBL).
 Uses the method described by Stull (1988), by which the virtual potential
 temperature is used. The offset determines the termination condition above
 the surface.</p>
@@ -1732,15 +1732,15 @@ the surface.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure values (Pa)</p></li>
-<li><p><strong>virtual_temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of virtual temperature values (K)</p></li>
+<li><p><strong>thetav</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of virtual potential temperature values (K)</p></li>
 <li><p><strong>offset</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The virtual potential temperature offset (K)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The index of the PBL top</p>
+<dd class="field-even"><p>The pressure of the PBL top (Pa)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
 </dd>
 </dl>
 </dd></dl>
