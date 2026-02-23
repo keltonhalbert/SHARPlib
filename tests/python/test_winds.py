@@ -99,10 +99,10 @@ def test_max_wind():
     assert (mw.v == pytest.approx(12.80, abs=1e-5))
 
     mw = winds.max_wind(
-        hlyr, snd_data["pres"], snd_data["uwin"], snd_data["vwin"])
+        hlyr, snd_data["hght"], snd_data["uwin"], snd_data["vwin"])
 
-    assert (mw.u == pytest.approx(-5.699999, abs=1e-5))
-    assert (mw.v == pytest.approx(3.4, abs=1e-5))
+    assert (mw.u == pytest.approx(12.8, abs=1e-5))
+    assert (mw.v == pytest.approx(12.8, abs=1e-5))
 
 
 def test_wind_shear():
