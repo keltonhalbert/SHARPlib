@@ -248,7 +248,6 @@ struct WindComponents {
  * \param   u_wind      (m/s)
  * \param   v_wind      (m/s)
  * \param   N           (length of arrays)
- * \param   lvl_max     (index of max)
  *
  * \return {max_u, max_v}
  */
@@ -256,22 +255,52 @@ template <typename Layer>
 [[nodiscard]] WindComponents max_wind(Layer lyr, const float coordinate[],
                                       const float u_wind[],
                                       const float v_wind[],
-                                      const std::ptrdiff_t N,
-                                      std::size_t* lvl_max = nullptr) {
+                                      const std::ptrdiff_t N) {
     LayerIndex lyr_idx = get_layer_index(lyr, coordinate, N);
 
-    float max = 0;
-    std::size_t max_idx = 0;
+    float u_bot, u_top;
+    float v_bot, v_top;
+    if constexpr (lyr.coord == LayerCoordinate::pressure) {
+        u_bot = interp_pressure(lyr.bottom, coordinate, u_wind, N);
+        v_bot = interp_pressure(lyr.bottom, coordinate, v_wind, N);
+        u_top = interp_pressure(lyr.top, coordinate, u_wind, N);
+        v_top = interp_pressure(lyr.top, coordinate, v_wind, N);
+    } else {
+        u_bot = interp_height(lyr.bottom, coordinate, u_wind, N);
+        v_bot = interp_height(lyr.bottom, coordinate, v_wind, N);
+        u_top = interp_height(lyr.top, coordinate, u_wind, N);
+        v_top = interp_height(lyr.top, coordinate, v_wind, N);
+    }
+
+    float u_max = MISSING;
+    float v_max = MISSING;
+    float max = MISSING;
+    if ((u_bot != MISSING) && (v_bot != MISSING)) {
+        max = vector_magnitude(u_bot, v_bot);
+        u_max = u_bot;
+        v_max = v_bot;
+    }
+
     for (std::ptrdiff_t idx = lyr_idx.kbot; idx <= lyr_idx.ktop; ++idx) {
+        if ((u_wind[idx] == MISSING) || (v_wind[idx] == MISSING)) continue;
         float wspd = vector_magnitude(u_wind[idx], v_wind[idx]);
         if (wspd > max) {
             max = wspd;
-            max_idx = idx;
+            u_max = u_wind[idx];
+            v_max = v_wind[idx];
         }
     }
-    if (lvl_max) *lvl_max = max_idx;
 
-    return {u_wind[max_idx], v_wind[max_idx]};
+    if ((u_top != MISSING) && (v_top != MISSING)) {
+        float wspd = vector_magnitude(u_top, v_top);
+        if (wspd > max) {
+            max = wspd;
+            u_max = u_top;
+            v_max = v_top;
+        }
+    }
+
+    return {u_max, v_max};
 }
 
 /**
