@@ -1763,17 +1763,17 @@ numpy.ndarray[dtype=float32]
 
     m_therm.def(
         "pbl_top",
-        [](const_prof_arr_t pres_arr, const_prof_arr_t vtmpk_arr, float offset){
+        [](const_prof_arr_t pres_arr, const_prof_arr_t thetav_arr, float offset){
             auto pres = pres_arr.view();
-            auto vtmpk = vtmpk_arr.view();
-            if ((pres.shape(0) != vtmpk.shape(0))) {
+            auto thetav = thetav_arr.view();
+            if ((pres.shape(0) != thetav.shape(0))) {
                 throw nb::buffer_error(
-                    "pressure and virtual temperature must have the same size!");
+                    "pressure and virtual potential temperature must have the same size!");
             }
 
             std::size_t pbl_idx = sharp::pbl_top(
                 pres.data(), 
-                vtmpk.data(), 
+                thetav.data(), 
                 pres.shape(0), 
                 offset
             );
@@ -1782,10 +1782,10 @@ numpy.ndarray[dtype=float32]
 
         },
         nb::arg("pressure"),
-        nb::arg("virtual_temperature"),
+        nb::arg("thetav"),
         nb::arg("offset") = 0.5,
 R"pbdoc(
-Compute the array index of the top of the Planetary Boundary Layer (PBL). 
+Compute the pressure of the top of the Planetary Boundary Layer (PBL). 
 Uses the method described by Stull (1988), by which the virtual potential 
 temperature is used. The offset determines the termination condition above 
 the surface.
@@ -1794,15 +1794,15 @@ Parameters
 ----------
 pressure : numpy.ndarray[dtype=float32] 
     1D NumPy array of pressure values (Pa)
-virtual_temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of virtual temperature values (K)
+thetav : numpy.ndarray[dtype=float32] 
+    1D NumPy array of virtual potential temperature values (K)
 offset : float 
     The virtual potential temperature offset (K)
 
 Returns 
 -------
-int 
-    The index of the PBL top
+float
+    The pressure of the PBL top (Pa)
 )pbdoc"
     );
 }

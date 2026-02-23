@@ -455,5 +455,6 @@ def test_buoyancy():
 
 
 def test_pbl_top():
-    pbl_top = thermo.pbl_top(snd_data["pres"], snd_data["vtmp"])
-    assert (pbl_top == 217)
+    thetav = thermo.theta(snd_data["pres"], snd_data["vtmp"])
+    pbl_top = thermo.pbl_top(snd_data["pres"], thetav)
+    assert (pbl_top == 81704)

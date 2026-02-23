@@ -555,21 +555,12 @@ float moist_static_energy(float height_agl, float temperature,
            (GRAVITY * height_agl);
 }
 
-std::size_t pbl_top(const float pressure[], const float virtemp[],
-                    const std::ptrdiff_t N, float offset) {
-    float thetav_sfc = theta(pressure[0], virtemp[0]);
+float pbl_top(const float pressure[], const float thetav[],
+              const std::ptrdiff_t N, float offset) {
+    float thetav_sfc = thetav[0];
+    float thetav_top = thetav_sfc + offset;
 
-    std::size_t pbl_idx = 0;
-    for (std::ptrdiff_t idx = 1; idx < N; ++idx) {
-        float thetav = sharp::theta(pressure[idx], virtemp[idx]);
-
-        if (thetav > thetav_sfc + offset) {
-            pbl_idx = idx;
-            break;
-        }
-    }
-
-    return pbl_idx;
+    return sharp::find_first_pressure(thetav_top, pressure, thetav, N);
 }
 
 float buoyancy_dilution_potential(float temperature, float mse_bar,
