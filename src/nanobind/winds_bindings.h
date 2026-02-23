@@ -201,6 +201,84 @@ nwsspc.sharp.calc.winds.WindComponents
     WindComponents of U anf V mean wind components (m/s)
     )pbdoc");
 
+    m_wind.def(
+        "max_wind",
+        [](sharp::PressureLayer layer, const_prof_arr_t pressure,
+           const_prof_arr_t u_wind, const_prof_arr_t v_wind) {
+            if ((pressure.shape(0) != u_wind.shape(0)) ||
+                (pressure.shape(0) != v_wind.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
+            auto u_comp = u_wind.view();
+            auto v_comp = v_wind.view();
+            auto pres = pressure.view();
+            auto len = u_comp.shape(0);
+
+            return sharp::max_wind(layer, pres.data(), u_comp.data(),
+                                   v_comp.data(), len);
+        },
+        nb::arg("layer"), nb::arg("pressure"), nb::arg("u_wind"),
+        nb::arg("v_wind"),
+        R"pbdoc(
+Finds the maximum wind speed over a given nwsspc.sharp.calc.layer.PressureLayer,
+returning the vector components.
+
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.PressureLayer 
+    PressureLayer over which to compute mean
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure coordinate values (Pa)
+u_wind : numpy.ndarray[dtype=float32] 
+    1D NumPy array of U-wind component values (m/s)
+v_wind : numpy.ndarray[dtype=float32] 
+    1D NumPy array of V-wind component values (m/s)
+
+Returns
+-------
+nwsspc.sharp.calc.winds.WindComponents
+)pbdoc");
+
+    m_wind.def(
+        "max_wind",
+        [](sharp::HeightLayer layer, const_prof_arr_t height,
+           const_prof_arr_t u_wind, const_prof_arr_t v_wind) {
+            if ((height.shape(0) != u_wind.shape(0)) ||
+                (height.shape(0) != v_wind.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
+            auto u_comp = u_wind.view();
+            auto v_comp = v_wind.view();
+            auto hght = height.view();
+            auto len = u_comp.shape(0);
+
+            return sharp::max_wind(layer, hght.data(), u_comp.data(),
+                                   v_comp.data(), len);
+        },
+        nb::arg("layer"), nb::arg("height"), nb::arg("u_wind"),
+        nb::arg("v_wind"),
+        R"pbdoc(
+Finds the maximum wind speed over a given nwsspc.sharp.calc.layer.HeightLayer,
+returning the vector components.
+
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.HeightLayer 
+    PressureLayer over which to compute mean
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of height coordinate values (m)
+u_wind : numpy.ndarray[dtype=float32] 
+    1D NumPy array of U-wind component values (m/s)
+v_wind : numpy.ndarray[dtype=float32] 
+    1D NumPy array of V-wind component values (m/s)
+
+Returns
+-------
+nwsspc.sharp.calc.winds.WindComponents
+)pbdoc");
+
     m_wind.def("vector_magnitude", &sharp::vector_magnitude, nb::arg("u_comp"),
                nb::arg("v_comp"),
                R"pbdoc(
