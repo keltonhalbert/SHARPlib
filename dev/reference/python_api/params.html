@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>params &#8212; SHARPlib v1.3.0.dev0-58-g884af66 Manual</title>
+    <title>params &#8212; SHARPlib v1.3.0.dev0-60-g0828144 Manual</title>
   
   
   
@@ -56,7 +56,7 @@
     <link rel="prev" title="layer" href="layer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.3.0.dev0-58-g884af66" />
+  <meta name="docsearch:version" content="1.3.0.dev0-60-g0828144" />
     <meta name="docbuild:last-update" content="Feb 24, 2026"/>
   </head>
   
@@ -863,9 +863,10 @@ with &lt; 2.0 in.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.params.hail_growth_layer">
 <span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.params.</span></span><span class="sig-name descname"><span class="pre">hail_growth_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></a></span></span><a class="headerlink" href="#nwsspc.sharp.calc.params.hail_growth_layer" title="Link to this definition">#</a></dt>
-<dd><p>Search for and return the PressureLayer of the lowest altitude
-hail growth zone. If none is found, the top and bottom of the
-PressureLayer are set to MISSING.</p>
+<dd><p>Performs a top-down search for the hail growth zone,
+returning the PressureLayer bounds. This zone is defined
+as the pressure layer that contains the portion of the
+profile between -30C and -10C.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1104,9 +1105,10 @@ Tory et al. 2021: <a class="reference external" href="https://journals.ametsoc.o
 <dl class="py function">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.params.dendritic_layer">
 <span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.params.</span></span><span class="sig-name descname"><span class="pre">dendritic_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></a></span></span><a class="headerlink" href="#nwsspc.sharp.calc.params.dendritic_layer" title="Link to this definition">#</a></dt>
-<dd><p>Search for and return the PressureLayer of the lowest altitude
-dendritic growth zone. If none is found, the top and bottom of the
-PressureLayer are set to MISSING.</p>
+<dd><p>Performs a top-down search for the dendritic growth zone,
+returning the PressureLayer bounds. This zone is defined
+as the pressure layer that contains the portion of the
+profile between -17C and -12C.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
