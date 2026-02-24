@@ -458,3 +458,22 @@ def test_pbl_top():
     thetav = thermo.theta(snd_data["pres"], snd_data["vtmp"])
     pbl_top = thermo.pbl_top(snd_data["pres"], thetav)
     assert (pbl_top == 81704)
+
+def test_temperature_layer():
+    hgz = thermo.temperature_layer(
+        snd_data["pres"], 
+        snd_data["tmpk"], 
+        -30 + constants.ZEROCNK, 
+        -10 + constants.ZEROCNK
+    )
+    assert (hgz.bottom == 51430)
+    assert (hgz.top == 35816)
+
+    dgz = thermo.temperature_layer(
+        snd_data["pres"], 
+        snd_data["tmpk"], 
+        -17 + constants.ZEROCNK, 
+        -12 + constants.ZEROCNK
+    )
+    assert (dgz.bottom == 49598)
+    assert (dgz.top == 45961)
