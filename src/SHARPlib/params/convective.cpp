@@ -462,23 +462,8 @@ float precipitable_water(PressureLayer layer, const float pressure[],
 PressureLayer hail_growth_layer(const float pressure[],
                                 const float temperature[],
                                 const std::ptrdiff_t N) {
-    float bottom =
-        find_first_pressure(-10.0f + ZEROCNK, pressure, temperature, N);
-    float top = find_first_pressure(-30.0f + ZEROCNK, pressure, temperature, N);
-
-    if (top == MISSING) {
-        return {MISSING, MISSING};
-    }
-
-    if (bottom == MISSING) {
-        bottom = pressure[0];
-    }
-
-    if (bottom < top) {
-        return {MISSING, MISSING};
-    }
-
-    return {bottom, top};
+    return temperature_layer(pressure, temperature, -30.0f + ZEROCNK,
+                             -10.0f + ZEROCNK, N);
 }
 
 float convective_temperature(lifter_wobus &lifter, const float pressure[],

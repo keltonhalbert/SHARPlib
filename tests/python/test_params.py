@@ -326,7 +326,7 @@ def test_stp_scp_ship_dcp_lhp():
         snd_data["uwin"],
         snd_data["vwin"]
     )
-    assert (lhp == pytest.approx(13.98, abs=1e-2))
+    assert (lhp == pytest.approx(14.2394, abs=1e-2))
 
 
 def test_ehi():
@@ -397,8 +397,8 @@ def test_precipitable_water():
 
 def test_hgz():
     hgz = params.hail_growth_layer(snd_data["pres"], snd_data["tmpk"])
-    assert (hgz.bottom == 51787)
-    assert (hgz.top == 35861)
+    assert (hgz.bottom == 51430)
+    assert (hgz.top == 35816)
 
 
 def test_dgz():
