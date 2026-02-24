@@ -702,6 +702,25 @@ void buoyancy(const float pcl_temperature[], const float env_temperature[],
                                                 const float mse_bar,
                                                 const float saturation_mse);
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Returns the sharp::PressureLayer bounding a temperature range.
+ *
+ * Performs a top-down search for a sharp::PressureLayer that bounds the
+ * given temperature range. Uses a geometric approach to find the
+ * intersection of the temperature line with the given range.
+ *
+ * \param   pressure        (Pa)
+ * \param   temperature     (K)
+ * \param   tmpk_1          (K)
+ * \param   tmpk_2          (K)
+ * \param   N               (length of arrays)
+ */
+PressureLayer temperature_layer(const float pressure[],
+                                const float temperature[], const float tmpk_1,
+                                const float tmpk_2, const std::ptrdiff_t N);
+
 }  // end namespace sharp
 
 #endif  // SHARP_THERMP_H

@@ -404,7 +404,7 @@ def test_hgz():
 def test_dgz():
     dgz = params.dendritic_layer(snd_data["pres"], snd_data["tmpk"])
     assert (dgz.bottom == 49598)
-    assert (dgz.top == 46032)
+    assert (dgz.top == 45961)
 
 
 def test_fwwi():
