@@ -534,9 +534,10 @@ def precipitable_water(layer: nwsspc.sharp.calc.layer.PressureLayer, pres: Annot
 
 def hail_growth_layer(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> nwsspc.sharp.calc.layer.PressureLayer:
     """
-    Search for and return the PressureLayer of the lowest altitude 
-    hail growth zone. If none is found, the top and bottom of the 
-    PressureLayer are set to MISSING. 
+    Performs a top-down search for the hail growth zone, 
+    returning the PressureLayer bounds. This zone is defined 
+    as the pressure layer that contains the portion of the 
+    profile between -30C and -10C.
 
     Parameters 
     ----------
@@ -552,9 +553,10 @@ def hail_growth_layer(pressure: Annotated[NDArray[numpy.float32], dict(shape=(No
 
 def dendritic_layer(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> nwsspc.sharp.calc.layer.PressureLayer:
     """
-    Search for and return the PressureLayer of the lowest altitude 
-    dendritic growth zone. If none is found, the top and bottom of the 
-    PressureLayer are set to MISSING. 
+    Performs a top-down search for the dendritic growth zone, 
+    returning the PressureLayer bounds. This zone is defined 
+    as the pressure layer that contains the portion of the 
+    profile between -17C and -12C.
 
     Parameters 
     ----------
