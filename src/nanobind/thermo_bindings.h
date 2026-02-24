@@ -5,33 +5,36 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/tuple.h>
 
-#include <SHARPlib/thermo.h>
+// clang-format on
+#include <SHARPlib/layer.h>
 #include <SHARPlib/parcel.h>
+#include <SHARPlib/thermo.h>
+
 #include <cstddef>
 #include <tuple>
-#include "SHARPlib/layer.h"
+
 #include "sharplib_types.h"
 
 namespace nb = nanobind;
 
-
-inline void make_thermo_bindings (nb::module_ m) {
-    nb::module_ m_therm = m.def_submodule("thermo", 
+inline void make_thermo_bindings(nb::module_ m) {
+    nb::module_ m_therm = m.def_submodule(
+        "thermo",
         "Sounding and Hodograph Analysis and Research Program Library "
         "(SHARPlib) :: Thermodynamic Routines");
 
     nb::enum_<sharp::adiabat>(m_therm, "adiabat")
         .value("pseudo_liq", sharp::adiabat::pseudo_liq,
-            "Use a pseudoadiabatic parcel with liquid only processes")
+               "Use a pseudoadiabatic parcel with liquid only processes")
         .value("adiab_liq", sharp::adiabat::adiab_liq,
-            "Use an adiabatic parcel with liquid only processes")
+               "Use an adiabatic parcel with liquid only processes")
         .value("pseudo_ice", sharp::adiabat::pseudo_ice,
-            "Use a pseudoadiabatic parcel with liquid and ice processes")
+               "Use a pseudoadiabatic parcel with liquid and ice processes")
         .value("adiab_ice", sharp::adiabat::adiab_ice,
-            "Use an adiabatic parcel with liquid and ice processes");
+               "Use an adiabatic parcel with liquid and ice processes");
 
     m_therm.def("wobf", &sharp::wobf, nb::arg("temperature"),
-        R"pbdoc(
+                R"pbdoc(
 Computes the difference between the wet-bulb potential temperatures
 (Kelvin) for saturated and dry air, given the temperature (Kelvin).
 
@@ -84,7 +87,7 @@ float
             }
 
             nb::capsule owner(wobf_arr,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(wobf_arr, {tmpk.shape(0)}, owner);
         },
@@ -129,9 +132,9 @@ numpy.ndarray[dtype=float32]
 
             )pbdoc");
 
-    m_therm.def("lcl_temperature", &sharp::lcl_temperature, nb::arg("temperature"),
-        nb::arg("dewpoint"),
-        R"pbdoc(
+    m_therm.def("lcl_temperature", &sharp::lcl_temperature,
+                nb::arg("temperature"), nb::arg("dewpoint"),
+                R"pbdoc(
 Compute the Lifted Condensation Level (LCL) temperature (Kelvin) 
 given an air temperature (Kelvin) and dewpoint temperature (Kelvin).
 
@@ -171,7 +174,7 @@ float
             }
 
             nb::capsule owner(lcl_tmpk_arr,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(lcl_tmpk_arr, {tmpk.shape(0)}, owner);
         },
@@ -200,8 +203,8 @@ numpy.ndarray[dtype=float32]
         )pbdoc");
 
     m_therm.def("vapor_pressure", &sharp::vapor_pressure, nb::arg("pressure"),
-        nb::arg("temperature"),
-        R"pbdoc(
+                nb::arg("temperature"),
+                R"pbdoc(
 Compute the vapor pressure with respect to liquid water.
 
 The vapor pressure (or saturation vapor pressure) is computed with 
@@ -243,7 +246,7 @@ float
             }
 
             nb::capsule owner(vappres_arr,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(vappres_arr, {tmpk.shape(0)}, owner);
         },
@@ -274,9 +277,9 @@ numpy.ndarray[dtype=float32]
     saturation vapor pressure given the air temperature. 
     )pbdoc");
 
-    m_therm.def("vapor_pressure_ice", &sharp::vapor_pressure_ice, nb::arg("pressure"),
-        nb::arg("temperature"),
-        R"pbdoc(
+    m_therm.def("vapor_pressure_ice", &sharp::vapor_pressure_ice,
+                nb::arg("pressure"), nb::arg("temperature"),
+                R"pbdoc(
 Compute the vapor pressure with respect to ice.
 
 The vapor pressure (or saturation vapor pressure) is computed with 
@@ -318,7 +321,7 @@ float
             }
 
             nb::capsule owner(vappres_arr,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(vappres_arr, {tmpk.shape(0)}, owner);
         },
@@ -350,8 +353,8 @@ numpy.ndarray[dtype=float32]
     )pbdoc");
 
     m_therm.def("temperature_at_mixratio", &sharp::temperature_at_mixratio,
-        nb::arg("wv_mixratio"), nb::arg("pressure"),
-        R"pbdoc(
+                nb::arg("wv_mixratio"), nb::arg("pressure"),
+                R"pbdoc(
 Computes the temperature (K) of air at the given water vapor mixing ratio
 (kg/kg) and air pressure (Pa). Can be used to compute the dewpoint temperature 
 from mixing ratio. 
@@ -388,7 +391,7 @@ float
             }
 
             nb::capsule owner(dwpk_arr,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(dwpk_arr, {mixr.shape(0)}, owner);
         },
@@ -415,9 +418,9 @@ numpy.ndarray[dtype=float32]
 
     )pbdoc");
 
-    m_therm.def("theta_level", &sharp::theta_level, nb::arg("potential_temperature"),
-        nb::arg("temperature"),
-        R"pbdoc(
+    m_therm.def("theta_level", &sharp::theta_level,
+                nb::arg("potential_temperature"), nb::arg("temperature"),
+                R"pbdoc(
 Computes the pressure level (Pa) of a parcel given the potential temperature (K) and air 
 temperature (K).
 
@@ -449,7 +452,7 @@ float
             }
 
             nb::capsule owner(pres_arr,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(pres_arr, {tmpk.shape(0)}, owner);
         },
@@ -472,9 +475,10 @@ numpy.ndarray[dtype=float32]
 
     )pbdoc");
 
-    m_therm.def("theta", &sharp::theta, nb::arg("pressure"), nb::arg("temperature"),
-        nb::arg("ref_pressure") = sharp::THETA_REF_PRESSURE,
-        R"pbdoc(
+    m_therm.def("theta", &sharp::theta, nb::arg("pressure"),
+                nb::arg("temperature"),
+                nb::arg("ref_pressure") = sharp::THETA_REF_PRESSURE,
+                R"pbdoc(
 Computes the potential temperature (K), or theta, given the air pressure (Pa), air temperature (K),
 and a reference pressure (default value is 100000 Pa).
 
@@ -496,7 +500,7 @@ float
     m_therm.def(
         "theta",
         [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr,
-        const float ref_pres) {
+           const float ref_pres) {
             auto pres = pres_arr.view();
             auto tmpk = tmpk_arr.view();
             if ((pres.shape(0) != tmpk.shape(0))) {
@@ -509,7 +513,7 @@ float
             }
 
             nb::capsule owner(theta_arr,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(theta_arr, {tmpk.shape(0)}, owner);
         },
@@ -535,8 +539,8 @@ numpy.ndarray[dtype=float32]
     )pbdoc");
 
     m_therm.def("mixratio", static_cast<float (*)(float)>(&sharp::mixratio),
-        nb::arg("q"),
-        R"pbdoc(
+                nb::arg("q"),
+                R"pbdoc(
 Compute the water vapor mixing ratio (kg/kg) from specific humidity (kg/kg).
 
 Parameters
@@ -550,9 +554,10 @@ float
     The water vapor mixing ratio (kg/kg)
     )pbdoc");
 
-    m_therm.def("mixratio", static_cast<float (*)(float, float)>(&sharp::mixratio),
-        nb::arg("pressure"), nb::arg("temperature"),
-        R"pbdoc(
+    m_therm.def("mixratio",
+                static_cast<float (*)(float, float)>(&sharp::mixratio),
+                nb::arg("pressure"), nb::arg("temperature"),
+                R"pbdoc(
 Compute the water vapor mixing ratio (kg/kg) from the air pressure (Pa) and temperature (K).
 If given the air temperature, this is the saturation mixing ratio. If given the dewpoint 
 temperature, tis is the mixing ratio. 
@@ -581,7 +586,7 @@ float
             }
 
             nb::capsule owner(mixr_arr,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(mixr_arr, {spfh.shape(0)}, owner);
         },
@@ -616,7 +621,7 @@ numpy.ndarray[dtype=float32]
             }
 
             nb::capsule owner(mixr_arr,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(mixr_arr, {tmpk.shape(0)}, owner);
         },
@@ -641,8 +646,8 @@ numpy.ndarray[dtype=float32]
     )pbdoc");
 
     m_therm.def("mixratio_ice", &sharp::mixratio_ice, nb::arg("pressure"),
-        nb::arg("temperature"),
-        R"pbdoc(
+                nb::arg("temperature"),
+                R"pbdoc(
 Compute the ice water mixing ratio (kg/kg) from the air pressure (Pa) and temperature (K).
 If given the air temperatuer, this is the saturation mixing ratio. If given the dewpoint 
 temperature, this is the mixing ratio. 
@@ -675,7 +680,7 @@ float
             }
 
             nb::capsule owner(mixr_arr,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(mixr_arr, {tmpk.shape(0)}, owner);
         },
@@ -700,7 +705,7 @@ numpy.ndarray[dtype=float32]
     )pbdoc");
 
     m_therm.def("specific_humidity", &sharp::specific_humidity, nb::arg("rv"),
-        R"pbdoc(
+                R"pbdoc(
 Compute the specific humidity (kg/kg) from a mixing ratio (kg/kg).
 
 Parameters
@@ -724,7 +729,7 @@ float
             }
 
             nb::capsule owner(spfh_arr,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(spfh_arr, {mixr.shape(0)}, owner);
         },
@@ -743,11 +748,10 @@ numpy.ndarray[dtype=float32]
     1D NumPy array of specific humidity (unitless)
     )pbdoc");
 
-    m_therm.def(
-        "relative_humidity",
-        &sharp::relative_humidity, 
-        nb::arg("pressure"), nb::arg("temperature"), nb::arg("dewpoint"),
-        R"pbdoc(
+    m_therm.def("relative_humidity", &sharp::relative_humidity,
+                nb::arg("pressure"), nb::arg("temperature"),
+                nb::arg("dewpoint"),
+                R"pbdoc(
 Compute the relative humidity of water vapor with respect to liquid water.
 NOTE: The pressure variable is only used as a sanity check when computing 
 vapor pressure at extremely low pressures and temperatures. If you do not 
@@ -767,29 +771,24 @@ Returns
 -------
 float
     Relative Humidity (fraction, unitless)
-    )pbdoc"
-    );
-    
+    )pbdoc");
+
     m_therm.def(
         "relative_humidity",
-        [](
-            const_prof_arr_t pres_arr,
-            const_prof_arr_t tmpk_arr,
-            const_prof_arr_t dwpk_arr
-        ) {
-
+        [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr,
+           const_prof_arr_t dwpk_arr) {
             auto pres = pres_arr.view();
             auto tmpk = tmpk_arr.view();
             auto dwpk = dwpk_arr.view();
 
-            float* relh = new float[pres.shape(0)];
+            float *relh = new float[pres.shape(0)];
 
             for (std::ptrdiff_t k = 0; k < pres.shape(0); ++k) {
                 relh[k] = sharp::relative_humidity(pres(k), tmpk(k), dwpk(k));
             }
 
             nb::capsule owner(relh,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(relh, {tmpk.shape(0)}, owner);
         },
@@ -819,9 +818,9 @@ numpy.ndarray[dtype=float32]
     );
 
     m_therm.def("virtual_temperature", &sharp::virtual_temperature,
-        nb::arg("temperature"), nb::arg("rv"), nb::arg("rl") = 0.0f,
-        nb::arg("ri") = 0.0f,
-        R"pbdoc(
+                nb::arg("temperature"), nb::arg("rv"), nb::arg("rl") = 0.0f,
+                nb::arg("ri") = 0.0f,
+                R"pbdoc(
 Returns the virtual temperature in Kelvin given the dry-bulb 
 temperature (Kelvin), the water vapor mixing ratio (kg/kg), the 
 liquid water mixing ratio (kg/kg), and the ice water mixing ratios
@@ -848,7 +847,7 @@ float
     m_therm.def(
         "virtual_temperature",
         [](const_prof_arr_t tmpk_arr, const_prof_arr_t rv_arr,
-        const_prof_arr_t rl_arr, const_prof_arr_t ri_arr) {
+           const_prof_arr_t rl_arr, const_prof_arr_t ri_arr) {
             auto tmpk = tmpk_arr.view();
             auto rv = rv_arr.view();
             float *vtmp_arr;
@@ -874,7 +873,7 @@ float
 
                 for (size_t k = 0; k < tmpk.shape(0); ++k) {
                     vtmp_arr[k] = sharp::virtual_temperature(tmpk(k), rv(k),
-                                                            rl(k), ri(k));
+                                                             rl(k), ri(k));
                 }
             } else if (rl_arr.is_valid()) {
                 auto rl = rl_arr.view();
@@ -908,7 +907,7 @@ float
             }
 
             nb::capsule owner(vtmp_arr,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(vtmp_arr, {tmpk.shape(0)}, owner);
         },
@@ -943,9 +942,9 @@ numpy.ndarray[dtype=float32]
     // for it to be called from Python directly.
 
     m_therm.def("wetlift", &sharp::wetlift, nb::arg("pressure"),
-        nb::arg("temperature"), nb::arg("lifted_pressure"),
-        nb::arg("converge") = 0.001f,
-        R"pbdoc(
+                nb::arg("temperature"), nb::arg("lifted_pressure"),
+                nb::arg("converge") = 0.001f,
+                R"pbdoc(
 Compute the temperature of a parcel lifted moist adiabatically to a new level. 
 
 With a given parcel defined by a pressure (Pa) and temperature (K), lift it 
@@ -977,7 +976,7 @@ float
     m_therm.def(
         "wetlift",
         [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr,
-        const_prof_arr_t lifted_pres_arr) {
+           const_prof_arr_t lifted_pres_arr) {
             auto pres = pres_arr.view();
             auto tmpk = tmpk_arr.view();
             auto lifted_pres = lifted_pres_arr.view();
@@ -995,7 +994,7 @@ float
             }
 
             nb::capsule owner(tmpk_out_arr,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(tmpk_out_arr, {tmpk.shape(0)}, owner);
         },
@@ -1029,10 +1028,12 @@ numpy.ndarray[dtype=float32]
 
     m_therm.def(
         "drylift",
-        [](float pressure, float temperature, float dewpoint) -> std::tuple<float, float> {
+        [](float pressure, float temperature,
+           float dewpoint) -> std::tuple<float, float> {
             float pressure_at_lcl, temperature_at_lcl;
-            
-            sharp::drylift(pressure, temperature, dewpoint, pressure_at_lcl, temperature_at_lcl);
+
+            sharp::drylift(pressure, temperature, dewpoint, pressure_at_lcl,
+                           temperature_at_lcl);
 
             return std::make_tuple(pressure_at_lcl, temperature_at_lcl);
         },
@@ -1059,22 +1060,16 @@ Returns
 -------
 tuple[float, float]
     A tuple of (lcl_pres, lcl_temperature)
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_therm.def(
         "wetbulb",
-        [](
-            sharp::lifter_wobus& lifter,
-            float pressure, 
-            float temperature,
-            float dewpoint
-        ) {
-
+        [](sharp::lifter_wobus &lifter, float pressure, float temperature,
+           float dewpoint) {
             return sharp::wetbulb(lifter, pressure, temperature, dewpoint);
         },
-        nb::arg("lifter"), nb::arg("pressure"),
-        nb::arg("temperature"), nb::arg("dewpoint"),
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
+        nb::arg("dewpoint"),
         R"pbdoc(
 Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
 temperature (K), and dewpoint temperature (K).
@@ -1103,22 +1098,16 @@ Returns
 -------
 float
     The wetbulb temperature (K)
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_therm.def(
         "wetbulb",
-        [](
-            sharp::lifter_cm1& lifter,
-            float pressure, 
-            float temperature,
-            float dewpoint
-        ) {
-
+        [](sharp::lifter_cm1 &lifter, float pressure, float temperature,
+           float dewpoint) {
             return sharp::wetbulb(lifter, pressure, temperature, dewpoint);
         },
-        nb::arg("lifter"), nb::arg("pressure"),
-        nb::arg("temperature"), nb::arg("dewpoint"),
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
+        nb::arg("dewpoint"),
         R"pbdoc(
 Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
 temperature (K), and dewpoint temperature (K).
@@ -1147,34 +1136,29 @@ Returns
 -------
 float
     The wetbulb temperature (K)
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_therm.def(
         "wetbulb",
-        [](
-            sharp::lifter_wobus& lifter,
-            const_prof_arr_t pres_arr,
-            const_prof_arr_t tmpk_arr,
-            const_prof_arr_t dwpk_arr
-        ) {
+        [](sharp::lifter_wobus &lifter, const_prof_arr_t pres_arr,
+           const_prof_arr_t tmpk_arr, const_prof_arr_t dwpk_arr) {
             auto pres = pres_arr.view();
             auto tmpk = tmpk_arr.view();
             auto dwpk = dwpk_arr.view();
-            
-            float* wb_out = new float[pres.shape(0)];
+
+            float *wb_out = new float[pres.shape(0)];
 
             for (size_t k = 0; k < pres.shape(0); ++k) {
                 wb_out[k] = sharp::wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
             }
-            
+
             nb::capsule owner(wb_out,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(wb_out, {tmpk.shape(0)}, owner);
         },
-        nb::arg("lifter"), nb::arg("pressure"),
-        nb::arg("temperature"), nb::arg("dewpoint"),
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
+        nb::arg("dewpoint"),
         R"pbdoc(
 Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
 temperature (K), and dewpoint temperature (K).
@@ -1203,34 +1187,29 @@ Returns
 -------
 numpy.ndarray[dtype=float32]
     1D NumPy array of wetbulb temperatures (K)
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_therm.def(
         "wetbulb",
-        [](
-            sharp::lifter_cm1& lifter,
-            const_prof_arr_t pres_arr,
-            const_prof_arr_t tmpk_arr,
-            const_prof_arr_t dwpk_arr
-        ) {
+        [](sharp::lifter_cm1 &lifter, const_prof_arr_t pres_arr,
+           const_prof_arr_t tmpk_arr, const_prof_arr_t dwpk_arr) {
             auto pres = pres_arr.view();
             auto tmpk = tmpk_arr.view();
             auto dwpk = dwpk_arr.view();
-            
-            float* wb_out = new float[pres.shape(0)];
+
+            float *wb_out = new float[pres.shape(0)];
 
             for (size_t k = 0; k < pres.shape(0); ++k) {
                 wb_out[k] = sharp::wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
             }
-            
+
             nb::capsule owner(wb_out,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(wb_out, {tmpk.shape(0)}, owner);
         },
-        nb::arg("lifter"), nb::arg("pressure"),
-        nb::arg("temperature"), nb::arg("dewpoint"),
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
+        nb::arg("dewpoint"),
         R"pbdoc(
 Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
 temperature (K), and dewpoint temperature (K).
@@ -1259,21 +1238,17 @@ Returns
 -------
 numpy.ndarray[dtype=float32]
     1D NumPy array of wetbulb temperatures (K)
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_therm.def(
         "theta_wetbulb",
-        [](
-            sharp::lifter_wobus& lifter,
-            float pressure, 
-            float temperature,
-            float dewpoint
-        ) {
-            return sharp::theta_wetbulb(lifter, pressure, temperature, dewpoint);
+        [](sharp::lifter_wobus &lifter, float pressure, float temperature,
+           float dewpoint) {
+            return sharp::theta_wetbulb(lifter, pressure, temperature,
+                                        dewpoint);
         },
-        nb::arg("lifter"), nb::arg("pressure"),
-        nb::arg("temperature"), nb::arg("dewpoint"),
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
+        nb::arg("dewpoint"),
         R"pbdoc(
 Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
 temperature (K), and dewpoint temperature (K).
@@ -1302,21 +1277,17 @@ Returns
 -------
 float
     The wet-bulb potential temperature (K)
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_therm.def(
         "theta_wetbulb",
-        [](
-            sharp::lifter_cm1& lifter,
-            float pressure, 
-            float temperature,
-            float dewpoint
-        ) {
-            return sharp::theta_wetbulb(lifter, pressure, temperature, dewpoint);
+        [](sharp::lifter_cm1 &lifter, float pressure, float temperature,
+           float dewpoint) {
+            return sharp::theta_wetbulb(lifter, pressure, temperature,
+                                        dewpoint);
         },
-        nb::arg("lifter"), nb::arg("pressure"),
-        nb::arg("temperature"), nb::arg("dewpoint"),
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
+        nb::arg("dewpoint"),
         R"pbdoc(
 Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
 temperature (K), and dewpoint temperature (K).
@@ -1345,34 +1316,30 @@ Returns
 -------
 float
     The wet-bulb potential temperature (K)
-    )pbdoc"
-    );
-    
+    )pbdoc");
+
     m_therm.def(
         "theta_wetbulb",
-        [](
-            sharp::lifter_wobus& lifter,
-            const_prof_arr_t pres_arr,
-            const_prof_arr_t tmpk_arr,
-            const_prof_arr_t dwpk_arr
-        ) {
+        [](sharp::lifter_wobus &lifter, const_prof_arr_t pres_arr,
+           const_prof_arr_t tmpk_arr, const_prof_arr_t dwpk_arr) {
             auto pres = pres_arr.view();
             auto tmpk = tmpk_arr.view();
             auto dwpk = dwpk_arr.view();
 
-            float* theta_wb = new float[pres.shape(0)];
-            
+            float *theta_wb = new float[pres.shape(0)];
+
             for (size_t k = 0; k < pres.shape(0); ++k) {
-                theta_wb[k] = sharp::theta_wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
+                theta_wb[k] =
+                    sharp::theta_wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
             }
-            
+
             nb::capsule owner(theta_wb,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(theta_wb, {tmpk.shape(0)}, owner);
         },
-        nb::arg("lifter"), nb::arg("pressure"),
-        nb::arg("temperature"), nb::arg("dewpoint"),
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
+        nb::arg("dewpoint"),
         R"pbdoc(
 Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
 temperature (K), and dewpoint temperature (K).
@@ -1401,34 +1368,30 @@ Returns
 -------
 numpy.ndarray[dtype=float32]
     1D NumPy array of wet-bulb potential temperatures (K)
-    )pbdoc"
-    );
-    
+    )pbdoc");
+
     m_therm.def(
         "theta_wetbulb",
-        [](
-            sharp::lifter_cm1& lifter,
-            const_prof_arr_t pres_arr,
-            const_prof_arr_t tmpk_arr,
-            const_prof_arr_t dwpk_arr
-        ) {
+        [](sharp::lifter_cm1 &lifter, const_prof_arr_t pres_arr,
+           const_prof_arr_t tmpk_arr, const_prof_arr_t dwpk_arr) {
             auto pres = pres_arr.view();
             auto tmpk = tmpk_arr.view();
             auto dwpk = dwpk_arr.view();
 
-            float* theta_wb = new float[pres.shape(0)];
-            
+            float *theta_wb = new float[pres.shape(0)];
+
             for (size_t k = 0; k < pres.shape(0); ++k) {
-                theta_wb[k] = sharp::theta_wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
+                theta_wb[k] =
+                    sharp::theta_wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
             }
-            
+
             nb::capsule owner(theta_wb,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(theta_wb, {tmpk.shape(0)}, owner);
         },
-        nb::arg("lifter"), nb::arg("pressure"),
-        nb::arg("temperature"), nb::arg("dewpoint"),
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
+        nb::arg("dewpoint"),
         R"pbdoc(
 Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
 temperature (K), and dewpoint temperature (K).
@@ -1457,14 +1420,11 @@ Returns
 -------
 numpy.ndarray[dtype=float32]
     1D NumPy array of wet-bulb potential temperatures (K)
-    )pbdoc"
-    );
+    )pbdoc");
 
-    m_therm.def(
-        "thetae",
-        &sharp::thetae,
-        nb::arg("pressure"), nb::arg("temperature"), nb::arg("dewpoint"),
-        R"pbdoc(
+    m_therm.def("thetae", &sharp::thetae, nb::arg("pressure"),
+                nb::arg("temperature"), nb::arg("dewpoint"),
+                R"pbdoc(
 Compute the equivalent potential temperature (K) given the 
 air pressure (Pa), air temperature (K), and dewpoint temperature (K).
 The equivalent potential temperature is computed as in Bolton 1980. 
@@ -1490,28 +1450,24 @@ Returns
 -------
 float
     The equivalent potential temperature (K)
-    )pbdoc"
-    );
-    
+    )pbdoc");
+
     m_therm.def(
         "thetae",
-        [](
-            const_prof_arr_t pres_arr,
-            const_prof_arr_t tmpk_arr,
-            const_prof_arr_t dwpk_arr
-        ) {
+        [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr,
+           const_prof_arr_t dwpk_arr) {
             auto pres = pres_arr.view();
             auto tmpk = tmpk_arr.view();
             auto dwpk = dwpk_arr.view();
 
-            float* thetae = new float[pres.shape(0)];
+            float *thetae = new float[pres.shape(0)];
 
             for (size_t k = 0; k < pres.shape(0); ++k) {
                 thetae[k] = sharp::thetae(pres(k), tmpk(k), dwpk(k));
             }
-            
+
             nb::capsule owner(thetae,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(thetae, {tmpk.shape(0)}, owner);
         },
@@ -1542,20 +1498,16 @@ Returns
 -------
 numpy.ndarray[dtype=float32]
     1D NumPy array of equivalent potential temperature (K)
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_therm.def(
         "lapse_rate",
-        [](
-            sharp::HeightLayer layer,
-            const_prof_arr_t hght_arr,
-            const_prof_arr_t tmpk_arr
-        ) {
-            return sharp::lapse_rate(layer, hght_arr.data(), tmpk_arr.data(), tmpk_arr.size());
+        [](sharp::HeightLayer layer, const_prof_arr_t hght_arr,
+           const_prof_arr_t tmpk_arr) {
+            return sharp::lapse_rate(layer, hght_arr.data(), tmpk_arr.data(),
+                                     tmpk_arr.size());
         },
-        nb::arg("layer_agl"), nb::arg("height"),
-        nb::arg("temperature"),
+        nb::arg("layer_agl"), nb::arg("height"), nb::arg("temperature"),
         R"pbdoc(
 Computes the lapse rate over a given HeightLayer (meters AGL).
 This routine handles converting the height AGL to MSL by adding
@@ -1574,21 +1526,17 @@ Returns
 -------
 float
     The temperature lapse rate (K)
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_therm.def(
         "lapse_rate",
-        [](
-            sharp::PressureLayer layer,
-            const_prof_arr_t pres_arr,
-            const_prof_arr_t hght_arr,
-            const_prof_arr_t tmpk_arr
-        ) {
-            return sharp::lapse_rate(layer, pres_arr.data(), hght_arr.data(), tmpk_arr.data(), tmpk_arr.size());
+        [](sharp::PressureLayer layer, const_prof_arr_t pres_arr,
+           const_prof_arr_t hght_arr, const_prof_arr_t tmpk_arr) {
+            return sharp::lapse_rate(layer, pres_arr.data(), hght_arr.data(),
+                                     tmpk_arr.data(), tmpk_arr.size());
         },
-        nb::arg("layer"), nb::arg("pressure"), 
-        nb::arg("height"), nb::arg("temperature"),
+        nb::arg("layer"), nb::arg("pressure"), nb::arg("height"),
+        nb::arg("temperature"),
         R"pbdoc(
 Computes the lapse rate over a given PressureLayer (Pa).
 
@@ -1607,32 +1555,21 @@ Returns
 -------
 float
     The temperature lapse rate (K)
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_therm.def(
         "lapse_rate_max",
-        [](
-            sharp::HeightLayer layer,
-            float depth, 
-            const_prof_arr_t hght_arr, 
-            const_prof_arr_t tmpk_arr
-        ) -> std::tuple<float, sharp::HeightLayer>{
-            
+        [](sharp::HeightLayer layer, float depth, const_prof_arr_t hght_arr,
+           const_prof_arr_t tmpk_arr) -> std::tuple<float, sharp::HeightLayer> {
             sharp::HeightLayer out_lyr = {0, 0};
-            float max_lr = sharp::lapse_rate_max(
-                layer, 
-                depth, 
-                hght_arr.data(), 
-                tmpk_arr.data(), 
-                tmpk_arr.size(), 
-                &out_lyr
-            );
+            float max_lr = sharp::lapse_rate_max(layer, depth, hght_arr.data(),
+                                                 tmpk_arr.data(),
+                                                 tmpk_arr.size(), &out_lyr);
 
             return std::make_tuple(max_lr, out_lyr);
         },
-        nb::arg("layer"), nb::arg("depth"),
-        nb::arg("height"), nb::arg("temperature"),
+        nb::arg("layer"), nb::arg("depth"), nb::arg("height"),
+        nb::arg("temperature"),
         R"pbdoc(
 Given a layer of the atmosphere (e.g. 2 - 6 km), find the maximum
 lapse rate over the provided depth (e.g. 2 km) within that given layer. 
@@ -1653,34 +1590,22 @@ Returns
 -------
 tuple[float, nwsspc.sharp.calc.layer.HeightLayer]
     A tuple containing the maximum lapse rate and the layer it was found in
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_therm.def(
         "lapse_rate_max",
-        [](
-            sharp::PressureLayer layer,
-            float depth, 
-            const_prof_arr_t pres_arr,
-            const_prof_arr_t hght_arr, 
-            const_prof_arr_t tmpk_arr
-        ) -> std::tuple<float, sharp::PressureLayer>{
-            
+        [](sharp::PressureLayer layer, float depth, const_prof_arr_t pres_arr,
+           const_prof_arr_t hght_arr, const_prof_arr_t tmpk_arr)
+            -> std::tuple<float, sharp::PressureLayer> {
             sharp::PressureLayer out_lyr = {0, 0};
             float max_lr = sharp::lapse_rate_max(
-                layer, 
-                depth, 
-                pres_arr.data(),
-                hght_arr.data(), 
-                tmpk_arr.data(), 
-                tmpk_arr.size(), 
-                &out_lyr
-            );
+                layer, depth, pres_arr.data(), hght_arr.data(), tmpk_arr.data(),
+                tmpk_arr.size(), &out_lyr);
 
             return std::make_tuple(max_lr, out_lyr);
         },
-        nb::arg("layer"), nb::arg("depth"),
-        nb::arg("pressure"), nb::arg("height"), nb::arg("temperature"),
+        nb::arg("layer"), nb::arg("depth"), nb::arg("pressure"),
+        nb::arg("height"), nb::arg("temperature"),
         R"pbdoc(
 Given a layer of the atmosphere (e.g. 800 hPa - 500 hPa), find the maximum
 lapse rate over the provided depth (e.g. 100 hPa) within that given layer. 
@@ -1703,16 +1628,12 @@ Returns
 -------
 tuple[float, nwsspc.sharp.calc.layer.PressureLayer]
     A tuple containing the maximum lapse rate and the layer it was found in
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_therm.def(
         "buoyancy",
-        [](float pcl_t, float env_t) {
-            return sharp::buoyancy(pcl_t, env_t);
-        },
-        nb::arg("parcel_temperature"),
-        nb::arg("environment_temperature"),
+        [](float pcl_t, float env_t) { return sharp::buoyancy(pcl_t, env_t); },
+        nb::arg("parcel_temperature"), nb::arg("environment_temperature"),
         R"pbdoc(
 Compute buoyancy given parcel & environment temperatures.
 
@@ -1727,19 +1648,18 @@ Returns
 -------
 float
     Buoyancy (m/s^2)
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_therm.def(
         "buoyancy",
         [](const_prof_arr_t pcl_tmpk, const_prof_arr_t env_tmpk) {
+            float *buoy_arr = new float[pcl_tmpk.size()];
 
-            float* buoy_arr = new float[pcl_tmpk.size()];
-
-            sharp::buoyancy(pcl_tmpk.data(), env_tmpk.data(), buoy_arr, pcl_tmpk.size());
+            sharp::buoyancy(pcl_tmpk.data(), env_tmpk.data(), buoy_arr,
+                            pcl_tmpk.size());
 
             nb::capsule owner(buoy_arr,
-                            [](void *p) noexcept { delete[] (float *)p; });
+                              [](void *p) noexcept { delete[] (float *)p; });
 
             return out_arr_t(buoy_arr, {pcl_tmpk.size()}, owner);
         },
@@ -1758,33 +1678,27 @@ Returns
 -------
 numpy.ndarray[dtype=float32]
     1D NumPy array of buoyancy values (m/s^2)
-    )pbdoc"
-    );
+    )pbdoc");
 
     m_therm.def(
         "pbl_top",
-        [](const_prof_arr_t pres_arr, const_prof_arr_t thetav_arr, float offset){
+        [](const_prof_arr_t pres_arr, const_prof_arr_t thetav_arr,
+           float offset) {
             auto pres = pres_arr.view();
             auto thetav = thetav_arr.view();
             if ((pres.shape(0) != thetav.shape(0))) {
                 throw nb::buffer_error(
-                    "pressure and virtual potential temperature must have the same size!");
+                    "pressure and virtual potential temperature must have the "
+                    "same size!");
             }
 
-            std::size_t pbl_idx = sharp::pbl_top(
-                pres.data(), 
-                thetav.data(), 
-                pres.shape(0), 
-                offset
-            );
+            std::size_t pbl_idx = sharp::pbl_top(pres.data(), thetav.data(),
+                                                 pres.shape(0), offset);
 
             return pbl_idx;
-
         },
-        nb::arg("pressure"),
-        nb::arg("thetav"),
-        nb::arg("offset") = 0.5,
-R"pbdoc(
+        nb::arg("pressure"), nb::arg("thetav"), nb::arg("offset") = 0.5,
+        R"pbdoc(
 Compute the pressure of the top of the Planetary Boundary Layer (PBL). 
 Uses the method described by Stull (1988), by which the virtual potential 
 temperature is used. The offset determines the termination condition above 
@@ -1803,8 +1717,46 @@ Returns
 -------
 float
     The pressure of the PBL top (Pa)
-)pbdoc"
-    );
+)pbdoc");
+
+    m_therm.def(
+        "temperature_layer",
+        [](const_prof_arr_t pressure, const_prof_arr_t temperature,
+           const float tmpk_1, const float tmpk_2) {
+            auto pres = pressure.view();
+            auto tmpk = temperature.view();
+            std::size_t len = pressure.size();
+            if ((pres.shape(0) != tmpk.shape(0))) {
+                throw nb::buffer_error(
+                    "Pressure and temperature must have the same size!");
+            }
+
+            return sharp::temperature_layer(pres.data(), tmpk.data(), tmpk_1,
+                                            tmpk_2, len);
+        },
+        nb::arg("pressure"), nb::arg("temperature"), nb::arg("tmpk_lo"),
+        nb::arg("tmpk_hi"),
+        R"pbdoc(
+Performs a top-down search for a PressureLayer that bounds 
+the given temperature range. Uses a geometric approach to 
+find the intersection of the temperature line with the given range.
+
+Parameters 
+----------
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of pressure values (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of temperature values (K)
+tmpk_lo : float 
+    The low end of the temperature range (K)
+tmpk_hi : float 
+    The high end of the temperature range (K)
+
+Returns 
+-------
+nwsspc.sharp.calc.layer.PressureLayer 
+    The layer bounding the temperature range from a top-down search
+        )pbdoc");
 }
 
 #endif
