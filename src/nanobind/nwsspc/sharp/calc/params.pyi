@@ -547,6 +547,7 @@ def hail_growth_layer(pressure: Annotated[NDArray[numpy.float32], dict(shape=(No
         1D NumPy array of temperature values (K)
 
     Returns 
+    -------
     nwsspc.sharp.calc.layer.PressureLayer
         The PressureLayer containing the hail growth zone
     """
