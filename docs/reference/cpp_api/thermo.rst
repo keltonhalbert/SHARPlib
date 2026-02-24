@@ -51,4 +51,5 @@ Moist Ascent
 Miscellaneous
 -------------
 .. doxygenfunction:: sharp::pbl_top
+.. doxygenfunction:: sharp::temperature_layer
 

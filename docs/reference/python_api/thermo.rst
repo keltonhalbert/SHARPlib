@@ -68,5 +68,6 @@ thermo
    Miscellaneous themodynamic routines 
 
    .. autofunction:: nwsspc.sharp.calc.thermo.pbl_top
+   .. autofunction:: nwsspc.sharp.calc.thermo.temperature_layer
 
    
