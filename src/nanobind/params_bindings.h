@@ -810,6 +810,7 @@ temperature : numpy.ndarray[dtype=float32]
     1D NumPy array of temperature values (K)
 
 Returns 
+-------
 nwsspc.sharp.calc.layer.PressureLayer
     The PressureLayer containing the hail growth zone
     )pbdoc");
