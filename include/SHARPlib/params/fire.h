@@ -160,25 +160,32 @@ template <typename Lifter>
     WindComponents mean_uv =
         mean_wind(mix_layer, pressure, uwin, vwin, N, false);
     float mean_wspd = sharp::vector_magnitude(mean_uv.u, mean_uv.v);
+    float pres_sfc = pressure[0];
 
-    float z_fc = sharp::MISSING;
-    float delta_theta = 0.0;
+    float beta_max = 0.1f;
+    int max_steps = static_cast<int>(beta_max / beta_incr);
+    int low_step = 0;
+    int high_step = max_steps;
 
-    float beta_max = 0.1;
-    float beta_val = 0.0;
-    Parcel fire_pcl;
     bool found = false;
-    while (beta_val <= beta_max) {
+    Parcel best_fire_pcl;
+    float best_z_fc = sharp::MISSING;
+    float best_delta_theta = 0.0f;
+
+    while (low_step <= high_step) {
+        int mid_step = low_step + (high_step - low_step) / 2;
+        float beta_val = mid_step * beta_incr;
+
         float eql_tmpk = 999.0;
         float plume_theta =
             pft_plume_potential_temperature(mean_theta, beta_val);
         float plume_mixr =
             pft_plume_mixratio(mean_theta, mean_mixr, beta_val, phi);
 
-        float plume_tmpk = theta(THETA_REF_PRESSURE, plume_theta, pressure[0]);
-        float plume_dwpk = temperature_at_mixratio(plume_mixr, pressure[0]);
+        float plume_tmpk = theta(THETA_REF_PRESSURE, plume_theta, pres_sfc);
+        float plume_dwpk = temperature_at_mixratio(plume_mixr, pres_sfc);
 
-        fire_pcl = Parcel(pressure[0], plume_tmpk, plume_dwpk, LPL::USR);
+        Parcel fire_pcl = Parcel(pres_sfc, plume_tmpk, plume_dwpk, LPL::USR);
         fire_pcl.lift_parcel(lifter, pressure, pcl_vtmpk_arr, N);
         buoyancy(pcl_vtmpk_arr, virtemp, pcl_buoy_arr, N);
         fire_pcl.cape_cinh(pressure, height, pcl_buoy_arr, N);
@@ -190,25 +197,29 @@ template <typename Lifter>
 
         if ((fire_pcl.cinh >= -sharp::TOL) && (fire_pcl.cape > 0) &&
             (eql_tmpk <= 253.15)) {
-            z_fc = interp_pressure(fire_pcl.lfc_pressure, pressure, height, N);
+            found = true;
+
+            best_fire_pcl = fire_pcl;
+            best_z_fc =
+                interp_pressure(fire_pcl.lfc_pressure, pressure, height, N);
             float theta_fc = interp_pressure(fire_pcl.lfc_pressure, pressure,
                                              potential_temperature, N);
-            delta_theta = theta_fc - mean_theta;
-            found = true;
-            break;
-        }
+            best_delta_theta = theta_fc - mean_theta;
 
-        beta_val += beta_incr;
+            high_step = mid_step - 1;
+        } else {
+            low_step = mid_step + 1;
+        }
     }
 
-    if ((z_fc == MISSING) || !found) {
+    if (!found) {
         std::fill_n(&pcl_vtmpk_arr[0], N, sharp::MISSING);
         std::fill_n(&pcl_buoy_arr[0], N, sharp::MISSING);
         if (pcl) *pcl = Parcel();
         return MISSING;
-    };
+    }
 
-    z_fc = z_fc - height[0];
+    float z_fc = best_z_fc - height[0];
 
     constexpr float beta_prime = 0.4;
     constexpr float alpha_prime = 0.32;
@@ -216,7 +227,7 @@ template <typename Lifter>
         (PI * CP_DRYAIR) *
         std::pow((beta_prime / (1 + (alpha_prime * beta_prime))), 2.0f);
 
-    float pres_pl_c = ((fire_pcl.lfc_pressure - fire_pcl.pres) /
+    float pres_pl_c = ((best_fire_pcl.lfc_pressure - best_fire_pcl.pres) /
                        (1 + (alpha_prime * beta_prime))) +
                       pressure[0];
     float theta_pl_c =
@@ -225,10 +236,9 @@ template <typename Lifter>
     float rho = (pres_pl_c / (sharp::RDGAS * theta_pl_c)) *
                 std::pow(sharp::THETA_REF_PRESSURE / pres_pl_c, sharp::ROCP);
 
-    float PFT =
-        big_const * rho * std::pow(z_fc, 2.0f) * mean_wspd * delta_theta;
+    float PFT = big_const * rho * (z_fc * z_fc) * mean_wspd * best_delta_theta;
 
-    if (pcl) *pcl = fire_pcl;
+    if (pcl) *pcl = best_fire_pcl;
 
     return PFT;
 }
