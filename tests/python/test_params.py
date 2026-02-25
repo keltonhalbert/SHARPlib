@@ -424,9 +424,12 @@ def test_fwwi():
 
 
 def test_pft():
+    lifter = parcel.lifter_cm1()
+    lifter.ma_type = thermo.adiabat.pseudo_liq
     mix_layer = layer.PressureLayer(
         snd_data["pres"][0], snd_data["pres"][0] - 10000.0)
     pft = params.pyrocumulonimbus_firepower_threshold(
+        lifter,
         mix_layer,
         snd_data["pres"],
         snd_data["hght"],
