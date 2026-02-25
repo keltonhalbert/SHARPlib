@@ -440,4 +440,4 @@ def test_pft():
         snd_data["vwin"],
         snd_data["theta"]
     )
-    assert (pft == pytest.approx(153856147456.0, abs=1e6))
+    assert (pft == pytest.approx(153856081920.0, abs=1e6))
