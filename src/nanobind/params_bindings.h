@@ -999,11 +999,11 @@ numpy.ndarray[dtype=float32]
 
     m_params.def(
         "pyrocumulonimbus_firepower_threshold",
-        [](sharp::PressureLayer& mix_layer, const_prof_arr_t pres,
-           const_prof_arr_t hght, const_prof_arr_t tmpk, const_prof_arr_t mixr,
-           const_prof_arr_t vtmpk, const_prof_arr_t uwin, const_prof_arr_t vwin,
-           const_prof_arr_t theta, sharp::Parcel* pcl, float phi,
-           float beta_incr) {
+        [](sharp::lifter_cm1& lifter, sharp::PressureLayer& mix_layer,
+           const_prof_arr_t pres, const_prof_arr_t hght, const_prof_arr_t tmpk,
+           const_prof_arr_t mixr, const_prof_arr_t vtmpk, const_prof_arr_t uwin,
+           const_prof_arr_t vwin, const_prof_arr_t theta, sharp::Parcel* pcl,
+           float phi, float beta_incr) {
             if ((pres.shape(0) != hght.shape(0)) ||
                 (pres.shape(0) != tmpk.shape(0)) ||
                 (pres.shape(0) != mixr.shape(0)) ||
@@ -1018,17 +1018,18 @@ numpy.ndarray[dtype=float32]
             float* pcl_buoy = new float[hght.size()];
 
             float pft = sharp::pyrocumulonimbus_firepower_threshold(
-                mix_layer, pres.data(), hght.data(), tmpk.data(), mixr.data(),
-                vtmpk.data(), uwin.data(), vwin.data(), theta.data(), pcl_vtmp,
-                pcl_buoy, pres.size(), pcl, phi, beta_incr);
+                lifter, mix_layer, pres.data(), hght.data(), tmpk.data(),
+                mixr.data(), vtmpk.data(), uwin.data(), vwin.data(),
+                theta.data(), pcl_vtmp, pcl_buoy, pres.size(), pcl, phi,
+                beta_incr);
 
             delete[] pcl_vtmp;
             delete[] pcl_buoy;
 
             return pft;
         },
-        nb::arg("mix_layer"), nb::arg("pressure"), nb::arg("height"),
-        nb::arg("temperature"), nb::arg("mixratio"),
+        nb::arg("lifter"), nb::arg("mix_layer"), nb::arg("pressure"),
+        nb::arg("height"), nb::arg("temperature"), nb::arg("mixratio"),
         nb::arg("virtual_temperature"), nb::arg("u_wind"), nb::arg("v_wind"),
         nb::arg("potential_temperature"), nb::arg("pcl") = nb::none(),
         nb::arg("phi") = 6.67e-5, nb::arg("beta_incr") = 0.005,
@@ -1051,6 +1052,95 @@ Tory et al. 2021: https://journals.ametsoc.org/view/journals/wefo/36/2/WAF-D-20-
 
 Parameters 
 ----------
+lifter : nwsspc.sharp.calc.parcel.lifter_cm1
+mix_layer : nwsspc.sharp.calc.layer.PressureLayer
+    A mixing layer to take average values of the environment from
+pressure : numpy.ndarray[dtype=float32]
+    A 1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of height values (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of temperature values (K)
+mixratio : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of water vapor mixing ratio values (g/g)
+virtual_temperature : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of virtual temperature values (K)
+u_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of U wind component values (m/s)
+v_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of V wind compnent values (m/s)
+potential_temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of potential temperature values (K)
+pcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
+    If a parcel is provided, returns the parcel for the PFT
+phi : float 
+    The fire moisture to potential temperature increment ratio (kg/(kg*K))
+beta_incr : float 
+    The fire plume buoyancy factor (unitless)
+
+Returns 
+-------
+float 
+    The PyroCB Firepower Threshold (Watts)
+
+)pbdoc");
+
+    m_params.def(
+        "pyrocumulonimbus_firepower_threshold",
+        [](sharp::lifter_wobus& lifter, sharp::PressureLayer& mix_layer,
+           const_prof_arr_t pres, const_prof_arr_t hght, const_prof_arr_t tmpk,
+           const_prof_arr_t mixr, const_prof_arr_t vtmpk, const_prof_arr_t uwin,
+           const_prof_arr_t vwin, const_prof_arr_t theta, sharp::Parcel* pcl,
+           float phi, float beta_incr) {
+            if ((pres.shape(0) != hght.shape(0)) ||
+                (pres.shape(0) != tmpk.shape(0)) ||
+                (pres.shape(0) != mixr.shape(0)) ||
+                (pres.shape(0) != vtmpk.shape(0)) ||
+                (pres.shape(0) != uwin.shape(0)) ||
+                (pres.shape(0) != vwin.shape(0)) ||
+                (pres.shape(0) != theta.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
+            float* pcl_vtmp = new float[hght.size()];
+            float* pcl_buoy = new float[hght.size()];
+
+            float pft = sharp::pyrocumulonimbus_firepower_threshold(
+                lifter, mix_layer, pres.data(), hght.data(), tmpk.data(),
+                mixr.data(), vtmpk.data(), uwin.data(), vwin.data(),
+                theta.data(), pcl_vtmp, pcl_buoy, pres.size(), pcl, phi,
+                beta_incr);
+
+            delete[] pcl_vtmp;
+            delete[] pcl_buoy;
+
+            return pft;
+        },
+        nb::arg("lifter"), nb::arg("mix_layer"), nb::arg("pressure"),
+        nb::arg("height"), nb::arg("temperature"), nb::arg("mixratio"),
+        nb::arg("virtual_temperature"), nb::arg("u_wind"), nb::arg("v_wind"),
+        nb::arg("potential_temperature"), nb::arg("pcl") = nb::none(),
+        nb::arg("phi") = 6.67e-5, nb::arg("beta_incr") = 0.005,
+        R"pbdoc(
+Computes the Pyrocumulonimbus Firepower Threshold (PFT), or the minimum 
+amount of firepower required to generate pyrocumulonimbus clouds for a 
+given atmospheric profile. Requires a PressureLayer to define a mixing 
+layer used to average values of potential temperature, mixing ratio, 
+and wind speed. The beta increment determines how to vary the plume 
+buoyancy factor, with smaller values resulting in more iteration steps. 
+Phi is the fire moisture to potential temperature increment ratio.
+
+Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
+If a parcel is passed, the values will be set with the PFT fire parcel.
+
+References 
+----------
+Tory et al. 2018: https://journals.ametsoc.org/view/journals/mwre/146/8/mwr-d-17-0377.1.xml
+Tory et al. 2021: https://journals.ametsoc.org/view/journals/wefo/36/2/WAF-D-20-0027.1.xml
+
+Parameters 
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_wobus
 mix_layer : nwsspc.sharp.calc.layer.PressureLayer
     A mixing layer to take average values of the environment from
 pressure : numpy.ndarray[dtype=float32]
