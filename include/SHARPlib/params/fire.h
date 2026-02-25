@@ -240,7 +240,7 @@ template <typename Lifter>
 
     if (pcl) *pcl = best_fire_pcl;
 
-    return PFT;
+    return std::max(PFT, 0.0f);
 }
 
 }  // namespace sharp
