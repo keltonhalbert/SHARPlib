@@ -124,6 +124,7 @@ namespace sharp {
  * References:
  * Tory et al. 2018:
  * https://journals.ametsoc.org/view/journals/mwre/146/8/mwr-d-17-0377.1.xml
+ *
  * Tory et al. 2021:
  * https://journals.ametsoc.org/view/journals/wefo/36/2/WAF-D-20-0027.1.xml
  *
@@ -164,16 +165,16 @@ template <typename Lifter>
 
     float beta_max = 0.1f;
     int max_steps = static_cast<int>(beta_max / beta_incr);
-    int low_step = 0;
-    int high_step = max_steps;
+    int lo_step = 0;
+    int hi_step = max_steps;
 
     bool found = false;
-    Parcel best_fire_pcl;
-    float best_z_fc = sharp::MISSING;
-    float best_delta_theta = 0.0f;
+    Parcel candidate_pcl;
+    float delta_theta = 0.0f;
+    float candidate_z_fc = sharp::MISSING;
 
-    while (low_step <= high_step) {
-        int mid_step = low_step + (high_step - low_step) / 2;
+    while (lo_step <= hi_step) {
+        int mid_step = lo_step + (hi_step - lo_step) / 2;
         float beta_val = mid_step * beta_incr;
 
         float eql_tmpk = 999.0;
@@ -198,17 +199,10 @@ template <typename Lifter>
         if ((fire_pcl.cinh >= -sharp::TOL) && (fire_pcl.cape > 0) &&
             (eql_tmpk <= 253.15)) {
             found = true;
-
-            best_fire_pcl = fire_pcl;
-            best_z_fc =
-                interp_pressure(fire_pcl.lfc_pressure, pressure, height, N);
-            float theta_fc = interp_pressure(fire_pcl.lfc_pressure, pressure,
-                                             potential_temperature, N);
-            best_delta_theta = theta_fc - mean_theta;
-
-            high_step = mid_step - 1;
+            candidate_pcl = fire_pcl;
+            hi_step = mid_step - 1;
         } else {
-            low_step = mid_step + 1;
+            lo_step = mid_step + 1;
         }
     }
 
@@ -219,7 +213,12 @@ template <typename Lifter>
         return MISSING;
     }
 
-    float z_fc = best_z_fc - height[0];
+    candidate_z_fc =
+        interp_pressure(candidate_pcl.lfc_pressure, pressure, height, N);
+    float z_fc = candidate_z_fc - height[0];
+    float theta_fc = interp_pressure(candidate_pcl.lfc_pressure, pressure,
+                                     potential_temperature, N);
+    delta_theta = theta_fc - mean_theta;
 
     constexpr float beta_prime = 0.4;
     constexpr float alpha_prime = 0.32;
@@ -227,19 +226,16 @@ template <typename Lifter>
         (PI * CP_DRYAIR) *
         std::pow((beta_prime / (1 + (alpha_prime * beta_prime))), 2.0f);
 
-    float pres_pl_c = ((best_fire_pcl.lfc_pressure - best_fire_pcl.pres) /
+    float pres_pl_c = ((candidate_pcl.lfc_pressure - candidate_pcl.pres) /
                        (1 + (alpha_prime * beta_prime))) +
-                      pressure[0];
+                      pres_sfc;
     float theta_pl_c =
         sharp::interp_pressure(pres_pl_c, pressure, potential_temperature, N);
-
     float rho = (pres_pl_c / (sharp::RDGAS * theta_pl_c)) *
                 std::pow(sharp::THETA_REF_PRESSURE / pres_pl_c, sharp::ROCP);
+    float PFT = big_const * rho * (z_fc * z_fc) * mean_wspd * delta_theta;
 
-    float PFT = big_const * rho * (z_fc * z_fc) * mean_wspd * best_delta_theta;
-
-    if (pcl) *pcl = best_fire_pcl;
-
+    if (pcl) *pcl = candidate_pcl;
     return std::max(PFT, 0.0f);
 }
 
