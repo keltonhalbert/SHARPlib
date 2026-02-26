@@ -252,24 +252,24 @@ struct WindComponents {
  * \return {max_u, max_v}
  */
 template <typename Layer>
-[[nodiscard]] WindComponents max_wind(Layer lyr, const float coordinate[],
+[[nodiscard]] WindComponents max_wind(Layer layer, const float coordinate[],
                                       const float u_wind[],
                                       const float v_wind[],
                                       const std::ptrdiff_t N) {
-    LayerIndex lyr_idx = get_layer_index(lyr, coordinate, N);
+    LayerIndex lyr_idx = get_layer_index(layer, coordinate, N);
 
     float u_bot, u_top;
     float v_bot, v_top;
-    if constexpr (lyr.coord == LayerCoordinate::pressure) {
-        u_bot = interp_pressure(lyr.bottom, coordinate, u_wind, N);
-        v_bot = interp_pressure(lyr.bottom, coordinate, v_wind, N);
-        u_top = interp_pressure(lyr.top, coordinate, u_wind, N);
-        v_top = interp_pressure(lyr.top, coordinate, v_wind, N);
+    if constexpr (layer.coord == LayerCoordinate::pressure) {
+        u_bot = interp_pressure(layer.bottom, coordinate, u_wind, N);
+        v_bot = interp_pressure(layer.bottom, coordinate, v_wind, N);
+        u_top = interp_pressure(layer.top, coordinate, u_wind, N);
+        v_top = interp_pressure(layer.top, coordinate, v_wind, N);
     } else {
-        u_bot = interp_height(lyr.bottom, coordinate, u_wind, N);
-        v_bot = interp_height(lyr.bottom, coordinate, v_wind, N);
-        u_top = interp_height(lyr.top, coordinate, u_wind, N);
-        v_top = interp_height(lyr.top, coordinate, v_wind, N);
+        u_bot = interp_height(layer.bottom, coordinate, u_wind, N);
+        v_bot = interp_height(layer.bottom, coordinate, v_wind, N);
+        u_top = interp_height(layer.top, coordinate, u_wind, N);
+        v_top = interp_height(layer.top, coordinate, v_wind, N);
     }
 
     float u_max = MISSING;
