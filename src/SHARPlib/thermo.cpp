@@ -392,18 +392,6 @@ void drylift(float pressure, float temperature, float dewpoint,
     return;
 }
 
-float wetbulb(lifter_wobus lifter, float pressure, float temperature,
-              float dewpoint);
-
-float wetbulb(lifter_cm1 lifter, float pressure, float temperature,
-              float dewpoint);
-
-float theta_wetbulb(lifter_wobus lifter, float pressure, float temperature,
-                    float dewpoint);
-
-float theta_wetbulb(lifter_cm1 lifter, float pressure, float temperature,
-                    float dewpoint);
-
 float thetae(float pressure, float temperature, float dewpoint) {
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING) ||
