@@ -130,4 +130,42 @@ WindComponents mean_wind(PressureLayer layer, const float pressure[],
     return {mean_u, mean_v};
 }
 
+/// @cond DOXYGEN_IGNORE
+
+template WindComponents max_wind<PressureLayer>(PressureLayer lyr,
+                                                const float coordinate[],
+                                                const float u_wind[],
+                                                const float v_wind[],
+                                                const std::ptrdiff_t N);
+
+template WindComponents max_wind<HeightLayer>(HeightLayer lyr,
+                                              const float coordinate[],
+                                              const float u_wind[],
+                                              const float v_wind[],
+                                              const std::ptrdiff_t N);
+
+template WindComponents wind_shear<PressureLayer>(PressureLayer layer,
+                                                  const float coord[],
+                                                  const float u_wind[],
+                                                  const float v_wind[],
+                                                  const std::ptrdiff_t N);
+
+template WindComponents wind_shear<HeightLayer>(HeightLayer layer,
+                                                const float coord[],
+                                                const float u_wind[],
+                                                const float v_wind[],
+                                                const std::ptrdiff_t N);
+
+template float helicity<PressureLayer>(
+    PressureLayer layer, WindComponents storm_motion, const float coord[],
+    const float u_wind[], const float v_wind[], const std::ptrdiff_t N);
+
+template float helicity<HeightLayer>(HeightLayer layer,
+                                     WindComponents storm_motion,
+                                     const float coord[], const float u_wind[],
+                                     const float v_wind[],
+                                     const std::ptrdiff_t N);
+
+/// @endcond
+
 }  // end namespace sharp

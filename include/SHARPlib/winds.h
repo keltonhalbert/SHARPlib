@@ -484,6 +484,40 @@ template <typename L>
     return layer_helicity;
 }
 
+/// @cond DOXYGEN_IGNORE
+
+extern template WindComponents max_wind<PressureLayer>(PressureLayer lyr,
+                                                       const float coordinate[],
+                                                       const float u_wind[],
+                                                       const float v_wind[],
+                                                       const std::ptrdiff_t N);
+
+extern template WindComponents max_wind<HeightLayer>(HeightLayer lyr,
+                                                     const float coordinate[],
+                                                     const float u_wind[],
+                                                     const float v_wind[],
+                                                     const std::ptrdiff_t N);
+
+extern template WindComponents wind_shear<PressureLayer>(
+    PressureLayer layer, const float coord[], const float u_wind[],
+    const float v_wind[], const std::ptrdiff_t N);
+
+extern template WindComponents wind_shear<HeightLayer>(HeightLayer layer,
+                                                       const float coord[],
+                                                       const float u_wind[],
+                                                       const float v_wind[],
+                                                       const std::ptrdiff_t N);
+
+extern template float helicity<PressureLayer>(
+    PressureLayer layer, WindComponents storm_motion, const float coord[],
+    const float u_wind[], const float v_wind[], const std::ptrdiff_t N);
+
+extern template float helicity<HeightLayer>(
+    HeightLayer layer, WindComponents storm_motion, const float coord[],
+    const float u_wind[], const float v_wind[], const std::ptrdiff_t N);
+
+/// @endcond
+
 }  // end namespace sharp
 
 #endif  // SHARP_WINDS_H

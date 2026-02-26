@@ -721,6 +721,29 @@ PressureLayer temperature_layer(const float pressure[],
                                 const float temperature[], const float tmpk_1,
                                 const float tmpk_2, const std::ptrdiff_t N);
 
+/// @cond DOXYGEN_IGNORE
+
+struct lifter_wobus;
+struct lifter_cm1;
+
+extern template float wetbulb<lifter_wobus>(lifter_wobus lifter, float pressure,
+                                            float temperature, float dewpoint);
+
+extern template float wetbulb<lifter_cm1>(lifter_cm1 lifter, float pressure,
+                                          float temperature, float dewpoint);
+
+extern template float theta_wetbulb<lifter_cm1>(lifter_cm1 lifter,
+                                                float pressure,
+                                                float temperature,
+                                                float dewpoint);
+
+extern template float theta_wetbulb<lifter_wobus>(lifter_wobus lifter,
+                                                  float pressure,
+                                                  float temperature,
+                                                  float dewpoint);
+
+/// @endcond
+
 }  // end namespace sharp
 
 #endif  // SHARP_THERMP_H
