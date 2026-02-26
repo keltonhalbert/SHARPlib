@@ -483,6 +483,7 @@ template <typename L>
 
     return layer_helicity;
 }
+
 /// @cond DOXYGEN_IGNORE
 
 extern template WindComponents max_wind<PressureLayer>(PressureLayer lyr,
