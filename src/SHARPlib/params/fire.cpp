@@ -188,6 +188,8 @@ template <typename Lifter>
     return std::max(PFT, 0.0f);
 }
 
+/// @cond DOXYGEN_IGNORE
+
 template float pyrocumulonimbus_firepower_threshold(
     lifter_wobus& lifter, PressureLayer mix_layer, const float pressure[],
     const float height[], const float temperature[], const float mixratio[],
@@ -203,5 +205,7 @@ template float pyrocumulonimbus_firepower_threshold(
     const float potential_temperature[], float pcl_vtmpk_arr[],
     float pcl_buoy_arr[], std::ptrdiff_t N, Parcel* pcl, float phi,
     float beta_incr);
+
+/// @endcond
 
 }  // namespace sharp
