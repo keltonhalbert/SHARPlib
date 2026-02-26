@@ -24,20 +24,6 @@
 
 namespace sharp {
 
-PressureLayer effective_inflow_layer(
-    sharp::lifter_wobus &lifter, const float pressure[], const float height[],
-    const float temperature[], const float dewpoint[],
-    const float virtemp_arr[], float pcl_vtmpk_arr[], float buoy_arr[],
-    const std::ptrdiff_t N, const float cape_thresh, const float cinh_thresh,
-    Parcel *mupcl);
-
-PressureLayer effective_inflow_layer(
-    sharp::lifter_cm1 &lifter, const float pressure[], const float height[],
-    const float temperature[], const float dewpoint[],
-    const float virtemp_arr[], float pcl_vtmpk_arr[], float buoy_arr[],
-    const std::ptrdiff_t N, const float cape_thresh, const float cinh_thresh,
-    Parcel *mupcl);
-
 WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const std::ptrdiff_t N,
@@ -91,7 +77,7 @@ WindComponents storm_motion_bunkers(
 [[nodiscard]] WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const std::ptrdiff_t N, PressureLayer eff_infl_lyr,
-    const Parcel &mupcl, const bool leftMover) {
+    const Parcel& mupcl, const bool leftMover) {
     HeightLayer shr_layer = {0, 6000.0};
     HeightLayer dflt_mw_lyr = {0.0, 6000.0};
 
@@ -176,7 +162,7 @@ WindComponents effective_bulk_wind_difference(
 float entrainment_cape(const float pressure[], const float height[],
                        const float temperature[], const float mse_arr[],
                        const float u_wind[], const float v_wind[],
-                       const std::ptrdiff_t N, Parcel *pcl) {
+                       const std::ptrdiff_t N, Parcel* pcl) {
     // if cape is zero, we get a divide by zero issue later.
     // there can "technically" be LFC/EL without CAPE because of very,
     // very shallow buoyancy near zero when searching for LFC/EL.
@@ -186,8 +172,8 @@ float entrainment_cape(const float pressure[], const float height[],
         return 0.0;
     }
 
-    float *mse_diff = new float[N];
-    float *mse_bar = new float[N];
+    float* mse_diff = new float[N];
+    float* mse_bar = new float[N];
 
     // compute MSE_bar
     mse_bar[0] = mse_arr[0];
@@ -345,7 +331,7 @@ float significant_tornado_parameter(Parcel pcl, float lcl_hght_agl,
     return stp;
 }
 
-float significant_hail_parameter(const sharp::Parcel &mu_pcl,
+float significant_hail_parameter(const sharp::Parcel& mu_pcl,
                                  float lapse_rate_700_500mb, float tmpk_500mb,
                                  float freezing_lvl_agl, float shear_0_6km) {
     float mu_mixr =
@@ -466,16 +452,34 @@ PressureLayer hail_growth_layer(const float pressure[],
                              -10.0f + ZEROCNK, N);
 }
 
-float convective_temperature(lifter_wobus &lifter, const float pressure[],
-                             const float height[], const float temperature[],
-                             const float virtemp[], const float mixratio[],
-                             float pcl_virtemp[], float pcl_buoyancy[],
-                             const std::ptrdiff_t N, float cinh_thresh);
+/// @cond DOXYGEN_IGNORE
 
-float convective_temperature(lifter_cm1 &lifter, const float pressure[],
-                             const float height[], const float temperature[],
-                             const float virtemp[], const float mixratio[],
-                             float pcl_virtemp[], float pcl_buoyancy[],
-                             const std::ptrdiff_t N, float cinh_thresh);
+template PressureLayer effective_inflow_layer<lifter_wobus>(
+    lifter_wobus& lifter, const float pressure[], const float height[],
+    const float temperature[], const float dewpoint[],
+    const float virtemp_arr[], float pcl_vtmpk_arr[], float buoy_arr[],
+    const std::ptrdiff_t N, const float cape_thresh, const float cinh_thresh,
+    Parcel* mupcl);
+
+template PressureLayer effective_inflow_layer<lifter_cm1>(
+    lifter_cm1& lifter, const float pressure[], const float height[],
+    const float temperature[], const float dewpoint[],
+    const float virtemp_arr[], float pcl_vtmpk_arr[], float buoy_arr[],
+    const std::ptrdiff_t N, const float cape_thresh, const float cinh_thresh,
+    Parcel* mupcl);
+
+template float convective_temperature<lifter_wobus>(
+    lifter_wobus& lifter, const float pressure[], const float height[],
+    const float temperature[], const float virtemp[], const float mixratio[],
+    float pcl_virtemp[], float pcl_buoyancy[], const std::ptrdiff_t N,
+    float cinh_thresh);
+
+template float convective_temperature<lifter_cm1>(
+    lifter_cm1& lifter, const float pressure[], const float height[],
+    const float temperature[], const float virtemp[], const float mixratio[],
+    float pcl_virtemp[], float pcl_buoyancy[], const std::ptrdiff_t N,
+    float cinh_thresh);
+
+/// @endcond
 
 }  // end namespace sharp

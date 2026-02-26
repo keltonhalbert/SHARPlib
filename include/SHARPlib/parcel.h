@@ -767,6 +767,63 @@ struct DowndraftParcel {
         return DowndraftParcel(pres_of_min, pcl_t, pcl_td);
     }
 };
+
+/// @cond DOXYGEN_IGNORE
+
+extern template Parcel
+Parcel::most_unstable_parcel<PressureLayer, lifter_wobus>(
+    PressureLayer& search_layer, lifter_wobus& lifter, const float pressure[],
+    const float height[], const float temperature[], const float virtemp[],
+    const float dewpoint[], float pcl_virtemp[], float buoy_arr[],
+    const std::ptrdiff_t N);
+
+extern template Parcel Parcel::most_unstable_parcel<HeightLayer, lifter_wobus>(
+    HeightLayer& search_layer, lifter_wobus& lifter, const float pressure[],
+    const float height[], const float temperature[], const float virtemp[],
+    const float dewpoint[], float pcl_virtemp[], float buoy_arr[],
+    const std::ptrdiff_t N);
+
+extern template Parcel Parcel::most_unstable_parcel<PressureLayer, lifter_cm1>(
+    PressureLayer& search_layer, lifter_cm1& lifter, const float pressure[],
+    const float height[], const float temperature[], const float virtemp[],
+    const float dewpoint[], float pcl_virtemp[], float buoy_arr[],
+    const std::ptrdiff_t N);
+
+extern template Parcel Parcel::most_unstable_parcel<HeightLayer, lifter_cm1>(
+    HeightLayer& search_layer, lifter_cm1& lifter, const float pressure[],
+    const float height[], const float temperature[], const float virtemp[],
+    const float dewpoint[], float pcl_virtemp[], float buoy_arr[],
+    const std::ptrdiff_t N);
+
+extern template Parcel Parcel::mixed_layer_parcel<PressureLayer>(
+    PressureLayer& mix_layer, const float pressure[], const float height[],
+    const float pot_temperature[], const float wv_mixratio[],
+    const std::ptrdiff_t N);
+
+extern template Parcel Parcel::mixed_layer_parcel<HeightLayer>(
+    HeightLayer& mix_layer, const float pressure[], const float height[],
+    const float pot_temperature[], const float wv_mixratio[],
+    const std::ptrdiff_t N);
+
+extern template void Parcel::lift_parcel<lifter_wobus>(
+    lifter_wobus& liftpcl, const float pressure_arr[], float pcl_vtmpk_arr[],
+    const std::ptrdiff_t N);
+
+extern template void Parcel::lift_parcel<lifter_cm1>(lifter_cm1& liftpcl,
+                                                     const float pressure_arr[],
+                                                     float pcl_vtmpk_arr[],
+                                                     const std::ptrdiff_t N);
+
+extern template void DowndraftParcel::lower_parcel<lifter_wobus>(
+    lifter_wobus& liftpcl, const float pressure_arr[], float pcl_tmpk_arr[],
+    const std::ptrdiff_t N);
+
+extern template void DowndraftParcel::lower_parcel<lifter_cm1>(
+    lifter_cm1& liftpcl, const float pressure_arr[], float pcl_tmpk_arr[],
+    const std::ptrdiff_t N);
+
+/// @endcond
+
 }  // end namespace sharp
 
 #endif  // SHARP_PARCEL_H

@@ -190,4 +190,40 @@ float layer_mean(HeightLayer layer, const float height[],
     return integrate_layer_trapz(pres_layer, data_arr, pressure, N, 0, true);
 }
 
+/// @cond DOXYGEN_IGNORE
+
+template float layer_min<PressureLayer>(PressureLayer layer,
+                                        const float coord_arr[],
+                                        const float data_arr[],
+                                        const std::ptrdiff_t N,
+                                        float* lvl_of_min);
+
+template float layer_min<HeightLayer>(HeightLayer layer,
+                                      const float coord_arr[],
+                                      const float data_arr[],
+                                      const std::ptrdiff_t N,
+                                      float* lvl_of_min);
+
+template float layer_max<PressureLayer>(PressureLayer layer,
+                                        const float coord_arr[],
+                                        const float data_arr[],
+                                        const std::ptrdiff_t N,
+                                        float* lvl_of_max);
+
+template float layer_max<HeightLayer>(HeightLayer layer,
+                                      const float coord_arr[],
+                                      const float data_arr[],
+                                      const std::ptrdiff_t N,
+                                      float* lvl_of_max);
+
+template float integrate_layer_trapz<PressureLayer>(
+    PressureLayer layer, const float var_array[], const float coord_array[],
+    const std::ptrdiff_t N, const int integ_sign, const bool weighted);
+
+template float integrate_layer_trapz<HeightLayer>(
+    HeightLayer layer, const float var_array[], const float coord_array[],
+    const std::ptrdiff_t N, const int integ_sign, const bool weighted);
+
+/// @endcond
+
 }  // end namespace sharp
