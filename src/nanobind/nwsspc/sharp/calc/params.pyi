@@ -44,7 +44,7 @@ def effective_inflow_layer(lifter: nwsspc.sharp.calc.parcel.lifter_wobus, pressu
         The CAPE threshold used to compute the Effective Inflow Layer 
     cinh_thresh : float, default = -250.0 
         The CINH threshold used to compute the Effective Inflow Layer
-    muplc : None or nwsspc.sharp.calc.parcel.Parcel, optional
+    mupcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
 
     Returns 
     -------
@@ -88,7 +88,7 @@ def effective_inflow_layer(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure
         The CAPE threshold used to compute the Effective Inflow Layer 
     cinh_thresh : float, default = -250.0 
         The CINH threshold used to compute the Effective Inflow Layer
-    muplc : None or nwsspc.sharp.calc.parcel.Parcel, optional
+    mupcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
 
     Returns 
     -------
@@ -452,6 +452,66 @@ def large_hail_parameter(mu_pcl: nwsspc.sharp.calc.parcel.Parcel, lapse_rate_700
         1D NumPy array of v_wind values (m/s)
     """
 
+@overload
+def convective_temperature(lifter: nwsspc.sharp.calc.parcel.lifter_wobus, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mixratio: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], cinh_thresh: float = -1.0) -> float:
+    """
+    Computes the convective temperature by iteratively lifting parcels from 
+    the surface using a lowest 100 hPa mean mixing ratio and increasing 
+    surface temperatures to find the first parcel that reaches the CINH 
+    threshold. The first guess is the current surface temperature.
+
+    Parameters 
+    ----------
+    lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+    pressure : numpy.ndarray[dtype=float32]
+        A 1D NumPy array of pressure values (Pa)
+    height : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of height values (Pa)
+    temperature : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of temperature values (K)
+    virtemp : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of virtual temperature values (K)
+    mixratio : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of water vapor mixing ratio values (g/g)
+    cinh_thresh : float, default = -1.0 
+        The CINH threshold used to compute the convective temperature (J/kg)
+
+    Returns
+    -------
+    float
+        The convective temperature (K)
+    """
+
+@overload
+def convective_temperature(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mixratio: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], cinh_thresh: float = -1.0) -> float:
+    """
+    Computes the convective temperature by iteratively lifting parcels from 
+    the surface using a lowest 100 hPa mean mixing ratio and increasing 
+    surface temperatures to find the first parcel that reaches the CINH 
+    threshold. The first guess is the current surface temperature.
+
+    Parameters 
+    ----------
+    lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
+    pressure : numpy.ndarray[dtype=float32]
+        A 1D NumPy array of pressure values (Pa)
+    height : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of height values (Pa)
+    temperature : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of temperature values (K)
+    virtemp : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of virtual temperature values (K)
+    mixratio : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of water vapor mixing ratio values (g/g)
+    cinh_thresh : float, default = -1.0 
+        The CINH threshold used to compute the convective temperature (J/kg)
+
+    Returns
+    -------
+    float
+        The convective temperature (K)
+    """
+
 def precipitable_water(layer: nwsspc.sharp.calc.layer.PressureLayer, pres: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mixr: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> float:
     """
     Given a PressureLayer to integrate over, compute the precipitable water 
@@ -474,9 +534,10 @@ def precipitable_water(layer: nwsspc.sharp.calc.layer.PressureLayer, pres: Annot
 
 def hail_growth_layer(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> nwsspc.sharp.calc.layer.PressureLayer:
     """
-    Search for and return the PressureLayer of the lowest altitude 
-    hail growth zone. If none is found, the top and bottom of the 
-    PressureLayer are set to MISSING. 
+    Performs a top-down search for the hail growth zone, 
+    returning the PressureLayer bounds. This zone is defined 
+    as the pressure layer that contains the portion of the 
+    profile between -30C and -10C.
 
     Parameters 
     ----------
@@ -486,15 +547,17 @@ def hail_growth_layer(pressure: Annotated[NDArray[numpy.float32], dict(shape=(No
         1D NumPy array of temperature values (K)
 
     Returns 
+    -------
     nwsspc.sharp.calc.layer.PressureLayer
         The PressureLayer containing the hail growth zone
     """
 
 def dendritic_layer(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> nwsspc.sharp.calc.layer.PressureLayer:
     """
-    Search for and return the PressureLayer of the lowest altitude 
-    dendritic growth zone. If none is found, the top and bottom of the 
-    PressureLayer are set to MISSING. 
+    Performs a top-down search for the dendritic growth zone, 
+    returning the PressureLayer bounds. This zone is defined 
+    as the pressure layer that contains the portion of the 
+    profile between -17C and -12C.
 
     Parameters 
     ----------
@@ -614,4 +677,110 @@ def fosberg_fire_index(temperature: Annotated[NDArray[numpy.float32], dict(shape
     -------
     numpy.ndarray[dtype=float32]
         Fosberg Fire-Weather Index
+    """
+
+@overload
+def pyrocumulonimbus_firepower_threshold(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, mix_layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mixratio: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], u_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], v_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], potential_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], pcl: nwsspc.sharp.calc.parcel.Parcel | None = None, phi: float = 6.67e-05, beta_incr: float = 0.005) -> float:
+    """
+    Computes the Pyrocumulonimbus Firepower Threshold (PFT), or the minimum 
+    amount of firepower required to generate pyrocumulonimbus clouds for a 
+    given atmospheric profile. Requires a PressureLayer to define a mixing 
+    layer used to average values of potential temperature, mixing ratio, 
+    and wind speed. The beta increment determines how to vary the plume 
+    buoyancy factor, with smaller values resulting in more iteration steps. 
+    Phi is the fire moisture to potential temperature increment ratio.
+
+    Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
+    If a parcel is passed, the values will be set with the PFT fire parcel.
+
+    References 
+    ----------
+    Tory et al. 2018: https://journals.ametsoc.org/view/journals/mwre/146/8/mwr-d-17-0377.1.xml
+    Tory et al. 2021: https://journals.ametsoc.org/view/journals/wefo/36/2/WAF-D-20-0027.1.xml
+
+    Parameters 
+    ----------
+    lifter : nwsspc.sharp.calc.parcel.lifter_cm1
+    mix_layer : nwsspc.sharp.calc.layer.PressureLayer
+        A mixing layer to take average values of the environment from
+    pressure : numpy.ndarray[dtype=float32]
+        A 1D NumPy array of pressure values (Pa)
+    height : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of height values (Pa)
+    temperature : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of temperature values (K)
+    mixratio : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of water vapor mixing ratio values (g/g)
+    virtual_temperature : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of virtual temperature values (K)
+    u_wind : numpy.ndarray[dtype=float32]
+        1D NumPy array of U wind component values (m/s)
+    v_wind : numpy.ndarray[dtype=float32]
+        1D NumPy array of V wind compnent values (m/s)
+    potential_temperature : numpy.ndarray[dtype=float32]
+        1D NumPy array of potential temperature values (K)
+    pcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
+        If a parcel is provided, returns the parcel for the PFT
+    phi : float 
+        The fire moisture to potential temperature increment ratio (kg/(kg*K))
+    beta_incr : float 
+        The fire plume buoyancy factor (unitless)
+
+    Returns 
+    -------
+    float 
+        The PyroCB Firepower Threshold (Watts)
+    """
+
+@overload
+def pyrocumulonimbus_firepower_threshold(lifter: nwsspc.sharp.calc.parcel.lifter_wobus, mix_layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mixratio: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], u_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], v_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], potential_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], pcl: nwsspc.sharp.calc.parcel.Parcel | None = None, phi: float = 6.67e-05, beta_incr: float = 0.005) -> float:
+    """
+    Computes the Pyrocumulonimbus Firepower Threshold (PFT), or the minimum 
+    amount of firepower required to generate pyrocumulonimbus clouds for a 
+    given atmospheric profile. Requires a PressureLayer to define a mixing 
+    layer used to average values of potential temperature, mixing ratio, 
+    and wind speed. The beta increment determines how to vary the plume 
+    buoyancy factor, with smaller values resulting in more iteration steps. 
+    Phi is the fire moisture to potential temperature increment ratio.
+
+    Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
+    If a parcel is passed, the values will be set with the PFT fire parcel.
+
+    References 
+    ----------
+    Tory et al. 2018: https://journals.ametsoc.org/view/journals/mwre/146/8/mwr-d-17-0377.1.xml
+    Tory et al. 2021: https://journals.ametsoc.org/view/journals/wefo/36/2/WAF-D-20-0027.1.xml
+
+    Parameters 
+    ----------
+    lifter : nwsspc.sharp.calc.parcel.lifter_wobus
+    mix_layer : nwsspc.sharp.calc.layer.PressureLayer
+        A mixing layer to take average values of the environment from
+    pressure : numpy.ndarray[dtype=float32]
+        A 1D NumPy array of pressure values (Pa)
+    height : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of height values (Pa)
+    temperature : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of temperature values (K)
+    mixratio : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of water vapor mixing ratio values (g/g)
+    virtual_temperature : numpy.ndarray[dtype=float32] 
+        A 1D NumPy array of virtual temperature values (K)
+    u_wind : numpy.ndarray[dtype=float32]
+        1D NumPy array of U wind component values (m/s)
+    v_wind : numpy.ndarray[dtype=float32]
+        1D NumPy array of V wind compnent values (m/s)
+    potential_temperature : numpy.ndarray[dtype=float32]
+        1D NumPy array of potential temperature values (K)
+    pcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
+        If a parcel is provided, returns the parcel for the PFT
+    phi : float 
+        The fire moisture to potential temperature increment ratio (kg/(kg*K))
+    beta_incr : float 
+        The fire plume buoyancy factor (unitless)
+
+    Returns 
+    -------
+    float 
+        The PyroCB Firepower Threshold (Watts)
     """

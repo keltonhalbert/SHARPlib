@@ -179,6 +179,50 @@ def mean_wind(layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated[
     """
 
 @overload
+def max_wind(layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], u_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], v_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> WindComponents:
+    """
+    Finds the maximum wind speed over a given nwsspc.sharp.calc.layer.PressureLayer,
+    returning the vector components.
+
+    Parameters
+    ----------
+    layer : nwsspc.sharp.calc.layer.PressureLayer 
+        PressureLayer over which to compute mean
+    pressure : numpy.ndarray[dtype=float32]
+        1D NumPy array of pressure coordinate values (Pa)
+    u_wind : numpy.ndarray[dtype=float32] 
+        1D NumPy array of U-wind component values (m/s)
+    v_wind : numpy.ndarray[dtype=float32] 
+        1D NumPy array of V-wind component values (m/s)
+
+    Returns
+    -------
+    nwsspc.sharp.calc.winds.WindComponents
+    """
+
+@overload
+def max_wind(layer: nwsspc.sharp.calc.layer.HeightLayer, height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], u_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], v_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> WindComponents:
+    """
+    Finds the maximum wind speed over a given nwsspc.sharp.calc.layer.HeightLayer,
+    returning the vector components.
+
+    Parameters
+    ----------
+    layer : nwsspc.sharp.calc.layer.HeightLayer 
+        PressureLayer over which to compute mean
+    height : numpy.ndarray[dtype=float32]
+        1D NumPy array of height coordinate values (m)
+    u_wind : numpy.ndarray[dtype=float32] 
+        1D NumPy array of U-wind component values (m/s)
+    v_wind : numpy.ndarray[dtype=float32] 
+        1D NumPy array of V-wind component values (m/s)
+
+    Returns
+    -------
+    nwsspc.sharp.calc.winds.WindComponents
+    """
+
+@overload
 def vector_magnitude(u_comp: float, v_comp: float) -> float:
     """
     Given the zonal (U) and meridional (V) wind components of a vector,

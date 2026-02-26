@@ -38,6 +38,7 @@ def load_parquet(filename):
     # vwin = np.empty(wspd.shape, dtype="float32")
     mixr = thermo.mixratio(pres, dwpk)
     vtmp = thermo.virtual_temperature(tmpk, mixr)
+    theta = thermo.theta(pres, tmpk)
     thetae = thermo.thetae(
         pres,
         tmpk,
@@ -48,6 +49,7 @@ def load_parquet(filename):
         "pres": pres, "hght": hght,
         "tmpk": tmpk, "mixr": mixr,
         "relh": relh,
+        "theta": theta,
         "thetae": thetae,
         "vtmp": vtmp, "dwpk": dwpk,
         "wdir": wdir, "wspd": wspd,
@@ -304,7 +306,8 @@ def test_stp_scp_ship_dcp_lhp():
     ship = params.significant_hail_parameter(mupcl, lr75, t500, fzl, shr06)
     assert (ship == pytest.approx(1.9521, abs=1e-3))
 
-    hlyr_in_p = layer.height_layer_to_pressure(hlyr, snd_data["pres"], snd_data["hght"])
+    hlyr_in_p = layer.height_layer_to_pressure(
+        hlyr, snd_data["pres"], snd_data["hght"])
     mw06 = winds.mean_wind(
         hlyr_in_p, snd_data["pres"], snd_data["uwin"], snd_data["vwin"]
     )
@@ -314,16 +317,16 @@ def test_stp_scp_ship_dcp_lhp():
 
     hgz = params.hail_growth_layer(snd_data["pres"], snd_data["tmpk"])
     lhp = params.large_hail_parameter(
-        mupcl, 
-        lr75, 
-        hgz, 
-        storm_mtn, 
-        snd_data["pres"], 
-        snd_data["hght"], 
-        snd_data["uwin"], 
+        mupcl,
+        lr75,
+        hgz,
+        storm_mtn,
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["uwin"],
         snd_data["vwin"]
     )
-    assert (lhp == pytest.approx(13.98, abs=1e-2))
+    assert (lhp == pytest.approx(14.2394, abs=1e-2))
 
 
 def test_ehi():
@@ -371,6 +374,20 @@ def test_ehi():
     assert (ehi == pytest.approx(4.41228, abs=1e-5))
 
 
+def test_convective_temperature():
+    lifter = parcel.lifter_cm1()
+    lifter.ma_type = thermo.adiabat.pseudo_liq
+    cnvtv_tmpk = params.convective_temperature(
+        lifter,
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["tmpk"],
+        snd_data["vtmp"],
+        snd_data["mixr"]
+    )
+    assert (cnvtv_tmpk == pytest.approx(304.65, abs=0.5))
+
+
 def test_precipitable_water():
     plyr = layer.PressureLayer(snd_data["pres"][0], 40000.0)
     pwat = params.precipitable_water(plyr, snd_data["pres"], snd_data["mixr"])
@@ -380,14 +397,14 @@ def test_precipitable_water():
 
 def test_hgz():
     hgz = params.hail_growth_layer(snd_data["pres"], snd_data["tmpk"])
-    assert (hgz.bottom == 51787)
-    assert (hgz.top == 35861)
+    assert (hgz.bottom == 51430)
+    assert (hgz.top == 35816)
 
 
 def test_dgz():
     dgz = params.dendritic_layer(snd_data["pres"], snd_data["tmpk"])
     assert (dgz.bottom == 49598)
-    assert (dgz.top == 46032)
+    assert (dgz.top == 45961)
 
 
 def test_fwwi():
@@ -404,3 +421,23 @@ def test_fwwi():
 
     fwwi = params.fosberg_fire_index(tmpk, relh, wspd)
     assert (fwwi == np.array([100.0, 100.0, 100.0], dtype='float32')).all()
+
+
+def test_pft():
+    lifter = parcel.lifter_cm1()
+    lifter.ma_type = thermo.adiabat.pseudo_liq
+    mix_layer = layer.PressureLayer(
+        snd_data["pres"][0], snd_data["pres"][0] - 10000.0)
+    pft = params.pyrocumulonimbus_firepower_threshold(
+        lifter,
+        mix_layer,
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["tmpk"],
+        snd_data["mixr"],
+        snd_data["vtmp"],
+        snd_data["uwin"],
+        snd_data["vwin"],
+        snd_data["theta"]
+    )
+    assert (pft == pytest.approx(153856081920.0, abs=1e6))

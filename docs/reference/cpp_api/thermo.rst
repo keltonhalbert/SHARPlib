@@ -19,6 +19,7 @@ Dry Ascent
 
 Moist Variables 
 ---------------
+
 .. doxygenfunction:: sharp::mixratio(float)
 .. doxygenfunction:: sharp::mixratio(float, float)
 .. doxygenfunction:: sharp::mixratio_ice
@@ -32,11 +33,7 @@ Moist Variables
 .. doxygenfunction:: sharp::buoyancy(const float[], const float[], float[], std::ptrdiff_t)
 .. doxygenfunction:: sharp::thetae
 .. doxygenfunction:: sharp::wetbulb(Lft, float, float, float)
-.. doxygenfunction:: sharp::wetbulb(lifter_wobus, float, float, float)
-.. doxygenfunction:: sharp::wetbulb(lifter_cm1, float, float, float)
 .. doxygenfunction:: sharp::theta_wetbulb(Lft, float, float, float)
-.. doxygenfunction:: sharp::theta_wetbulb(lifter_wobus, float, float, float)
-.. doxygenfunction:: sharp::theta_wetbulb(lifter_cm1, float, float, float)
 
 Moist Ascent
 ------------
@@ -47,4 +44,8 @@ Moist Ascent
 .. doxygenfunction:: sharp::saturated_lift 
 .. doxygenfunction:: sharp::moist_adiabat_cm1
 
+Miscellaneous
+-------------
+.. doxygenfunction:: sharp::pbl_top
+.. doxygenfunction:: sharp::temperature_layer
 

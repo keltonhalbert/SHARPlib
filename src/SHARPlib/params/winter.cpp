@@ -14,6 +14,7 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/params/winter.h>
+#include <SHARPlib/thermo.h>
 
 #include <cstddef>
 
@@ -21,25 +22,8 @@ namespace sharp {
 
 PressureLayer dendritic_layer(const float pressure[], const float temperature[],
                               const std::ptrdiff_t N) {
-    float bottom =
-        find_first_pressure(-12.0f + ZEROCNK, pressure, temperature, N);
-    float top = find_first_pressure(-17.0f + ZEROCNK, pressure, temperature, N);
-
-    if (top == MISSING) {
-        return {MISSING, MISSING};
-    }
-
-    if (bottom == MISSING) {
-        bottom = pressure[0];
-    }
-
-    // in the event of an inverstion, these
-    // can be sqapped...
-    if (bottom < top) {
-        std::swap(bottom, top);
-    }
-
-    return {bottom, top};
+    return temperature_layer(pressure, temperature, -17.0f + ZEROCNK,
+                             -12.0f + ZEROCNK, N);
 }
 
 float snow_squall_parameter(const float wetbulb_2m, const float mean_relh_0_2km,

@@ -178,3 +178,25 @@ TEST_CASE("Testing mean wind calculations") {
     CHECK(mean_layer6.u == doctest::Approx(32.3939));
     CHECK(mean_layer6.v == doctest::Approx(32.3939));
 }
+
+TEST_CASE("Testing max wind calculations") {
+    constexpr int NZ = 3;
+    float pres[NZ] = {100000.0f, 90000.0, 80000.0f};
+    float hght[NZ] = {0.0, 1000.0, 2000.0};
+    float u_wind[NZ] = {0.0, 10.0, 5.0};
+    float v_wind[NZ] = {0.0, 10.0, 5.0};
+
+    sharp::PressureLayer plyr = {95000.0f, 70000.0f};
+    sharp::HeightLayer hlyr = {0.0f, 2500.0f};
+
+    sharp::WindComponents max_wind =
+        sharp::max_wind(plyr, pres, u_wind, v_wind, NZ);
+
+    CHECK(max_wind.u == 10.0f);
+    CHECK(max_wind.v == 10.0f);
+
+    max_wind = sharp::max_wind(hlyr, hght, u_wind, v_wind, NZ);
+
+    CHECK(max_wind.u == 10.0f);
+    CHECK(max_wind.v == 10.0f);
+}

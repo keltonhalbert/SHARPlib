@@ -8,11 +8,13 @@
 // clang-format on
 #include <SHARPlib/layer.h>
 #include <SHARPlib/params/convective.h>
+#include <SHARPlib/params/fire.h>
+#include <SHARPlib/params/winter.h>
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/winds.h>
 
-#include "SHARPlib/params/fire.h"
-#include "SHARPlib/params/winter.h"
+#include <cstddef>
+
 #include "sharplib_types.h"
 
 namespace nb = nanobind;
@@ -87,7 +89,7 @@ cape_thresh : float, default = 100.0
     The CAPE threshold used to compute the Effective Inflow Layer 
 cinh_thresh : float, default = -250.0 
     The CINH threshold used to compute the Effective Inflow Layer
-muplc : None or nwsspc.sharp.calc.parcel.Parcel, optional
+mupcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
 
 Returns 
 -------
@@ -159,7 +161,7 @@ cape_thresh : float, default = 100.0
     The CAPE threshold used to compute the Effective Inflow Layer 
 cinh_thresh : float, default = -250.0 
     The CINH threshold used to compute the Effective Inflow Layer
-muplc : None or nwsspc.sharp.calc.parcel.Parcel, optional
+mupcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
 
 Returns 
 -------
@@ -642,6 +644,116 @@ v_wind : numpy.ndarray[dtype=float32]
     )pbdoc");
 
     m_params.def(
+        "convective_temperature",
+        [](sharp::lifter_wobus& lifter, const_prof_arr_t pres,
+           const_prof_arr_t hght, const_prof_arr_t tmpk, const_prof_arr_t vtmpk,
+           const_prof_arr_t mixr, float cinh_thresh) {
+            if ((pres.shape(0) != hght.shape(0)) ||
+                (pres.shape(0) != tmpk.shape(0)) ||
+                (pres.shape(0) != mixr.shape(0)) ||
+                (pres.shape(0) != vtmpk.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
+            float* pcl_vtmp = new float[hght.size()];
+            float* pcl_buoy = new float[hght.size()];
+
+            float cnvtv_tmpk = sharp::convective_temperature(
+                lifter, pres.data(), hght.data(), tmpk.data(), vtmpk.data(),
+                mixr.data(), pcl_vtmp, pcl_buoy, pres.size());
+
+            delete[] pcl_vtmp;
+            delete[] pcl_buoy;
+
+            return cnvtv_tmpk;
+        },
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("height"),
+        nb::arg("temperature"), nb::arg("virtual_temperature"),
+        nb::arg("mixratio"), nb::arg("cinh_thresh") = -1.0,
+        R"pbdoc(
+Computes the convective temperature by iteratively lifting parcels from 
+the surface using a lowest 100 hPa mean mixing ratio and increasing 
+surface temperatures to find the first parcel that reaches the CINH 
+threshold. The first guess is the current surface temperature.
+
+Parameters 
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+pressure : numpy.ndarray[dtype=float32]
+    A 1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of height values (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of temperature values (K)
+virtemp : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of virtual temperature values (K)
+mixratio : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of water vapor mixing ratio values (g/g)
+cinh_thresh : float, default = -1.0 
+    The CINH threshold used to compute the convective temperature (J/kg)
+
+Returns
+-------
+float
+    The convective temperature (K)
+)pbdoc");
+
+    m_params.def(
+        "convective_temperature",
+        [](sharp::lifter_cm1& lifter, const_prof_arr_t pres,
+           const_prof_arr_t hght, const_prof_arr_t tmpk, const_prof_arr_t vtmpk,
+           const_prof_arr_t mixr, float cinh_thresh) {
+            if ((pres.shape(0) != hght.shape(0)) ||
+                (pres.shape(0) != tmpk.shape(0)) ||
+                (pres.shape(0) != mixr.shape(0)) ||
+                (pres.shape(0) != vtmpk.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
+            float* pcl_vtmp = new float[hght.size()];
+            float* pcl_buoy = new float[hght.size()];
+
+            float cnvtv_tmpk = sharp::convective_temperature(
+                lifter, pres.data(), hght.data(), tmpk.data(), vtmpk.data(),
+                mixr.data(), pcl_vtmp, pcl_buoy, pres.size());
+
+            delete[] pcl_vtmp;
+            delete[] pcl_buoy;
+
+            return cnvtv_tmpk;
+        },
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("height"),
+        nb::arg("temperature"), nb::arg("virtual_temperature"),
+        nb::arg("mixratio"), nb::arg("cinh_thresh") = -1.0,
+        R"pbdoc(
+Computes the convective temperature by iteratively lifting parcels from 
+the surface using a lowest 100 hPa mean mixing ratio and increasing 
+surface temperatures to find the first parcel that reaches the CINH 
+threshold. The first guess is the current surface temperature.
+
+Parameters 
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
+pressure : numpy.ndarray[dtype=float32]
+    A 1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of height values (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of temperature values (K)
+virtemp : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of virtual temperature values (K)
+mixratio : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of water vapor mixing ratio values (g/g)
+cinh_thresh : float, default = -1.0 
+    The CINH threshold used to compute the convective temperature (J/kg)
+
+Returns
+-------
+float
+    The convective temperature (K)
+)pbdoc");
+
+    m_params.def(
         "precipitable_water",
         [](sharp::PressureLayer& layer, const_prof_arr_t pres,
            const_prof_arr_t mixr) {
@@ -685,9 +797,10 @@ float
         },
         nb::arg("pressure"), nb::arg("temperature"),
         R"pbdoc(
-Search for and return the PressureLayer of the lowest altitude 
-hail growth zone. If none is found, the top and bottom of the 
-PressureLayer are set to MISSING. 
+Performs a top-down search for the hail growth zone, 
+returning the PressureLayer bounds. This zone is defined 
+as the pressure layer that contains the portion of the 
+profile between -30C and -10C.
 
 Parameters 
 ----------
@@ -697,6 +810,7 @@ temperature : numpy.ndarray[dtype=float32]
     1D NumPy array of temperature values (K)
 
 Returns 
+-------
 nwsspc.sharp.calc.layer.PressureLayer
     The PressureLayer containing the hail growth zone
     )pbdoc");
@@ -713,9 +827,10 @@ nwsspc.sharp.calc.layer.PressureLayer
         },
         nb::arg("pressure"), nb::arg("temperature"),
         R"pbdoc(
-Search for and return the PressureLayer of the lowest altitude 
-dendritic growth zone. If none is found, the top and bottom of the 
-PressureLayer are set to MISSING. 
+Performs a top-down search for the dendritic growth zone, 
+returning the PressureLayer bounds. This zone is defined 
+as the pressure layer that contains the portion of the 
+profile between -17C and -12C.
 
 Parameters 
 ----------
@@ -881,6 +996,182 @@ Returns
 numpy.ndarray[dtype=float32]
     Fosberg Fire-Weather Index
     )pbdoc");
+
+    m_params.def(
+        "pyrocumulonimbus_firepower_threshold",
+        [](sharp::lifter_cm1& lifter, sharp::PressureLayer& mix_layer,
+           const_prof_arr_t pres, const_prof_arr_t hght, const_prof_arr_t tmpk,
+           const_prof_arr_t mixr, const_prof_arr_t vtmpk, const_prof_arr_t uwin,
+           const_prof_arr_t vwin, const_prof_arr_t theta, sharp::Parcel* pcl,
+           float phi, float beta_incr) {
+            if ((pres.shape(0) != hght.shape(0)) ||
+                (pres.shape(0) != tmpk.shape(0)) ||
+                (pres.shape(0) != mixr.shape(0)) ||
+                (pres.shape(0) != vtmpk.shape(0)) ||
+                (pres.shape(0) != uwin.shape(0)) ||
+                (pres.shape(0) != vwin.shape(0)) ||
+                (pres.shape(0) != theta.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
+            float* pcl_vtmp = new float[hght.size()];
+            float* pcl_buoy = new float[hght.size()];
+
+            float pft = sharp::pyrocumulonimbus_firepower_threshold(
+                lifter, mix_layer, pres.data(), hght.data(), tmpk.data(),
+                mixr.data(), vtmpk.data(), uwin.data(), vwin.data(),
+                theta.data(), pcl_vtmp, pcl_buoy, pres.size(), pcl, phi,
+                beta_incr);
+
+            delete[] pcl_vtmp;
+            delete[] pcl_buoy;
+
+            return pft;
+        },
+        nb::arg("lifter"), nb::arg("mix_layer"), nb::arg("pressure"),
+        nb::arg("height"), nb::arg("temperature"), nb::arg("mixratio"),
+        nb::arg("virtual_temperature"), nb::arg("u_wind"), nb::arg("v_wind"),
+        nb::arg("potential_temperature"), nb::arg("pcl") = nb::none(),
+        nb::arg("phi") = 6.67e-5, nb::arg("beta_incr") = 0.005,
+        R"pbdoc(
+Computes the Pyrocumulonimbus Firepower Threshold (PFT), or the minimum 
+amount of firepower required to generate pyrocumulonimbus clouds for a 
+given atmospheric profile. Requires a PressureLayer to define a mixing 
+layer used to average values of potential temperature, mixing ratio, 
+and wind speed. The beta increment determines how to vary the plume 
+buoyancy factor, with smaller values resulting in more iteration steps. 
+Phi is the fire moisture to potential temperature increment ratio.
+
+Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
+If a parcel is passed, the values will be set with the PFT fire parcel.
+
+References 
+----------
+Tory et al. 2018: https://journals.ametsoc.org/view/journals/mwre/146/8/mwr-d-17-0377.1.xml
+Tory et al. 2021: https://journals.ametsoc.org/view/journals/wefo/36/2/WAF-D-20-0027.1.xml
+
+Parameters 
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_cm1
+mix_layer : nwsspc.sharp.calc.layer.PressureLayer
+    A mixing layer to take average values of the environment from
+pressure : numpy.ndarray[dtype=float32]
+    A 1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of height values (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of temperature values (K)
+mixratio : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of water vapor mixing ratio values (g/g)
+virtual_temperature : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of virtual temperature values (K)
+u_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of U wind component values (m/s)
+v_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of V wind compnent values (m/s)
+potential_temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of potential temperature values (K)
+pcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
+    If a parcel is provided, returns the parcel for the PFT
+phi : float 
+    The fire moisture to potential temperature increment ratio (kg/(kg*K))
+beta_incr : float 
+    The fire plume buoyancy factor (unitless)
+
+Returns 
+-------
+float 
+    The PyroCB Firepower Threshold (Watts)
+
+)pbdoc");
+
+    m_params.def(
+        "pyrocumulonimbus_firepower_threshold",
+        [](sharp::lifter_wobus& lifter, sharp::PressureLayer& mix_layer,
+           const_prof_arr_t pres, const_prof_arr_t hght, const_prof_arr_t tmpk,
+           const_prof_arr_t mixr, const_prof_arr_t vtmpk, const_prof_arr_t uwin,
+           const_prof_arr_t vwin, const_prof_arr_t theta, sharp::Parcel* pcl,
+           float phi, float beta_incr) {
+            if ((pres.shape(0) != hght.shape(0)) ||
+                (pres.shape(0) != tmpk.shape(0)) ||
+                (pres.shape(0) != mixr.shape(0)) ||
+                (pres.shape(0) != vtmpk.shape(0)) ||
+                (pres.shape(0) != uwin.shape(0)) ||
+                (pres.shape(0) != vwin.shape(0)) ||
+                (pres.shape(0) != theta.shape(0))) {
+                throw nb::buffer_error(
+                    "All input arrays must have the same size!");
+            }
+            float* pcl_vtmp = new float[hght.size()];
+            float* pcl_buoy = new float[hght.size()];
+
+            float pft = sharp::pyrocumulonimbus_firepower_threshold(
+                lifter, mix_layer, pres.data(), hght.data(), tmpk.data(),
+                mixr.data(), vtmpk.data(), uwin.data(), vwin.data(),
+                theta.data(), pcl_vtmp, pcl_buoy, pres.size(), pcl, phi,
+                beta_incr);
+
+            delete[] pcl_vtmp;
+            delete[] pcl_buoy;
+
+            return pft;
+        },
+        nb::arg("lifter"), nb::arg("mix_layer"), nb::arg("pressure"),
+        nb::arg("height"), nb::arg("temperature"), nb::arg("mixratio"),
+        nb::arg("virtual_temperature"), nb::arg("u_wind"), nb::arg("v_wind"),
+        nb::arg("potential_temperature"), nb::arg("pcl") = nb::none(),
+        nb::arg("phi") = 6.67e-5, nb::arg("beta_incr") = 0.005,
+        R"pbdoc(
+Computes the Pyrocumulonimbus Firepower Threshold (PFT), or the minimum 
+amount of firepower required to generate pyrocumulonimbus clouds for a 
+given atmospheric profile. Requires a PressureLayer to define a mixing 
+layer used to average values of potential temperature, mixing ratio, 
+and wind speed. The beta increment determines how to vary the plume 
+buoyancy factor, with smaller values resulting in more iteration steps. 
+Phi is the fire moisture to potential temperature increment ratio.
+
+Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
+If a parcel is passed, the values will be set with the PFT fire parcel.
+
+References 
+----------
+Tory et al. 2018: https://journals.ametsoc.org/view/journals/mwre/146/8/mwr-d-17-0377.1.xml
+Tory et al. 2021: https://journals.ametsoc.org/view/journals/wefo/36/2/WAF-D-20-0027.1.xml
+
+Parameters 
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_wobus
+mix_layer : nwsspc.sharp.calc.layer.PressureLayer
+    A mixing layer to take average values of the environment from
+pressure : numpy.ndarray[dtype=float32]
+    A 1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of height values (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of temperature values (K)
+mixratio : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of water vapor mixing ratio values (g/g)
+virtual_temperature : numpy.ndarray[dtype=float32] 
+    A 1D NumPy array of virtual temperature values (K)
+u_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of U wind component values (m/s)
+v_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of V wind compnent values (m/s)
+potential_temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of potential temperature values (K)
+pcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
+    If a parcel is provided, returns the parcel for the PFT
+phi : float 
+    The fire moisture to potential temperature increment ratio (kg/(kg*K))
+beta_incr : float 
+    The fire plume buoyancy factor (unitless)
+
+Returns 
+-------
+float 
+    The PyroCB Firepower Threshold (Watts)
+
+)pbdoc");
 }
 
 #endif

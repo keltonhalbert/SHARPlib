@@ -678,9 +678,71 @@ void buoyancy(const float pcl_temperature[], const float env_temperature[],
 [[nodiscard]] float moist_static_energy(float height_agl, float temperature,
                                         float specific_humidity);
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Compute the pressure of the top of the Planetary Boundary Layer (PBL)
+ *
+ * Computes the pressure level corresponding to the top of the Planetary
+ * Boundary Layer (PBL). Uses the method described by Stull (1988), by which the
+ * virtual potential temperature is used. The offset determines the termination
+ * threshold above the surface.
+ *
+ * \param   pressure    (Pa)
+ * \param   thetav      (K)
+ * \param   N           (length of arrays)
+ * \param   offset      (K)
+ *
+ * \return Pressure of PBL top (Pa)
+ */
+[[nodiscard]] float pbl_top(const float pressure[], const float thetav[],
+                            const std::ptrdiff_t N, float offset = 0.5);
+
 [[nodiscard]] float buoyancy_dilution_potential(const float temperature,
                                                 const float mse_bar,
                                                 const float saturation_mse);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Returns the sharp::PressureLayer bounding a temperature range.
+ *
+ * Performs a top-down search for a sharp::PressureLayer that bounds the
+ * given temperature range. Uses a geometric approach to find the
+ * intersection of the temperature line with the given range.
+ *
+ * \param   pressure        (Pa)
+ * \param   temperature     (K)
+ * \param   tmpk_1          (K)
+ * \param   tmpk_2          (K)
+ * \param   N               (length of arrays)
+ */
+PressureLayer temperature_layer(const float pressure[],
+                                const float temperature[], const float tmpk_1,
+                                const float tmpk_2, const std::ptrdiff_t N);
+
+/// @cond DOXYGEN_IGNORE
+
+struct lifter_wobus;
+struct lifter_cm1;
+
+extern template float wetbulb<lifter_wobus>(lifter_wobus lifter, float pressure,
+                                            float temperature, float dewpoint);
+
+extern template float wetbulb<lifter_cm1>(lifter_cm1 lifter, float pressure,
+                                          float temperature, float dewpoint);
+
+extern template float theta_wetbulb<lifter_cm1>(lifter_cm1 lifter,
+                                                float pressure,
+                                                float temperature,
+                                                float dewpoint);
+
+extern template float theta_wetbulb<lifter_wobus>(lifter_wobus lifter,
+                                                  float pressure,
+                                                  float temperature,
+                                                  float dewpoint);
+
+/// @endcond
 
 }  // end namespace sharp
 

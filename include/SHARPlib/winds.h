@@ -236,6 +236,74 @@ struct WindComponents {
                                        const bool weighted);
 
 /**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Compute the max wind over a height or pressure layer
+ *
+ * Finds the maximum wind speed over a given sharp::PressureLayer or
+ * sharp::HeightLayer, returning the vector components.
+ *
+ * \param   layer       {bottom, top}
+ * \param   coordinate  (pressure (Pa) or height (m))
+ * \param   u_wind      (m/s)
+ * \param   v_wind      (m/s)
+ * \param   N           (length of arrays)
+ *
+ * \return {max_u, max_v}
+ */
+template <typename Layer>
+[[nodiscard]] WindComponents max_wind(Layer layer, const float coordinate[],
+                                      const float u_wind[],
+                                      const float v_wind[],
+                                      const std::ptrdiff_t N) {
+    LayerIndex lyr_idx = get_layer_index(layer, coordinate, N);
+
+    float u_bot, u_top;
+    float v_bot, v_top;
+    if constexpr (layer.coord == LayerCoordinate::pressure) {
+        u_bot = interp_pressure(layer.bottom, coordinate, u_wind, N);
+        v_bot = interp_pressure(layer.bottom, coordinate, v_wind, N);
+        u_top = interp_pressure(layer.top, coordinate, u_wind, N);
+        v_top = interp_pressure(layer.top, coordinate, v_wind, N);
+    } else {
+        u_bot = interp_height(layer.bottom, coordinate, u_wind, N);
+        v_bot = interp_height(layer.bottom, coordinate, v_wind, N);
+        u_top = interp_height(layer.top, coordinate, u_wind, N);
+        v_top = interp_height(layer.top, coordinate, v_wind, N);
+    }
+
+    float u_max = MISSING;
+    float v_max = MISSING;
+    float max = MISSING;
+    if ((u_bot != MISSING) && (v_bot != MISSING)) {
+        max = vector_magnitude(u_bot, v_bot);
+        u_max = u_bot;
+        v_max = v_bot;
+    }
+
+    for (std::ptrdiff_t idx = lyr_idx.kbot; idx <= lyr_idx.ktop; ++idx) {
+        if ((u_wind[idx] == MISSING) || (v_wind[idx] == MISSING)) continue;
+        float wspd = vector_magnitude(u_wind[idx], v_wind[idx]);
+        if (wspd > max) {
+            max = wspd;
+            u_max = u_wind[idx];
+            v_max = v_wind[idx];
+        }
+    }
+
+    if ((u_top != MISSING) && (v_top != MISSING)) {
+        float wspd = vector_magnitude(u_top, v_top);
+        if (wspd > max) {
+            max = wspd;
+            u_max = u_top;
+            v_max = v_top;
+        }
+    }
+
+    return {u_max, v_max};
+}
+
+/**
  *
  * \author Kelton Halbert - NWS Storm Prediction Center
  *
@@ -415,6 +483,40 @@ template <typename L>
 
     return layer_helicity;
 }
+
+/// @cond DOXYGEN_IGNORE
+
+extern template WindComponents max_wind<PressureLayer>(PressureLayer lyr,
+                                                       const float coordinate[],
+                                                       const float u_wind[],
+                                                       const float v_wind[],
+                                                       const std::ptrdiff_t N);
+
+extern template WindComponents max_wind<HeightLayer>(HeightLayer lyr,
+                                                     const float coordinate[],
+                                                     const float u_wind[],
+                                                     const float v_wind[],
+                                                     const std::ptrdiff_t N);
+
+extern template WindComponents wind_shear<PressureLayer>(
+    PressureLayer layer, const float coord[], const float u_wind[],
+    const float v_wind[], const std::ptrdiff_t N);
+
+extern template WindComponents wind_shear<HeightLayer>(HeightLayer layer,
+                                                       const float coord[],
+                                                       const float u_wind[],
+                                                       const float v_wind[],
+                                                       const std::ptrdiff_t N);
+
+extern template float helicity<PressureLayer>(
+    PressureLayer layer, WindComponents storm_motion, const float coord[],
+    const float u_wind[], const float v_wind[], const std::ptrdiff_t N);
+
+extern template float helicity<HeightLayer>(
+    HeightLayer layer, WindComponents storm_motion, const float coord[],
+    const float u_wind[], const float v_wind[], const std::ptrdiff_t N);
+
+/// @endcond
 
 }  // end namespace sharp
 

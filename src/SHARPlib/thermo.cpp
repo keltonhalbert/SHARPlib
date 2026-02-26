@@ -14,10 +14,12 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
+#include <SHARPlib/parcel.h>
 #include <SHARPlib/thermo.h>
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <cstdio>
 
 namespace sharp {
@@ -390,18 +392,6 @@ void drylift(float pressure, float temperature, float dewpoint,
     return;
 }
 
-float wetbulb(lifter_wobus lifter, float pressure, float temperature,
-              float dewpoint);
-
-float wetbulb(lifter_cm1 lifter, float pressure, float temperature,
-              float dewpoint);
-
-float theta_wetbulb(lifter_wobus lifter, float pressure, float temperature,
-                    float dewpoint);
-
-float theta_wetbulb(lifter_cm1 lifter, float pressure, float temperature,
-                    float dewpoint);
-
 float thetae(float pressure, float temperature, float dewpoint) {
 #ifndef NO_QC
     if ((pressure == MISSING) || (temperature == MISSING) ||
@@ -554,6 +544,14 @@ float moist_static_energy(float height_agl, float temperature,
            (GRAVITY * height_agl);
 }
 
+float pbl_top(const float pressure[], const float thetav[],
+              const std::ptrdiff_t N, float offset) {
+    float thetav_sfc = thetav[0];
+    float thetav_top = thetav_sfc + offset;
+
+    return sharp::find_first_pressure(thetav_top, pressure, thetav, N);
+}
+
 float buoyancy_dilution_potential(float temperature, float mse_bar,
                                   float saturation_mse) {
 #ifndef NO_QC
@@ -565,5 +563,96 @@ float buoyancy_dilution_potential(float temperature, float mse_bar,
     return -1.0f * (GRAVITY / (CP_DRYAIR * temperature)) *
            (mse_bar - saturation_mse);
 }
+
+PressureLayer temperature_layer(const float pressure[],
+                                const float temperature[], const float tmpk_1,
+                                const float tmpk_2, const std::ptrdiff_t N) {
+    float layer_bot = MISSING;
+    float layer_top = MISSING;
+
+    const float t_lo = std::min(tmpk_1, tmpk_2);
+    const float t_hi = std::max(tmpk_1, tmpk_2);
+
+    auto interpolate_log_p = [](float p1, float p2, float w) {
+        if (w <= 0.0f) return p1;
+        if (w >= 1.0f) return p2;
+        return p1 * std::pow(p2 / p1, w);
+    };
+
+    float last_p = MISSING;
+    float last_t = MISSING;
+    std::ptrdiff_t idx = N - 1;
+
+    while (idx >= 0) {
+        last_p = pressure[idx];
+        last_t = temperature[idx];
+        --idx;
+        if (last_p != MISSING && last_t != MISSING) break;
+    }
+
+    for (; idx >= 0; --idx) {
+        float p_curr = pressure[idx];
+        float t_curr = temperature[idx];
+
+        if (p_curr == MISSING || t_curr == MISSING) continue;
+
+        float t1 = last_t, t2 = t_curr;
+        float p1 = last_p, p2 = p_curr;
+        float w_in = 0.0f;
+        float w_out = 1.0f;
+        float dt = t2 - t1;
+
+        if (std::abs(dt) > 1e-5f) {
+            float inv_dt = 1.0f / dt;
+            float w1 = (t_lo - t1) * inv_dt;
+            float w2 = (t_hi - t1) * inv_dt;
+            w_in = std::max(0.0f, std::min(w1, w2));
+            w_out = std::min(1.0f, std::max(w1, w2));
+        } else {
+            if (t1 >= t_lo && t1 <= t_hi) {
+                w_in = 0.0f;
+                w_out = 1.0f;
+            } else {
+                w_in = 1.0f;
+                w_out = 0.0f;
+            }
+        }
+
+        if (w_in < w_out) {
+            if (layer_top == MISSING) {
+                layer_top = interpolate_log_p(p1, p2, w_in);
+            }
+
+            layer_bot = interpolate_log_p(p1, p2, w_out);
+
+            if (w_out < 1.0f) {
+                break;
+            }
+        } else if (layer_top != MISSING) {
+            break;
+        }
+
+        last_p = p_curr;
+        last_t = t_curr;
+    }
+
+    return {layer_bot, layer_top};
+}
+
+/// @cond DOXYGEN_IGNORE
+
+template float wetbulb<lifter_wobus>(lifter_wobus lifter, float pressure,
+                                     float temperature, float dewpoint);
+
+template float wetbulb<lifter_cm1>(lifter_cm1 lifter, float pressure,
+                                   float temperature, float dewpoint);
+
+template float theta_wetbulb<lifter_wobus>(lifter_wobus lifter, float pressure,
+                                           float temperature, float dewpoint);
+
+template float theta_wetbulb<lifter_cm1>(lifter_cm1 lifter, float pressure,
+                                         float temperature, float dewpoint);
+
+/// @endcond
 
 }  // end namespace sharp

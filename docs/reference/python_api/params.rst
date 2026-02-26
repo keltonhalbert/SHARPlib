@@ -18,6 +18,7 @@ params
    .. autofunction:: nwsspc.sharp.calc.params.derecho_composite_parameter
    .. autofunction:: nwsspc.sharp.calc.params.large_hail_parameter
    .. autofunction:: nwsspc.sharp.calc.params.hail_growth_layer
+   .. autofunction:: nwsspc.sharp.calc.params.convective_temperature
    .. autofunction:: nwsspc.sharp.calc.params.precipitable_water
 
    Fire
@@ -26,6 +27,7 @@ params
 
    .. autofunction:: nwsspc.sharp.calc.params.equilibrium_moisture_content
    .. autofunction:: nwsspc.sharp.calc.params.fosberg_fire_index
+   .. autofunction:: nwsspc.sharp.calc.params.pyrocumulonimbus_firepower_threshold
 
    Winter
    ------

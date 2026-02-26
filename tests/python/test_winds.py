@@ -88,6 +88,23 @@ def test_mean_wind():
     assert (mw.v == pytest.approx(11.69769, abs=1e-5))
 
 
+def test_max_wind():
+
+    plyr = layer.PressureLayer(snd_data["pres"][0], 60000.0)
+    hlyr = layer.HeightLayer(snd_data["hght"][0], snd_data["hght"][0] + 3000.0)
+    mw = winds.max_wind(
+        plyr, snd_data["pres"], snd_data["uwin"], snd_data["vwin"])
+
+    assert (mw.u == pytest.approx(12.80, abs=1e-5))
+    assert (mw.v == pytest.approx(12.80, abs=1e-5))
+
+    mw = winds.max_wind(
+        hlyr, snd_data["hght"], snd_data["uwin"], snd_data["vwin"])
+
+    assert (mw.u == pytest.approx(12.8, abs=1e-5))
+    assert (mw.v == pytest.approx(12.8, abs=1e-5))
+
+
 def test_wind_shear():
     hlyr = layer.HeightLayer(0, 6000.0)
     shr = winds.wind_shear(

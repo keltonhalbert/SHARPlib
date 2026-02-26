@@ -12,7 +12,14 @@
  */
 
 #include <SHARPlib/constants.h>
+#include <SHARPlib/interp.h>
+#include <SHARPlib/layer.h>
 #include <SHARPlib/params/fire.h>
+#include <SHARPlib/parcel.h>
+#include <SHARPlib/thermo.h>
+#include <SHARPlib/winds.h>
+#define FMT_HEADER_ONLY
+#include <fmt/core.h>
 
 #include <algorithm>
 #include <cmath>
@@ -67,5 +74,46 @@ float fosberg_fire_index(float temperature, float rel_humidity,
         eta * std::sqrt(1.0f + std::pow(wind_speed, 2)) / 0.3002f;
     return std::min(fwwi, 100.f);
 }
+
+float pft_plume_potential_temperature(float theta_env, float beta) {
+#ifndef NO_QC
+    if (theta_env == MISSING) {
+        return MISSING;
+    }
+#endif
+    return (beta + 1.0f) * theta_env;
+}
+
+float pft_plume_mixratio(float theta_env, float mixr_env, float beta,
+                         float phi) {
+#ifndef NO_QC
+    if ((theta_env == MISSING) || (mixr_env == MISSING)) {
+        return MISSING;
+    }
+#endif
+    float spfh_env = specific_humidity(mixr_env);
+    float spfh_plume = std::max(0.0f, spfh_env + (beta * phi * theta_env));
+    return mixratio(spfh_plume);
+}
+
+/// @cond DOXYGEN_IGNORE
+
+template float pyrocumulonimbus_firepower_threshold(
+    lifter_wobus& lifter, PressureLayer mix_layer, const float pressure[],
+    const float height[], const float temperature[], const float mixratio[],
+    const float virtemp[], const float uwin[], const float vwin[],
+    const float potential_temperature[], float pcl_vtmpk_arr[],
+    float pcl_buoy_arr[], std::ptrdiff_t N, Parcel* pcl, float phi,
+    float beta_incr);
+
+template float pyrocumulonimbus_firepower_threshold(
+    lifter_cm1& lifter, PressureLayer mix_layer, const float pressure[],
+    const float height[], const float temperature[], const float mixratio[],
+    const float virtemp[], const float uwin[], const float vwin[],
+    const float potential_temperature[], float pcl_vtmpk_arr[],
+    float pcl_buoy_arr[], std::ptrdiff_t N, Parcel* pcl, float phi,
+    float beta_incr);
+
+/// @endcond
 
 }  // namespace sharp

@@ -607,6 +607,42 @@ template <typename L>
                                const std::ptrdiff_t N,
                                const bool isAGL = false);
 
+/// @cond DOXYGEN_IGNORE
+
+extern template float layer_min<PressureLayer>(PressureLayer layer,
+                                               const float coord_arr[],
+                                               const float data_arr[],
+                                               const std::ptrdiff_t N,
+                                               float* lvl_of_min);
+
+extern template float layer_min<HeightLayer>(HeightLayer layer,
+                                             const float coord_arr[],
+                                             const float data_arr[],
+                                             const std::ptrdiff_t N,
+                                             float* lvl_of_min);
+
+extern template float layer_max<PressureLayer>(PressureLayer layer,
+                                               const float coord_arr[],
+                                               const float data_arr[],
+                                               const std::ptrdiff_t N,
+                                               float* lvl_of_max);
+
+extern template float layer_max<HeightLayer>(HeightLayer layer,
+                                             const float coord_arr[],
+                                             const float data_arr[],
+                                             const std::ptrdiff_t N,
+                                             float* lvl_of_max);
+
+extern template float integrate_layer_trapz<PressureLayer>(
+    PressureLayer layer, const float var_array[], const float coord_array[],
+    const std::ptrdiff_t N, const int integ_sign, const bool weighted);
+
+extern template float integrate_layer_trapz<HeightLayer>(
+    HeightLayer layer, const float var_array[], const float coord_array[],
+    const std::ptrdiff_t N, const int integ_sign, const bool weighted);
+
+/// @endcond
+
 }  // end namespace sharp
 
 #endif  // SHARP_LAYERS_H

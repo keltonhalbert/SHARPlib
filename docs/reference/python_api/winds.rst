@@ -27,3 +27,4 @@ winds
    .. autofunction:: nwsspc.sharp.calc.winds.helicity
    .. autofunction:: nwsspc.sharp.calc.winds.wind_shear
    .. autofunction:: nwsspc.sharp.calc.winds.mean_wind
+   .. autofunction:: nwsspc.sharp.calc.winds.max_wind
