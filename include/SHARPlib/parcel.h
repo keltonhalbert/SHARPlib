@@ -188,6 +188,26 @@ struct lifter_cm1 {
     }
 };
 
+template <typename Lft>
+struct lifter_tbl {
+    Lft m_lifter;
+    float p_max = 110000.0f;
+    float p_min = 100.0f;
+    float thetae_min = 250.0f;
+    float thetae_max = 400.0f;
+
+    std::vector<float> m_logp_coord;
+    std::vector<float> m_thetae_coord;
+    std::vector<float> m_LUT_pcl_tmpk;
+    std::vector<float> m_LUT_pcl_qv;
+    std::vector<float> m_LUT_pcl_qi;
+    std::vector<float> m_LUT_pcl_ql;
+
+    inline void setup() {
+        // fill the coordinates and tables
+    }
+};
+
 //
 ////////////  END FUNCTORS   ///////////
 
