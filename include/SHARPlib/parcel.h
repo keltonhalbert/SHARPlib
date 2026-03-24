@@ -225,9 +225,9 @@ struct lifter_tbl {
     inline void setup([[maybe_unused]] const float lcl_pres,
                       [[maybe_unused]] const float lcl_tmpk) {
         if constexpr (Lft::tracks_moisture) {
-            this->rv = sharp::MISSING;
-            this->rl = sharp::MISSING;
-            this->ri = sharp::MISSING;
+            m_rv = sharp::MISSING;
+            m_rl = sharp::MISSING;
+            m_ri = sharp::MISSING;
         }
     }
 
@@ -347,9 +347,9 @@ struct lifter_tbl {
         };
 
         if constexpr (Lft::tracks_moisture) {
-            this->rv = bilinear_interp(m_LUT_pcl_rv);
-            this->rl = bilinear_interp(m_LUT_pcl_rl);
-            this->ri = bilinear_interp(m_LUT_pcl_ri);
+            m_rv = bilinear_interp(m_LUT_pcl_rv);
+            m_rl = bilinear_interp(m_LUT_pcl_rl);
+            m_ri = bilinear_interp(m_LUT_pcl_ri);
         }
 
         return bilinear_interp(m_LUT_pcl_tmpk);
@@ -358,8 +358,7 @@ struct lifter_tbl {
     [[nodiscard]] inline float parcel_virtual_temperature(
         const float pres, const float tmpk) const {
         if constexpr (Lft::tracks_moisture) {
-            return sharp::virtual_temperature(tmpk, this->rv, this->rl,
-                                              this->ri);
+            return sharp::virtual_temperature(tmpk, m_rv, m_rl, m_ri);
         } else {
             return sharp::virtual_temperature(tmpk,
                                               sharp::mixratio(pres, tmpk));
