@@ -199,7 +199,7 @@ struct tbl_data {
     Lft m_lifter;
 
     float p_max = 110000.0f;
-    float p_min = 100.0f;
+    float p_min = 1000.0f;
     float thetae_min = 250.0f;
     float thetae_max = 450.0f;
     float m_delta_thetae_inv = 0.0f;
