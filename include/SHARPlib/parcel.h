@@ -210,8 +210,8 @@ struct lifter_tbl {
     float m_rl = sharp::MISSING;
     float m_ri = sharp::MISSING;
 
-    std::size_t num_logp = 200;
-    std::size_t num_thetae = 200;
+    std::size_t num_logp = 251;
+    std::size_t num_thetae = 251;
 
     std::vector<float> m_logp_coord;
     std::vector<float> m_thetae_coord;
