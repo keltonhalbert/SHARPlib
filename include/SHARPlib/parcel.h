@@ -195,10 +195,8 @@ struct lifter_cm1 {
 };
 
 template <typename Lft>
-struct lifter_tbl {
+struct tbl_data {
     Lft m_lifter;
-    static constexpr bool lift_from_lcl = Lft::lift_from_lcl;
-    static constexpr bool tracks_moisture = Lft::tracks_moisture;
 
     float p_max = 110000.0f;
     float p_min = 100.0f;
@@ -206,9 +204,6 @@ struct lifter_tbl {
     float thetae_max = 500.0f;
     float m_delta_thetae_inv = 0.0f;
     float m_delta_logp_inv = 0.0f;
-    float m_rv = sharp::MISSING;
-    float m_rl = sharp::MISSING;
-    float m_ri = sharp::MISSING;
 
     std::size_t num_logp = 251;
     std::size_t num_thetae = 251;
@@ -220,16 +215,7 @@ struct lifter_tbl {
     std::vector<float> m_LUT_pcl_rl;
     std::vector<float> m_LUT_pcl_ri;
 
-    lifter_tbl(Lft lifter) : m_lifter(std::move(lifter)) {}
-
-    inline void setup([[maybe_unused]] const float lcl_pres,
-                      [[maybe_unused]] const float lcl_tmpk) {
-        if constexpr (Lft::tracks_moisture) {
-            m_rv = sharp::MISSING;
-            m_rl = sharp::MISSING;
-            m_ri = sharp::MISSING;
-        }
-    }
+    tbl_data(Lft lifter) : m_lifter(std::move(lifter)) {}
 
     inline void generate_table() {
         m_logp_coord.resize(num_logp);
@@ -313,33 +299,58 @@ struct lifter_tbl {
         fmt::println("Failed to converge on a temperature for thetae.");
         return tmpk_mid;
     }
+};
+
+template <typename Lft>
+struct lifter_tbl {
+    const tbl_data<Lft>& m_data;
+    static constexpr bool lift_from_lcl = Lft::lift_from_lcl;
+    static constexpr bool tracks_moisture = Lft::tracks_moisture;
+
+    float m_rv = sharp::MISSING;
+    float m_rl = sharp::MISSING;
+    float m_ri = sharp::MISSING;
+
+    lifter_tbl(const tbl_data<Lft>& data) : m_data(data) {}
+
+    inline void setup([[maybe_unused]] const float lcl_pres,
+                      [[maybe_unused]] const float lcl_tmpk) {
+        if constexpr (Lft::tracks_moisture) {
+            m_rv = sharp::MISSING;
+            m_rl = sharp::MISSING;
+            m_ri = sharp::MISSING;
+        }
+    }
 
     [[nodiscard]] inline float operator()(const float pres, const float tmpk,
                                           const float new_pres) {
-        const float target_thetae = thetae(pres, tmpk, tmpk);
+        const float target_thetae = sharp::thetae(pres, tmpk, tmpk);
 
-        float fi = (target_thetae - thetae_min) * m_delta_thetae_inv;
-        fi = std::clamp(fi, 0.0f, static_cast<float>(num_thetae - 1.001f));
+        // Access all the bounding limits and spacing from m_data
+        float fi =
+            (target_thetae - m_data.thetae_min) * m_data.m_delta_thetae_inv;
+        fi = std::clamp(fi, 0.0f,
+                        static_cast<float>(m_data.num_thetae - 1.001f));
 
         const std::size_t i0 = static_cast<std::size_t>(fi);
         const std::size_t i1 = i0 + 1;
         const float wi = fi - static_cast<float>(i0);
 
         const float target_logp = std::log(new_pres);
-        const float logp_max = std::log(p_max);
+        const float logp_max = std::log(m_data.p_max);
 
-        float fk = (target_logp - logp_max) * m_delta_logp_inv;
-        fk = std::clamp(fk, 0.0f, static_cast<float>(num_logp - 1.001f));
+        float fk = (target_logp - logp_max) * m_data.m_delta_logp_inv;
+        fk = std::clamp(fk, 0.0f, static_cast<float>(m_data.num_logp - 1.001f));
 
         const std::size_t k0 = static_cast<std::size_t>(fk);
         const std::size_t k1 = k0 + 1;
         const float wk = fk - static_cast<float>(k0);
 
         auto bilinear_interp = [&](const std::vector<float>& lut) -> float {
-            const float val00 = lut[i0 * num_logp + k0];
-            const float val01 = lut[i0 * num_logp + k1];
-            const float val10 = lut[i1 * num_logp + k0];
-            const float val11 = lut[i1 * num_logp + k1];
+            const float val00 = lut[i0 * m_data.num_logp + k0];
+            const float val01 = lut[i0 * m_data.num_logp + k1];
+            const float val10 = lut[i1 * m_data.num_logp + k0];
+            const float val11 = lut[i1 * m_data.num_logp + k1];
 
             const float val0 = sharp::lerp(val00, val01, wk);
             const float val1 = sharp::lerp(val10, val11, wk);
@@ -347,12 +358,12 @@ struct lifter_tbl {
         };
 
         if constexpr (Lft::tracks_moisture) {
-            m_rv = bilinear_interp(m_LUT_pcl_rv);
-            m_rl = bilinear_interp(m_LUT_pcl_rl);
-            m_ri = bilinear_interp(m_LUT_pcl_ri);
+            m_rv = bilinear_interp(m_data.m_LUT_pcl_rv);
+            m_rl = bilinear_interp(m_data.m_LUT_pcl_rl);
+            m_ri = bilinear_interp(m_data.m_LUT_pcl_ri);
         }
 
-        return bilinear_interp(m_LUT_pcl_tmpk);
+        return bilinear_interp(m_data.m_LUT_pcl_tmpk);
     }
 
     [[nodiscard]] inline float parcel_virtual_temperature(
