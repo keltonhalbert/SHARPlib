@@ -17,8 +17,12 @@
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
 #include <SHARPlib/thermo.h>
+#include <fmt/core.h>
 
+#include <algorithm>
+#include <cmath>
 #include <cstddef>
+#include <vector>
 
 namespace sharp {
 
@@ -45,6 +49,7 @@ namespace sharp {
  */
 struct lifter_wobus {
     static constexpr bool lift_from_lcl = true;
+    static constexpr bool tracks_moisture = false;
 
     /**
      * \brief The iterative convergence criteria (K)
@@ -108,6 +113,7 @@ struct lifter_wobus {
  */
 struct lifter_cm1 {
     static constexpr bool lift_from_lcl = false;
+    static constexpr bool tracks_moisture = true;
 
     /**
      * \brief The type of moist adiabat to use, as defined by sharp::adiabat
@@ -191,20 +197,173 @@ struct lifter_cm1 {
 template <typename Lft>
 struct lifter_tbl {
     Lft m_lifter;
+    static constexpr bool lift_from_lcl = Lft::lift_from_lcl;
+    static constexpr bool tracks_moisture = Lft::tracks_moisture;
+
     float p_max = 110000.0f;
     float p_min = 100.0f;
     float thetae_min = 250.0f;
-    float thetae_max = 400.0f;
+    float thetae_max = 500.0f;
+    float m_delta_thetae_inv = 0.0f;
+    float m_delta_logp_inv = 0.0f;
+    float m_rv = sharp::MISSING;
+    float m_rl = sharp::MISSING;
+    float m_ri = sharp::MISSING;
+
+    std::size_t num_logp = 200;
+    std::size_t num_thetae = 200;
 
     std::vector<float> m_logp_coord;
     std::vector<float> m_thetae_coord;
     std::vector<float> m_LUT_pcl_tmpk;
-    std::vector<float> m_LUT_pcl_qv;
-    std::vector<float> m_LUT_pcl_qi;
-    std::vector<float> m_LUT_pcl_ql;
+    std::vector<float> m_LUT_pcl_rv;
+    std::vector<float> m_LUT_pcl_rl;
+    std::vector<float> m_LUT_pcl_ri;
 
-    inline void setup() {
-        // fill the coordinates and tables
+    lifter_tbl(Lft lifter) : m_lifter(std::move(lifter)) {}
+
+    inline void setup([[maybe_unused]] const float lcl_pres,
+                      [[maybe_unused]] const float lcl_tmpk) {
+        if constexpr (Lft::tracks_moisture) {
+            this->rv = sharp::MISSING;
+            this->rl = sharp::MISSING;
+            this->ri = sharp::MISSING;
+        }
+    }
+
+    inline void generate_table() {
+        m_logp_coord.resize(num_logp);
+        m_thetae_coord.resize(num_thetae);
+
+        const float delta_thetae = (thetae_max - thetae_min) / (num_thetae - 1);
+        m_delta_thetae_inv = 1.0f / delta_thetae;
+        for (std::size_t i = 0; i < num_thetae; ++i) {
+            m_thetae_coord[i] = thetae_min + i * delta_thetae;
+        }
+
+        const float logp_max = std::log(p_max);
+        const float logp_min = std::log(p_min);
+        const float delta_logp = (logp_min - logp_max) / (num_logp - 1);
+        m_delta_logp_inv = 1.0f / delta_logp;
+        for (std::size_t i = 0; i < num_logp; ++i) {
+            m_logp_coord[i] = logp_max + i * delta_logp;
+        }
+
+        std::size_t size_2D = num_logp * num_thetae;
+        m_LUT_pcl_tmpk.resize(size_2D);
+        m_LUT_pcl_rv.resize(size_2D);
+        m_LUT_pcl_rl.resize(size_2D);
+        m_LUT_pcl_ri.resize(size_2D);
+
+        for (std::size_t i = 0; i < num_thetae; ++i) {
+            const float thetae_target = m_thetae_coord[i];
+            const float tmpk = solve_tmpk_for_thetae(p_max, thetae_target);
+
+            m_lifter.setup(p_max, tmpk);
+            float pres_curr = p_max;
+            float tmpk_curr = tmpk;
+
+            for (std::size_t k = 0; k < num_logp; ++k) {
+                float pres = std::exp(m_logp_coord[k]);
+                if (k > 0) {
+                    tmpk_curr = m_lifter(pres_curr, tmpk_curr, pres);
+                }
+
+                const std::size_t idx_2D = i * num_logp + k;
+                m_LUT_pcl_tmpk[idx_2D] = tmpk_curr;
+
+                if constexpr (Lft::tracks_moisture) {
+                    m_LUT_pcl_rv[idx_2D] = m_lifter.rv;
+                    m_LUT_pcl_rl[idx_2D] = m_lifter.rl;
+                    m_LUT_pcl_ri[idx_2D] = m_lifter.ri;
+                } else {
+                    m_LUT_pcl_rv[idx_2D] = mixratio(pres, tmpk_curr);
+                    m_LUT_pcl_rl[idx_2D] = 0.0f;
+                    m_LUT_pcl_ri[idx_2D] = 0.0f;
+                }
+
+                pres_curr = pres;
+            }
+        }
+    }
+
+    [[nodiscard]] float solve_tmpk_for_thetae(float pressure,
+                                              float thetae_target) const {
+        float tmpk_lo = 200.0f;
+        float tmpk_hi = 400.0f;
+        float tmpk_mid = sharp::ZEROCNK;
+
+        const float tol = 0.001f;
+        const std::size_t max_iters = 50;
+
+        for (std::size_t i = 0; i < max_iters; ++i) {
+            tmpk_mid = 0.5f * (tmpk_lo + tmpk_hi);
+            const float curr_thetae = thetae(pressure, tmpk_mid, tmpk_mid);
+
+            if (std::abs(curr_thetae - thetae_target) < tol) {
+                return tmpk_mid;
+            }
+
+            if (curr_thetae < thetae_target) {
+                tmpk_lo = tmpk_mid;
+            } else {
+                tmpk_hi = tmpk_mid;
+            }
+        }
+        fmt::println("Failed to converge on a temperature for thetae.");
+        return tmpk_mid;
+    }
+
+    [[nodiscard]] inline float operator()(const float pres, const float tmpk,
+                                          const float new_pres) {
+        const float target_thetae = thetae(pres, tmpk, tmpk);
+
+        float fi = (target_thetae - thetae_min) * m_delta_thetae_inv;
+        fi = std::clamp(fi, 0.0f, static_cast<float>(num_thetae - 1.001f));
+
+        const std::size_t i0 = static_cast<std::size_t>(fi);
+        const std::size_t i1 = i0 + 1;
+        const float wi = fi - static_cast<float>(i0);
+
+        const float target_logp = std::log(new_pres);
+        const float logp_max = std::log(p_max);
+
+        float fk = (target_logp - logp_max) * m_delta_logp_inv;
+        fk = std::clamp(fk, 0.0f, static_cast<float>(num_logp - 1.001f));
+
+        const std::size_t k0 = static_cast<std::size_t>(fk);
+        const std::size_t k1 = k0 + 1;
+        const float wk = fk - static_cast<float>(k0);
+
+        auto bilinear_interp = [&](const std::vector<float>& lut) -> float {
+            const float val00 = lut[i0 * num_logp + k0];
+            const float val01 = lut[i0 * num_logp + k1];
+            const float val10 = lut[i1 * num_logp + k0];
+            const float val11 = lut[i1 * num_logp + k1];
+
+            const float val0 = sharp::lerp(val00, val01, wk);
+            const float val1 = sharp::lerp(val10, val11, wk);
+            return sharp::lerp(val0, val1, wi);
+        };
+
+        if constexpr (Lft::tracks_moisture) {
+            this->rv = bilinear_interp(m_LUT_pcl_rv);
+            this->rl = bilinear_interp(m_LUT_pcl_rl);
+            this->ri = bilinear_interp(m_LUT_pcl_ri);
+        }
+
+        return bilinear_interp(m_LUT_pcl_tmpk);
+    }
+
+    [[nodiscard]] inline float parcel_virtual_temperature(
+        const float pres, const float tmpk) const {
+        if constexpr (Lft::tracks_moisture) {
+            return sharp::virtual_temperature(tmpk, this->rv, this->rl,
+                                              this->ri);
+        } else {
+            return sharp::virtual_temperature(tmpk,
+                                              sharp::mixratio(pres, tmpk));
+        }
     }
 };
 
