@@ -367,7 +367,7 @@ struct lifter_tbl {
     }
 
     [[nodiscard]] inline float parcel_virtual_temperature(
-        const float pres, const float tmpk) const {
+        [[maybe_unused]] const float pres, const float tmpk) const {
         if constexpr (Lft::tracks_moisture) {
             return sharp::virtual_temperature(tmpk, m_rv, m_rl, m_ri);
         } else {
