@@ -315,11 +315,40 @@ struct lifter_tbl {
     lifter_tbl(const tbl_data<Lft>& data) : m_data(data) {}
 
     inline void setup(const float lcl_pres, const float lcl_tmpk) {
-        const float target_thetae = sharp::thetae(lcl_pres, lcl_tmpk, lcl_tmpk);
+        const float target_logp = std::log(lcl_pres);
+        const float logp_max = std::log(m_data.p_max);
 
-        m_fi = (target_thetae - m_data.thetae_min) * m_data.m_delta_thetae_inv;
-        m_fi = std::clamp(m_fi, 0.0f,
-                          static_cast<float>(m_data.num_thetae - 1.001f));
+        float fk = (target_logp - logp_max) * m_data.m_delta_logp_inv;
+        fk = std::clamp(fk, 0.0f, static_cast<float>(m_data.num_logp - 1.001f));
+
+        const std::size_t k0 = static_cast<std::size_t>(fk);
+        const std::size_t k1 = k0 + 1;
+        const float wk = fk - static_cast<float>(k0);
+
+        float fi_lo = 0.0f;
+        float fi_hi = static_cast<float>(m_data.num_thetae - 1.001f);
+
+        for (int step = 0; step < 20; ++step) {
+            m_fi = 0.5f * (fi_lo + fi_hi);
+
+            std::size_t i0 = static_cast<std::size_t>(m_fi);
+            std::size_t i1 = i0 + 1;
+            float wi = m_fi - static_cast<float>(i0);
+
+            float t0 = sharp::lerp(
+                m_data.m_LUT_pcl_tmpk[i0 * m_data.num_logp + k0],
+                m_data.m_LUT_pcl_tmpk[i0 * m_data.num_logp + k1], wk);
+            float t1 = sharp::lerp(
+                m_data.m_LUT_pcl_tmpk[i1 * m_data.num_logp + k0],
+                m_data.m_LUT_pcl_tmpk[i1 * m_data.num_logp + k1], wk);
+            float t_interp = sharp::lerp(t0, t1, wi);
+
+            if (t_interp < lcl_tmpk) {
+                fi_lo = m_fi;
+            } else {
+                fi_hi = m_fi;
+            }
+        }
 
         if constexpr (Lft::tracks_moisture) {
             m_rv = sharp::MISSING;
