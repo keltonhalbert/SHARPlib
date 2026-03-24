@@ -312,6 +312,9 @@ struct lifter_tbl {
     float m_rl = sharp::MISSING;
     float m_ri = sharp::MISSING;
 
+    float m_rl_base = 0.0f;
+    float m_ri_base = 0.0f;
+
     lifter_tbl(const tbl_data<Lft>& data) : m_data(data) {}
 
     inline void setup(const float lcl_pres, const float lcl_tmpk) {
@@ -330,7 +333,6 @@ struct lifter_tbl {
 
         for (int step = 0; step < 20; ++step) {
             m_fi = 0.5f * (fi_lo + fi_hi);
-
             std::size_t i0 = static_cast<std::size_t>(m_fi);
             std::size_t i1 = i0 + 1;
             float wi = m_fi - static_cast<float>(i0);
@@ -343,14 +345,28 @@ struct lifter_tbl {
                 m_data.m_LUT_pcl_tmpk[i1 * m_data.num_logp + k1], wk);
             float t_interp = sharp::lerp(t0, t1, wi);
 
-            if (t_interp < lcl_tmpk) {
+            if (t_interp < lcl_tmpk)
                 fi_lo = m_fi;
-            } else {
+            else
                 fi_hi = m_fi;
-            }
         }
 
         if constexpr (Lft::tracks_moisture) {
+            std::size_t i0 = static_cast<std::size_t>(m_fi);
+            std::size_t i1 = i0 + 1;
+            float wi = m_fi - static_cast<float>(i0);
+
+            auto get_base = [&](const std::vector<float>& lut) -> float {
+                float v0 = sharp::lerp(lut[i0 * m_data.num_logp + k0],
+                                       lut[i0 * m_data.num_logp + k1], wk);
+                float v1 = sharp::lerp(lut[i1 * m_data.num_logp + k0],
+                                       lut[i1 * m_data.num_logp + k1], wk);
+                return sharp::lerp(v0, v1, wi);
+            };
+
+            m_rl_base = get_base(m_data.m_LUT_pcl_rl);
+            m_ri_base = get_base(m_data.m_LUT_pcl_ri);
+
             m_rv = sharp::MISSING;
             m_rl = sharp::MISSING;
             m_ri = sharp::MISSING;
@@ -387,8 +403,12 @@ struct lifter_tbl {
 
         if constexpr (Lft::tracks_moisture) {
             m_rv = bilinear_interp(m_data.m_LUT_pcl_rv);
-            m_rl = bilinear_interp(m_data.m_LUT_pcl_rl);
-            m_ri = bilinear_interp(m_data.m_LUT_pcl_ri);
+
+            // OFFSET the water loading so it starts at 0 at the LCL!
+            m_rl = std::max(0.0f,
+                            bilinear_interp(m_data.m_LUT_pcl_rl) - m_rl_base);
+            m_ri = std::max(0.0f,
+                            bilinear_interp(m_data.m_LUT_pcl_ri) - m_ri_base);
         }
 
         return bilinear_interp(m_data.m_LUT_pcl_tmpk);
