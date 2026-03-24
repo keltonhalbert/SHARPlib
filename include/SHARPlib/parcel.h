@@ -201,7 +201,7 @@ struct tbl_data {
     float p_max = 110000.0f;
     float p_min = 100.0f;
     float thetae_min = 250.0f;
-    float thetae_max = 500.0f;
+    float thetae_max = 450.0f;
     float m_delta_thetae_inv = 0.0f;
     float m_delta_logp_inv = 0.0f;
 
@@ -276,7 +276,7 @@ struct tbl_data {
     [[nodiscard]] float solve_tmpk_for_thetae(float pressure,
                                               float thetae_target) const {
         float tmpk_lo = 200.0f;
-        float tmpk_hi = 400.0f;
+        float tmpk_hi = 330.0f;
         float tmpk_mid = sharp::ZEROCNK;
 
         const float tol = 0.001f;
