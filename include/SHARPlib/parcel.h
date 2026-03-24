@@ -215,7 +215,17 @@ struct tbl_data {
     std::vector<float> m_LUT_pcl_rl;
     std::vector<float> m_LUT_pcl_ri;
 
-    tbl_data(Lft lifter) : m_lifter(std::move(lifter)) {}
+    tbl_data(Lft lifter) : m_lifter(std::move(lifter)) {
+        if (m_lifter.ma_type == sharp::adiabat::adiab_liq ||
+            m_lifter.ma_type == sharp::adiabat::adiab_ice) {
+            throw std::invalid_argument(
+                "CRITICAL ERROR: sharp::tbl_data does not support reversible "
+                "adiabatic ascent (adiab_liq or adiab_ice). The 2D lookup "
+                "table "
+                "cannot track conserved total water mass. Please configure the "
+                "lifter to use pseudo_liq or pseudo_ice instead.");
+        }
+    }
 
     inline void generate_table() {
         m_logp_coord.resize(num_logp);
