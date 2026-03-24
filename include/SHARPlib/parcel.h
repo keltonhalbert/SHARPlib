@@ -307,14 +307,20 @@ struct lifter_tbl {
     static constexpr bool lift_from_lcl = Lft::lift_from_lcl;
     static constexpr bool tracks_moisture = Lft::tracks_moisture;
 
+    float m_fi = 0.0f;
     float m_rv = sharp::MISSING;
     float m_rl = sharp::MISSING;
     float m_ri = sharp::MISSING;
 
     lifter_tbl(const tbl_data<Lft>& data) : m_data(data) {}
 
-    inline void setup([[maybe_unused]] const float lcl_pres,
-                      [[maybe_unused]] const float lcl_tmpk) {
+    inline void setup(const float lcl_pres, const float lcl_tmpk) {
+        const float target_thetae = sharp::thetae(lcl_pres, lcl_tmpk, lcl_tmpk);
+
+        m_fi = (target_thetae - m_data.thetae_min) * m_data.m_delta_thetae_inv;
+        m_fi = std::clamp(m_fi, 0.0f,
+                          static_cast<float>(m_data.num_thetae - 1.001f));
+
         if constexpr (Lft::tracks_moisture) {
             m_rv = sharp::MISSING;
             m_rl = sharp::MISSING;
@@ -322,19 +328,12 @@ struct lifter_tbl {
         }
     }
 
-    [[nodiscard]] inline float operator()(const float pres, const float tmpk,
+    [[nodiscard]] inline float operator()([[maybe_unused]] const float pres,
+                                          [[maybe_unused]] const float tmpk,
                                           const float new_pres) {
-        const float target_thetae = sharp::thetae(pres, tmpk, tmpk);
-
-        // Access all the bounding limits and spacing from m_data
-        float fi =
-            (target_thetae - m_data.thetae_min) * m_data.m_delta_thetae_inv;
-        fi = std::clamp(fi, 0.0f,
-                        static_cast<float>(m_data.num_thetae - 1.001f));
-
-        const std::size_t i0 = static_cast<std::size_t>(fi);
+        const std::size_t i0 = static_cast<std::size_t>(m_fi);
         const std::size_t i1 = i0 + 1;
-        const float wi = fi - static_cast<float>(i0);
+        const float wi = m_fi - static_cast<float>(i0);
 
         const float target_logp = std::log(new_pres);
         const float logp_max = std::log(m_data.p_max);
