@@ -205,8 +205,8 @@ struct tbl_data {
     float m_delta_thetae_inv = 0.0f;
     float m_delta_logp_inv = 0.0f;
 
-    std::size_t num_logp = 251;
-    std::size_t num_thetae = 251;
+    std::size_t num_logp = 301;
+    std::size_t num_thetae = 301;
 
     std::vector<float> m_logp_coord;
     std::vector<float> m_thetae_coord;
