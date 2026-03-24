@@ -641,17 +641,34 @@ PressureLayer temperature_layer(const float pressure[],
 
 /// @cond DOXYGEN_IGNORE
 
-template float wetbulb<lifter_wobus>(lifter_wobus lifter, float pressure,
+template float wetbulb<lifter_wobus>(lifter_wobus& lifter, float pressure,
                                      float temperature, float dewpoint);
 
-template float wetbulb<lifter_cm1>(lifter_cm1 lifter, float pressure,
+template float wetbulb<lifter_cm1>(lifter_cm1& lifter, float pressure,
                                    float temperature, float dewpoint);
 
-template float theta_wetbulb<lifter_wobus>(lifter_wobus lifter, float pressure,
+template float wetbulb<lifter_tbl<lifter_wobus>>(
+    lifter_tbl<lifter_wobus>& lifter, float pressure, float temperature,
+    float dewpoint);
+
+template float wetbulb<lifter_tbl<lifter_cm1>>(lifter_tbl<lifter_cm1>& lifter,
+                                               float pressure,
+                                               float temperature,
+                                               float dewpoint);
+
+template float theta_wetbulb<lifter_wobus>(lifter_wobus& lifter, float pressure,
                                            float temperature, float dewpoint);
 
-template float theta_wetbulb<lifter_cm1>(lifter_cm1 lifter, float pressure,
+template float theta_wetbulb<lifter_cm1>(lifter_cm1& lifter, float pressure,
                                          float temperature, float dewpoint);
+
+template float theta_wetbulb<lifter_tbl<lifter_cm1>>(
+    lifter_tbl<lifter_cm1>& lifter, float pressure, float temperature,
+    float dewpoint);
+
+template float theta_wetbulb<lifter_tbl<lifter_wobus>>(
+    lifter_tbl<lifter_wobus>& lifter, float pressure, float temperature,
+    float dewpoint);
 
 /// @endcond
 

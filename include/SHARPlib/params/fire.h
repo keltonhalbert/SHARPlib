@@ -257,6 +257,24 @@ extern template float pyrocumulonimbus_firepower_threshold<lifter_cm1>(
     float pcl_buoy_arr[], std::ptrdiff_t N, Parcel* pcl, float phi,
     float beta_incr);
 
+extern template float
+pyrocumulonimbus_firepower_threshold<lifter_tbl<lifter_wobus>>(
+    lifter_tbl<lifter_wobus>& lifter, PressureLayer mix_layer,
+    const float pressure[], const float height[], const float temperature[],
+    const float mixratio[], const float virtemp[], const float uwin[],
+    const float vwin[], const float potential_temperature[],
+    float pcl_vtmpk_arr[], float pcl_buoy_arr[], std::ptrdiff_t N, Parcel* pcl,
+    float phi, float beta_incr);
+
+extern template float
+pyrocumulonimbus_firepower_threshold<lifter_tbl<lifter_cm1>>(
+    lifter_tbl<lifter_cm1>& lifter, PressureLayer mix_layer,
+    const float pressure[], const float height[], const float temperature[],
+    const float mixratio[], const float virtemp[], const float uwin[],
+    const float vwin[], const float potential_temperature[],
+    float pcl_vtmpk_arr[], float pcl_buoy_arr[], std::ptrdiff_t N, Parcel* pcl,
+    float phi, float beta_incr);
+
 /// @endcond
 
 }  // namespace sharp
