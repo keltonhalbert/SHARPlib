@@ -294,9 +294,10 @@ float _solve_cm1(float& pcl_pres_next, float& pcl_pi_next, float& pcl_t_next,
 
         pcl_theta_next = pcl_theta_prev * std::exp(term);
 
+        float relax = (iter_count > 20) ? 0.05f : 0.3f;
         if (std::abs(pcl_theta_next - pcl_theta_last) > converge) {
             pcl_theta_last =
-                pcl_theta_last + 0.3 * (pcl_theta_next - pcl_theta_last);
+                pcl_theta_last + relax * (pcl_theta_next - pcl_theta_last);
         } else {
             not_converged = false;
         }
