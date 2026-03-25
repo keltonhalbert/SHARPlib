@@ -212,8 +212,6 @@ struct tbl_data {
     std::vector<float> m_thetae_coord;
     std::vector<float> m_LUT_pcl_tmpk;
     std::vector<float> m_LUT_pcl_rv;
-    std::vector<float> m_LUT_pcl_rl;
-    std::vector<float> m_LUT_pcl_ri;
 
     tbl_data(Lft lifter) : m_lifter(std::move(lifter)) {
         if (m_lifter.ma_type == sharp::adiabat::adiab_liq ||
@@ -248,8 +246,6 @@ struct tbl_data {
         std::size_t size_2D = num_logp * num_thetae;
         m_LUT_pcl_tmpk.resize(size_2D);
         m_LUT_pcl_rv.resize(size_2D);
-        m_LUT_pcl_rl.resize(size_2D);
-        m_LUT_pcl_ri.resize(size_2D);
 
         for (std::size_t i = 0; i < num_thetae; ++i) {
             const float thetae_target = m_thetae_coord[i];
@@ -270,12 +266,8 @@ struct tbl_data {
 
                 if constexpr (Lft::tracks_moisture) {
                     m_LUT_pcl_rv[idx_2D] = m_lifter.rv;
-                    m_LUT_pcl_rl[idx_2D] = m_lifter.rl;
-                    m_LUT_pcl_ri[idx_2D] = m_lifter.ri;
                 } else {
                     m_LUT_pcl_rv[idx_2D] = mixratio(pres, tmpk_curr);
-                    m_LUT_pcl_rl[idx_2D] = 0.0f;
-                    m_LUT_pcl_ri[idx_2D] = 0.0f;
                 }
 
                 pres_curr = pres;
@@ -425,8 +417,6 @@ struct lifter_tbl {
 
         if constexpr (Lft::tracks_moisture) {
             m_rv = bilinear_interp(m_data.m_LUT_pcl_rv);
-            m_rl = bilinear_interp(m_data.m_LUT_pcl_rl);
-            m_ri = bilinear_interp(m_data.m_LUT_pcl_ri);
         }
 
         return bilinear_interp(m_data.m_LUT_pcl_tmpk);
