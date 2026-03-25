@@ -22,6 +22,8 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <stdexcept>
+#include <tuple>
 #include <vector>
 
 namespace sharp {
