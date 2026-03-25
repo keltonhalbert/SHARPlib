@@ -349,7 +349,8 @@ struct lifter_tbl {
             m_data.m_LUT_pcl_tmpk[i_max * m_data.num_logp + k0],
             m_data.m_LUT_pcl_tmpk[i_max * m_data.num_logp + k1], wk);
 
-        if (lcl_tmpk < t_min_bound || lcl_tmpk > t_max_bound) {
+        if (lcl_tmpk < t_min_bound || lcl_tmpk > t_max_bound ||
+            lcl_pres < m_data.p_min || lcl_pres > m_data.p_max) {
             m_use_lifter = true;
             m_lifter.setup(lcl_pres, lcl_tmpk);
             return;
