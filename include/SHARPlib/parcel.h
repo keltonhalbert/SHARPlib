@@ -417,6 +417,8 @@ struct lifter_tbl {
 
         if constexpr (Lft::tracks_moisture) {
             m_rv = bilinear_interp(m_data.m_LUT_pcl_rv);
+            m_rl = 0.0f;
+            m_ri = 0.0f;
         }
 
         return bilinear_interp(m_data.m_LUT_pcl_tmpk);
