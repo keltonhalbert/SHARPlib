@@ -394,7 +394,8 @@ struct lifter_tbl {
             return m_lifter(pres, tmpk, new_pres);
         }
 
-        if (new_pres < m_data.p_min) return MISSING;
+        if ((new_pres < m_data.p_min) || (new_pres > m_data.p_max))
+            return MISSING;
 
         const std::size_t i0 = static_cast<std::size_t>(m_fi);
         const std::size_t i1 = i0 + 1;
