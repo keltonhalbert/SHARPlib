@@ -51,7 +51,6 @@ namespace sharp {
  */
 struct lifter_wobus {
     static constexpr bool lift_from_lcl = true;
-    static constexpr bool tracks_moisture = false;
 
     /**
      * \brief The iterative convergence criteria (K)
@@ -115,7 +114,6 @@ struct lifter_wobus {
  */
 struct lifter_cm1 {
     static constexpr bool lift_from_lcl = false;
-    static constexpr bool tracks_moisture = true;
 
     /**
      * \brief The type of moist adiabat to use, as defined by sharp::adiabat
@@ -213,7 +211,6 @@ struct tbl_data {
     std::vector<float> m_logp_coord;
     std::vector<float> m_thetae_coord;
     std::vector<float> m_LUT_pcl_tmpk;
-    std::vector<float> m_LUT_pcl_rv;
 
     tbl_data(Lft lifter) : m_lifter(std::move(lifter)) {
         if (m_lifter.ma_type == sharp::adiabat::adiab_liq ||
@@ -247,7 +244,6 @@ struct tbl_data {
 
         const std::size_t size_2D = num_logp * num_thetae;
         m_LUT_pcl_tmpk.resize(size_2D);
-        m_LUT_pcl_rv.resize(size_2D);
 
         for (std::size_t i = 0; i < num_thetae; ++i) {
             const float thetae_target = m_thetae_coord[i];
@@ -265,12 +261,6 @@ struct tbl_data {
 
                 const std::size_t idx_2D = i * num_logp + k;
                 m_LUT_pcl_tmpk[idx_2D] = tmpk_curr;
-
-                if constexpr (Lft::tracks_moisture) {
-                    m_LUT_pcl_rv[idx_2D] = m_lifter.rv;
-                } else {
-                    m_LUT_pcl_rv[idx_2D] = sharp::mixratio(pres, tmpk_curr);
-                }
 
                 pres_curr = pres;
             }
@@ -375,7 +365,6 @@ template <typename Lft>
 struct lifter_tbl {
     const tbl_data<Lft>& m_data;
     static constexpr bool lift_from_lcl = Lft::lift_from_lcl;
-    static constexpr bool tracks_moisture = Lft::tracks_moisture;
 
     bool m_use_lifter = false;
     Lft m_lifter;
@@ -411,12 +400,6 @@ struct lifter_tbl {
         m_use_lifter = false;
 
         m_fi = m_data.find_thetae_index(lcl_tmpk, k0, k1, wk);
-
-        if constexpr (Lft::tracks_moisture) {
-            m_rv = sharp::MISSING;
-            m_rl = sharp::MISSING;
-            m_ri = sharp::MISSING;
-        }
     }
 
     [[nodiscard]] inline float operator()(const float pres, const float tmpk,
@@ -434,13 +417,6 @@ struct lifter_tbl {
         const float wi = std::clamp(m_fi - static_cast<float>(i0), 0.0f, 1.0f);
         const auto [k0, k1, wk] = m_data.get_logp_indices(new_pres);
 
-        if constexpr (Lft::tracks_moisture) {
-            m_rv = m_data.bilinear_interp(m_data.m_LUT_pcl_rv, i0, i1, wi, k0,
-                                          k1, wk);
-            m_rl = 0.0f;
-            m_ri = 0.0f;
-        }
-
         return m_data.bilinear_interp(m_data.m_LUT_pcl_tmpk, i0, i1, wi, k0, k1,
                                       wk);
     }
@@ -449,10 +425,6 @@ struct lifter_tbl {
         const float pres, const float tmpk) const {
         if (m_use_lifter) {
             return m_lifter.parcel_virtual_temperature(pres, tmpk);
-        }
-
-        if constexpr (Lft::tracks_moisture) {
-            return sharp::virtual_temperature(tmpk, m_rv, m_rl, m_ri);
         } else {
             return sharp::virtual_temperature(tmpk,
                                               sharp::mixratio(pres, tmpk));
