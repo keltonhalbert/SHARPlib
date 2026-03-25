@@ -200,13 +200,13 @@ struct tbl_data {
 
     float p_max = 110000.0f;
     float p_min = 1000.0f;
-    float thetae_min = 200.0f;
-    float thetae_max = 500.0f;
+    float thetae_min = 210.0f;
+    float thetae_max = 430.0f;
     float m_delta_thetae_inv = 0.0f;
     float m_delta_logp_inv = 0.0f;
 
-    std::size_t num_logp = 301;
-    std::size_t num_thetae = 301;
+    std::size_t num_logp = 251;
+    std::size_t num_thetae = 221;
 
     std::vector<float> m_logp_coord;
     std::vector<float> m_thetae_coord;
@@ -221,9 +221,9 @@ struct tbl_data {
             throw std::invalid_argument(
                 "CRITICAL ERROR: sharp::tbl_data does not support reversible "
                 "adiabatic ascent (adiab_liq or adiab_ice). The 2D lookup "
-                "table "
-                "cannot track conserved total water mass. Please configure the "
-                "lifter to use pseudo_liq or pseudo_ice instead.");
+                "table cannot track conserved total water mass. Please "
+                "configure the lifter to use pseudo_liq or pseudo_ice "
+                "instead.");
         }
     }
 
