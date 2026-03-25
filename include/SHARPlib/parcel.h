@@ -199,13 +199,13 @@ struct tbl_data {
     Lft m_lifter;
 
     float p_max = 110000.0f;
-    float p_min = 1000.0f;
+    float p_min = 5000.0f;
     float thetae_min = 210.0f;
     float thetae_max = 430.0f;
     float m_delta_thetae_inv = 0.0f;
     float m_delta_logp_inv = 0.0f;
 
-    std::size_t num_logp = 251;
+    std::size_t num_logp = 201;
     std::size_t num_thetae = 221;
 
     std::vector<float> m_logp_coord;
