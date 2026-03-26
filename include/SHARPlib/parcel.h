@@ -17,7 +17,6 @@
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
 #include <SHARPlib/thermo.h>
-#include <fmt/core.h>
 
 #include <algorithm>
 #include <cmath>
@@ -529,7 +528,6 @@ struct lut_data {
                 tmpk_hi = tmpk_mid;
             }
         }
-        fmt::println("Failed to converge on a LCL temperature for thetae.");
         return tmpk_mid;
     }
 };
