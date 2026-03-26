@@ -4,6 +4,7 @@
 // clang-format off
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/tuple.h>
+#include <nanobind/stl/shared_ptr.h>
 
 // clang-format on
 #include <SHARPlib/layer.h>
@@ -168,6 +169,203 @@ float
     The virtual temperature of the parcel (K)
              )pbdoc");
 
+    nb::class_<sharp::lut_data<sharp::lifter_wobus>>(m_parcel, "lut_data")
+        .def(nb::init<sharp::lifter_wobus, float, float, float, float,
+                      std::size_t, std::size_t>(),
+             nb::arg("lifter"), nb::arg("pmin") = 5000.0f,
+             nb::arg("pmax") = 110000.0f, nb::arg("thte_min") = 210.0f,
+             nb::arg("thte_max") = 430.0f, nb::arg("n_logp") = 201,
+             nb::arg("n_thetae") = 221)
+        .def_ro("pres_min", &sharp::lut_data<sharp::lifter_wobus>::pres_min)
+        .def_ro("pres_max", &sharp::lut_data<sharp::lifter_wobus>::pres_max)
+        .def_ro("thte_min", &sharp::lut_data<sharp::lifter_wobus>::thetae_min)
+        .def_ro("thte_max", &sharp::lut_data<sharp::lifter_wobus>::thetae_max)
+        .def_ro("num_logp", &sharp::lut_data<sharp::lifter_wobus>::num_logp)
+        .def_ro("num_thetae",
+                &sharp::lut_data<sharp::lifter_wobus>::num_thetae);
+
+    nb::class_<sharp::lut_data<sharp::lifter_cm1>>(m_parcel, "lut_data")
+        .def(nb::init<sharp::lifter_cm1, float, float, float, float,
+                      std::size_t, std::size_t>(),
+             nb::arg("lifter"), nb::arg("pmin") = 5000.0f,
+             nb::arg("pmax") = 110000.0f, nb::arg("thte_min") = 210.0f,
+             nb::arg("thte_max") = 430.0f, nb::arg("n_logp") = 201,
+             nb::arg("n_thetae") = 221)
+        .def_ro("pres_min", &sharp::lut_data<sharp::lifter_cm1>::pres_min)
+        .def_ro("pres_max", &sharp::lut_data<sharp::lifter_cm1>::pres_max)
+        .def_ro("thte_min", &sharp::lut_data<sharp::lifter_cm1>::thetae_min)
+        .def_ro("thte_max", &sharp::lut_data<sharp::lifter_cm1>::thetae_max)
+        .def_ro("num_logp", &sharp::lut_data<sharp::lifter_cm1>::num_logp)
+        .def_ro("num_thetae", &sharp::lut_data<sharp::lifter_cm1>::num_thetae);
+
+    nb::class_<sharp::lifter_lut<sharp::lifter_wobus>>(m_parcel, "lifter_lut",
+                                                       R"pbdoc(
+A parcel lifter functor that uses a pseudoadiabatic lookup table (LUT)
+for fast moist adiabatic ascent calculations.
+
+Instead of directly solving the moist ascent ODEs, this lifter uses
+bilinear interpolation of a precomputed lookup table to determine the
+parcel temperature. If the parcel's LCL falls outside the table bounds,
+it falls back to the direct Wobus solver automatically.
+
+LUT based parcel ascent only works for pseudoadiabats. Constructing the
+LUT with a reversible adiabat type will result in an error being thrown.
+
+Parameters
+----------
+data : nwsspc.sharp.calc.parcel.lut_data
+    A shared lookup table constructed with a lifter_wobus instance.
+)pbdoc")
+        .def(nb::init<
+                 std::shared_ptr<const sharp::lut_data<sharp::lifter_wobus>>>(),
+             nb::arg("data"))
+        .def_ro_static("lift_from_lcl",
+                       &sharp::lifter_lut<sharp::lifter_wobus>::lift_from_lcl,
+                       R"pbdoc(
+A static flag that helps the parcel lifting functions know where to lift from.
+)pbdoc")
+        .def("setup", &sharp::lifter_lut<sharp::lifter_wobus>::setup,
+             nb::arg("lcl_pres"), nb::arg("lcl_tmpk"), R"pbdoc(
+Performs a setup step based on the LCL attributes.
+
+Computes the fractional index needed to select the correct pseudoadiabat
+for lookup. If the LCL is outside the table bounds, it falls back to the
+direct solver.
+
+Parameters
+----------
+lcl_pres : float
+    The LCL pressure (Pa)
+lcl_tmpk : float
+    The LCL temperature (K)
+
+Returns
+-------
+None
+)pbdoc")
+        .def("__call__", &sharp::lifter_lut<sharp::lifter_wobus>::operator(),
+             nb::is_operator(), nb::arg("pres"), nb::arg("tmpk"),
+             nb::arg("new_pres"), R"pbdoc(
+Performs LUT interpolation to lift a parcel moist adiabatically.
+
+Parameters
+----------
+pres : float
+    Parcel pressure (Pa)
+tmpk : float
+    Parcel temperature (K)
+new_pres : float
+    Final level of parcel after lift (Pa)
+
+Returns
+-------
+float
+    The temperature of the lifted parcel (K)
+)pbdoc")
+        .def(
+            "parcel_virtual_temperature",
+            &sharp::lifter_lut<sharp::lifter_wobus>::parcel_virtual_temperature,
+            nb::arg("pres"), nb::arg("tmpk"), R"pbdoc(
+Computes the virtual temperature of the parcel (after saturation).
+
+Parameters
+----------
+pres : float
+    Parcel pressure (Pa)
+tmpk : float
+    Parcel temperature (K)
+
+Returns
+-------
+float
+    The virtual temperature of the parcel (K)
+)pbdoc");
+
+    nb::class_<sharp::lifter_lut<sharp::lifter_cm1>>(m_parcel, "lifter_lut",
+                                                     R"pbdoc(
+A parcel lifter functor that uses a pseudoadiabatic lookup table (LUT)
+for fast moist adiabatic ascent calculations.
+
+Instead of directly solving the moist ascent ODEs, this lifter uses
+bilinear interpolation of a precomputed lookup table to determine the
+parcel temperature. If the parcel's LCL falls outside the table bounds,
+it falls back to the direct CM1 solver automatically.
+
+LUT based parcel ascent only works for pseudoadiabats. Constructing the
+LUT with a reversible adiabat type will result in an error being thrown.
+
+Parameters
+----------
+data : lut_data
+    A shared lookup table constructed with a lifter_cm1 instance.
+)pbdoc")
+        .def(nb::init<
+                 std::shared_ptr<const sharp::lut_data<sharp::lifter_cm1>>>(),
+             nb::arg("data"))
+        .def_ro_static("lift_from_lcl",
+                       &sharp::lifter_lut<sharp::lifter_cm1>::lift_from_lcl,
+                       R"pbdoc(
+A static flag that helps the parcel lifting functions know where to lift from.
+The lifter_cm1 lifts from the last lifted level, rather than the LCL, because
+it is an iterative solver. This results in major performance improvements while
+maintaining accuracy.
+)pbdoc")
+        .def("setup", &sharp::lifter_lut<sharp::lifter_cm1>::setup,
+             nb::arg("lcl_pres"), nb::arg("lcl_tmpk"), R"pbdoc(
+Performs a setup step based on the LCL attributes.
+
+Computes the fractional index needed to select the correct pseudoadiabat
+for lookup. If the LCL is outside the table bounds, it falls back to the
+direct solver.
+
+Parameters
+----------
+lcl_pres : float
+    The LCL pressure (Pa)
+lcl_tmpk : float
+    The LCL temperature (K)
+
+Returns
+-------
+None
+)pbdoc")
+        .def("__call__", &sharp::lifter_lut<sharp::lifter_cm1>::operator(),
+             nb::is_operator(), nb::arg("pres"), nb::arg("tmpk"),
+             nb::arg("new_pres"), R"pbdoc(
+Performs LUT interpolation to lift a parcel moist adiabatically.
+
+Parameters
+----------
+pres : float
+    Parcel pressure (Pa)
+tmpk : float
+    Parcel temperature (K)
+new_pres : float
+    Final level of parcel after lift (Pa)
+
+Returns
+-------
+float
+    The temperature of the lifted parcel (K)
+)pbdoc")
+        .def("parcel_virtual_temperature",
+             &sharp::lifter_lut<sharp::lifter_cm1>::parcel_virtual_temperature,
+             nb::arg("pres"), nb::arg("tmpk"), R"pbdoc(
+Computes the virtual temperature of the parcel (after saturation).
+
+Parameters
+----------
+pres : float
+    Parcel pressure (Pa)
+tmpk : float
+    Parcel temperature (K)
+
+Returns
+-------
+float
+    The virtual temperature of the parcel (K)
+)pbdoc");
+
     nb::enum_<sharp::LPL>(m_parcel, "LPL")
         .value("SFC", sharp::LPL::SFC, "A Surface Based Parcel")
         .value("FCST", sharp::LPL::FCST, "A Forecast Surface Parcel")
@@ -262,14 +460,14 @@ numpy.ndarray[dtype=float32]
             "lift_parcel",
             [](sharp::Parcel& pcl, sharp::lifter_cm1& lifter,
                const_prof_arr_t pressure) {
-                const size_t NZ = pressure.size();
+                const std::ptrdiff_t NZ = pressure.size();
                 float* virtemp_arr = new float[NZ];
 
                 pcl.lift_parcel(lifter, pressure.data(), virtemp_arr, NZ);
 
                 nb::capsule owner(virtemp_arr,
                                   [](void* p) noexcept { delete[] (float*)p; });
-                return out_arr_t(virtemp_arr, {NZ}, owner);
+                return out_arr_t(virtemp_arr, {pressure.shape(0)}, owner);
             },
             nb::arg("lifter"), nb::arg("pressure"),
             R"pbdoc(
@@ -283,6 +481,73 @@ Parameters
 ----------
 lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
     An instantiated lifter_cm1 functor
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of Pressure levels for lifting (Pa)
+
+Returns
+-------
+numpy.ndarray[dtype=float32]
+    A 1D NumPy array of parcel virtual temperature values (K)
+        )pbdoc")
+        .def(
+            "lift_parcel",
+            [](sharp::Parcel& pcl,
+               sharp::lifter_lut<sharp::lifter_wobus>& lifter,
+               const_prof_arr_t pressure) {
+                const std::ptrdiff_t NZ = pressure.size();
+                float* virtemp_arr = new float[NZ];
+
+                pcl.lift_parcel(lifter, pressure.data(), virtemp_arr, NZ);
+
+                nb::capsule owner(virtemp_arr,
+                                  [](void* p) noexcept { delete[] (float*)p; });
+                return out_arr_t(virtemp_arr, {pressure.shape(0)}, owner);
+            },
+            nb::arg("lifter"), nb::arg("pressure"),
+            R"pbdoc(
+Lifts a Parcel dry adiabatically from its LPL to its LCL dry
+adiabatically, and then moist adiabatically from the LCL to 
+the top of the profile. The moist adiabat used is determined
+by the type of lifting functor passed to the function (i.e.
+lifter_wobus or lifter_cm1).
+
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+    An instantiated lifter_lut functor
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of Pressure levels for lifting (Pa)
+
+Returns
+-------
+numpy.ndarray[dtype=float32]
+    A 1D NumPy array of parcel virtual temperature values (K)
+        )pbdoc")
+        .def(
+            "lift_parcel",
+            [](sharp::Parcel& pcl, sharp::lifter_lut<sharp::lifter_cm1>& lifter,
+               const_prof_arr_t pressure) {
+                const std::ptrdiff_t NZ = pressure.size();
+                float* virtemp_arr = new float[NZ];
+
+                pcl.lift_parcel(lifter, pressure.data(), virtemp_arr, NZ);
+
+                nb::capsule owner(virtemp_arr,
+                                  [](void* p) noexcept { delete[] (float*)p; });
+                return out_arr_t(virtemp_arr, {pressure.shape(0)}, owner);
+            },
+            nb::arg("lifter"), nb::arg("pressure"),
+            R"pbdoc(
+Lifts a Parcel dry adiabatically from its LPL to its LCL dry
+adiabatically, and then moist adiabatically from the LCL to 
+the top of the profile. The moist adiabat used is determined
+by the type of lifting functor passed to the function (i.e.
+lifter_wobus or lifter_cm1).
+
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+    An instantiated lifter_lut functor
 pressure : numpy.ndarray[dtype=float32] 
     1D NumPy array of Pressure levels for lifting (Pa)
 
@@ -350,7 +615,7 @@ tuple[float, float]
             R"pbdoc(
 Find the pressure of the Maximum Parcel Level (MPL).
 
-The Maximum Parcel Level (MPL) is the level a parcel woud reach 
+The Maximum Parcel Level (MPL) is the level a parcel would reach 
 if it expended all of its integrated positive buoyancy past the 
 Equilibrium Level. It is found by integrating negatively buoyant 
 area above the Equilibrium Level until the integrated negative 
@@ -362,9 +627,9 @@ For valid calculations, nwsspc.sharp.calc.parcel.Parcel.cape_cinh
 must be called first, or nwsspc.sharp.calc.parcel.Parcel.cape and 
 nwsspc.sharp.calc.parcel.Parcel.eql_pressure must be set. 
 
-A values of nwsspc.sharp.calc.constants.MISSING is returned if:
+A value of nwsspc.sharp.calc.constants.MISSING is returned if:
   * CAPE is 0 
-  * nwsspc.sharp.calc.parce.Parcel.eql_pressure is MISSING
+  * nwsspc.sharp.calc.parcel.Parcel.eql_pressure is MISSING
   * No valid MPL candidate is found within the profile
     In this scenario, it likely exceeds the top of the available data
 
@@ -736,6 +1001,7 @@ dewpoint : numpy.ndarray[dtype=float32]
 Returns
 -------
 nwsspc.sharp.calc.parcel.Parcel
+    Parcel with most-unstable values
         )pbdoc")
         .def_static(
             "most_unstable_parcel",
@@ -778,6 +1044,241 @@ Parameters
 layer : nwsspc.sharp.calc.layer.HeightLayer 
     HeightLayer for which to search for the Most Unstable Parcel
 lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+    Parcel lifting routine to use for moist ascent
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile height values (meters)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile temperature values (K)
+virtual_temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile virtual temperature values (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile dewpoint values (K)
+
+Returns
+-------
+nwsspc.sharp.calc.parcel.Parcel
+    Parcel with most-unstable values
+        )pbdoc")
+        .def_static(
+            "most_unstable_parcel",
+            [](sharp::PressureLayer& layer,
+               sharp::lifter_lut<sharp::lifter_cm1>& lifter,
+               const_prof_arr_t pressure, const_prof_arr_t height,
+               const_prof_arr_t temperature, const_prof_arr_t virtemp,
+               const_prof_arr_t dewpoint) {
+                if ((pressure.shape(0) != temperature.shape(0)) ||
+                    (pressure.shape(0) != dewpoint.shape(0)) ||
+                    (pressure.shape(0) != height.shape(0)) ||
+                    (pressure.shape(0) != virtemp.shape(0))) {
+                    throw nb::buffer_error(
+                        "All input arrays must have the same size!");
+                }
+                const std::ptrdiff_t NZ = height.size();
+                float* pcl_virtemp_arr = new float[NZ];
+                float* pcl_buoy_arr = new float[NZ];
+
+                sharp::Parcel max_pcl = sharp::Parcel::most_unstable_parcel(
+                    layer, lifter, pressure.data(), height.data(),
+                    temperature.data(), virtemp.data(), dewpoint.data(),
+                    pcl_virtemp_arr, pcl_buoy_arr, NZ);
+
+                delete[] pcl_virtemp_arr;
+                delete[] pcl_buoy_arr;
+
+                return max_pcl;
+            },
+            nb::arg("layer"), nb::arg("lifter"), nb::arg("pressure"),
+            nb::arg("height"), nb::arg("temperature"),
+            nb::arg("virtual_temperature"), nb::arg("dewpoint"),
+            R"pbdoc(
+Given input arrays of pressure, height, temperature, virtual temperature,
+and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
+parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
+
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.PressureLayer 
+    PressureLayer for which to search for the Most Unstable Parcel
+lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+    Parcel lifting routine to use for moist ascent
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile height values (meters)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile temperature values (K)
+virtual_temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile virtual temperature values (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile dewpoint values (K)
+
+Returns
+-------
+nwsspc.sharp.calc.parcel.Parcel
+    Parcel with most-unstable values
+        )pbdoc")
+        .def_static(
+            "most_unstable_parcel",
+            [](sharp::HeightLayer& layer,
+               sharp::lifter_lut<sharp::lifter_cm1>& lifter,
+               const_prof_arr_t pressure, const_prof_arr_t height,
+               const_prof_arr_t temperature, const_prof_arr_t virtemp,
+               const_prof_arr_t dewpoint) {
+                if ((pressure.shape(0) != temperature.shape(0)) ||
+                    (pressure.shape(0) != dewpoint.shape(0)) ||
+                    (pressure.shape(0) != height.shape(0)) ||
+                    (pressure.shape(0) != virtemp.shape(0))) {
+                    throw nb::buffer_error(
+                        "All input arrays must have the same size!");
+                }
+                const std::ptrdiff_t NZ = height.size();
+
+                float* pcl_virtemp_arr = new float[NZ];
+                float* pcl_buoy_arr = new float[NZ];
+
+                sharp::Parcel max_pcl = sharp::Parcel::most_unstable_parcel(
+                    layer, lifter, pressure.data(), height.data(),
+                    temperature.data(), virtemp.data(), dewpoint.data(),
+                    pcl_virtemp_arr, pcl_buoy_arr, NZ);
+
+                delete[] pcl_virtemp_arr;
+                delete[] pcl_buoy_arr;
+
+                return max_pcl;
+            },
+            nb::arg("layer"), nb::arg("lifter"), nb::arg("pressure"),
+            nb::arg("height"), nb::arg("temperature"),
+            nb::arg("virtual_temperature"), nb::arg("dewpoint"),
+            R"pbdoc(
+Given input arrays of pressure, height, temperature, virtual temperature,
+and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
+parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
+
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.HeightLayer 
+    HeightLayer for which to search for the Most Unstable Parcel
+lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+    Parcel lifting routine to use for moist ascent
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile height values (meters)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile temperature values (K)
+virtual_temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile virtual temperature values (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile dewpoint values (K)
+
+Returns
+-------
+nwsspc.sharp.calc.parcel.Parcel
+    Parcel with most-unstable values
+        )pbdoc")
+        .def_static(
+            "most_unstable_parcel",
+            [](sharp::PressureLayer& layer,
+               sharp::lifter_lut<sharp::lifter_wobus>& lifter,
+               const_prof_arr_t pressure, const_prof_arr_t height,
+               const_prof_arr_t temperature, const_prof_arr_t virtemp,
+               const_prof_arr_t dewpoint) {
+                if ((pressure.shape(0) != temperature.shape(0)) ||
+                    (pressure.shape(0) != dewpoint.shape(0)) ||
+                    (pressure.shape(0) != height.shape(0)) ||
+                    (pressure.shape(0) != virtemp.shape(0))) {
+                    throw nb::buffer_error(
+                        "All input arrays must have the same size!");
+                }
+                const std::ptrdiff_t NZ = height.size();
+
+                float* pcl_virtemp_arr = new float[NZ];
+                float* pcl_buoy_arr = new float[NZ];
+
+                sharp::Parcel max_pcl = sharp::Parcel::most_unstable_parcel(
+                    layer, lifter, pressure.data(), height.data(),
+                    temperature.data(), virtemp.data(), dewpoint.data(),
+                    pcl_virtemp_arr, pcl_buoy_arr, NZ);
+
+                delete[] pcl_virtemp_arr;
+                delete[] pcl_buoy_arr;
+
+                return max_pcl;
+            },
+            nb::arg("layer"), nb::arg("lifter"), nb::arg("pressure"),
+            nb::arg("height"), nb::arg("temperature"),
+            nb::arg("virtual_temperature"), nb::arg("dewpoint"),
+            R"pbdoc(
+Given input arrays of pressure, height, temperature, virtual temperature,
+and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
+parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
+
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.PressureLayer 
+    PressureLayer for which to search for the Most Unstable Parcel
+lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+    Parcel lifting routine to use for moist ascent
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile pressure values (Pa)
+height : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile height values (meters)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile temperature values (K)
+virtual_temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile virtual temperature values (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    1D NumPy array of profile dewpoint values (K)
+
+Returns
+-------
+nwsspc.sharp.calc.parcel.Parcel
+    Parcel with most-unstable values
+        )pbdoc")
+        .def_static(
+            "most_unstable_parcel",
+            [](sharp::HeightLayer& layer,
+               sharp::lifter_lut<sharp::lifter_wobus>& lifter,
+               const_prof_arr_t pressure, const_prof_arr_t height,
+               const_prof_arr_t temperature, const_prof_arr_t virtemp,
+               const_prof_arr_t dewpoint) {
+                if ((pressure.shape(0) != temperature.shape(0)) ||
+                    (pressure.shape(0) != dewpoint.shape(0)) ||
+                    (pressure.shape(0) != height.shape(0)) ||
+                    (pressure.shape(0) != virtemp.shape(0))) {
+                    throw nb::buffer_error(
+                        "All input arrays must have the same size!");
+                }
+                const std::ptrdiff_t NZ = height.size();
+
+                float* pcl_virtemp_arr = new float[NZ];
+                float* pcl_buoy_arr = new float[NZ];
+
+                sharp::Parcel max_pcl = sharp::Parcel::most_unstable_parcel(
+                    layer, lifter, pressure.data(), height.data(),
+                    temperature.data(), virtemp.data(), dewpoint.data(),
+                    pcl_virtemp_arr, pcl_buoy_arr, NZ);
+
+                delete[] pcl_virtemp_arr;
+                delete[] pcl_buoy_arr;
+
+                return max_pcl;
+            },
+            nb::arg("layer"), nb::arg("lifter"), nb::arg("pressure"),
+            nb::arg("height"), nb::arg("temperature"),
+            nb::arg("virtual_temperature"), nb::arg("dewpoint"),
+            R"pbdoc(
+Given input arrays of pressure, height, temperature, virtual temperature,
+and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
+parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
+
+Parameters
+----------
+layer : nwsspc.sharp.calc.layer.HeightLayer 
+    HeightLayer for which to search for the Most Unstable Parcel
+lifter : nwsspc.sharp.calc.parcel.lifter_lut 
     Parcel lifting routine to use for moist ascent
 pressure : numpy.ndarray[dtype=float32] 
     1D NumPy array of profile pressure values (Pa)
@@ -893,6 +1394,78 @@ Parameters
 ----------
 lifter : nwsspc.sharp.calc.parcel.lifter_cm1
     An instantiated lifter_cm1 functor
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of Pressure levels for lifting (Pa)
+
+Returns
+-------
+numpy.ndarray[dtype=float32]
+    A 1D NumPy array of parcel temperature values (K)
+        )pbdoc")
+        .def(
+            "lower_parcel",
+            [](sharp::DowndraftParcel& pcl,
+               sharp::lifter_lut<sharp::lifter_wobus>& lifter,
+               const_prof_arr_t pressure) {
+                const std::ptrdiff_t NZ = pressure.size();
+                float* tmpk_arr = new float[NZ];
+
+                pcl.lower_parcel(lifter, pressure.data(), tmpk_arr, NZ);
+
+                nb::capsule owner(tmpk_arr,
+                                  [](void* p) noexcept { delete[] (float*)p; });
+                return out_arr_t(tmpk_arr, {pressure.shape(0)}, owner);
+            },
+            nb::arg("lifter"), nb::arg("pressure"),
+            R"pbdoc(
+Lowers a saturated nwsspc.sharp.calc.parcel.DowndraftParcel moist 
+adiabatically from its LPL to the surface. The moist adiabat used 
+is determined by the type of lifting functor passed to the function 
+(i.e. lifter_wobus or lifter_cm1).
+
+Unlike nwsspc.sharp.calc.parcel.Parcel.lift_parcel, the virtual 
+temperature correction is not used for downdraft parcels.
+
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+    An instantiated lifter_lut functor
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of Pressure levels for lifting (Pa)
+
+Returns
+-------
+numpy.ndarray[dtype=float32]
+    A 1D NumPy array of parcel temperature values (K)
+        )pbdoc")
+        .def(
+            "lower_parcel",
+            [](sharp::DowndraftParcel& pcl,
+               sharp::lifter_lut<sharp::lifter_cm1>& lifter,
+               const_prof_arr_t pressure) {
+                const std::ptrdiff_t NZ = pressure.size();
+                float* tmpk_arr = new float[NZ];
+
+                pcl.lower_parcel(lifter, pressure.data(), tmpk_arr, NZ);
+
+                nb::capsule owner(tmpk_arr,
+                                  [](void* p) noexcept { delete[] (float*)p; });
+                return out_arr_t(tmpk_arr, {pressure.shape(0)}, owner);
+            },
+            nb::arg("lifter"), nb::arg("pressure"),
+            R"pbdoc(
+Lowers a saturated nwsspc.sharp.calc.parcel.DowndraftParcel moist 
+adiabatically from its LPL to the surface. The moist adiabat used 
+is determined by the type of lifting functor passed to the function 
+(i.e. lifter_wobus or lifter_cm1).
+
+Unlike nwsspc.sharp.calc.parcel.Parcel.lift_parcel, the virtual 
+temperature correction is not used for downdraft parcels.
+
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_lut
+    An instantiated lifter_lut functor
 pressure : numpy.ndarray[dtype=float32] 
     1D NumPy array of Pressure levels for lifting (Pa)
 
