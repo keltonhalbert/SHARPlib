@@ -45,6 +45,10 @@ specifications.
                        R"pbdoc(
 A static flag that helps the parcel lifting functions know where to lift from.
 )pbdoc")
+        .def_ro_static("ma_type", &sharp::lifter_wobus::ma_type,
+                       R"pbdoc(
+A static flag for the type of solver this is 
+)pbdoc")
         .def_rw("converge", &sharp::lifter_wobus::converge, R"pbdoc(
 The iterative convergence criteria (K)
              )pbdoc")

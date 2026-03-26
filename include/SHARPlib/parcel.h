@@ -51,7 +51,14 @@ namespace sharp {
  * the parcel lifting algorithm to their specifications.
  */
 struct lifter_wobus {
+    /**
+     * \brief Whether the parcel should be lifted from the LCL or last level
+     */
     static constexpr bool lift_from_lcl = true;
+
+    /**
+     * \brief The type of moist adiabat to use, as defined by sharp::adiabat
+     */
     static constexpr adiabat ma_type = adiabat::pseudo_liq;
 
     /**
@@ -115,6 +122,9 @@ struct lifter_wobus {
  * the parcel lifting algorithm to their specifications.
  */
 struct lifter_cm1 {
+    /**
+     * \brief Whether the parcel should be lifted from the LCL or last level
+     */
     static constexpr bool lift_from_lcl = false;
 
     /**
@@ -542,6 +552,9 @@ struct lut_data {
  */
 template <typename Lft>
 struct lifter_lut {
+    /**
+     * \brief Whether the parcel should be lifted from the LCL or last level
+     */
     static constexpr bool lift_from_lcl = Lft::lift_from_lcl;
 
     /**
@@ -564,6 +577,16 @@ struct lifter_lut {
      */
     Lft m_lifter;
 
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Constructor for lifter_lut
+     *
+     * Constructs lifter_lut given a sared pointer to a previously
+     * generated table.
+     *
+     * \param   data    Shared pointer to a sharp::lut_data
+     */
     explicit lifter_lut(std::shared_ptr<const lut_data<Lft>> data)
         : m_data(std::move(data)), m_lifter(m_data->m_lifter) {}
 
