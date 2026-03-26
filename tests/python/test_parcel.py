@@ -154,6 +154,7 @@ def test_surface_parcel():
     assert (pcl.mpl_pressure == pytest.approx(9065, abs=1e-0))
 
     lifter = parcel.lifter_cm1()
+    lifter.converge = 0.001
     lifter.ma_type = thermo.adiabat.pseudo_liq
     vtmpk = pcl.lift_parcel(lifter, snd_data["pres"])
     buoy = thermo.buoyancy(vtmpk, snd_data["vtmp"])
@@ -166,6 +167,21 @@ def test_surface_parcel():
     assert (cinh == pytest.approx(-36.4, abs=5e-1))
     assert (pcl.lfc_pressure == pytest.approx(71482, abs=1e-0))
     assert (pcl.eql_pressure == pytest.approx(18969, abs=1e-0))
+    assert (pcl.mpl_pressure == pytest.approx(9529, abs=1e-0))
+
+    lut_cm1 = parcel.lut_data(lifter)
+    lifter = parcel.lifter_lut(lut_cm1)
+    vtmpk = pcl.lift_parcel(lifter, snd_data["pres"])
+    buoy = thermo.buoyancy(vtmpk, snd_data["vtmp"])
+    cape, cinh = pcl.cape_cinh(snd_data["pres"], snd_data["hght"], buoy)
+    mpl = pcl.maximum_parcel_level(snd_data["pres"], snd_data["hght"], buoy)
+    li = pcl.lifted_index(50000.0, snd_data["pres"], snd_data["vtmp"], vtmpk)
+
+    assert (li == pytest.approx(-9.12, abs=1e-2))
+    assert (cape == pytest.approx(3111.147216, abs=5e-1))
+    assert (cinh == pytest.approx(-36.4, abs=5e-1))
+    assert (pcl.lfc_pressure == pytest.approx(71482, abs=1e-0))
+    assert (pcl.eql_pressure == pytest.approx(18933, abs=1e-0))
     assert (pcl.mpl_pressure == pytest.approx(9529, abs=1e-0))
 
 
