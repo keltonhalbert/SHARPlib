@@ -20,6 +20,18 @@ SHARPlib supports configurable parcel ascent via parcel lifter 'functors'. These
    .. autofunction:: nwsspc.sharp.calc.parcel.lifter_cm1.__call__
    .. autofunction:: nwsspc.sharp.calc.parcel.lifter_cm1.parcel_virtual_temperature
 
+.. autoclass:: nwsspc.sharp.calc.parcel.lut_data
+
+   .. autofunction:: nwsspc.sharp.calc.parcel.lut_data.get_logp_indices
+   .. autofunction:: nwsspc.sharp.calc.parcel.lut_data.find_thetae_index
+   .. autofunction:: nwsspc.sharp.calc.parcel.lut_data.bilinear_interp
+
+
+.. autoclass:: nwsspc.sharp.calc.parcel.lifter_lut
+
+   .. autofunction:: nwsspc.sharp.calc.parcel.lifter_lut.__call__
+   .. autofunction:: nwsspc.sharp.calc.parcel.lifter_lut.parcel_virtual_temperature
+
 Parcels
 -------
 Parcel creation, parcel ascent, and integrated CAPE/CINH.

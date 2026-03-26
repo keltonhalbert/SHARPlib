@@ -9,6 +9,12 @@ Parcel Lifters
 .. doxygenstruct:: sharp::lifter_cm1
    :members:
 
+.. doxygenstruct:: sharp::lut_data
+   :members:
+
+.. doxygenstruct:: sharp::lifter_lut
+   :members:
+
 Parcels
 -------
 .. doxygenenum:: sharp::LPL
