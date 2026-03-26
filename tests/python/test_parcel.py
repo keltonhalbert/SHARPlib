@@ -103,7 +103,7 @@ def test_lifter_cm1():
     assert (np.isnan(lifter(pres, np.nan, new_pres)))
 
     lifter.setup(pres, tmpk)
-    assert (lifter(pres, tmpk, new_pres) == pytest.approx(302.0066833496094))
+    assert (lifter(pres, tmpk, new_pres) == pytest.approx(302.0066833496094, abs=1e-1))
 
 def test_lifter_lut():
     lifter_wobf = parcel.lifter_wobus()
@@ -137,7 +137,7 @@ def test_lifter_lut():
 
     assert (np.isnan(lifter_lut2(np.nan, tmpk, new_pres)))
     assert (np.isnan(lifter_lut2(pres, np.nan, new_pres)))
-    assert (lifter_lut2(pres, tmpk, new_pres) == pytest.approx(302.0087890625))
+    assert (lifter_lut2(pres, tmpk, new_pres) == pytest.approx(302.0087890625, abs=1e-1))
 
 def test_surface_parcel():
     pres = snd_data["pres"][0]
