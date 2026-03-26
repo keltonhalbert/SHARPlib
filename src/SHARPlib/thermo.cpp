@@ -319,6 +319,10 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
         (new_pressure == MISSING)) {
         return MISSING;
     }
+    if (std::isnan(temperature) || std::isnan(pressure) ||
+        std::isnan(new_pressure)) {
+        return MISSING;
+    }
 #endif
 
     // set up solver variables
