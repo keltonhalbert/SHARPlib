@@ -1,4 +1,4 @@
-#include "SHARPlib/thermo.h"
+#include <SHARPlib/thermo.h>
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include <SHARPlib/constants.h>
