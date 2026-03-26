@@ -52,6 +52,7 @@ namespace sharp {
  */
 struct lifter_wobus {
     static constexpr bool lift_from_lcl = true;
+    static constexpr adiabat ma_type = adiabat::pseudo_liq;
 
     /**
      * \brief The iterative convergence criteria (K)
@@ -195,24 +196,97 @@ struct lifter_cm1 {
     }
 };
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Pseudoadiabatic ascent lookup table (LUT)
+ *
+ * This data structure contains everything necessary to construct,
+ * store, and interrogate a pseudoadiabatic ascent lookup table (LUT).
+ * The LUT is generated using the passed lifter (e.g. sharp::lifter_cm1).
+ * Due to the complex nature of reversible adiabatic ascent, it is
+ * not supported in this lookup table. Any sharp::adiabat::adiab_liq
+ * or sharp::adiabat::adiab_ice configured lifters will throw an error.
+ *
+ * This is intended to be used by sharp::lifter_lut for actual parcel
+ * lifting operations. While this data structure can be accessed by
+ * multiple threads, each thread must have its own sharp::lifter_lut.
+ */
 template <typename Lft>
 struct lut_data {
+    /**
+     * \brief The moist adiabatic ascent solver to use
+     */
     Lft m_lifter;
 
+    /**
+     * \brief The minimum pressure of the lookup table
+     */
     const float pres_min;
+
+    /**
+     * \brief The maximum pressure of the lookup table
+     */
     const float pres_max;
+
+    /**
+     * \brief The minimum thetae of the lookup table
+     */
     const float thetae_min;
+
+    /**
+     * \brief The maximum thetae of the lookup table
+     */
     const float thetae_max;
 
+    /**
+     * \brief The number of pressure levels (in log space) for the LUT
+     */
     const std::size_t num_logp;
+
+    /**
+     * \brief The number of thetae levels for the LUT
+     */
     const std::size_t num_thetae;
 
+    /**
+     * \brief Storage for the maximum logp
+     */
     const float m_logp_max;
+
+    /**
+     * \brief Storage for inverse delta theta
+     */
     const float m_delta_thetae_inv;
+
+    /**
+     * \brief Storage for inverse delta logarithmic pressure
+     */
     const float m_delta_logp_inv;
 
+    /**
+     * \brief The parcel temperature LUT
+     */
     std::vector<float> m_LUT_pcl_tmpk;
 
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Create a pseudoadiabatic lookup table (LUT)
+     *
+     * Construct the pseudoadiabatic lookup table (LUT) using
+     * the provided lifter and LUT configuration options. This
+     * lookup data is safe to share with many threads, but each
+     * thread must use its own sharp::lifter_lut.
+     *
+     * \param   lifter      Parcel lifting function/functor
+     * \param   pmin        Minimum Pressure (Pa)
+     * \param   pmax        Maximum pressure (Pa)
+     * \param   thte_min    Minimum theta-e (K)
+     * \param   thte_max    Maximum theta-e (K)
+     * \param   n_logp      Number of logarithmic pressure levels
+     * \param   n_thetae    Number of theta-e levels
+     */
     explicit lut_data(Lft lifter, float pmin = 5000.0f, float pmax = 110000.0f,
                       float thte_min = 210.0f, float thte_max = 430.0f,
                       std::size_t n_logp = 201, std::size_t n_thetae = 221)
@@ -240,6 +314,19 @@ struct lut_data {
         generate_table();
     }
 
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Get the bounding vertical indices for a given pressure
+     *
+     * Returns the bounding vertical indices for the LUT given a
+     * pressure value, along with the interpolation weight.
+     *
+     * \param   pres    Pa
+     *
+     * \return  tuple of (k0, k1, weight_k): bottom index, top index,
+     *          and interpolation weight
+     */
     [[nodiscard]] inline std::tuple<std::size_t, std::size_t, float>
     get_logp_indices(const float pres) const {
         const float target_logp = std::log(pres);
@@ -256,6 +343,23 @@ struct lut_data {
         return {k0, k1, weight_k};
     }
 
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Get the fractional thetae coordinate index
+     *
+     * Returns the fractional index for the thetae coordinate
+     * of the LUT given the lcl temperature and the bounding
+     * vertical coordinate indices, along with the vertical
+     * interpolation weight.
+     *
+     * \param   lcl_tmpk    lifted condensation level temperature (K)
+     * \param   k0          The bottom bounding index of pressure
+     * \param   k1          The top bounding index of pressure
+     * \param   weight_k    The vertical interpolation weight
+     *
+     * \return  fractional index of thetae axis for LUT
+     */
     [[nodiscard]] inline float find_thetae_index(const float lcl_tmpk,
                                                  const std::size_t k0,
                                                  const std::size_t k1,
@@ -297,6 +401,23 @@ struct lut_data {
         return frac_i_mid;
     }
 
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Perform bilinear interpolation of LUT
+     *
+     * Performs the bilinear interpolation of the LUT to
+     * return a parcel temperature along a pseudoadiabat.
+     *
+     * \param   i0  thetae left bounding index
+     * \param   i1  thetae right bounding index
+     * \param   wi  thetae interpolation weight
+     * \param   k0  pressure bottom bounding index
+     * \param   k1  pressure top bounding index
+     * \param   wk  pressure interpolation weight
+     *
+     * \return  parcel temperature (K)
+     */
     [[nodiscard]] inline float bilinear_interp(
         const std::size_t i0, const std::size_t i1, const float wi,
         const std::size_t k0, const std::size_t k1, const float wk) const {
@@ -312,6 +433,14 @@ struct lut_data {
     }
 
    private:
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Constructs pseudoadiabatic LUT
+     *
+     * Called by the constructor, this creates and fills
+     * the pseudoadiabatic parcel ascent LUT.
+     */
     inline void generate_table() {
         std::vector<float> logp_coord(num_logp);
         std::vector<float> thetae_coord(num_thetae);
@@ -352,6 +481,20 @@ struct lut_data {
         }
     }
 
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Finds and returns a temperature for a given pressure and thetae.
+     *
+     * Iteratively inverts theta-e to find the saturated temperature at a
+     * single pressure level. Used for finding the starting parcel
+     * temperature during LUT construction.
+     *
+     * \param   pressure            (Pa)
+     * \param   thetae_target       (K)
+     *
+     * \return  lcl_temperature     (K)
+     */
     [[nodiscard]] float solve_tmpk_for_thetae(float pressure,
                                               float thetae_target) const {
         float tmpk_lo = 200.0f;
@@ -381,18 +524,58 @@ struct lut_data {
     }
 };
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Parcel lifter functor for LUT based calculations.
+ *
+ * This functor is used to wrap sharp::lut_data, which creates
+ * a pseudoadiabatic ascent lookup table based on the type of
+ * parcel lifter used to construct the table. Instead of
+ * directly solving the moist ascent ODEs, this lifter uses
+ * the LUT to perform bilinear interpolation to get the
+ * parcel temperature.
+ *
+ * LUT based parcel ascent only works for pseudoadiabats.
+ * Constructing the LUT with a reversible adiabat type will
+ * result in an error being thrown.
+ */
 template <typename Lft>
 struct lifter_lut {
-    std::shared_ptr<const lut_data<Lft>> m_data;
     static constexpr bool lift_from_lcl = Lft::lift_from_lcl;
 
+    /**
+     * \brief Shared pointer to a previously created LUT
+     */
+    std::shared_ptr<const lut_data<Lft>> m_data;
+
+    /**
+     * Used to signal a fallback to the direct solver
+     */
     bool m_use_lifter = false;
+
+    /**
+     * Fractional index used to determine the pseudoadiabat
+     */
     float m_fi = 0.0f;
+
+    /**
+     * An instantiation of a parcel lifter for fallback computation
+     */
     Lft m_lifter;
 
     explicit lifter_lut(std::shared_ptr<const lut_data<Lft>> data)
         : m_data(std::move(data)), m_lifter(m_data->m_lifter) {}
 
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Performs a setup step based on the LCL attributes
+     *
+     * Computes the fractional index needed to select the
+     * correct pseudoadiabat for lookup. If the LCL is outside
+     * the table bounds, it falls back to the direct solver.
+     */
     inline void setup(const float lcl_pres, const float lcl_tmpk) {
         const auto [k0, k1, wk] = m_data->get_logp_indices(lcl_pres);
         const std::size_t i_max = m_data->num_thetae - 1;
@@ -416,6 +599,15 @@ struct lifter_lut {
         m_fi = m_data->find_thetae_index(lcl_tmpk, k0, k1, wk);
     }
 
+    /**
+     * \brief Overloads operator() to perform LUT interpolation
+     *
+     * \param   pres        Parcel pressure (Pa)
+     * \param   tmpk        Parcel temperature (K)
+     * \param   new_pres    Final level of parcel after lift (Pa)
+     *
+     * \return  The temperature of the lifted parcel
+     */
     [[nodiscard]] inline float operator()(const float pres, const float tmpk,
                                           const float new_pres) {
         if (m_use_lifter) {
@@ -435,6 +627,13 @@ struct lifter_lut {
         return m_data->bilinear_interp(i0, i1, weight_i, k0, k1, weight_k);
     }
 
+    /**
+     * \brief Computes the virtual temperature of the parcel
+     * \param   pres        Parcel pressure (Pa)
+     * \param   tmpk        Parcel temperature (K)
+     *
+     * \return  The virtual temperature of the parcel
+     */
     [[nodiscard]] inline float parcel_virtual_temperature(
         const float pres, const float tmpk) const {
         if (m_use_lifter) {
