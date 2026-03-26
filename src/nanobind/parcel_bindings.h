@@ -173,7 +173,7 @@ float
     The virtual temperature of the parcel (K)
              )pbdoc");
 
-    nb::class_<sharp::lut_data<sharp::lifter_wobus>>(m_parcel, "lut_data")
+    nb::class_<sharp::lut_data<sharp::lifter_wobus>>(m_parcel, "lut_data_wobus")
         .def(nb::init<sharp::lifter_wobus, float, float, float, float,
                       std::size_t, std::size_t>(),
              nb::arg("lifter"), nb::arg("pmin") = 5000.0f,
@@ -188,7 +188,7 @@ float
         .def_ro("num_thetae",
                 &sharp::lut_data<sharp::lifter_wobus>::num_thetae);
 
-    nb::class_<sharp::lut_data<sharp::lifter_cm1>>(m_parcel, "lut_data")
+    nb::class_<sharp::lut_data<sharp::lifter_cm1>>(m_parcel, "lut_data_cm1")
         .def(nb::init<sharp::lifter_cm1, float, float, float, float,
                       std::size_t, std::size_t>(),
              nb::arg("lifter"), nb::arg("pmin") = 5000.0f,
@@ -202,7 +202,80 @@ float
         .def_ro("num_logp", &sharp::lut_data<sharp::lifter_cm1>::num_logp)
         .def_ro("num_thetae", &sharp::lut_data<sharp::lifter_cm1>::num_thetae);
 
-    nb::class_<sharp::lifter_lut<sharp::lifter_wobus>>(m_parcel, "lifter_lut",
+    m_parcel.def(
+        "lut_data",
+        [](sharp::lifter_wobus& lifter, float pmin, float pmax, float thte_min,
+           float thte_max, std::size_t n_logp, std::size_t n_thetae) {
+            return sharp::lut_data(lifter, pmin, pmax, thte_min, thte_max,
+                                   n_logp, n_thetae);
+        },
+        nb::arg("lifter"), nb::arg("pmin") = 5000.0f,
+        nb::arg("pmax") = 110000.0f, nb::arg("thte_min") = 210.0f,
+        nb::arg("thte_max") = 430.0f, nb::arg("n_logp") = 201,
+        nb::arg("n_thetae") = 221,
+        R"pbdoc(
+Constructs the lookup table (LUT) data for a parcel lifter.
+
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_wobus
+pmin : float 
+    The minimum pressure of the lookup table (Pa)
+pmax : float 
+    The maximum pressure of the lookup table (Pa)
+thte_min : float 
+    The minimum thetae of the lookup table (K)
+thte_max : float 
+    The maximum thetae of the lookup table (K)
+n_logp : uint
+    The number of logp levels for the lookup table
+n_thetae : uint
+    The number of thetae levels for the lookup table
+
+Returns
+-------
+nwsspc.sharp.calc.parcel.lut_data_wobus
+   A lookup table for nwsspc.sharp.calc.parcel.lifter_wobus
+)pbdoc");
+
+    m_parcel.def(
+        "lut_data",
+        [](sharp::lifter_cm1& lifter, float pmin, float pmax, float thte_min,
+           float thte_max, std::size_t n_logp, std::size_t n_thetae) {
+            return sharp::lut_data(lifter, pmin, pmax, thte_min, thte_max,
+                                   n_logp, n_thetae);
+        },
+        nb::arg("lifter"), nb::arg("pmin") = 5000.0f,
+        nb::arg("pmax") = 110000.0f, nb::arg("thte_min") = 210.0f,
+        nb::arg("thte_max") = 430.0f, nb::arg("n_logp") = 201,
+        nb::arg("n_thetae") = 221,
+        R"pbdoc(
+Constructs the lookup table (LUT) data for a parcel lifter.
+
+Parameters
+----------
+lifter : nwsspc.sharp.calc.parcel.lifter_cm1
+pmin : float 
+    The minimum pressure of the lookup table (Pa)
+pmax : float 
+    The maximum pressure of the lookup table (Pa)
+thte_min : float 
+    The minimum thetae of the lookup table (K)
+thte_max : float 
+    The maximum thetae of the lookup table (K)
+n_logp : uint
+    The number of logp levels for the lookup table
+n_thetae : uint
+    The number of thetae levels for the lookup table
+
+Returns
+-------
+nwsspc.sharp.calc.parcel.lut_data_wobus
+   A lookup table for nwsspc.sharp.calc.parcel.lifter_cm1
+)pbdoc");
+
+    nb::class_<sharp::lifter_lut<sharp::lifter_wobus>>(m_parcel,
+                                                       "lifter_lut_wobus",
                                                        R"pbdoc(
 A parcel lifter functor that uses a pseudoadiabatic lookup table (LUT)
 for fast moist adiabatic ascent calculations.
@@ -285,7 +358,7 @@ float
     The virtual temperature of the parcel (K)
 )pbdoc");
 
-    nb::class_<sharp::lifter_lut<sharp::lifter_cm1>>(m_parcel, "lifter_lut",
+    nb::class_<sharp::lifter_lut<sharp::lifter_cm1>>(m_parcel, "lifter_lut_cm1",
                                                      R"pbdoc(
 A parcel lifter functor that uses a pseudoadiabatic lookup table (LUT)
 for fast moist adiabatic ascent calculations.
@@ -368,6 +441,42 @@ Returns
 -------
 float
     The virtual temperature of the parcel (K)
+)pbdoc");
+
+    m_parcel.def(
+        "lifter_lut",
+        [](std::shared_ptr<const sharp::lut_data<sharp::lifter_wobus>>& lut) {
+            return sharp::lifter_lut<sharp::lifter_wobus>(std::move(lut));
+        },
+        nb::arg("lut"),
+        R"pbdoc(
+Constructs the parcel lifter from a LUT.
+
+Parameters
+----------
+lut : nwsspc.sharp.calc.parcel.lut_data_wobus
+
+Returns
+-------
+nwsspc.sharp.calc.parcel.lifter_lut_wobus
+)pbdoc");
+
+    m_parcel.def(
+        "lifter_lut",
+        [](std::shared_ptr<const sharp::lut_data<sharp::lifter_cm1>>& lut) {
+            return sharp::lifter_lut<sharp::lifter_cm1>(std::move(lut));
+        },
+        nb::arg("lut"),
+        R"pbdoc(
+Constructs the parcel lifter from a LUT.
+
+Parameters
+----------
+lut : nwsspc.sharp.calc.parcel.lut_data_cm1
+
+Returns
+-------
+nwsspc.sharp.calc.parcel.lifter_lut_cm1
 )pbdoc");
 
     nb::enum_<sharp::LPL>(m_parcel, "LPL")

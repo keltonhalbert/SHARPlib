@@ -633,6 +633,14 @@ struct lifter_lut {
      */
     [[nodiscard]] inline float operator()(const float pres, const float tmpk,
                                           const float new_pres) {
+        if ((pres == MISSING) || (tmpk == MISSING) || (new_pres == MISSING)) {
+            return MISSING;
+        }
+
+        if (std::isnan(pres) || std::isnan(tmpk) || std::isnan(new_pres)) {
+            return std::nanf("");
+        }
+
         if (m_use_lifter) {
             return m_lifter(pres, tmpk, new_pres);
         }
@@ -674,24 +682,24 @@ struct lifter_lut {
 /**
  * \brief Enum that defines the lifted parcel level (LPL) of origin.
  *
- * The SFC parcel is a surface-based parcel, where the parcel initial attributes
- * are set to the surface pressure, temperature, and dewpoint.
+ * The SFC parcel is a surface-based parcel, where the parcel initial
+ * attributes are set to the surface pressure, temperature, and dewpoint.
  *
- * The FCST parcel is a forecast-surface-based parcel, in which the afternoon
- * surface temperature and dewpoint are estimated and set as the parcel starting
- * values.
+ * The FCST parcel is a forecast-surface-based parcel, in which the
+ * afternoon surface temperature and dewpoint are estimated and set as the
+ * parcel starting values.
  *
- * The MU parcel is the most unstable parcel, in which the parcel attributes are
- * set to the pressure, temperature, and dewpoint of the maximum Theta-E level
- * within the bottom 400 hPa of the profile.
+ * The MU parcel is the most unstable parcel, in which the parcel attributes
+ * are set to the pressure, temperature, and dewpoint of the maximum Theta-E
+ * level within the bottom 400 hPa of the profile.
  *
- * The ML parcel is the mixed-layer parcel, in which the mean theta and water
- * vapor mixing ratio within the lowest 100 hPa are used to estimate a boundary
- * layer mean, and lifted from the surface.
+ * The ML parcel is the mixed-layer parcel, in which the mean theta and
+ * water vapor mixing ratio within the lowest 100 hPa are used to estimate a
+ * boundary layer mean, and lifted from the surface.
  *
- * The USR parcel means that the parcel initial lifting attributes have already
- * been set by the programmer or user, and there is no need for them to be
- * set or modified.
+ * The USR parcel means that the parcel initial lifting attributes have
+ * already been set by the programmer or user, and there is no need for them
+ * to be set or modified.
  */
 enum class LPL : int {
     /**
@@ -724,7 +732,8 @@ enum class LPL : int {
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
  *
- * \brief Data that defines a Parcel, its attributes, and derived quantities.
+ * \brief Data that defines a Parcel, its attributes, and derived
+ * quantities.
  *
  * Contains information about a Parcel's starting level and
  * thermodynamic attributes, as well as paramaters computed
@@ -767,8 +776,8 @@ struct Parcel {
     float mpl_pressure = MISSING;
 
     /**
-     * \brief Parcel Convective Available Potential Energy (J/kg) between the
-     * LFC and EL
+     * \brief Parcel Convective Available Potential Energy (J/kg) between
+     * the LFC and EL
      */
     float cape = 0.0;
 
@@ -824,7 +833,8 @@ struct Parcel {
         PressureLayer dry_lyr = {this->pres, this->lcl_pressure};
         PressureLayer sat_lyr = {this->lcl_pressure, pressure_arr[N - 1]};
 
-        // The LayerIndex excludes the top and bottom for interpolation reasons
+        // The LayerIndex excludes the top and bottom for interpolation
+        // reasons
         const LayerIndex dry_idx = get_layer_index(dry_lyr, pressure_arr, N);
         const LayerIndex sat_idx = get_layer_index(sat_lyr, pressure_arr, N);
 
@@ -864,19 +874,20 @@ struct Parcel {
     /**
      * \author Kelton Halbert - NWS Storm Prediction Center
      *
-     * \brief Find the LFC and EL that bounds the layer with the maximum CAPE
+     * \brief Find the LFC and EL that bounds the layer with the maximum
+     * CAPE
      *
      * Searches the buoyancy array for the LFC and EL combination that
      * results in the most CAPE in the given profile. The buoyancy array is
-     * typically computed by calling sharp::Parcel::lift_parcel. Once the LFC
-     * and EL are found, the values are set in sharp::Parcel::lfc_pres and
-     * sharp::Parcel::eql_pres.
+     * typically computed by calling sharp::Parcel::lift_parcel. Once the
+     * LFC and EL are found, the values are set in sharp::Parcel::lfc_pres
+     * and sharp::Parcel::eql_pres.
      *
      * The value of sharp::Parcel::eql_pres is sharp::MISSING if there there
      * is no qualifying level found within the data bounds (e.g. incomplete
      * data, or an EL above the available data). Any calls to
-     * sharp::Parcel::cape_cinh will still compute CAPE without the presence of
-     * an EL, using the best-available data.
+     * sharp::Parcel::cape_cinh will still compute CAPE without the presence
+     * of an EL, using the best-available data.
      *
      * \param   pres_arr    The pressure coordinate array (Pa)
      * \param   hght_arr    The height coordinate array (meters)
@@ -907,7 +918,8 @@ struct Parcel {
      * - CAPE is 0
      * - sharp::Parcel::eql_pressure is sharp::MISSING
      * - No valid MPL candidate is found within the profile.
-     *     - In this scenario, it likely exceeds the top of the available data.
+     *     - In this scenario, it likely exceeds the top of the available
+     * data.
      *
      * In addition to being returned, the result is stored inside of
      * sharp::Parcel::mpl_pressure.
@@ -1003,11 +1015,13 @@ struct Parcel {
      * sharp::HeightLayer, compute and return a mixed-layer
      * Parcel.
      *
-     * \param   mix_layer           sharp::PressureLayer or sharp::HeightLayer
+     * \param   mix_layer           sharp::PressureLayer or
+     * sharp::HeightLayer
      * \param   pressure            Array of pressure (Pa)
      * \param   height              Array of height (meters)
      * \param   pot_temperature     Array of potential temperature (K)
-     * \param   wv_mixratio         Array of water vapor mixing ratio (unitless)
+     * \param   wv_mixratio         Array of water vapor mixing ratio
+     * (unitless)
      * \param   N                   Length of arrays
      * \return sharp::Parcel with mixed-layer values
      */
@@ -1052,11 +1066,14 @@ struct Parcel {
      * \param   temperature         Array of temperature (K)
      * \param   virtemp             Array of virtual temperature (K)
      * \param   dewpoint            Array of dewpoint temperature (K)
-     * \param   pcl_virtemp         Writeable array for parcel lifting calcs (K)
-     * \param   buoy_arr            Writeable array for buoyancy calcs (m/s^2)
+     * \param   pcl_virtemp         Writeable array for parcel lifting calcs
+     * (K)
+     * \param   buoy_arr            Writeable array for buoyancy calcs
+     * (m/s^2)
      * \param   N                   Length of arrays
      * \param   search_layer        sharp::PressureLayer or sharp::HeightLay
-     * \param   lifter              The parcel moist adiabatic ascent function
+     * \param   lifter              The parcel moist adiabatic ascent
+     * function
      * \return The most unstable sharp::Parcel within the search layer
      */
     template <typename Lyr, typename Lft>
@@ -1123,8 +1140,8 @@ struct DowndraftParcel {
     float cape = 0.0;
 
     /**
-     * \brief DowndraftParcel Convective Inhibition (J/kg) between the LFC and
-     * EL
+     * \brief DowndraftParcel Convective Inhibition (J/kg) between the LFC
+     * and EL
      */
     float cinh = std::nanf("");
 

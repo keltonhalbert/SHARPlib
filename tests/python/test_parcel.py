@@ -82,11 +82,11 @@ def test_lifter_wobus():
 def test_lifter_cm1():
     lifter = parcel.lifter_cm1()
     lifter.ma_type = thermo.adiabat.pseudo_liq
-    lifter.converge = 100.0
 
     pres = 100000.0
     tmpk = 320.0
     new_pres = 50000.0
+    lifter.setup(pres, tmpk)
 
     assert (lifter(constants.MISSING, tmpk, new_pres) == constants.MISSING)
     assert (lifter(pres, constants.MISSING, new_pres) == constants.MISSING)
@@ -95,6 +95,41 @@ def test_lifter_cm1():
     assert (np.isnan(lifter(np.nan, tmpk, new_pres)))
     assert (np.isnan(lifter(pres, np.nan, new_pres)))
 
+    assert (lifter(pres, tmpk, new_pres) == pytest.approx(302.0066833496094))
+
+def test_lifter_lut():
+    lifter_wobf = parcel.lifter_wobus()
+    lifter_cm1 = parcel.lifter_cm1()
+    lifter_cm1.ma_type = thermo.adiabat.pseudo_liq
+
+    lut_wobf = parcel.lut_data(lifter_wobf)
+    lut_cm1 = parcel.lut_data(lifter_cm1)
+
+    lifter_lut1 = parcel.lifter_lut(lut_wobf)
+    lifter_lut2 = parcel.lifter_lut(lut_cm1)
+
+    pres = 100000.0
+    tmpk = 320.0
+    new_pres = 50000.0
+
+    lifter_lut1.setup(pres, tmpk)
+    lifter_lut2.setup(pres, tmpk)
+
+    assert (lifter_lut1(constants.MISSING, tmpk, new_pres) == constants.MISSING)
+    assert (lifter_lut1(pres, constants.MISSING, new_pres) == constants.MISSING)
+    assert (lifter_lut1(pres, tmpk, constants.MISSING) == constants.MISSING)
+
+    assert (np.isnan(lifter_lut1(np.nan, tmpk, new_pres)))
+    assert (np.isnan(lifter_lut1(pres, np.nan, new_pres)))
+    assert (lifter_lut1(pres, tmpk, new_pres) == pytest.approx(301.872528))
+
+    assert (lifter_lut2(constants.MISSING, tmpk, new_pres) == constants.MISSING)
+    assert (lifter_lut2(pres, constants.MISSING, new_pres) == constants.MISSING)
+    assert (lifter_lut2(pres, tmpk, constants.MISSING) == constants.MISSING)
+
+    assert (np.isnan(lifter_lut2(np.nan, tmpk, new_pres)))
+    assert (np.isnan(lifter_lut2(pres, np.nan, new_pres)))
+    assert (lifter_lut2(pres, tmpk, new_pres) == pytest.approx(302.0087890625))
 
 def test_surface_parcel():
     pres = snd_data["pres"][0]

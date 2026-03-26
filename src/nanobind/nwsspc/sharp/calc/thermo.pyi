@@ -782,7 +782,7 @@ def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure: float, temper
     """
 
 @overload
-def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut, pressure: float, temperature: float, dewpoint: float) -> float:
+def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_wobus, pressure: float, temperature: float, dewpoint: float) -> float:
     """
     Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
     temperature (K), and dewpoint temperature (K).
@@ -814,7 +814,7 @@ def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut, pressure: float, temper
     """
 
 @overload
-def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut, pressure: float, temperature: float, dewpoint: float) -> float:
+def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_cm1, pressure: float, temperature: float, dewpoint: float) -> float:
     """
     Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
     temperature (K), and dewpoint temperature (K).
@@ -910,7 +910,7 @@ def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure: Annotated[NDA
     """
 
 @overload
-def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
+def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_wobus, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
     """
     Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
     temperature (K), and dewpoint temperature (K).
@@ -942,7 +942,7 @@ def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut, pressure: Annotated[NDA
     """
 
 @overload
-def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
+def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_cm1, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
     """
     Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
     temperature (K), and dewpoint temperature (K).
@@ -1038,7 +1038,7 @@ def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure: float, 
     """
 
 @overload
-def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut, pressure: float, temperature: float, dewpoint: float) -> float:
+def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_wobus, pressure: float, temperature: float, dewpoint: float) -> float:
     """
     Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
     temperature (K), and dewpoint temperature (K).
@@ -1070,7 +1070,7 @@ def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut, pressure: float, 
     """
 
 @overload
-def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut, pressure: float, temperature: float, dewpoint: float) -> float:
+def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_cm1, pressure: float, temperature: float, dewpoint: float) -> float:
     """
     Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
     temperature (K), and dewpoint temperature (K).
@@ -1166,7 +1166,7 @@ def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure: Annotat
     """
 
 @overload
-def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
+def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_wobus, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
     """
     Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
     temperature (K), and dewpoint temperature (K).
@@ -1198,7 +1198,7 @@ def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut, pressure: Annotat
     """
 
 @overload
-def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
+def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_cm1, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
     """
     Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
     temperature (K), and dewpoint temperature (K).
