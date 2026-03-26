@@ -321,7 +321,7 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
     }
     if (std::isnan(temperature) || std::isnan(pressure) ||
         std::isnan(new_pressure)) {
-        return MISSING;
+        return std::nanf("");
     }
 #endif
 
