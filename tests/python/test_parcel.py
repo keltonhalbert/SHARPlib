@@ -86,15 +86,23 @@ def test_lifter_cm1():
     pres = 100000.0
     tmpk = 320.0
     new_pres = 50000.0
-    lifter.setup(pres, tmpk)
 
+    lifter.setup(pres, tmpk)
     assert (lifter(constants.MISSING, tmpk, new_pres) == constants.MISSING)
+
+    lifter.setup(pres, tmpk)
     assert (lifter(pres, constants.MISSING, new_pres) == constants.MISSING)
+
+    lifter.setup(pres, tmpk)
     assert (lifter(pres, tmpk, constants.MISSING) == constants.MISSING)
 
+    lifter.setup(pres, tmpk)
     assert (np.isnan(lifter(np.nan, tmpk, new_pres)))
+
+    lifter.setup(pres, tmpk)
     assert (np.isnan(lifter(pres, np.nan, new_pres)))
 
+    lifter.setup(pres, tmpk)
     assert (lifter(pres, tmpk, new_pres) == pytest.approx(302.0066833496094))
 
 def test_lifter_lut():
