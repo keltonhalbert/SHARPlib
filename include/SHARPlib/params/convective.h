@@ -597,15 +597,15 @@ extern template PressureLayer effective_inflow_layer<lifter_cm1>(
     const std::ptrdiff_t N, const float cape_thresh, const float cinh_thresh,
     Parcel* mupcl);
 
-extern template PressureLayer effective_inflow_layer<lifter_tbl<lifter_wobus>>(
-    lifter_tbl<lifter_wobus>& lifter, const float pressure[],
+extern template PressureLayer effective_inflow_layer<lifter_lut<lifter_wobus>>(
+    lifter_lut<lifter_wobus>& lifter, const float pressure[],
     const float height[], const float temperature[], const float dewpoint[],
     const float virtemp_arr[], float pcl_vtmpk_arr[], float buoy_arr[],
     const std::ptrdiff_t N, const float cape_thresh, const float cinh_thresh,
     Parcel* mupcl);
 
-extern template PressureLayer effective_inflow_layer<lifter_tbl<lifter_cm1>>(
-    lifter_tbl<lifter_cm1>& lifter, const float pressure[],
+extern template PressureLayer effective_inflow_layer<lifter_lut<lifter_cm1>>(
+    lifter_lut<lifter_cm1>& lifter, const float pressure[],
     const float height[], const float temperature[], const float dewpoint[],
     const float virtemp_arr[], float pcl_vtmpk_arr[], float buoy_arr[],
     const std::ptrdiff_t N, const float cape_thresh, const float cinh_thresh,
@@ -623,14 +623,14 @@ extern template float convective_temperature<lifter_cm1>(
     float pcl_virtemp[], float pcl_buoyancy[], const std::ptrdiff_t N,
     float cinh_thresh);
 
-extern template float convective_temperature<lifter_tbl<lifter_wobus>>(
-    lifter_tbl<lifter_wobus>& lifter, const float pressure[],
+extern template float convective_temperature<lifter_lut<lifter_wobus>>(
+    lifter_lut<lifter_wobus>& lifter, const float pressure[],
     const float height[], const float temperature[], const float virtemp[],
     const float mixratio[], float pcl_virtemp[], float pcl_buoyancy[],
     const std::ptrdiff_t N, float cinh_thresh);
 
-extern template float convective_temperature<lifter_tbl<lifter_cm1>>(
-    lifter_tbl<lifter_cm1>& lifter, const float pressure[],
+extern template float convective_temperature<lifter_lut<lifter_cm1>>(
+    lifter_lut<lifter_cm1>& lifter, const float pressure[],
     const float height[], const float temperature[], const float virtemp[],
     const float mixratio[], float pcl_virtemp[], float pcl_buoyancy[],
     const std::ptrdiff_t N, float cinh_thresh);

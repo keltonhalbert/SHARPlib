@@ -727,7 +727,7 @@ struct lifter_wobus;
 struct lifter_cm1;
 
 template <typename Lft>
-struct lifter_tbl;
+struct lifter_lut;
 
 extern template float wetbulb<lifter_wobus>(lifter_wobus& lifter,
                                             float pressure, float temperature,
@@ -736,12 +736,12 @@ extern template float wetbulb<lifter_wobus>(lifter_wobus& lifter,
 extern template float wetbulb<lifter_cm1>(lifter_cm1& lifter, float pressure,
                                           float temperature, float dewpoint);
 
-extern template float wetbulb<lifter_tbl<lifter_wobus>>(
-    lifter_tbl<lifter_wobus>& lifter, float pressure, float temperature,
+extern template float wetbulb<lifter_lut<lifter_wobus>>(
+    lifter_lut<lifter_wobus>& lifter, float pressure, float temperature,
     float dewpoint);
 
-extern template float wetbulb<lifter_tbl<lifter_cm1>>(
-    lifter_tbl<lifter_cm1>& lifter, float pressure, float temperature,
+extern template float wetbulb<lifter_lut<lifter_cm1>>(
+    lifter_lut<lifter_cm1>& lifter, float pressure, float temperature,
     float dewpoint);
 
 extern template float theta_wetbulb<lifter_cm1>(lifter_cm1& lifter,
@@ -754,12 +754,12 @@ extern template float theta_wetbulb<lifter_wobus>(lifter_wobus& lifter,
                                                   float temperature,
                                                   float dewpoint);
 
-extern template float theta_wetbulb<lifter_tbl<lifter_cm1>>(
-    lifter_tbl<lifter_cm1>& lifter, float pressure, float temperature,
+extern template float theta_wetbulb<lifter_lut<lifter_cm1>>(
+    lifter_lut<lifter_cm1>& lifter, float pressure, float temperature,
     float dewpoint);
 
-extern template float theta_wetbulb<lifter_tbl<lifter_wobus>>(
-    lifter_tbl<lifter_wobus>& lifter, float pressure, float temperature,
+extern template float theta_wetbulb<lifter_lut<lifter_wobus>>(
+    lifter_lut<lifter_wobus>& lifter, float pressure, float temperature,
     float dewpoint);
 
 /// @endcond

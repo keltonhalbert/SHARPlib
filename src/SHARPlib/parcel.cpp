@@ -272,29 +272,29 @@ template Parcel Parcel::most_unstable_parcel<HeightLayer, lifter_cm1>(
     const std::ptrdiff_t N);
 
 template Parcel
-Parcel::most_unstable_parcel<PressureLayer, lifter_tbl<lifter_wobus>>(
-    PressureLayer& search_layer, lifter_tbl<lifter_wobus>& lifter,
+Parcel::most_unstable_parcel<PressureLayer, lifter_lut<lifter_wobus>>(
+    PressureLayer& search_layer, lifter_lut<lifter_wobus>& lifter,
     const float pressure[], const float height[], const float temperature[],
     const float virtemp[], const float dewpoint[], float pcl_virtemp[],
     float buoy_arr[], const std::ptrdiff_t N);
 
 template Parcel
-Parcel::most_unstable_parcel<HeightLayer, lifter_tbl<lifter_wobus>>(
-    HeightLayer& search_layer, lifter_tbl<lifter_wobus>& lifter,
+Parcel::most_unstable_parcel<HeightLayer, lifter_lut<lifter_wobus>>(
+    HeightLayer& search_layer, lifter_lut<lifter_wobus>& lifter,
     const float pressure[], const float height[], const float temperature[],
     const float virtemp[], const float dewpoint[], float pcl_virtemp[],
     float buoy_arr[], const std::ptrdiff_t N);
 
 template Parcel
-Parcel::most_unstable_parcel<PressureLayer, lifter_tbl<lifter_cm1>>(
-    PressureLayer& search_layer, lifter_tbl<lifter_cm1>& lifter,
+Parcel::most_unstable_parcel<PressureLayer, lifter_lut<lifter_cm1>>(
+    PressureLayer& search_layer, lifter_lut<lifter_cm1>& lifter,
     const float pressure[], const float height[], const float temperature[],
     const float virtemp[], const float dewpoint[], float pcl_virtemp[],
     float buoy_arr[], const std::ptrdiff_t N);
 
 template Parcel
-Parcel::most_unstable_parcel<HeightLayer, lifter_tbl<lifter_cm1>>(
-    HeightLayer& search_layer, lifter_tbl<lifter_cm1>& lifter,
+Parcel::most_unstable_parcel<HeightLayer, lifter_lut<lifter_cm1>>(
+    HeightLayer& search_layer, lifter_lut<lifter_cm1>& lifter,
     const float pressure[], const float height[], const float temperature[],
     const float virtemp[], const float dewpoint[], float pcl_virtemp[],
     float buoy_arr[], const std::ptrdiff_t N);
@@ -319,12 +319,12 @@ template void Parcel::lift_parcel<lifter_cm1>(lifter_cm1& liftpcl,
                                               float pcl_vtmpk_arr[],
                                               const std::ptrdiff_t N);
 
-template void Parcel::lift_parcel<lifter_tbl<lifter_wobus>>(
-    lifter_tbl<lifter_wobus>& liftpcl, const float pressure_arr[],
+template void Parcel::lift_parcel<lifter_lut<lifter_wobus>>(
+    lifter_lut<lifter_wobus>& liftpcl, const float pressure_arr[],
     float pcl_vtmpk_arr[], const std::ptrdiff_t N);
 
-template void Parcel::lift_parcel<lifter_tbl<lifter_cm1>>(
-    lifter_tbl<lifter_cm1>& liftpcl, const float pressure_arr[],
+template void Parcel::lift_parcel<lifter_lut<lifter_cm1>>(
+    lifter_lut<lifter_cm1>& liftpcl, const float pressure_arr[],
     float pcl_vtmpk_arr[], const std::ptrdiff_t N);
 
 template void DowndraftParcel::lower_parcel<lifter_wobus>(
@@ -335,12 +335,12 @@ template void DowndraftParcel::lower_parcel<lifter_cm1>(
     lifter_cm1& liftpcl, const float pressure_arr[], float pcl_tmpk_arr[],
     const std::ptrdiff_t N);
 
-template void DowndraftParcel::lower_parcel<lifter_tbl<lifter_wobus>>(
-    lifter_tbl<lifter_wobus>& liftpcl, const float pressure_arr[],
+template void DowndraftParcel::lower_parcel<lifter_lut<lifter_wobus>>(
+    lifter_lut<lifter_wobus>& liftpcl, const float pressure_arr[],
     float pcl_tmpk_arr[], const std::ptrdiff_t N);
 
-template void DowndraftParcel::lower_parcel<lifter_tbl<lifter_cm1>>(
-    lifter_tbl<lifter_cm1>& liftpcl, const float pressure_arr[],
+template void DowndraftParcel::lower_parcel<lifter_lut<lifter_cm1>>(
+    lifter_lut<lifter_cm1>& liftpcl, const float pressure_arr[],
     float pcl_tmpk_arr[], const std::ptrdiff_t N);
 
 /// @endcond

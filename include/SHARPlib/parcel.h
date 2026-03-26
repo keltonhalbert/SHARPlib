@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <memory>
 #include <stdexcept>
 #include <tuple>
 #include <vector>
@@ -195,66 +196,150 @@ struct lifter_cm1 {
 };
 
 template <typename Lft>
-struct tbl_data {
+struct lut_data {
     Lft m_lifter;
 
-    float p_max = 110000.0f;
-    float p_min = 5000.0f;
-    float thetae_min = 210.0f;
-    float thetae_max = 430.0f;
-    float m_delta_thetae_inv = 0.0f;
-    float m_delta_logp_inv = 0.0f;
+    const float pres_min;
+    const float pres_max;
+    const float thetae_min;
+    const float thetae_max;
 
-    std::size_t num_logp = 201;
-    std::size_t num_thetae = 221;
+    const std::size_t num_logp;
+    const std::size_t num_thetae;
 
-    std::vector<float> m_logp_coord;
-    std::vector<float> m_thetae_coord;
+    const float m_logp_max;
+    const float m_delta_thetae_inv;
+    const float m_delta_logp_inv;
+
     std::vector<float> m_LUT_pcl_tmpk;
 
-    tbl_data(Lft lifter) : m_lifter(std::move(lifter)) {
+    explicit lut_data(Lft lifter, float pmin = 5000.0f, float pmax = 110000.0f,
+                      float thte_min = 210.0f, float thte_max = 430.0f,
+                      std::size_t n_logp = 201, std::size_t n_thetae = 221)
+        : m_lifter(std::move(lifter)),
+          pres_min(pmin),
+          pres_max(pmax),
+          thetae_min(thte_min),
+          thetae_max(thte_max),
+          num_logp(n_logp),
+          num_thetae(n_thetae),
+          m_logp_max(std::log(pmax)),
+          m_delta_thetae_inv(static_cast<float>(n_thetae - 1) /
+                             (thte_max - thte_min)),
+          m_delta_logp_inv(static_cast<float>(n_logp - 1) /
+                           (std::log(pmin) - std::log(pmax))) {
         if (m_lifter.ma_type == sharp::adiabat::adiab_liq ||
             m_lifter.ma_type == sharp::adiabat::adiab_ice) {
             throw std::invalid_argument(
-                "CRITICAL ERROR: sharp::tbl_data does not support reversible "
+                "CRITICAL ERROR: sharp::lut_data does not support reversible "
                 "adiabatic ascent (adiab_liq or adiab_ice). The 2D lookup "
                 "table cannot track conserved total water mass. Please "
                 "configure the lifter to use pseudo_liq or pseudo_ice "
                 "instead.");
         }
+        generate_table();
     }
 
+    [[nodiscard]] inline std::tuple<std::size_t, std::size_t, float>
+    get_logp_indices(const float pres) const {
+        const float target_logp = std::log(pres);
+
+        const float frac_k =
+            std::max((target_logp - m_logp_max) * m_delta_logp_inv, 0.0f);
+        const std::size_t k0 =
+            std::min(static_cast<std::size_t>(frac_k), num_logp - 2);
+
+        const std::size_t k1 = k0 + 1;
+        const float weight_k =
+            std::clamp(frac_k - static_cast<float>(k0), 0.0f, 1.0f);
+
+        return {k0, k1, weight_k};
+    }
+
+    [[nodiscard]] inline float find_thetae_index(const float lcl_tmpk,
+                                                 const std::size_t k0,
+                                                 const std::size_t k1,
+                                                 const float weight_k) const {
+        float frac_i_lo = 0.0f;
+        float frac_i_hi = static_cast<float>(num_thetae - 1);
+        float frac_i_mid = 0.0f;
+
+        constexpr int max_iter = 20;
+        constexpr float tol = 0.005f;  // Kelvin
+        const float* lut = m_LUT_pcl_tmpk.data();
+        for (int step = 0; step < max_iter; ++step) {
+            frac_i_mid = 0.5f * (frac_i_lo + frac_i_hi);
+
+            const std::size_t i0 =
+                std::min(static_cast<std::size_t>(frac_i_mid), num_thetae - 2);
+            const std::size_t i1 = i0 + 1;
+            const float weight_i =
+                std::clamp(frac_i_mid - static_cast<float>(i0), 0.0f, 1.0f);
+
+            const std::size_t idx1 = i0 * num_logp + k0;
+            const std::size_t idx2 = i0 * num_logp + k1;
+            const std::size_t idx3 = i1 * num_logp + k0;
+            const std::size_t idx4 = i1 * num_logp + k1;
+
+            const float t0 = sharp::lerp(lut[idx1], lut[idx2], weight_k);
+            const float t1 = sharp::lerp(lut[idx3], lut[idx4], weight_k);
+            const float t_interp = sharp::lerp(t0, t1, weight_i);
+
+            const float residual = t_interp - lcl_tmpk;
+            if (std::abs(residual) < tol) break;
+
+            if (residual > 0.0f) {
+                frac_i_hi = frac_i_mid;
+            } else {
+                frac_i_lo = frac_i_mid;
+            }
+        }
+        return frac_i_mid;
+    }
+
+    [[nodiscard]] inline float bilinear_interp(
+        const std::size_t i0, const std::size_t i1, const float wi,
+        const std::size_t k0, const std::size_t k1, const float wk) const {
+        const float* lut = m_LUT_pcl_tmpk.data();
+        const float val00 = lut[i0 * num_logp + k0];
+        const float val01 = lut[i0 * num_logp + k1];
+        const float val10 = lut[i1 * num_logp + k0];
+        const float val11 = lut[i1 * num_logp + k1];
+
+        const float val0 = sharp::lerp(val00, val01, wk);
+        const float val1 = sharp::lerp(val10, val11, wk);
+        return sharp::lerp(val0, val1, wi);
+    }
+
+   private:
     inline void generate_table() {
-        m_logp_coord.resize(num_logp);
-        m_thetae_coord.resize(num_thetae);
+        std::vector<float> logp_coord(num_logp);
+        std::vector<float> thetae_coord(num_thetae);
 
         const float delta_thetae = (thetae_max - thetae_min) / (num_thetae - 1);
-        m_delta_thetae_inv = 1.0f / delta_thetae;
         for (std::size_t i = 0; i < num_thetae; ++i) {
-            m_thetae_coord[i] = thetae_min + i * delta_thetae;
+            thetae_coord[i] = thetae_min + i * delta_thetae;
         }
 
-        const float logp_max = std::log(p_max);
-        const float logp_min = std::log(p_min);
-        const float delta_logp = (logp_min - logp_max) / (num_logp - 1);
-        m_delta_logp_inv = 1.0f / delta_logp;
+        const float logp_min = std::log(pres_min);
+        const float delta_logp = (logp_min - m_logp_max) / (num_logp - 1);
         for (std::size_t i = 0; i < num_logp; ++i) {
-            m_logp_coord[i] = logp_max + i * delta_logp;
+            logp_coord[i] = m_logp_max + i * delta_logp;
         }
 
         const std::size_t size_2D = num_logp * num_thetae;
         m_LUT_pcl_tmpk.resize(size_2D);
 
         for (std::size_t i = 0; i < num_thetae; ++i) {
-            const float thetae_target = m_thetae_coord[i];
-            const float tmpk = solve_tmpk_for_thetae(p_max, thetae_target);
+            const float thetae_target = thetae_coord[i];
+            const float tmpk = solve_tmpk_for_thetae(pres_max, thetae_target);
 
-            m_lifter.setup(p_max, tmpk);
-            float pres_curr = p_max;
+            m_lifter.setup(pres_max, tmpk);
+            float pres_curr = pres_max;
             float tmpk_curr = tmpk;
 
             for (std::size_t k = 0; k < num_logp; ++k) {
-                const float pres = std::exp(m_logp_coord[k]);
+                const float pres = std::exp(logp_coord[k]);
                 if (k > 0) {
                     tmpk_curr = m_lifter(pres_curr, tmpk_curr, pres);
                 }
@@ -271,7 +356,7 @@ struct tbl_data {
                                               float thetae_target) const {
         float tmpk_lo = 200.0f;
         float tmpk_hi = 330.0f;
-        float tmpk_mid = sharp::ZEROCNK;
+        float tmpk_mid = ZEROCNK;
 
         const float tol = 0.001f;
         const std::size_t max_iters = 50;
@@ -294,112 +379,41 @@ struct tbl_data {
         fmt::println("Failed to converge on a LCL temperature for thetae.");
         return tmpk_mid;
     }
-
-    [[nodiscard]] inline std::tuple<std::size_t, std::size_t, float>
-    get_logp_indices(const float pres) const {
-        const float target_logp = std::log(pres);
-        const float logp_max = std::log(p_max);
-
-        const float fk =
-            std::max((target_logp - logp_max) * m_delta_logp_inv, 0.0f);
-        const std::size_t k0 =
-            std::min(static_cast<std::size_t>(fk), num_logp - 2);
-
-        const std::size_t k1 = k0 + 1;
-        const float wk = std::clamp(fk - static_cast<float>(k0), 0.0f, 1.0f);
-
-        return {k0, k1, wk};
-    }
-
-    [[nodiscard]] inline float find_thetae_index(const float lcl_tmpk,
-                                                 const std::size_t k0,
-                                                 const std::size_t k1,
-                                                 const float wk) const {
-        float fi_lo = 0.0f;
-        float fi_hi = static_cast<float>(num_thetae - 1);
-        float fi_mid = 0.0f;
-
-        for (int step = 0; step < 20; ++step) {
-            fi_mid = 0.5f * (fi_lo + fi_hi);
-
-            const std::size_t i0 =
-                std::min(static_cast<std::size_t>(fi_mid), num_thetae - 2);
-
-            const std::size_t i1 = i0 + 1;
-            const float wi =
-                std::clamp(fi_mid - static_cast<float>(i0), 0.0f, 1.0f);
-
-            const float t0 =
-                sharp::lerp(m_LUT_pcl_tmpk[i0 * num_logp + k0],
-                            m_LUT_pcl_tmpk[i0 * num_logp + k1], wk);
-            const float t1 =
-                sharp::lerp(m_LUT_pcl_tmpk[i1 * num_logp + k0],
-                            m_LUT_pcl_tmpk[i1 * num_logp + k1], wk);
-            const float t_interp = sharp::lerp(t0, t1, wi);
-
-            if (t_interp < lcl_tmpk) {
-                fi_lo = fi_mid;
-            } else {
-                fi_hi = fi_mid;
-            }
-        }
-        return fi_mid;
-    }
-
-    [[nodiscard]] inline float bilinear_interp(
-        const std::vector<float>& lut, const std::size_t i0,
-        const std::size_t i1, const float wi, const std::size_t k0,
-        const std::size_t k1, const float wk) const {
-        const float val00 = lut[i0 * num_logp + k0];
-        const float val01 = lut[i0 * num_logp + k1];
-        const float val10 = lut[i1 * num_logp + k0];
-        const float val11 = lut[i1 * num_logp + k1];
-
-        const float val0 = sharp::lerp(val00, val01, wk);
-        const float val1 = sharp::lerp(val10, val11, wk);
-        return sharp::lerp(val0, val1, wi);
-    }
 };
 
 template <typename Lft>
-struct lifter_tbl {
-    const tbl_data<Lft>& m_data;
+struct lifter_lut {
+    std::shared_ptr<const lut_data<Lft>> m_data;
     static constexpr bool lift_from_lcl = Lft::lift_from_lcl;
 
     bool m_use_lifter = false;
+    float m_fi = 0.0f;
     Lft m_lifter;
 
-    float m_fi = 0.0f;
-    float m_rv = sharp::MISSING;
-    float m_rl = sharp::MISSING;
-    float m_ri = sharp::MISSING;
-
-    lifter_tbl(const tbl_data<Lft>& data)
-        : m_data(data), m_lifter(data.m_lifter) {}
+    explicit lifter_lut(std::shared_ptr<const lut_data<Lft>> data)
+        : m_data(std::move(data)), m_lifter(m_data->m_lifter) {}
 
     inline void setup(const float lcl_pres, const float lcl_tmpk) {
-        const auto [k0, k1, wk] = m_data.get_logp_indices(lcl_pres);
-
-        const std::size_t i_max = m_data.num_thetae - 1;
+        const auto [k0, k1, wk] = m_data->get_logp_indices(lcl_pres);
+        const std::size_t i_max = m_data->num_thetae - 1;
 
         const float t_min_bound =
-            sharp::lerp(m_data.m_LUT_pcl_tmpk[0 * m_data.num_logp + k0],
-                        m_data.m_LUT_pcl_tmpk[0 * m_data.num_logp + k1], wk);
+            sharp::lerp(m_data->m_LUT_pcl_tmpk[0 * m_data->num_logp + k0],
+                        m_data->m_LUT_pcl_tmpk[0 * m_data->num_logp + k1], wk);
 
         const float t_max_bound = sharp::lerp(
-            m_data.m_LUT_pcl_tmpk[i_max * m_data.num_logp + k0],
-            m_data.m_LUT_pcl_tmpk[i_max * m_data.num_logp + k1], wk);
+            m_data->m_LUT_pcl_tmpk[i_max * m_data->num_logp + k0],
+            m_data->m_LUT_pcl_tmpk[i_max * m_data->num_logp + k1], wk);
 
         if (lcl_tmpk < t_min_bound || lcl_tmpk > t_max_bound ||
-            lcl_pres < m_data.p_min || lcl_pres > m_data.p_max) {
+            lcl_pres < m_data->pres_min || lcl_pres > m_data->pres_max) {
             m_use_lifter = true;
             m_lifter.setup(lcl_pres, lcl_tmpk);
             return;
         }
 
         m_use_lifter = false;
-
-        m_fi = m_data.find_thetae_index(lcl_tmpk, k0, k1, wk);
+        m_fi = m_data->find_thetae_index(lcl_tmpk, k0, k1, wk);
     }
 
     [[nodiscard]] inline float operator()(const float pres, const float tmpk,
@@ -408,17 +422,17 @@ struct lifter_tbl {
             return m_lifter(pres, tmpk, new_pres);
         }
 
-        if ((new_pres < m_data.p_min) || (new_pres > m_data.p_max))
+        if ((new_pres < m_data->pres_min) || (new_pres > m_data->pres_max))
             return MISSING;
 
         const std::size_t i0 =
-            std::min(static_cast<std::size_t>(m_fi), m_data.num_thetae - 2);
+            std::min(static_cast<std::size_t>(m_fi), m_data->num_thetae - 2);
         const std::size_t i1 = i0 + 1;
-        const float wi = std::clamp(m_fi - static_cast<float>(i0), 0.0f, 1.0f);
-        const auto [k0, k1, wk] = m_data.get_logp_indices(new_pres);
+        const float weight_i =
+            std::clamp(m_fi - static_cast<float>(i0), 0.0f, 1.0f);
+        const auto [k0, k1, weight_k] = m_data->get_logp_indices(new_pres);
 
-        return m_data.bilinear_interp(m_data.m_LUT_pcl_tmpk, i0, i1, wi, k0, k1,
-                                      wk);
+        return m_data->bilinear_interp(i0, i1, weight_i, k0, k1, weight_k);
     }
 
     [[nodiscard]] inline float parcel_virtual_temperature(
@@ -1040,29 +1054,29 @@ extern template Parcel Parcel::most_unstable_parcel<HeightLayer, lifter_cm1>(
     const std::ptrdiff_t N);
 
 extern template Parcel
-Parcel::most_unstable_parcel<PressureLayer, lifter_tbl<lifter_wobus>>(
-    PressureLayer& search_layer, lifter_tbl<lifter_wobus>& lifter,
+Parcel::most_unstable_parcel<PressureLayer, lifter_lut<lifter_wobus>>(
+    PressureLayer& search_layer, lifter_lut<lifter_wobus>& lifter,
     const float pressure[], const float height[], const float temperature[],
     const float virtemp[], const float dewpoint[], float pcl_virtemp[],
     float buoy_arr[], const std::ptrdiff_t N);
 
 extern template Parcel
-Parcel::most_unstable_parcel<HeightLayer, lifter_tbl<lifter_wobus>>(
-    HeightLayer& search_layer, lifter_tbl<lifter_wobus>& lifter,
+Parcel::most_unstable_parcel<HeightLayer, lifter_lut<lifter_wobus>>(
+    HeightLayer& search_layer, lifter_lut<lifter_wobus>& lifter,
     const float pressure[], const float height[], const float temperature[],
     const float virtemp[], const float dewpoint[], float pcl_virtemp[],
     float buoy_arr[], const std::ptrdiff_t N);
 
 extern template Parcel
-Parcel::most_unstable_parcel<PressureLayer, lifter_tbl<lifter_cm1>>(
-    PressureLayer& search_layer, lifter_tbl<lifter_cm1>& lifter,
+Parcel::most_unstable_parcel<PressureLayer, lifter_lut<lifter_cm1>>(
+    PressureLayer& search_layer, lifter_lut<lifter_cm1>& lifter,
     const float pressure[], const float height[], const float temperature[],
     const float virtemp[], const float dewpoint[], float pcl_virtemp[],
     float buoy_arr[], const std::ptrdiff_t N);
 
 extern template Parcel
-Parcel::most_unstable_parcel<HeightLayer, lifter_tbl<lifter_cm1>>(
-    HeightLayer& search_layer, lifter_tbl<lifter_cm1>& lifter,
+Parcel::most_unstable_parcel<HeightLayer, lifter_lut<lifter_cm1>>(
+    HeightLayer& search_layer, lifter_lut<lifter_cm1>& lifter,
     const float pressure[], const float height[], const float temperature[],
     const float virtemp[], const float dewpoint[], float pcl_virtemp[],
     float buoy_arr[], const std::ptrdiff_t N);
@@ -1086,12 +1100,12 @@ extern template void Parcel::lift_parcel<lifter_cm1>(lifter_cm1& liftpcl,
                                                      float pcl_vtmpk_arr[],
                                                      const std::ptrdiff_t N);
 
-extern template void Parcel::lift_parcel<lifter_tbl<lifter_wobus>>(
-    lifter_tbl<lifter_wobus>& liftpcl, const float pressure_arr[],
+extern template void Parcel::lift_parcel<lifter_lut<lifter_wobus>>(
+    lifter_lut<lifter_wobus>& liftpcl, const float pressure_arr[],
     float pcl_vtmpk_arr[], const std::ptrdiff_t N);
 
-extern template void Parcel::lift_parcel<lifter_tbl<lifter_cm1>>(
-    lifter_tbl<lifter_cm1>& liftpcl, const float pressure_arr[],
+extern template void Parcel::lift_parcel<lifter_lut<lifter_cm1>>(
+    lifter_lut<lifter_cm1>& liftpcl, const float pressure_arr[],
     float pcl_vtmpk_arr[], const std::ptrdiff_t N);
 
 extern template void DowndraftParcel::lower_parcel<lifter_wobus>(
@@ -1102,12 +1116,12 @@ extern template void DowndraftParcel::lower_parcel<lifter_cm1>(
     lifter_cm1& liftpcl, const float pressure_arr[], float pcl_tmpk_arr[],
     const std::ptrdiff_t N);
 
-extern template void DowndraftParcel::lower_parcel<lifter_tbl<lifter_wobus>>(
-    lifter_tbl<lifter_wobus>& liftpcl, const float pressure_arr[],
+extern template void DowndraftParcel::lower_parcel<lifter_lut<lifter_wobus>>(
+    lifter_lut<lifter_wobus>& liftpcl, const float pressure_arr[],
     float pcl_tmpk_arr[], const std::ptrdiff_t N);
 
-extern template void DowndraftParcel::lower_parcel<lifter_tbl<lifter_cm1>>(
-    lifter_tbl<lifter_cm1>& liftpcl, const float pressure_arr[],
+extern template void DowndraftParcel::lower_parcel<lifter_lut<lifter_cm1>>(
+    lifter_lut<lifter_cm1>& liftpcl, const float pressure_arr[],
     float pcl_tmpk_arr[], const std::ptrdiff_t N);
 
 /// @endcond
