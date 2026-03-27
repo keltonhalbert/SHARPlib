@@ -711,11 +711,15 @@ void buoyancy(const float pcl_temperature[], const float env_temperature[],
  * given temperature range. Uses a geometric approach to find the
  * intersection of the temperature line with the given range.
  *
+ * A pressure minimum can be specified (default: 100 hPa) to bound the
+ * search to be at pressures highter (lowe altitudes) than given.
+ *
  * \param   pressure        (Pa)
  * \param   temperature     (K)
  * \param   tmpk_1          (K)
  * \param   tmpk_2          (K)
  * \param   N               (length of arrays)
+ * \param   pres_min        (Pa)
  */
 PressureLayer temperature_layer(const float pressure[],
                                 const float temperature[], const float tmpk_1,
