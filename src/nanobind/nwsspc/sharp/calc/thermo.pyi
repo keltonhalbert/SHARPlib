@@ -1185,7 +1185,7 @@ def pbl_top(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), orde
         The pressure of the PBL top (Pa)
     """
 
-def temperature_layer(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], tmpk_lo: float, tmpk_hi: float) -> nwsspc.sharp.calc.layer.PressureLayer:
+def temperature_layer(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], tmpk_lo: float, tmpk_hi: float, pres_min: float = 10000.0) -> nwsspc.sharp.calc.layer.PressureLayer:
     """
     Performs a top-down search for a PressureLayer that bounds 
     the given temperature range. Uses a geometric approach to 
@@ -1201,6 +1201,8 @@ def temperature_layer(pressure: Annotated[NDArray[numpy.float32], dict(shape=(No
         The low end of the temperature range (K)
     tmpk_hi : float 
         The high end of the temperature range (K)
+    pres_min : float 
+        Restricts the search pressure levels (Pa)
 
     Returns 
     -------
