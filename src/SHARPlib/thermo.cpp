@@ -625,7 +625,7 @@ PressureLayer temperature_layer(const float pressure[],
 
             layer_bot = interpolate_log_p(p1, p2, w_out);
 
-            if (w_out < 1.0f) {
+            if (w_out < 1.0f - 1e-6f) {
                 break;
             }
         } else if (layer_top != MISSING) {
