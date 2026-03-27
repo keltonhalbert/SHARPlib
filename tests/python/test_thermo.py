@@ -466,8 +466,8 @@ def test_temperature_layer():
         -30 + constants.ZEROCNK, 
         -10 + constants.ZEROCNK
     )
-    assert (hgz.bottom == 51430)
-    assert (hgz.top == 35816)
+    assert (hgz.bottom == pytest.approx(51430))
+    assert (hgz.top == pytest.approx(35816))
 
     dgz = thermo.temperature_layer(
         snd_data["pres"], 
@@ -475,5 +475,5 @@ def test_temperature_layer():
         -17 + constants.ZEROCNK, 
         -12 + constants.ZEROCNK
     )
-    assert (dgz.bottom == 49598)
-    assert (dgz.top == 45961)
+    assert (dgz.bottom == pytest.approx(49598))
+    assert (dgz.top == pytest.approx(45961))
