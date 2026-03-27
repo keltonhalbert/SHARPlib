@@ -719,7 +719,8 @@ void buoyancy(const float pcl_temperature[], const float env_temperature[],
  */
 PressureLayer temperature_layer(const float pressure[],
                                 const float temperature[], const float tmpk_1,
-                                const float tmpk_2, const std::ptrdiff_t N);
+                                const float tmpk_2, const std::ptrdiff_t N,
+                                const float pres_min = 10000.0f);
 
 /// @cond DOXYGEN_IGNORE
 

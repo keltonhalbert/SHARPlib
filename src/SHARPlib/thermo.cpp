@@ -566,7 +566,8 @@ float buoyancy_dilution_potential(float temperature, float mse_bar,
 
 PressureLayer temperature_layer(const float pressure[],
                                 const float temperature[], const float tmpk_1,
-                                const float tmpk_2, const std::ptrdiff_t N) {
+                                const float tmpk_2, const std::ptrdiff_t N,
+                                const float pres_min) {
     auto interp_logp = [](float p1, float p2, float w) -> float {
         return std::pow(10.0f, sharp::lerp(std::log10(p1), std::log10(p2), w));
     };
@@ -580,30 +581,32 @@ PressureLayer temperature_layer(const float pressure[],
     float last_p = MISSING;
     float last_t = MISSING;
     std::ptrdiff_t idx = N - 1;
-
-    while (idx >= 0) {
+    for (; idx >= 0; --idx) {
+        if (pressure[idx] == MISSING || temperature[idx] == MISSING) continue;
+        if (pressure[idx] < pres_min) continue;
         last_p = pressure[idx];
         last_t = temperature[idx];
-        --idx;
-        if (last_p != MISSING && last_t != MISSING) break;
+        break;
     }
+    if (idx < 0) return {MISSING, MISSING};
+    --idx;
 
     for (; idx >= 0; --idx) {
-        float p_curr = pressure[idx];
-        float t_curr = temperature[idx];
+        const float p_curr = pressure[idx];
+        const float t_curr = temperature[idx];
 
         if (p_curr == MISSING || t_curr == MISSING) continue;
 
-        float t1 = last_t, t2 = t_curr;
-        float p1 = last_p, p2 = p_curr;
+        const float t1 = last_t, t2 = t_curr;
+        const float p1 = last_p, p2 = p_curr;
         float w_in = 0.0f;
         float w_out = 1.0f;
-        float dt = t2 - t1;
+        const float dt = t2 - t1;
 
         if (std::abs(dt) > 1e-5f) {
-            float inv_dt = 1.0f / dt;
-            float w1 = (t_lo - t1) * inv_dt;
-            float w2 = (t_hi - t1) * inv_dt;
+            const float inv_dt = 1.0f / dt;
+            const float w1 = (t_lo - t1) * inv_dt;
+            const float w2 = (t_hi - t1) * inv_dt;
             w_in = std::max(0.0f, std::min(w1, w2));
             w_out = std::min(1.0f, std::max(w1, w2));
         } else {
