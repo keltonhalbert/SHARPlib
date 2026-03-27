@@ -9,6 +9,8 @@ SHARPlib supports configurable parcel ascent via parcel lifter 'functors'. These
 
 .. autoclass:: nwsspc.sharp.calc.parcel.lifter_wobus
 
+   .. autoproperty:: nwsspc.sharp.calc.parcel.lifter_wobus.ma_type
+   .. autoproperty:: nwsspc.sharp.calc.parcel.lifter_wobus.lift_from_lcl
    .. autofunction:: nwsspc.sharp.calc.parcel.lifter_wobus.__call__
    .. autofunction:: nwsspc.sharp.calc.parcel.lifter_wobus.parcel_virtual_temperature
 
@@ -16,9 +18,22 @@ SHARPlib supports configurable parcel ascent via parcel lifter 'functors'. These
 
    .. autoproperty:: nwsspc.sharp.calc.parcel.lifter_cm1.converge
    .. autoproperty:: nwsspc.sharp.calc.parcel.lifter_cm1.ma_type
+   .. autoproperty:: nwsspc.sharp.calc.parcel.lifter_cm1.lift_from_lcl
    .. autoproperty:: nwsspc.sharp.calc.parcel.lifter_cm1.pressure_incr
    .. autofunction:: nwsspc.sharp.calc.parcel.lifter_cm1.__call__
    .. autofunction:: nwsspc.sharp.calc.parcel.lifter_cm1.parcel_virtual_temperature
+
+.. autofunction:: nwsspc.sharp.calc.parcel.lut_data
+.. autoclass:: nwsspc.sharp.calc.parcel.lut_data_wobus
+.. autoclass:: nwsspc.sharp.calc.parcel.lut_data_cm1
+
+.. autofunction:: nwsspc.sharp.calc.parcel.lifter_lut
+.. autoclass:: nwsspc.sharp.calc.parcel.lifter_lut_wobus
+.. autoclass:: nwsspc.sharp.calc.parcel.lifter_lut_cm1
+
+   .. autoproperty:: nwsspc.sharp.calc.parcel.lifter_lut.lift_from_lcl
+   .. autofunction:: nwsspc.sharp.calc.parcel.lifter_lut.__call__
+   .. autofunction:: nwsspc.sharp.calc.parcel.lifter_lut.parcel_virtual_temperature
 
 Parcels
 -------

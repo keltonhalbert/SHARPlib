@@ -34,6 +34,9 @@ class lifter_wobus:
     A static flag that helps the parcel lifting functions know where to lift from.
     """
 
+    ma_type: nwsspc.sharp.calc.thermo.adiabat = ...
+    """A static flag for the type of solver this is"""
+
     @property
     def converge(self) -> float:
         """The iterative convergence criteria (K)"""
@@ -178,6 +181,297 @@ class lifter_cm1:
         float
             The virtual temperature of the parcel (K)
         """
+
+class lut_data_wobus:
+    def __init__(self, lifter: lifter_wobus, pmin: float = 5000.0, pmax: float = 110000.0, thte_min: float = 210.0, thte_max: float = 430.0, n_logp: int = 201, n_thetae: int = 221) -> None: ...
+
+    @property
+    def pres_min(self) -> float: ...
+
+    @property
+    def pres_max(self) -> float: ...
+
+    @property
+    def thte_min(self) -> float: ...
+
+    @property
+    def thte_max(self) -> float: ...
+
+    @property
+    def num_logp(self) -> int: ...
+
+    @property
+    def num_thetae(self) -> int: ...
+
+class lut_data_cm1:
+    def __init__(self, lifter: lifter_cm1, pmin: float = 5000.0, pmax: float = 110000.0, thte_min: float = 210.0, thte_max: float = 430.0, n_logp: int = 201, n_thetae: int = 221) -> None: ...
+
+    @property
+    def pres_min(self) -> float: ...
+
+    @property
+    def pres_max(self) -> float: ...
+
+    @property
+    def thte_min(self) -> float: ...
+
+    @property
+    def thte_max(self) -> float: ...
+
+    @property
+    def num_logp(self) -> int: ...
+
+    @property
+    def num_thetae(self) -> int: ...
+
+@overload
+def lut_data(lifter: lifter_wobus, pmin: float = 5000.0, pmax: float = 110000.0, thte_min: float = 210.0, thte_max: float = 430.0, n_logp: int = 201, n_thetae: int = 221) -> lut_data_wobus:
+    """
+    Constructs the lookup table (LUT) data for a parcel lifter.
+
+    Parameters
+    ----------
+    lifter : nwsspc.sharp.calc.parcel.lifter_wobus
+    pmin : float 
+        The minimum pressure of the lookup table (Pa)
+    pmax : float 
+        The maximum pressure of the lookup table (Pa)
+    thte_min : float 
+        The minimum thetae of the lookup table (K)
+    thte_max : float 
+        The maximum thetae of the lookup table (K)
+    n_logp : uint
+        The number of logp levels for the lookup table
+    n_thetae : uint
+        The number of thetae levels for the lookup table
+
+    Returns
+    -------
+    nwsspc.sharp.calc.parcel.lut_data_wobus
+       A lookup table for nwsspc.sharp.calc.parcel.lifter_wobus
+    """
+
+@overload
+def lut_data(lifter: lifter_cm1, pmin: float = 5000.0, pmax: float = 110000.0, thte_min: float = 210.0, thte_max: float = 430.0, n_logp: int = 201, n_thetae: int = 221) -> lut_data_cm1:
+    """
+    Constructs the lookup table (LUT) data for a parcel lifter.
+
+    Parameters
+    ----------
+    lifter : nwsspc.sharp.calc.parcel.lifter_cm1
+    pmin : float 
+        The minimum pressure of the lookup table (Pa)
+    pmax : float 
+        The maximum pressure of the lookup table (Pa)
+    thte_min : float 
+        The minimum thetae of the lookup table (K)
+    thte_max : float 
+        The maximum thetae of the lookup table (K)
+    n_logp : uint
+        The number of logp levels for the lookup table
+    n_thetae : uint
+        The number of thetae levels for the lookup table
+
+    Returns
+    -------
+    nwsspc.sharp.calc.parcel.lut_data_wobus
+       A lookup table for nwsspc.sharp.calc.parcel.lifter_cm1
+    """
+
+class lifter_lut_wobus:
+    """
+    A parcel lifter functor that uses a pseudoadiabatic lookup table (LUT)
+    for fast moist adiabatic ascent calculations.
+
+    Instead of directly solving the moist ascent ODEs, this lifter uses
+    bilinear interpolation of a precomputed lookup table to determine the
+    parcel temperature. If the parcel's LCL falls outside the table bounds,
+    it falls back to the direct Wobus solver automatically.
+
+    LUT based parcel ascent only works for pseudoadiabats. Constructing the
+    LUT with a reversible adiabat type will result in an error being thrown.
+
+    Parameters
+    ----------
+    data : nwsspc.sharp.calc.parcel.lut_data
+        A shared lookup table constructed with a lifter_wobus instance.
+    """
+
+    def __init__(self, data: lut_data_wobus) -> None: ...
+
+    lift_from_lcl: bool = ...
+    """
+    A static flag that helps the parcel lifting functions know where to lift from.
+    """
+
+    def setup(self, lcl_pres: float, lcl_tmpk: float) -> None:
+        """
+        Performs a setup step based on the LCL attributes.
+
+        Computes the fractional index needed to select the correct pseudoadiabat
+        for lookup. If the LCL is outside the table bounds, it falls back to the
+        direct solver.
+
+        Parameters
+        ----------
+        lcl_pres : float
+            The LCL pressure (Pa)
+        lcl_tmpk : float
+            The LCL temperature (K)
+
+        Returns
+        -------
+        None
+        """
+
+    def __call__(self, pres: float, tmpk: float, new_pres: float) -> float:
+        """
+        Performs LUT interpolation to lift a parcel moist adiabatically.
+
+        Parameters
+        ----------
+        pres : float
+            Parcel pressure (Pa)
+        tmpk : float
+            Parcel temperature (K)
+        new_pres : float
+            Final level of parcel after lift (Pa)
+
+        Returns
+        -------
+        float
+            The temperature of the lifted parcel (K)
+        """
+
+    def parcel_virtual_temperature(self, pres: float, tmpk: float) -> float:
+        """
+        Computes the virtual temperature of the parcel (after saturation).
+
+        Parameters
+        ----------
+        pres : float
+            Parcel pressure (Pa)
+        tmpk : float
+            Parcel temperature (K)
+
+        Returns
+        -------
+        float
+            The virtual temperature of the parcel (K)
+        """
+
+class lifter_lut_cm1:
+    """
+    A parcel lifter functor that uses a pseudoadiabatic lookup table (LUT)
+    for fast moist adiabatic ascent calculations.
+
+    Instead of directly solving the moist ascent ODEs, this lifter uses
+    bilinear interpolation of a precomputed lookup table to determine the
+    parcel temperature. If the parcel's LCL falls outside the table bounds,
+    it falls back to the direct CM1 solver automatically.
+
+    LUT based parcel ascent only works for pseudoadiabats. Constructing the
+    LUT with a reversible adiabat type will result in an error being thrown.
+
+    Parameters
+    ----------
+    data : lut_data
+        A shared lookup table constructed with a lifter_cm1 instance.
+    """
+
+    def __init__(self, data: lut_data_cm1) -> None: ...
+
+    lift_from_lcl: bool = ...
+    """
+    A static flag that helps the parcel lifting functions know where to lift from.
+    The lifter_cm1 lifts from the last lifted level, rather than the LCL, because
+    it is an iterative solver. This results in major performance improvements while
+    maintaining accuracy.
+    """
+
+    def setup(self, lcl_pres: float, lcl_tmpk: float) -> None:
+        """
+        Performs a setup step based on the LCL attributes.
+
+        Computes the fractional index needed to select the correct pseudoadiabat
+        for lookup. If the LCL is outside the table bounds, it falls back to the
+        direct solver.
+
+        Parameters
+        ----------
+        lcl_pres : float
+            The LCL pressure (Pa)
+        lcl_tmpk : float
+            The LCL temperature (K)
+
+        Returns
+        -------
+        None
+        """
+
+    def __call__(self, pres: float, tmpk: float, new_pres: float) -> float:
+        """
+        Performs LUT interpolation to lift a parcel moist adiabatically.
+
+        Parameters
+        ----------
+        pres : float
+            Parcel pressure (Pa)
+        tmpk : float
+            Parcel temperature (K)
+        new_pres : float
+            Final level of parcel after lift (Pa)
+
+        Returns
+        -------
+        float
+            The temperature of the lifted parcel (K)
+        """
+
+    def parcel_virtual_temperature(self, pres: float, tmpk: float) -> float:
+        """
+        Computes the virtual temperature of the parcel (after saturation).
+
+        Parameters
+        ----------
+        pres : float
+            Parcel pressure (Pa)
+        tmpk : float
+            Parcel temperature (K)
+
+        Returns
+        -------
+        float
+            The virtual temperature of the parcel (K)
+        """
+
+@overload
+def lifter_lut(lut: lut_data_wobus) -> lifter_lut_wobus:
+    """
+    Constructs the parcel lifter from a LUT.
+
+    Parameters
+    ----------
+    lut : nwsspc.sharp.calc.parcel.lut_data_wobus
+
+    Returns
+    -------
+    nwsspc.sharp.calc.parcel.lifter_lut_wobus
+    """
+
+@overload
+def lifter_lut(lut: lut_data_cm1) -> lifter_lut_cm1:
+    """
+    Constructs the parcel lifter from a LUT.
+
+    Parameters
+    ----------
+    lut : nwsspc.sharp.calc.parcel.lut_data_cm1
+
+    Returns
+    -------
+    nwsspc.sharp.calc.parcel.lifter_lut_cm1
+    """
 
 class LPL(enum.Enum):
     SFC = 1
@@ -331,6 +625,50 @@ class Parcel:
             A 1D NumPy array of parcel virtual temperature values (K)
         """
 
+    @overload
+    def lift_parcel(self, lifter: lifter_lut_wobus, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
+        """
+        Lifts a Parcel dry adiabatically from its LPL to its LCL dry
+        adiabatically, and then moist adiabatically from the LCL to 
+        the top of the profile. The moist adiabat used is determined
+        by the type of lifting functor passed to the function (i.e.
+        lifter_wobus or lifter_cm1).
+
+        Parameters
+        ----------
+        lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+            An instantiated lifter_lut functor
+        pressure : numpy.ndarray[dtype=float32] 
+            1D NumPy array of Pressure levels for lifting (Pa)
+
+        Returns
+        -------
+        numpy.ndarray[dtype=float32]
+            A 1D NumPy array of parcel virtual temperature values (K)
+        """
+
+    @overload
+    def lift_parcel(self, lifter: lifter_lut_cm1, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
+        """
+        Lifts a Parcel dry adiabatically from its LPL to its LCL dry
+        adiabatically, and then moist adiabatically from the LCL to 
+        the top of the profile. The moist adiabat used is determined
+        by the type of lifting functor passed to the function (i.e.
+        lifter_wobus or lifter_cm1).
+
+        Parameters
+        ----------
+        lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+            An instantiated lifter_lut functor
+        pressure : numpy.ndarray[dtype=float32] 
+            1D NumPy array of Pressure levels for lifting (Pa)
+
+        Returns
+        -------
+        numpy.ndarray[dtype=float32]
+            A 1D NumPy array of parcel virtual temperature values (K)
+        """
+
     def find_lfc_el(self, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], buoyancy: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> tuple[float, float]:
         """
         Searches the buoyancy array for the LFC and EL combination that results
@@ -365,7 +703,7 @@ class Parcel:
         """
         Find the pressure of the Maximum Parcel Level (MPL).
 
-        The Maximum Parcel Level (MPL) is the level a parcel woud reach 
+        The Maximum Parcel Level (MPL) is the level a parcel would reach 
         if it expended all of its integrated positive buoyancy past the 
         Equilibrium Level. It is found by integrating negatively buoyant 
         area above the Equilibrium Level until the integrated negative 
@@ -377,9 +715,9 @@ class Parcel:
         must be called first, or nwsspc.sharp.calc.parcel.Parcel.cape and 
         nwsspc.sharp.calc.parcel.Parcel.eql_pressure must be set. 
 
-        A values of nwsspc.sharp.calc.constants.MISSING is returned if:
+        A value of nwsspc.sharp.calc.constants.MISSING is returned if:
           * CAPE is 0 
-          * nwsspc.sharp.calc.parce.Parcel.eql_pressure is MISSING
+          * nwsspc.sharp.calc.parcel.Parcel.eql_pressure is MISSING
           * No valid MPL candidate is found within the profile
             In this scenario, it likely exceeds the top of the available data
 
@@ -619,6 +957,7 @@ class Parcel:
         Returns
         -------
         nwsspc.sharp.calc.parcel.Parcel
+            Parcel with most-unstable values
         """
 
     @overload
@@ -634,6 +973,130 @@ class Parcel:
         layer : nwsspc.sharp.calc.layer.HeightLayer 
             HeightLayer for which to search for the Most Unstable Parcel
         lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+            Parcel lifting routine to use for moist ascent
+        pressure : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile pressure values (Pa)
+        height : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile height values (meters)
+        temperature : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile temperature values (K)
+        virtual_temperature : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile virtual temperature values (K)
+        dewpoint : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile dewpoint values (K)
+
+        Returns
+        -------
+        nwsspc.sharp.calc.parcel.Parcel
+            Parcel with most-unstable values
+        """
+
+    @overload
+    @staticmethod
+    def most_unstable_parcel(layer: nwsspc.sharp.calc.layer.PressureLayer, lifter: lifter_lut_cm1, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Parcel:
+        """
+        Given input arrays of pressure, height, temperature, virtual temperature,
+        and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
+        parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
+
+        Parameters
+        ----------
+        layer : nwsspc.sharp.calc.layer.PressureLayer 
+            PressureLayer for which to search for the Most Unstable Parcel
+        lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+            Parcel lifting routine to use for moist ascent
+        pressure : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile pressure values (Pa)
+        height : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile height values (meters)
+        temperature : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile temperature values (K)
+        virtual_temperature : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile virtual temperature values (K)
+        dewpoint : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile dewpoint values (K)
+
+        Returns
+        -------
+        nwsspc.sharp.calc.parcel.Parcel
+            Parcel with most-unstable values
+        """
+
+    @overload
+    @staticmethod
+    def most_unstable_parcel(layer: nwsspc.sharp.calc.layer.HeightLayer, lifter: lifter_lut_cm1, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Parcel:
+        """
+        Given input arrays of pressure, height, temperature, virtual temperature,
+        and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
+        parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
+
+        Parameters
+        ----------
+        layer : nwsspc.sharp.calc.layer.HeightLayer 
+            HeightLayer for which to search for the Most Unstable Parcel
+        lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+            Parcel lifting routine to use for moist ascent
+        pressure : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile pressure values (Pa)
+        height : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile height values (meters)
+        temperature : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile temperature values (K)
+        virtual_temperature : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile virtual temperature values (K)
+        dewpoint : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile dewpoint values (K)
+
+        Returns
+        -------
+        nwsspc.sharp.calc.parcel.Parcel
+            Parcel with most-unstable values
+        """
+
+    @overload
+    @staticmethod
+    def most_unstable_parcel(layer: nwsspc.sharp.calc.layer.PressureLayer, lifter: lifter_lut_wobus, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Parcel:
+        """
+        Given input arrays of pressure, height, temperature, virtual temperature,
+        and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
+        parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
+
+        Parameters
+        ----------
+        layer : nwsspc.sharp.calc.layer.PressureLayer 
+            PressureLayer for which to search for the Most Unstable Parcel
+        lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+            Parcel lifting routine to use for moist ascent
+        pressure : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile pressure values (Pa)
+        height : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile height values (meters)
+        temperature : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile temperature values (K)
+        virtual_temperature : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile virtual temperature values (K)
+        dewpoint : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile dewpoint values (K)
+
+        Returns
+        -------
+        nwsspc.sharp.calc.parcel.Parcel
+            Parcel with most-unstable values
+        """
+
+    @overload
+    @staticmethod
+    def most_unstable_parcel(layer: nwsspc.sharp.calc.layer.HeightLayer, lifter: lifter_lut_wobus, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], virtual_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Parcel:
+        """
+        Given input arrays of pressure, height, temperature, virtual temperature,
+        and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
+        parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
+
+        Parameters
+        ----------
+        layer : nwsspc.sharp.calc.layer.HeightLayer 
+            HeightLayer for which to search for the Most Unstable Parcel
+        lifter : nwsspc.sharp.calc.parcel.lifter_lut 
             Parcel lifting routine to use for moist ascent
         pressure : numpy.ndarray[dtype=float32] 
             1D NumPy array of profile pressure values (Pa)
@@ -751,6 +1214,54 @@ class DowndraftParcel:
         ----------
         lifter : nwsspc.sharp.calc.parcel.lifter_cm1
             An instantiated lifter_cm1 functor
+        pressure : numpy.ndarray[dtype=float32] 
+            1D NumPy array of Pressure levels for lifting (Pa)
+
+        Returns
+        -------
+        numpy.ndarray[dtype=float32]
+            A 1D NumPy array of parcel temperature values (K)
+        """
+
+    @overload
+    def lower_parcel(self, lifter: lifter_lut_wobus, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
+        """
+        Lowers a saturated nwsspc.sharp.calc.parcel.DowndraftParcel moist 
+        adiabatically from its LPL to the surface. The moist adiabat used 
+        is determined by the type of lifting functor passed to the function 
+        (i.e. lifter_wobus or lifter_cm1).
+
+        Unlike nwsspc.sharp.calc.parcel.Parcel.lift_parcel, the virtual 
+        temperature correction is not used for downdraft parcels.
+
+        Parameters
+        ----------
+        lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+            An instantiated lifter_lut functor
+        pressure : numpy.ndarray[dtype=float32] 
+            1D NumPy array of Pressure levels for lifting (Pa)
+
+        Returns
+        -------
+        numpy.ndarray[dtype=float32]
+            A 1D NumPy array of parcel temperature values (K)
+        """
+
+    @overload
+    def lower_parcel(self, lifter: lifter_lut_cm1, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
+        """
+        Lowers a saturated nwsspc.sharp.calc.parcel.DowndraftParcel moist 
+        adiabatically from its LPL to the surface. The moist adiabat used 
+        is determined by the type of lifting functor passed to the function 
+        (i.e. lifter_wobus or lifter_cm1).
+
+        Unlike nwsspc.sharp.calc.parcel.Parcel.lift_parcel, the virtual 
+        temperature correction is not used for downdraft parcels.
+
+        Parameters
+        ----------
+        lifter : nwsspc.sharp.calc.parcel.lifter_lut
+            An instantiated lifter_lut functor
         pressure : numpy.ndarray[dtype=float32] 
             1D NumPy array of Pressure levels for lifting (Pa)
 

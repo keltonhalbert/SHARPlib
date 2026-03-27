@@ -32,8 +32,8 @@ Moist Variables
 .. doxygenfunction:: sharp::buoyancy(const float, const float)
 .. doxygenfunction:: sharp::buoyancy(const float[], const float[], float[], std::ptrdiff_t)
 .. doxygenfunction:: sharp::thetae
-.. doxygenfunction:: sharp::wetbulb(Lft, float, float, float)
-.. doxygenfunction:: sharp::theta_wetbulb(Lft, float, float, float)
+.. doxygenfunction:: sharp::wetbulb(Lft&, float, float, float)
+.. doxygenfunction:: sharp::theta_wetbulb(Lft&, float, float, float)
 
 Moist Ascent
 ------------
