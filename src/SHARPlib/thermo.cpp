@@ -567,6 +567,10 @@ float buoyancy_dilution_potential(float temperature, float mse_bar,
 PressureLayer temperature_layer(const float pressure[],
                                 const float temperature[], const float tmpk_1,
                                 const float tmpk_2, const std::ptrdiff_t N) {
+    auto interp_logp = [](float p1, float p2, float w) -> float {
+        return std::pow(10.0f, sharp::lerp(std::log10(p1), std::log10(p2), w));
+    };
+
     float layer_bot = MISSING;
     float layer_top = MISSING;
 
@@ -614,14 +618,12 @@ PressureLayer temperature_layer(const float pressure[],
 
         if (w_in < w_out) {
             if (layer_top == MISSING) {
-                layer_top = std::pow(
-                    10.0f, sharp::lerp(std::log10(p1), std::log10(p2), w_in));
+                layer_top = interp_logp(p1, p2, w_in);
             }
 
-            layer_bot = std::pow(
-                10.0f, sharp::lerp(std::log10(p1), std::log10(p2), w_out));
+            layer_bot = interp_logp(p1, p2, w_out);
 
-            if (w_out < 1.0f - 1e-6f) {
+            if (w_out < 1.0f - 1e-5f) {
                 break;
             }
         } else if (layer_top != MISSING) {
