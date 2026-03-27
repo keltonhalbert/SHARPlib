@@ -576,7 +576,7 @@ PressureLayer temperature_layer(const float pressure[],
     auto interpolate_log_p = [](float p1, float p2, float w) {
         if (w <= 0.0f) return p1;
         if (w >= 1.0f) return p2;
-        return p1 * std::pow(p2 / p1, w);
+        return std::pow(10.0f, sharp::lerp(std::log10(p1), std::log10(p2), w));
     };
 
     float last_p = MISSING;
