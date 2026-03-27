@@ -573,12 +573,6 @@ PressureLayer temperature_layer(const float pressure[],
     const float t_lo = std::min(tmpk_1, tmpk_2);
     const float t_hi = std::max(tmpk_1, tmpk_2);
 
-    auto interpolate_log_p = [](float p1, float p2, float w) {
-        if (w <= 0.0f) return p1;
-        if (w >= 1.0f) return p2;
-        return std::pow(10.0f, sharp::lerp(std::log10(p1), std::log10(p2), w));
-    };
-
     float last_p = MISSING;
     float last_t = MISSING;
     std::ptrdiff_t idx = N - 1;
@@ -620,10 +614,12 @@ PressureLayer temperature_layer(const float pressure[],
 
         if (w_in < w_out) {
             if (layer_top == MISSING) {
-                layer_top = interpolate_log_p(p1, p2, w_in);
+                layer_top = std::pow(
+                    10.0f, sharp::lerp(std::log10(p1), std::log10(p2), w_in));
             }
 
-            layer_bot = interpolate_log_p(p1, p2, w_out);
+            layer_bot = std::pow(
+                10.0f, sharp::lerp(std::log10(p1), std::log10(p2), w_out));
 
             if (w_out < 1.0f - 1e-6f) {
                 break;
