@@ -384,9 +384,6 @@ class lifter_lut_cm1:
     lift_from_lcl: bool = ...
     """
     A static flag that helps the parcel lifting functions know where to lift from.
-    The lifter_cm1 lifts from the last lifted level, rather than the LCL, because
-    it is an iterative solver. This results in major performance improvements while
-    maintaining accuracy.
     """
 
     def setup(self, lcl_pres: float, lcl_tmpk: float) -> None:
@@ -460,18 +457,7 @@ def lifter_lut(lut: lut_data_wobus) -> lifter_lut_wobus:
     """
 
 @overload
-def lifter_lut(lut: lut_data_cm1) -> lifter_lut_cm1:
-    """
-    Constructs the parcel lifter from a LUT.
-
-    Parameters
-    ----------
-    lut : nwsspc.sharp.calc.parcel.lut_data_cm1
-
-    Returns
-    -------
-    nwsspc.sharp.calc.parcel.lifter_lut_cm1
-    """
+def lifter_lut(lut: lut_data_cm1) -> lifter_lut_cm1: ...
 
 class LPL(enum.Enum):
     SFC = 1
@@ -580,94 +566,6 @@ class Parcel:
 
     @cinh.setter
     def cinh(self, arg: float, /) -> None: ...
-
-    @overload
-    def lift_parcel(self, lifter: lifter_wobus, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
-        """
-        Lifts a Parcel dry adiabatically from its LPL to its LCL dry
-        adiabatically, and then moist adiabatically from the LCL to 
-        the top of the profile. The moist adiabat used is determined
-        by the type of lifting functor passed to the function (i.e.
-        lifter_wobus or lifter_cm1).
-
-        Parameters
-        ----------
-        lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
-            An instantiated lifter_wobus functor
-        pressure : numpy.ndarray[dtype=float32] 
-            1D NumPy array of Pressure levels for lifting (Pa)
-
-        Returns
-        -------
-        numpy.ndarray[dtype=float32]
-            A 1D NumPy array of parcel virtual temperature values (K)
-        """
-
-    @overload
-    def lift_parcel(self, lifter: lifter_cm1, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
-        """
-        Lifts a Parcel dry adiabatically from its LPL to its LCL dry
-        adiabatically, and then moist adiabatically from the LCL to 
-        the top of the profile. The moist adiabat used is determined
-        by the type of lifting functor passed to the function (i.e.
-        lifter_wobus or lifter_cm1).
-
-        Parameters
-        ----------
-        lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
-            An instantiated lifter_cm1 functor
-        pressure : numpy.ndarray[dtype=float32] 
-            1D NumPy array of Pressure levels for lifting (Pa)
-
-        Returns
-        -------
-        numpy.ndarray[dtype=float32]
-            A 1D NumPy array of parcel virtual temperature values (K)
-        """
-
-    @overload
-    def lift_parcel(self, lifter: lifter_lut_wobus, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
-        """
-        Lifts a Parcel dry adiabatically from its LPL to its LCL dry
-        adiabatically, and then moist adiabatically from the LCL to 
-        the top of the profile. The moist adiabat used is determined
-        by the type of lifting functor passed to the function (i.e.
-        lifter_wobus or lifter_cm1).
-
-        Parameters
-        ----------
-        lifter : nwsspc.sharp.calc.parcel.lifter_lut 
-            An instantiated lifter_lut functor
-        pressure : numpy.ndarray[dtype=float32] 
-            1D NumPy array of Pressure levels for lifting (Pa)
-
-        Returns
-        -------
-        numpy.ndarray[dtype=float32]
-            A 1D NumPy array of parcel virtual temperature values (K)
-        """
-
-    @overload
-    def lift_parcel(self, lifter: lifter_lut_cm1, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
-        """
-        Lifts a Parcel dry adiabatically from its LPL to its LCL dry
-        adiabatically, and then moist adiabatically from the LCL to 
-        the top of the profile. The moist adiabat used is determined
-        by the type of lifting functor passed to the function (i.e.
-        lifter_wobus or lifter_cm1).
-
-        Parameters
-        ----------
-        lifter : nwsspc.sharp.calc.parcel.lifter_lut 
-            An instantiated lifter_lut functor
-        pressure : numpy.ndarray[dtype=float32] 
-            1D NumPy array of Pressure levels for lifting (Pa)
-
-        Returns
-        -------
-        numpy.ndarray[dtype=float32]
-            A 1D NumPy array of parcel virtual temperature values (K)
-        """
 
     def find_lfc_el(self, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], buoyancy: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> tuple[float, float]:
         """
@@ -816,55 +714,91 @@ class Parcel:
         """
 
     @overload
-    @staticmethod
-    def mixed_layer_parcel(mix_layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], potential_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mixing_ratio: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Parcel:
+    def lift_parcel(self, lifter: lifter_wobus, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
         """
-        Given input arrays of pressure, potential temperature, 
-        and water vapor mixing ratio, as well as a defined PressureLayer, 
-        compute and return a mixed-layer Parcel.
+        Lifts a Parcel dry adiabatically from its LPL to its LCL dry
+        adiabatically, and then moist adiabatically from the LCL to 
+        the top of the profile. The moist adiabat used is determined
+        by the type of lifting functor passed to the function (i.e.
+        lifter_wobus or lifter_cm1).
 
         Parameters
         ----------
-        mix_layer : nwsspc.sharp.calc.layer.PressureLayer 
-            PressureLayer over which to compute a mixed-layer parcel 
+        lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+            An instantiated lifter_wobus functor
         pressure : numpy.ndarray[dtype=float32] 
-            1D NumPy array of profile pressure values (Pa)
-        potential_temperature : numpy.ndarray[dtype=float32] 
-            1D NumPy array of profile potential temperature (K)
-        mixing_ratio : numpy.ndarray[dtype=float32] 
-            1D NumPy array of profile water vapor mixing ratio (unitless)
+            1D NumPy array of Pressure levels for lifting (Pa)
 
         Returns
         -------
-        nwsspc.sharp.calc.parcel.Parcel
-            Parcel with mixed layer values
+        numpy.ndarray[dtype=float32]
+            A 1D NumPy array of parcel virtual temperature values (K)
         """
 
     @overload
-    @staticmethod
-    def mixed_layer_parcel(mix_layer: nwsspc.sharp.calc.layer.HeightLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], potential_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mixing_ratio: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Parcel:
+    def lift_parcel(self, lifter: lifter_cm1, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
         """
-        Given input arrays of pressure, potential temperature, and water 
-        vapor mixing ratio, as well as a defined PressureLayer, compute 
-        and return a mixed-layer Parcel.
+        Lifts a Parcel dry adiabatically from its LPL to its LCL dry
+        adiabatically, and then moist adiabatically from the LCL to 
+        the top of the profile. The moist adiabat used is determined
+        by the type of lifting functor passed to the function (i.e.
+        lifter_wobus or lifter_cm1).
 
         Parameters
         ----------
-        mix_layer : nwsspc.sharp.calc.layer.HeightLayer 
-            HeightLayer over which to compute a mixed-layer parcel 
+        lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
+            An instantiated lifter_cm1 functor
         pressure : numpy.ndarray[dtype=float32] 
-            1D NumPy array of profile pressure values (Pa)
-        height : numpy.ndarray[dtype=float32] 
-            1D NumPy array of profile height values (meters)
-        potential_temperature : numpy.ndarray[dtype=float32] 
-            1D NumPy array of profile potential temperature (K)
-        mixing_ratio : numpy.ndarray[dtype=float32] 
-            1D NumPy array of profile water vapor mixing ratio (unitless)
+            1D NumPy array of Pressure levels for lifting (Pa)
 
         Returns
         -------
-        nwsspc.sharp.calc.parcel.Parcel
-            Parcel with mixed layer values
+        numpy.ndarray[dtype=float32]
+            A 1D NumPy array of parcel virtual temperature values (K)
+        """
+
+    @overload
+    def lift_parcel(self, lifter: lifter_lut_wobus, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
+        """
+        Lifts a Parcel dry adiabatically from its LPL to its LCL dry
+        adiabatically, and then moist adiabatically from the LCL to 
+        the top of the profile. The moist adiabat used is determined
+        by the type of lifting functor passed to the function (i.e.
+        lifter_wobus or lifter_cm1).
+
+        Parameters
+        ----------
+        lifter : nwsspc.sharp.calc.parcel.lifter_lut_wobus 
+            An instantiated lifter_lut functor
+        pressure : numpy.ndarray[dtype=float32] 
+            1D NumPy array of Pressure levels for lifting (Pa)
+
+        Returns
+        -------
+        numpy.ndarray[dtype=float32]
+            A 1D NumPy array of parcel virtual temperature values (K)
+        """
+
+    @overload
+    def lift_parcel(self, lifter: lifter_lut_cm1, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
+        """
+        Lifts a Parcel dry adiabatically from its LPL to its LCL dry
+        adiabatically, and then moist adiabatically from the LCL to 
+        the top of the profile. The moist adiabat used is determined
+        by the type of lifting functor passed to the function (i.e.
+        lifter_wobus or lifter_cm1).
+
+        Parameters
+        ----------
+        lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+            An instantiated lifter_lut functor
+        pressure : numpy.ndarray[dtype=float32] 
+            1D NumPy array of Pressure levels for lifting (Pa)
+
+        Returns
+        -------
+        numpy.ndarray[dtype=float32]
+            A 1D NumPy array of parcel virtual temperature values (K)
         """
 
     @overload
@@ -1003,7 +937,7 @@ class Parcel:
         ----------
         layer : nwsspc.sharp.calc.layer.PressureLayer 
             PressureLayer for which to search for the Most Unstable Parcel
-        lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+        lifter : nwsspc.sharp.calc.parcel.lifter_lut_cm1 
             Parcel lifting routine to use for moist ascent
         pressure : numpy.ndarray[dtype=float32] 
             1D NumPy array of profile pressure values (Pa)
@@ -1034,7 +968,7 @@ class Parcel:
         ----------
         layer : nwsspc.sharp.calc.layer.HeightLayer 
             HeightLayer for which to search for the Most Unstable Parcel
-        lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+        lifter : nwsspc.sharp.calc.parcel.lifter_lut_cm1
             Parcel lifting routine to use for moist ascent
         pressure : numpy.ndarray[dtype=float32] 
             1D NumPy array of profile pressure values (Pa)
@@ -1065,7 +999,7 @@ class Parcel:
         ----------
         layer : nwsspc.sharp.calc.layer.PressureLayer 
             PressureLayer for which to search for the Most Unstable Parcel
-        lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+        lifter : nwsspc.sharp.calc.parcel.lifter_lut_wobus 
             Parcel lifting routine to use for moist ascent
         pressure : numpy.ndarray[dtype=float32] 
             1D NumPy array of profile pressure values (Pa)
@@ -1096,7 +1030,7 @@ class Parcel:
         ----------
         layer : nwsspc.sharp.calc.layer.HeightLayer 
             HeightLayer for which to search for the Most Unstable Parcel
-        lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+        lifter : nwsspc.sharp.calc.parcel.lifter_lut_wobus 
             Parcel lifting routine to use for moist ascent
         pressure : numpy.ndarray[dtype=float32] 
             1D NumPy array of profile pressure values (Pa)
@@ -1114,6 +1048,35 @@ class Parcel:
         nwsspc.sharp.calc.parcel.Parcel
             Parcel with most-unstable values
         """
+
+    @overload
+    @staticmethod
+    def mixed_layer_parcel(mix_layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], potential_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mixing_ratio: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Parcel:
+        """
+        Given input arrays of pressure, potential temperature, 
+        and water vapor mixing ratio, as well as a defined PressureLayer, 
+        compute and return a mixed-layer Parcel.
+
+        Parameters
+        ----------
+        mix_layer : nwsspc.sharp.calc.layer.PressureLayer 
+            PressureLayer over which to compute a mixed-layer parcel 
+        pressure : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile pressure values (Pa)
+        potential_temperature : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile potential temperature (K)
+        mixing_ratio : numpy.ndarray[dtype=float32] 
+            1D NumPy array of profile water vapor mixing ratio (unitless)
+
+        Returns
+        -------
+        nwsspc.sharp.calc.parcel.Parcel
+            Parcel with mixed layer values
+        """
+
+    @overload
+    @staticmethod
+    def mixed_layer_parcel(mix_layer: nwsspc.sharp.calc.layer.HeightLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], potential_temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mixing_ratio: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Parcel: ...
 
 class DowndraftParcel:
     """
@@ -1174,6 +1137,62 @@ class DowndraftParcel:
 
     @cinh.setter
     def cinh(self, arg: float, /) -> None: ...
+
+    def cape_cinh(self, pres: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], hght: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], buoy: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> tuple[float, float]:
+        """
+        Assuming that nwsspc.sharp.calc.parcel.DowndraftParcel.lower_parcel 
+        has been called, cape_cinh will integrate the area between the LPL
+        and the surface to compute downdraft CAPE and downdraft CINH.
+
+        The results are stored in nwsspc.sharp.calc.parcel.DowndraftParcel.cape 
+        and nwsspc.sharp.calc.parcel.DowndraftParcel.cinh via the provided parcel.
+
+        Parameters
+        ----------
+        pres : numpy.ndarray[dtype=float32] 
+            1D NumPy array of pressure values (Pa)
+        hght : numpy.ndarray[dtype=float32] 
+            1D NumPy array of height values (meters)
+        buoyancy : numpy.ndarray[dtype=float32] 
+            1D NumPy array of buoyancy values (m/s^2)
+
+        Returns
+        -------
+        tuple[float, float]
+            (DCAPE, DCINH)
+        """
+
+    @staticmethod
+    def min_thetae(search_layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], thetae: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mean_depth: float = 10000.0) -> DowndraftParcel:
+        """
+        Define a downdraft parcel. 
+
+        Defines a downdraft parcel within a given search layer. 
+        The downdraft parcel is defined as the minimum layer-mean 
+        equivalent potential temperature (Theta-E) within the 
+        search layer. Typical values are to search within the lowest
+        400 hPa of the profile, and a mean depth of 100 hPa. 
+
+        Parameters 
+        ----------
+        search_layer : nwsspc.sharp.calc.layer.PressureLayer 
+            The layer over which to search for the downdraft parcel 
+        pressure : numpy.ndarray[dtype=float32]
+            1D NumPy array of pressure (Pa)
+        temperature : numpy.ndarray[dtype=float32]
+            1D NumPy array of temperature (K)
+        dewpoint : numpy.ndarray[dtype=float32]
+            1D NumPy array of dewpoint (K)
+        thetae : numpy.ndarray[dtype=float32]
+            1D NumPy array of thetae (K)
+        mean_depth : float
+            The layer depth for calculating mean thetae.
+
+        Returns 
+        -------
+        nwsspc.sharp.calc.parcel.DowndraftParcel 
+            Downdraft Parcel
+        """
 
     @overload
     def lower_parcel(self, lifter: lifter_wobus, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
@@ -1236,7 +1255,7 @@ class DowndraftParcel:
 
         Parameters
         ----------
-        lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+        lifter : nwsspc.sharp.calc.parcel.lifter_lut_wobus
             An instantiated lifter_lut functor
         pressure : numpy.ndarray[dtype=float32] 
             1D NumPy array of Pressure levels for lifting (Pa)
@@ -1260,7 +1279,7 @@ class DowndraftParcel:
 
         Parameters
         ----------
-        lifter : nwsspc.sharp.calc.parcel.lifter_lut
+        lifter : nwsspc.sharp.calc.parcel.lifter_lut_cm1
             An instantiated lifter_lut functor
         pressure : numpy.ndarray[dtype=float32] 
             1D NumPy array of Pressure levels for lifting (Pa)
@@ -1269,60 +1288,4 @@ class DowndraftParcel:
         -------
         numpy.ndarray[dtype=float32]
             A 1D NumPy array of parcel temperature values (K)
-        """
-
-    def cape_cinh(self, pres: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], hght: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], buoy: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> tuple[float, float]:
-        """
-        Assuming that nwsspc.sharp.calc.parcel.DowndraftParcel.lower_parcel 
-        has been called, cape_cinh will integrate the area between the LPL
-        and the surface to compute downdraft CAPE and downdraft CINH.
-
-        The results are stored in nwsspc.sharp.calc.parcel.DowndraftParcel.cape 
-        and nwsspc.sharp.calc.parcel.DowndraftParcel.cinh via the provided parcel.
-
-        Parameters
-        ----------
-        pres : numpy.ndarray[dtype=float32] 
-            1D NumPy array of pressure values (Pa)
-        hght : numpy.ndarray[dtype=float32] 
-            1D NumPy array of height values (meters)
-        buoyancy : numpy.ndarray[dtype=float32] 
-            1D NumPy array of buoyancy values (m/s^2)
-
-        Returns
-        -------
-        tuple[float, float]
-            (DCAPE, DCINH)
-        """
-
-    @staticmethod
-    def min_thetae(search_layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], thetae: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], mean_depth: float = 10000.0) -> DowndraftParcel:
-        """
-        Define a downdraft parcel. 
-
-        Defines a downdraft parcel within a given search layer. 
-        The downdraft parcel is defined as the minimum layer-mean 
-        equivalent potential temperature (Theta-E) within the 
-        search layer. Typical values are to search within the lowest
-        400 hPa of the profile, and a mean depth of 100 hPa. 
-
-        Parameters 
-        ----------
-        search_layer : nwsspc.sharp.calc.layer.PressureLayer 
-            The layer over which to search for the downdraft parcel 
-        pressure : numpy.ndarray[dtype=float32]
-            1D NumPy array of pressure (Pa)
-        temperature : numpy.ndarray[dtype=float32]
-            1D NumPy array of temperature (K)
-        dewpoint : numpy.ndarray[dtype=float32]
-            1D NumPy array of dewpoint (K)
-        thetae : numpy.ndarray[dtype=float32]
-            1D NumPy array of thetae (K)
-        mean_depth : float
-            The layer depth for calculating mean thetae.
-
-        Returns 
-        -------
-        nwsspc.sharp.calc.parcel.DowndraftParcel 
-            Downdraft Parcel
         """

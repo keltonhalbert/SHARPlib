@@ -232,6 +232,27 @@ def test_mixed_layer_parcel():
     assert (pcl.eql_pressure == pytest.approx(20968, abs=1e-0))
     assert (pcl.mpl_pressure == pytest.approx(11649, abs=1e-0))
 
+    mix_lyr_hght = layer.pressure_layer_to_height(
+            mix_lyr, 
+            snd_data["pres"], 
+            snd_data["hght"], 
+            False)
+
+    pcl = parcel.Parcel.mixed_layer_parcel(
+        mix_lyr_hght, snd_data["pres"], snd_data["hght"], theta, snd_data["mixr"])
+    vtmpk = pcl.lift_parcel(lifter, snd_data["pres"])
+    buoy = thermo.buoyancy(vtmpk, snd_data["vtmp"])
+    cape, cinh = pcl.cape_cinh(snd_data["pres"], snd_data["hght"], buoy)
+    mpl = pcl.maximum_parcel_level(snd_data["pres"], snd_data["hght"], buoy)
+    li = pcl.lifted_index(50000.0, snd_data["pres"], snd_data["vtmp"], vtmpk)
+
+    assert (li == pytest.approx(-6.428, abs=1e-2))
+    assert (cape == pytest.approx(1929.36, abs=5e-1))
+    assert (cinh == pytest.approx(-133.71, abs=5e-1))
+    assert (pcl.lfc_pressure == pytest.approx(67100, abs=1e-0))
+    assert (pcl.eql_pressure == pytest.approx(20968, abs=1e-0))
+    assert (pcl.mpl_pressure == pytest.approx(11649, abs=1e-0))
+
 
 def test_most_unstable_parcel():
     search_layer = layer.PressureLayer(
