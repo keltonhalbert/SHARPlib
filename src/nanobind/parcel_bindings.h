@@ -9,6 +9,9 @@
 // clang-format on
 #include <SHARPlib/layer.h>
 #include <SHARPlib/parcel.h>
+#include <fmt/core.h>
+
+#include <memory>
 
 #include "sharplib_types.h"
 
@@ -20,13 +23,14 @@ void bind_lift_parcel(nb::class_<sharp::Parcel>& cls, const char* lifter_doc) {
         "lift_parcel",
         [](sharp::Parcel& pcl, Lft& lifter, const_prof_arr_t pressure) {
             const std::size_t NZ = pressure.size();
-            float* virtemp_arr = new float[NZ];
+            auto virtemp_arr = std::make_unique<float[]>(NZ);
 
-            pcl.lift_parcel(lifter, pressure.data(), virtemp_arr, NZ);
+            pcl.lift_parcel(lifter, pressure.data(), virtemp_arr.get(), NZ);
 
-            nb::capsule owner(virtemp_arr,
+            float* raw = virtemp_arr.release();
+            nb::capsule owner(raw,
                               [](void* p) noexcept { delete[] (float*)p; });
-            return out_arr_t(virtemp_arr, {NZ}, owner);
+            return out_arr_t(raw, {NZ}, owner);
         },
         nb::arg("lifter"), nb::arg("pressure"), lifter_doc);
 }
@@ -38,24 +42,22 @@ void bind_mu_parcel(nb::class_<sharp::Parcel>& cls, const char* doc) {
         [](Layer& layer, Lft& lifter, const_prof_arr_t pressure,
            const_prof_arr_t height, const_prof_arr_t temperature,
            const_prof_arr_t virtemp, const_prof_arr_t dewpoint) {
-            if ((pressure.shape(0) != temperature.shape(0)) ||
-                (pressure.shape(0) != dewpoint.shape(0)) ||
-                (pressure.shape(0) != height.shape(0)) ||
-                (pressure.shape(0) != virtemp.shape(0))) {
+            if ((pressure.size() != temperature.size()) ||
+                (pressure.size() != dewpoint.size()) ||
+                (pressure.size() != height.size()) ||
+                (pressure.size() != virtemp.size())) {
                 throw nb::buffer_error(
                     "All input arrays must have the same size!");
             }
-            const std::ptrdiff_t NZ = height.size();
-            float* pcl_virtemp_arr = new float[NZ];
-            float* pcl_buoy_arr = new float[NZ];
+
+            const std::size_t NZ = height.size();
+            auto pcl_virtemp_arr = std::make_unique<float[]>(NZ);
+            auto pcl_buoy_arr = std::make_unique<float[]>(NZ);
 
             sharp::Parcel max_pcl = sharp::Parcel::most_unstable_parcel(
                 layer, lifter, pressure.data(), height.data(),
                 temperature.data(), virtemp.data(), dewpoint.data(),
-                pcl_virtemp_arr, pcl_buoy_arr, NZ);
-
-            delete[] pcl_virtemp_arr;
-            delete[] pcl_buoy_arr;
+                pcl_virtemp_arr.get(), pcl_buoy_arr.get(), NZ);
 
             return max_pcl;
         },
@@ -72,9 +74,9 @@ void bind_ml_parcel(nb::class_<sharp::Parcel>& cls, const char* doc) {
             [](Layer& mix_layer, const_prof_arr_t pressure,
                const_prof_arr_t height, const_prof_arr_t potential_temperature,
                const_prof_arr_t mixing_ratio) {
-                if ((pressure.shape(0) != potential_temperature.shape(0)) ||
-                    (pressure.shape(0) != mixing_ratio.shape(0)) ||
-                    (pressure.shape(0) != height.shape(0))) {
+                if ((pressure.size() != potential_temperature.size()) ||
+                    (pressure.size() != mixing_ratio.size()) ||
+                    (pressure.size() != height.size())) {
                     throw nb::buffer_error(
                         "All input arrays must have the same size!");
                 }
@@ -91,8 +93,8 @@ void bind_ml_parcel(nb::class_<sharp::Parcel>& cls, const char* doc) {
             [](Layer& mix_layer, const_prof_arr_t pressure,
                const_prof_arr_t potential_temperature,
                const_prof_arr_t mixing_ratio) {
-                if ((pressure.shape(0) != potential_temperature.shape(0)) ||
-                    (pressure.shape(0) != mixing_ratio.shape(0))) {
+                if ((pressure.size() != potential_temperature.size()) ||
+                    (pressure.size() != mixing_ratio.size())) {
                     throw nb::buffer_error(
                         "All input arrays must have the same size!");
                 }
@@ -218,14 +220,15 @@ void bind_lower_parcel(nb::class_<sharp::DowndraftParcel>& cls,
         "lower_parcel",
         [](sharp::DowndraftParcel& pcl, Lft& lifter,
            const_prof_arr_t pressure) {
-            const std::ptrdiff_t NZ = pressure.size();
-            float* tmpk_arr = new float[NZ];
+            const std::size_t NZ = pressure.size();
+            auto tmpk_arr = std::make_unique<float[]>(NZ);
 
-            pcl.lower_parcel(lifter, pressure.data(), tmpk_arr, NZ);
+            pcl.lower_parcel(lifter, pressure.data(), tmpk_arr.get(), NZ);
 
-            nb::capsule owner(tmpk_arr,
+            float* raw = tmpk_arr.release();
+            nb::capsule owner(raw,
                               [](void* p) noexcept { delete[] (float*)p; });
-            return out_arr_t(tmpk_arr, {pressure.shape(0)}, owner);
+            return out_arr_t(raw, {pressure.size()}, owner);
         },
         nb::arg("lifter"), nb::arg("pressure"), doc);
 }
@@ -236,7 +239,7 @@ inline void make_parcel_bindings(nb::module_ m) {
         "Sounding and Hodograph Analysis and Research Program Library "
         "(SHARPlib) :: Parcel Lifting Routines");
 
-    const char* lift_parcel_wobus_doc =
+    const char* lift_parcel_template_doc =
         R"pbdoc(
 Lifts a Parcel dry adiabatically from its LPL to its LCL dry
 adiabatically, and then moist adiabatically from the LCL to 
@@ -246,8 +249,8 @@ lifter_wobus or lifter_cm1).
 
 Parameters
 ----------
-lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
-    An instantiated lifter_wobus functor
+lifter : {}
+    An instantiated lifter functor
 pressure : numpy.ndarray[dtype=float32] 
     1D NumPy array of Pressure levels for lifting (Pa)
 
@@ -257,70 +260,7 @@ numpy.ndarray[dtype=float32]
     A 1D NumPy array of parcel virtual temperature values (K)
         )pbdoc";
 
-    const char* lift_parcel_cm1_doc =
-        R"pbdoc(
-Lifts a Parcel dry adiabatically from its LPL to its LCL dry
-adiabatically, and then moist adiabatically from the LCL to 
-the top of the profile. The moist adiabat used is determined
-by the type of lifting functor passed to the function (i.e.
-lifter_wobus or lifter_cm1).
-
-Parameters
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
-    An instantiated lifter_cm1 functor
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of Pressure levels for lifting (Pa)
-
-Returns
--------
-numpy.ndarray[dtype=float32]
-    A 1D NumPy array of parcel virtual temperature values (K)
-        )pbdoc";
-
-    const char* lift_parcel_lut_wobus_doc =
-        R"pbdoc(
-Lifts a Parcel dry adiabatically from its LPL to its LCL dry
-adiabatically, and then moist adiabatically from the LCL to 
-the top of the profile. The moist adiabat used is determined
-by the type of lifting functor passed to the function (i.e.
-lifter_wobus or lifter_cm1).
-
-Parameters
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_lut_wobus 
-    An instantiated lifter_lut functor
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of Pressure levels for lifting (Pa)
-
-Returns
--------
-numpy.ndarray[dtype=float32]
-    A 1D NumPy array of parcel virtual temperature values (K)
-        )pbdoc";
-
-    const char* lift_parcel_lut_cm1_doc =
-        R"pbdoc(
-Lifts a Parcel dry adiabatically from its LPL to its LCL dry
-adiabatically, and then moist adiabatically from the LCL to 
-the top of the profile. The moist adiabat used is determined
-by the type of lifting functor passed to the function (i.e.
-lifter_wobus or lifter_cm1).
-
-Parameters
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_lut 
-    An instantiated lifter_lut functor
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of Pressure levels for lifting (Pa)
-
-Returns
--------
-numpy.ndarray[dtype=float32]
-    A 1D NumPy array of parcel virtual temperature values (K)
-        )pbdoc";
-
-    const char* mu_pcl_cm1_pres_doc =
+    const char* mu_pcl_template_doc =
         R"pbdoc(
 Given input arrays of pressure, height, temperature, virtual temperature,
 and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
@@ -328,212 +268,9 @@ parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable pa
 
 Parameters
 ----------
-layer : nwsspc.sharp.calc.layer.PressureLayer 
-    PressureLayer for which to search for the Most Unstable Parcel
-lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
-    Parcel lifting routine to use for moist ascent
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile pressure values (Pa)
-height : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile height values (meters)
-temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile temperature values (K)
-virtual_temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile virtual temperature values (K)
-dewpoint : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile dewpoint values (K)
-
-Returns
--------
-nwsspc.sharp.calc.parcel.Parcel
-    Parcel with most-unstable values
-        )pbdoc";
-
-    const char* mu_pcl_cm1_hght_doc =
-        R"pbdoc(
-Given input arrays of pressure, height, temperature, virtual temperature,
-and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
-parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
-
-Parameters
-----------
-layer : nwsspc.sharp.calc.layer.HeightLayer 
-    HeightLayer for which to search for the Most Unstable Parcel
-lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
-    Parcel lifting routine to use for moist ascent
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile pressure values (Pa)
-height : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile height values (meters)
-temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile temperature values (K)
-virtual_temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile virtual temperature values (K)
-dewpoint : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile dewpoint values (K)
-
-Returns
--------
-nwsspc.sharp.calc.parcel.Parcel
-    Parcel with most-unstable values
-        )pbdoc";
-
-    const char* mu_pcl_wobus_pres_doc =
-        R"pbdoc(
-Given input arrays of pressure, height, temperature, virtual temperature,
-and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
-parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
-
-Parameters
-----------
-layer : nwsspc.sharp.calc.layer.PressureLayer 
-    PressureLayer for which to search for the Most Unstable Parcel
-lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
-    Parcel lifting routine to use for moist ascent
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile pressure values (Pa)
-height : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile height values (meters)
-temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile temperature values (K)
-virtual_temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile virtual temperature values (K)
-dewpoint : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile dewpoint values (K)
-
-Returns
--------
-nwsspc.sharp.calc.parcel.Parcel
-    Parcel with most-unstable values
-        )pbdoc";
-
-    const char* mu_pcl_wobus_hght_doc =
-        R"pbdoc(
-Given input arrays of pressure, height, temperature, virtual temperature,
-and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
-parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
-
-Parameters
-----------
-layer : nwsspc.sharp.calc.layer.HeightLayer 
-    HeightLayer for which to search for the Most Unstable Parcel
-lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
-    Parcel lifting routine to use for moist ascent
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile pressure values (Pa)
-height : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile height values (meters)
-temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile temperature values (K)
-virtual_temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile virtual temperature values (K)
-dewpoint : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile dewpoint values (K)
-
-Returns
--------
-nwsspc.sharp.calc.parcel.Parcel
-    Parcel with most-unstable values
-        )pbdoc";
-
-    const char* mu_pcl_lut_cm1_pres_doc =
-        R"pbdoc(
-Given input arrays of pressure, height, temperature, virtual temperature,
-and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
-parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
-
-Parameters
-----------
-layer : nwsspc.sharp.calc.layer.PressureLayer 
-    PressureLayer for which to search for the Most Unstable Parcel
-lifter : nwsspc.sharp.calc.parcel.lifter_lut_cm1 
-    Parcel lifting routine to use for moist ascent
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile pressure values (Pa)
-height : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile height values (meters)
-temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile temperature values (K)
-virtual_temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile virtual temperature values (K)
-dewpoint : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile dewpoint values (K)
-
-Returns
--------
-nwsspc.sharp.calc.parcel.Parcel
-    Parcel with most-unstable values
-        )pbdoc";
-
-    const char* mu_pcl_lut_cm1_hght_doc =
-        R"pbdoc(
-Given input arrays of pressure, height, temperature, virtual temperature,
-and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
-parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
-
-Parameters
-----------
-layer : nwsspc.sharp.calc.layer.HeightLayer 
-    HeightLayer for which to search for the Most Unstable Parcel
-lifter : nwsspc.sharp.calc.parcel.lifter_lut_cm1
-    Parcel lifting routine to use for moist ascent
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile pressure values (Pa)
-height : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile height values (meters)
-temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile temperature values (K)
-virtual_temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile virtual temperature values (K)
-dewpoint : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile dewpoint values (K)
-
-Returns
--------
-nwsspc.sharp.calc.parcel.Parcel
-    Parcel with most-unstable values
-        )pbdoc";
-
-    const char* mu_pcl_lut_wobus_pres_doc =
-        R"pbdoc(
-Given input arrays of pressure, height, temperature, virtual temperature,
-and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
-parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
-
-Parameters
-----------
-layer : nwsspc.sharp.calc.layer.PressureLayer 
-    PressureLayer for which to search for the Most Unstable Parcel
-lifter : nwsspc.sharp.calc.parcel.lifter_lut_wobus 
-    Parcel lifting routine to use for moist ascent
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile pressure values (Pa)
-height : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile height values (meters)
-temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile temperature values (K)
-virtual_temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile virtual temperature values (K)
-dewpoint : numpy.ndarray[dtype=float32] 
-    1D NumPy array of profile dewpoint values (K)
-
-Returns
--------
-nwsspc.sharp.calc.parcel.Parcel
-    Parcel with most-unstable values
-        )pbdoc";
-
-    const char* mu_pcl_lut_wobus_hght_doc =
-        R"pbdoc(
-Given input arrays of pressure, height, temperature, virtual temperature,
-and dewpoint temperature, as well as a defined PressureLayer/HeightLayer and 
-parcel lifter (lifter_wobus or lifter_cm1), find and return the most unstable parcel. 
-
-Parameters
-----------
-layer : nwsspc.sharp.calc.layer.HeightLayer 
-    HeightLayer for which to search for the Most Unstable Parcel
-lifter : nwsspc.sharp.calc.parcel.lifter_lut_wobus 
+layer : {}
+    Layer for which to search for the Most Unstable Parcel
+lifter : {}
     Parcel lifting routine to use for moist ascent
 pressure : numpy.ndarray[dtype=float32] 
     1D NumPy array of profile pressure values (Pa)
@@ -601,13 +338,13 @@ nwsspc.sharp.calc.parcel.Parcel
     Parcel with mixed layer values
         )pbdoc";
 
-    const char* lut_data_wobus_doc =
+    const char* lut_data_template_doc =
         R"pbdoc(
 Constructs the lookup table (LUT) data for a parcel lifter.
 
 Parameters
 ----------
-lifter : nwsspc.sharp.calc.parcel.lifter_wobus
+lifter : {}
 pmin : float 
     The minimum pressure of the lookup table (Pa)
 pmax : float 
@@ -623,63 +360,24 @@ n_thetae : uint
 
 Returns
 -------
-nwsspc.sharp.calc.parcel.lut_data_wobus
-   A lookup table for nwsspc.sharp.calc.parcel.lifter_wobus
+{}
+   A lookup table for the given lifter
 )pbdoc";
 
-    const char* lut_data_cm1_doc =
-        R"pbdoc(
-Constructs the lookup table (LUT) data for a parcel lifter.
-
-Parameters
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_cm1
-pmin : float 
-    The minimum pressure of the lookup table (Pa)
-pmax : float 
-    The maximum pressure of the lookup table (Pa)
-thte_min : float 
-    The minimum thetae of the lookup table (K)
-thte_max : float 
-    The maximum thetae of the lookup table (K)
-n_logp : uint
-    The number of logp levels for the lookup table
-n_thetae : uint
-    The number of thetae levels for the lookup table
-
-Returns
--------
-nwsspc.sharp.calc.parcel.lut_data_wobus
-   A lookup table for nwsspc.sharp.calc.parcel.lifter_cm1
-)pbdoc";
-
-    const char* lifter_lut_wobus_doc =
+    const char* lifter_lut_template_doc =
         R"pbdoc(
 Constructs the parcel lifter from a LUT.
 
 Parameters
 ----------
-lut : nwsspc.sharp.calc.parcel.lut_data_wobus
+lut : {}
 
 Returns
 -------
-nwsspc.sharp.calc.parcel.lifter_lut_wobus
+{}
 )pbdoc";
 
-    const char* lifter_lut_cm1_doc =
-        R"pbdoc(
-Constructs the parcel lifter from a LUT.
-
-Parameters
-----------
-lut : nwsspc.sharp.calc.parcel.lut_data_cm1
-
-Returns
--------
-nwsspc.sharp.calc.parcel.lifter_lut_cm1
-)pbdoc";
-
-    const char* lower_parcel_wobus_doc =
+    const char* lower_parcel_template_doc =
         R"pbdoc(
 Lowers a saturated nwsspc.sharp.calc.parcel.DowndraftParcel moist 
 adiabatically from its LPL to the surface. The moist adiabat used 
@@ -691,77 +389,8 @@ temperature correction is not used for downdraft parcels.
 
 Parameters
 ----------
-lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
-    An instantiated lifter_wobus functor
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of Pressure levels for lifting (Pa)
-
-Returns
--------
-numpy.ndarray[dtype=float32]
-    A 1D NumPy array of parcel temperature values (K)
-        )pbdoc";
-
-    const char* lower_parcel_cm1_doc =
-        R"pbdoc(
-Lowers a saturated nwsspc.sharp.calc.parcel.DowndraftParcel moist 
-adiabatically from its LPL to the surface. The moist adiabat used 
-is determined by the type of lifting functor passed to the function 
-(i.e. lifter_wobus or lifter_cm1).
-
-Unlike nwsspc.sharp.calc.parcel.Parcel.lift_parcel, the virtual 
-temperature correction is not used for downdraft parcels.
-
-Parameters
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_cm1
-    An instantiated lifter_cm1 functor
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of Pressure levels for lifting (Pa)
-
-Returns
--------
-numpy.ndarray[dtype=float32]
-    A 1D NumPy array of parcel temperature values (K)
-        )pbdoc";
-
-    const char* lower_parcel_lut_wobus_doc =
-        R"pbdoc(
-Lowers a saturated nwsspc.sharp.calc.parcel.DowndraftParcel moist 
-adiabatically from its LPL to the surface. The moist adiabat used 
-is determined by the type of lifting functor passed to the function 
-(i.e. lifter_wobus or lifter_cm1).
-
-Unlike nwsspc.sharp.calc.parcel.Parcel.lift_parcel, the virtual 
-temperature correction is not used for downdraft parcels.
-
-Parameters
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_lut_wobus
-    An instantiated lifter_lut functor
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of Pressure levels for lifting (Pa)
-
-Returns
--------
-numpy.ndarray[dtype=float32]
-    A 1D NumPy array of parcel temperature values (K)
-        )pbdoc";
-
-    const char* lower_parcel_lut_cm1_doc =
-        R"pbdoc(
-Lowers a saturated nwsspc.sharp.calc.parcel.DowndraftParcel moist 
-adiabatically from its LPL to the surface. The moist adiabat used 
-is determined by the type of lifting functor passed to the function 
-(i.e. lifter_wobus or lifter_cm1).
-
-Unlike nwsspc.sharp.calc.parcel.Parcel.lift_parcel, the virtual 
-temperature correction is not used for downdraft parcels.
-
-Parameters
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_lut_cm1
-    An instantiated lifter_lut functor
+lifter : {}
+    An instantiated lifter functor
 pressure : numpy.ndarray[dtype=float32] 
     1D NumPy array of Pressure levels for lifting (Pa)
 
@@ -932,8 +561,15 @@ float
         m_parcel, "lut_data_cm1");
     bind_lut_data_class(lut_data_cm1);
 
-    bind_lut_data<sharp::lifter_wobus>(m_parcel, lut_data_wobus_doc);
-    bind_lut_data<sharp::lifter_cm1>(m_parcel, lut_data_cm1_doc);
+    std::string lut_data_wobus_doc = fmt::format(
+        lut_data_template_doc, "nwsspc.sharp.calc.parcel.lifter_wobus",
+        "nwsspc.sharp.calc.parcel.lut_data_wobus");
+    bind_lut_data<sharp::lifter_wobus>(m_parcel, lut_data_wobus_doc.c_str());
+
+    std::string lut_data_cm1_doc = fmt::format(
+        lut_data_template_doc, "nwsspc.sharp.calc.parcel.lifter_cm1",
+        "nwsspc.sharp.calc.parcel.lut_data_cm1");
+    bind_lut_data<sharp::lifter_cm1>(m_parcel, lut_data_cm1_doc.c_str());
 
     auto lifter_lut_wobus = nb::class_<sharp::lifter_lut<sharp::lifter_wobus>>(
         m_parcel, "lifter_lut_wobus",
@@ -976,8 +612,17 @@ data : lut_data
 )pbdoc");
     bind_lifter_lut_class(lifter_lut_wobus);
     bind_lifter_lut_class(lifter_lut_cm1);
-    bind_lifter_lut<sharp::lifter_wobus>(m_parcel, lifter_lut_wobus_doc);
-    bind_lifter_lut<sharp::lifter_cm1>(m_parcel, lifter_lut_wobus_doc);
+
+    std::string lifter_lut_wobus_doc = fmt::format(
+        lifter_lut_template_doc, "nwsspc.sharp.calc.parcel.lut_data_wobus",
+        "nwsspc.sharp.calc.parcel.lifter_lut_wobus");
+    bind_lifter_lut<sharp::lifter_wobus>(m_parcel,
+                                         lifter_lut_wobus_doc.c_str());
+
+    std::string lifter_lut_cm1_doc = fmt::format(
+        lifter_lut_template_doc, "nwsspc.sharp.calc.parcel.lut_data_cm1",
+        "nwsspc.sharp.calc.parcel.lifter_lut_cm1");
+    bind_lifter_lut<sharp::lifter_cm1>(m_parcel, lifter_lut_cm1_doc.c_str());
 
     nb::enum_<sharp::LPL>(m_parcel, "LPL")
         .value("SFC", sharp::LPL::SFC, "A Surface Based Parcel")
@@ -1041,8 +686,8 @@ lpl : nwsspc.sharp.calc.parcel.LPL
                 "find_lfc_el",
                 [](sharp::Parcel& pcl, const_prof_arr_t pres,
                    const_prof_arr_t hght, const_prof_arr_t buoy) {
-                    if ((pres.shape(0) != hght.shape(0)) ||
-                        (pres.shape(0) != buoy.shape(0))) {
+                    if ((pres.size() != hght.size()) ||
+                        (pres.size() != buoy.size())) {
                         throw nb::buffer_error(
                             "All input arrays must have the same size!");
                     }
@@ -1083,14 +728,14 @@ tuple[float, float]
                 "maximum_parcel_level",
                 [](sharp::Parcel& pcl, const_prof_arr_t pres,
                    const_prof_arr_t hght, const_prof_arr_t buoy) {
-                    if ((pres.shape(0) != hght.shape(0)) ||
-                        (pres.shape(0) != buoy.shape(0))) {
+                    if ((pres.size() != hght.size()) ||
+                        (pres.size() != buoy.size())) {
                         throw nb::buffer_error(
                             "All input arrays must have the same size!");
                     }
 
                     return pcl.maximum_parcel_level(pres.data(), hght.data(),
-                                                    buoy.data(), pres.shape(0));
+                                                    buoy.data(), pres.size());
                 },
                 nb::arg("pressure"), nb::arg("height"), nb::arg("buoyancy"),
                 R"pbdoc(
@@ -1135,8 +780,8 @@ float
                 "cape_cinh",
                 [](sharp::Parcel& pcl, const_prof_arr_t pres,
                    const_prof_arr_t hght, const_prof_arr_t buoy) {
-                    if ((pres.shape(0) != hght.shape(0)) ||
-                        (pres.shape(0) != buoy.shape(0))) {
+                    if ((pres.size() != hght.size()) ||
+                        (pres.size() != buoy.size())) {
                         throw nb::buffer_error(
                             "All input arrays must have the same size!");
                     }
@@ -1178,8 +823,8 @@ tuple[float, float]
                 "lifted_index",
                 [](sharp::Parcel& pcl, const float plev, const_prof_arr_t pres,
                    const_prof_arr_t vtmpk, const_prof_arr_t pcl_vtmpk) {
-                    if ((pres.shape(0) != vtmpk.shape(0)) ||
-                        (pres.shape(0) != pcl_vtmpk.shape(0))) {
+                    if ((pres.size() != vtmpk.size()) ||
+                        (pres.size() != pcl_vtmpk.size())) {
                         throw nb::buffer_error(
                             "All input arrays must have the same size!");
                     }
@@ -1232,33 +877,76 @@ nwsspc.sharp.calc.parcel.Parcel
     Parcel with surface values
                     )pbdoc");
 
-    bind_lift_parcel<sharp::lifter_wobus>(parcel_class, lift_parcel_wobus_doc);
-    bind_lift_parcel<sharp::lifter_cm1>(parcel_class, lift_parcel_cm1_doc);
-    bind_lift_parcel<sharp::lifter_lut<sharp::lifter_wobus>>(
-        parcel_class, lift_parcel_lut_wobus_doc);
-    bind_lift_parcel<sharp::lifter_lut<sharp::lifter_cm1>>(
-        parcel_class, lift_parcel_lut_cm1_doc);
+    std::string lift_pcl_wobus_doc = fmt::format(
+        lift_parcel_template_doc, "nwsspc.sharp.calc.parcel.lifter_wobus");
+    bind_lift_parcel<sharp::lifter_wobus>(parcel_class,
+                                          lift_pcl_wobus_doc.c_str());
 
+    std::string lift_pcl_cm1_doc = fmt::format(
+        lift_parcel_template_doc, "nwsspc.sharp.calc.parcel.lifter_cm1");
+    bind_lift_parcel<sharp::lifter_cm1>(parcel_class, lift_pcl_cm1_doc.c_str());
+
+    std::string lift_pcl_lut_wobus_doc = fmt::format(
+        lift_parcel_template_doc, "nwsspc.sharp.calc.parcel.lifter_lut_wobus");
+    bind_lift_parcel<sharp::lifter_lut<sharp::lifter_wobus>>(
+        parcel_class, lift_pcl_lut_wobus_doc.c_str());
+
+    std::string lift_pcl_lut_cm1_doc = fmt::format(
+        lift_parcel_template_doc, "nwsspc.sharp.calc.parcel.lifter_lut_cm1");
+    bind_lift_parcel<sharp::lifter_lut<sharp::lifter_cm1>>(
+        parcel_class, lift_pcl_lut_cm1_doc.c_str());
+
+    std::string mu_pcl_pres_cm1_doc = fmt::format(
+        mu_pcl_template_doc, "nwsspc.sharp.calc.layer.PressureLayer",
+        "nwsspc.sharp.calc.parcel.lifter_cm1");
     bind_mu_parcel<sharp::PressureLayer, sharp::lifter_cm1>(
-        parcel_class, mu_pcl_cm1_pres_doc);
-    bind_mu_parcel<sharp::HeightLayer, sharp::lifter_cm1>(parcel_class,
-                                                          mu_pcl_cm1_hght_doc);
+        parcel_class, mu_pcl_pres_cm1_doc.c_str());
+
+    std::string mu_pcl_hght_cm1_doc =
+        fmt::format(mu_pcl_template_doc, "nwsspc.sharp.calc.layer.HeightLayer",
+                    "nwsspc.sharp.calc.parcel.lifter_cm1");
+    bind_mu_parcel<sharp::HeightLayer, sharp::lifter_cm1>(
+        parcel_class, mu_pcl_hght_cm1_doc.c_str());
+
+    std::string mu_pcl_pres_wobus_doc = fmt::format(
+        mu_pcl_template_doc, "nwsspc.sharp.calc.layer.PressureLayer",
+        "nwsspc.sharp.calc.parcel.lifter_wobus");
     bind_mu_parcel<sharp::PressureLayer, sharp::lifter_wobus>(
-        parcel_class, mu_pcl_wobus_pres_doc);
+        parcel_class, mu_pcl_pres_wobus_doc.c_str());
+
+    std::string mu_pcl_hght_wobus_doc =
+        fmt::format(mu_pcl_template_doc, "nwsspc.sharp.calc.layer.HeightLayer",
+                    "nwsspc.sharp.calc.parcel.lifter_wobus");
     bind_mu_parcel<sharp::HeightLayer, sharp::lifter_wobus>(
-        parcel_class, mu_pcl_wobus_hght_doc);
+        parcel_class, mu_pcl_hght_wobus_doc.c_str());
+
+    std::string mu_pcl_pres_lut_cm1_doc = fmt::format(
+        mu_pcl_template_doc, "nwsspc.sharp.calc.layer.PressureLayer",
+        "nwsspc.sharp.calc.parcel.lifter_lut_cm1");
     bind_mu_parcel<sharp::PressureLayer, sharp::lifter_lut<sharp::lifter_cm1>>(
-        parcel_class, mu_pcl_lut_cm1_pres_doc);
+        parcel_class, mu_pcl_pres_lut_cm1_doc.c_str());
+
+    std::string mu_pcl_hght_lut_cm1_doc =
+        fmt::format(mu_pcl_template_doc, "nwsspc.sharp.calc.layer.HeightLayer",
+                    "nwsspc.sharp.calc.parcel.lifter_lut_cm1");
     bind_mu_parcel<sharp::HeightLayer, sharp::lifter_lut<sharp::lifter_cm1>>(
-        parcel_class, mu_pcl_lut_cm1_hght_doc);
+        parcel_class, mu_pcl_hght_lut_cm1_doc.c_str());
+
+    std::string mu_pcl_pres_lut_wobus_doc = fmt::format(
+        mu_pcl_template_doc, "nwsspc.sharp.calc.layer.PressureLayer",
+        "nwsspc.sharp.calc.parcel.lifter_lut_wobus");
     bind_mu_parcel<sharp::PressureLayer,
                    sharp::lifter_lut<sharp::lifter_wobus>>(
-        parcel_class, mu_pcl_lut_wobus_pres_doc);
+        parcel_class, mu_pcl_pres_lut_wobus_doc.c_str());
+
+    std::string mu_pcl_hght_lut_wobus_doc =
+        fmt::format(mu_pcl_template_doc, "nwsspc.sharp.calc.layer.HeightLayer",
+                    "nwsspc.sharp.calc.parcel.lifter_lut_wobus");
     bind_mu_parcel<sharp::HeightLayer, sharp::lifter_lut<sharp::lifter_wobus>>(
-        parcel_class, mu_pcl_lut_wobus_hght_doc);
+        parcel_class, mu_pcl_hght_lut_wobus_doc.c_str());
 
     bind_ml_parcel<sharp::PressureLayer>(parcel_class, ml_pcl_pres_doc);
-    bind_ml_parcel<sharp::HeightLayer>(parcel_class, ml_pcl_pres_doc);
+    bind_ml_parcel<sharp::HeightLayer>(parcel_class, ml_pcl_hght_doc);
 
     auto dpcl_class =
         nb::class_<sharp::DowndraftParcel>(m_parcel, "DowndraftParcel", R"pbdoc(
@@ -1301,8 +989,8 @@ dewpoint : float
                 "cape_cinh",
                 [](sharp::DowndraftParcel& pcl, const_prof_arr_t pres,
                    const_prof_arr_t hght, const_prof_arr_t buoy) {
-                    if ((pres.shape(0) != hght.shape(0)) ||
-                        (pres.shape(0) != buoy.shape(0))) {
+                    if ((pres.size() != hght.size()) ||
+                        (pres.size() != buoy.size())) {
                         throw nb::buffer_error(
                             "All input arrays must have the same size!");
                     }
@@ -1339,15 +1027,15 @@ tuple[float, float]
                    const_prof_arr_t pressure, const_prof_arr_t temperature,
                    const_prof_arr_t dewpoint, const_prof_arr_t thetae,
                    const float mean_depth) {
-                    if ((pressure.shape(0) != temperature.shape(0)) ||
-                        (pressure.shape(0) != dewpoint.shape(0)) ||
-                        (pressure.shape(0) != thetae.shape(0))) {
+                    if ((pressure.size() != temperature.size()) ||
+                        (pressure.size() != dewpoint.size()) ||
+                        (pressure.size() != thetae.size())) {
                         throw nb::buffer_error(
                             "All input arrays must have the same size!");
                     }
                     return sharp::DowndraftParcel::min_thetae(
                         search_layer, pressure.data(), temperature.data(),
-                        dewpoint.data(), thetae.data(), pressure.shape(0),
+                        dewpoint.data(), thetae.data(), pressure.size(),
                         mean_depth);
                 },
                 nb::arg("search_layer"), nb::arg("pressure"),
@@ -1382,12 +1070,25 @@ Returns
 nwsspc.sharp.calc.parcel.DowndraftParcel 
     Downdraft Parcel
     )pbdoc");
-    bind_lower_parcel<sharp::lifter_wobus>(dpcl_class, lower_parcel_wobus_doc);
-    bind_lower_parcel<sharp::lifter_cm1>(dpcl_class, lower_parcel_cm1_doc);
+
+    std::string lower_pcl_wobus_doc = fmt::format(
+        lower_parcel_template_doc, "nwsspc.sharp.calc.parcel.lifter_wobus");
+    bind_lower_parcel<sharp::lifter_wobus>(dpcl_class,
+                                           lower_pcl_wobus_doc.c_str());
+
+    std::string lower_pcl_cm1_doc = fmt::format(
+        lower_parcel_template_doc, "nwsspc.sharp.calc.parcel.lifter_cm1");
+    bind_lower_parcel<sharp::lifter_cm1>(dpcl_class, lower_pcl_cm1_doc.c_str());
+
+    std::string lower_pcl_lut_wobus_doc = fmt::format(
+        lower_parcel_template_doc, "nwsspc.sharp.calc.parcel.lifter_lut_wobus");
     bind_lower_parcel<sharp::lifter_lut<sharp::lifter_wobus>>(
-        dpcl_class, lower_parcel_lut_wobus_doc);
+        dpcl_class, lower_pcl_lut_wobus_doc.c_str());
+
+    std::string lower_pcl_lut_cm1_doc = fmt::format(
+        lower_parcel_template_doc, "nwsspc.sharp.calc.parcel.lifter_lut_cm1");
     bind_lower_parcel<sharp::lifter_lut<sharp::lifter_cm1>>(
-        dpcl_class, lower_parcel_lut_cm1_doc);
+        dpcl_class, lower_pcl_lut_cm1_doc.c_str());
 }
 
 #endif
