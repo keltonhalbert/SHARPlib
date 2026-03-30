@@ -17,8 +17,25 @@
 
 namespace nb = nanobind;
 
+template <typename T>
+struct type_tag {
+    using type = T;
+};
+
+template <typename F>
+void for_each_lifter(F&& f) {
+    f(type_tag<sharp::lifter_wobus>{}, "nwsspc.sharp.calc.parcel.lifter_wobus");
+    f(type_tag<sharp::lifter_cm1>{}, "nwsspc.sharp.calc.parcel.lifter_cm1");
+    f(type_tag<sharp::lifter_lut<sharp::lifter_wobus>>{},
+      "nwsspc.sharp.calc.parcel.lifter_lut_wobus");
+    f(type_tag<sharp::lifter_lut<sharp::lifter_cm1>>{},
+      "nwsspc.sharp.calc.parcel.lifter_lut_cm1");
+}
+
 template <typename Lft>
-void bind_lift_parcel(nb::class_<sharp::Parcel>& cls, const char* lifter_doc) {
+void bind_lift_parcel(nb::class_<sharp::Parcel>& cls, const char* doc_template,
+                      const char* lifter_name) {
+    std::string doc = fmt::format(doc_template, lifter_name);
     cls.def(
         "lift_parcel",
         [](sharp::Parcel& pcl, Lft& lifter, const_prof_arr_t pressure) {
@@ -32,11 +49,13 @@ void bind_lift_parcel(nb::class_<sharp::Parcel>& cls, const char* lifter_doc) {
                               [](void* p) noexcept { delete[] (float*)p; });
             return out_arr_t(raw, {NZ}, owner);
         },
-        nb::arg("lifter"), nb::arg("pressure"), lifter_doc);
+        nb::arg("lifter"), nb::arg("pressure"), doc.c_str());
 }
 
 template <typename Layer, typename Lft>
-void bind_mu_parcel(nb::class_<sharp::Parcel>& cls, const char* doc) {
+void bind_mu_parcel(nb::class_<sharp::Parcel>& cls, const char* doc_template,
+                    const char* layer_name, const char* lifter_name) {
+    std::string doc = fmt::format(doc_template, layer_name, lifter_name);
     cls.def_static(
         "most_unstable_parcel",
         [](Layer& layer, Lft& lifter, const_prof_arr_t pressure,
@@ -63,7 +82,7 @@ void bind_mu_parcel(nb::class_<sharp::Parcel>& cls, const char* doc) {
         },
         nb::arg("layer"), nb::arg("lifter"), nb::arg("pressure"),
         nb::arg("height"), nb::arg("temperature"),
-        nb::arg("virtual_temperature"), nb::arg("dewpoint"), doc);
+        nb::arg("virtual_temperature"), nb::arg("dewpoint"), doc.c_str());
 }
 
 template <typename Layer>
@@ -125,7 +144,9 @@ void bind_lut_data_class(nb::class_<sharp::lut_data<Lft>>& cls) {
 }
 
 template <typename Lft>
-void bind_lut_data(nb::module_& mod, const char* doc) {
+void bind_lut_data(nb::module_& mod, const char* doc_template,
+                   const char* lifter_name, const char* return_name) {
+    std::string doc = fmt::format(doc_template, lifter_name, return_name);
     mod.def(
         "lut_data",
         [](Lft& lifter, float pmin, float pmax, float thte_min, float thte_max,
@@ -136,7 +157,7 @@ void bind_lut_data(nb::module_& mod, const char* doc) {
         nb::arg("lifter"), nb::arg("pmin") = 5000.0f,
         nb::arg("pmax") = 110000.0f, nb::arg("thte_min") = 210.0f,
         nb::arg("thte_max") = 430.0f, nb::arg("n_logp") = 201,
-        nb::arg("n_thetae") = 221, doc);
+        nb::arg("n_thetae") = 221, doc.c_str());
 }
 
 template <typename Lft>
@@ -204,18 +225,21 @@ float
 }
 
 template <typename Lft>
-void bind_lifter_lut(nb::module_& mod, const char* doc) {
+void bind_lifter_lut(nb::module_& mod, const char* doc_template,
+                     const char* lut_name, const char* return_name) {
+    std::string doc = fmt::format(doc_template, lut_name, return_name);
     mod.def(
         "lifter_lut",
         [](std::shared_ptr<const sharp::lut_data<Lft>>& lut) {
             return sharp::lifter_lut<Lft>(std::move(lut));
         },
-        nb::arg("lut"), doc);
+        nb::arg("lut"), doc.c_str());
 }
 
 template <typename Lft>
 void bind_lower_parcel(nb::class_<sharp::DowndraftParcel>& cls,
-                       const char* doc) {
+                       const char* doc_template, const char* lifter_name) {
+    std::string doc = fmt::format(doc_template, lifter_name);
     cls.def(
         "lower_parcel",
         [](sharp::DowndraftParcel& pcl, Lft& lifter,
@@ -230,7 +254,7 @@ void bind_lower_parcel(nb::class_<sharp::DowndraftParcel>& cls,
                               [](void* p) noexcept { delete[] (float*)p; });
             return out_arr_t(raw, {pressure.size()}, owner);
         },
-        nb::arg("lifter"), nb::arg("pressure"), doc);
+        nb::arg("lifter"), nb::arg("pressure"), doc.c_str());
 }
 
 inline void make_parcel_bindings(nb::module_ m) {
@@ -400,7 +424,6 @@ numpy.ndarray[dtype=float32]
     A 1D NumPy array of parcel temperature values (K)
         )pbdoc";
 
-    // Bind the constructors, named fields, and default arguments
     nb::class_<sharp::lifter_wobus>(m_parcel, "lifter_wobus",
                                     R"pbdoc(
 A functor that calls the Wobus Wetlift for computation of moist adiabats.
@@ -561,15 +584,13 @@ float
         m_parcel, "lut_data_cm1");
     bind_lut_data_class(lut_data_cm1);
 
-    std::string lut_data_wobus_doc = fmt::format(
-        lut_data_template_doc, "nwsspc.sharp.calc.parcel.lifter_wobus",
+    bind_lut_data<sharp::lifter_wobus>(
+        m_parcel, lut_data_template_doc,
+        "nwsspc.sharp.calc.parcel.lifter_wobus",
         "nwsspc.sharp.calc.parcel.lut_data_wobus");
-    bind_lut_data<sharp::lifter_wobus>(m_parcel, lut_data_wobus_doc.c_str());
-
-    std::string lut_data_cm1_doc = fmt::format(
-        lut_data_template_doc, "nwsspc.sharp.calc.parcel.lifter_cm1",
-        "nwsspc.sharp.calc.parcel.lut_data_cm1");
-    bind_lut_data<sharp::lifter_cm1>(m_parcel, lut_data_cm1_doc.c_str());
+    bind_lut_data<sharp::lifter_cm1>(m_parcel, lut_data_template_doc,
+                                     "nwsspc.sharp.calc.parcel.lifter_cm1",
+                                     "nwsspc.sharp.calc.parcel.lut_data_cm1");
 
     auto lifter_lut_wobus = nb::class_<sharp::lifter_lut<sharp::lifter_wobus>>(
         m_parcel, "lifter_lut_wobus",
@@ -613,16 +634,14 @@ data : lut_data
     bind_lifter_lut_class(lifter_lut_wobus);
     bind_lifter_lut_class(lifter_lut_cm1);
 
-    std::string lifter_lut_wobus_doc = fmt::format(
-        lifter_lut_template_doc, "nwsspc.sharp.calc.parcel.lut_data_wobus",
+    bind_lifter_lut<sharp::lifter_wobus>(
+        m_parcel, lifter_lut_template_doc,
+        "nwsspc.sharp.calc.parcel.lut_data_wobus",
         "nwsspc.sharp.calc.parcel.lifter_lut_wobus");
-    bind_lifter_lut<sharp::lifter_wobus>(m_parcel,
-                                         lifter_lut_wobus_doc.c_str());
-
-    std::string lifter_lut_cm1_doc = fmt::format(
-        lifter_lut_template_doc, "nwsspc.sharp.calc.parcel.lut_data_cm1",
+    bind_lifter_lut<sharp::lifter_cm1>(
+        m_parcel, lifter_lut_template_doc,
+        "nwsspc.sharp.calc.parcel.lut_data_cm1",
         "nwsspc.sharp.calc.parcel.lifter_lut_cm1");
-    bind_lifter_lut<sharp::lifter_cm1>(m_parcel, lifter_lut_cm1_doc.c_str());
 
     nb::enum_<sharp::LPL>(m_parcel, "LPL")
         .value("SFC", sharp::LPL::SFC, "A Surface Based Parcel")
@@ -877,73 +896,21 @@ nwsspc.sharp.calc.parcel.Parcel
     Parcel with surface values
                     )pbdoc");
 
-    std::string lift_pcl_wobus_doc = fmt::format(
-        lift_parcel_template_doc, "nwsspc.sharp.calc.parcel.lifter_wobus");
-    bind_lift_parcel<sharp::lifter_wobus>(parcel_class,
-                                          lift_pcl_wobus_doc.c_str());
+    for_each_lifter([&](auto tag, const char* lifter_name) {
+        using Lft = typename decltype(tag)::type;
+        bind_lift_parcel<Lft>(parcel_class, lift_parcel_template_doc,
+                              lifter_name);
+    });
 
-    std::string lift_pcl_cm1_doc = fmt::format(
-        lift_parcel_template_doc, "nwsspc.sharp.calc.parcel.lifter_cm1");
-    bind_lift_parcel<sharp::lifter_cm1>(parcel_class, lift_pcl_cm1_doc.c_str());
-
-    std::string lift_pcl_lut_wobus_doc = fmt::format(
-        lift_parcel_template_doc, "nwsspc.sharp.calc.parcel.lifter_lut_wobus");
-    bind_lift_parcel<sharp::lifter_lut<sharp::lifter_wobus>>(
-        parcel_class, lift_pcl_lut_wobus_doc.c_str());
-
-    std::string lift_pcl_lut_cm1_doc = fmt::format(
-        lift_parcel_template_doc, "nwsspc.sharp.calc.parcel.lifter_lut_cm1");
-    bind_lift_parcel<sharp::lifter_lut<sharp::lifter_cm1>>(
-        parcel_class, lift_pcl_lut_cm1_doc.c_str());
-
-    std::string mu_pcl_pres_cm1_doc = fmt::format(
-        mu_pcl_template_doc, "nwsspc.sharp.calc.layer.PressureLayer",
-        "nwsspc.sharp.calc.parcel.lifter_cm1");
-    bind_mu_parcel<sharp::PressureLayer, sharp::lifter_cm1>(
-        parcel_class, mu_pcl_pres_cm1_doc.c_str());
-
-    std::string mu_pcl_hght_cm1_doc =
-        fmt::format(mu_pcl_template_doc, "nwsspc.sharp.calc.layer.HeightLayer",
-                    "nwsspc.sharp.calc.parcel.lifter_cm1");
-    bind_mu_parcel<sharp::HeightLayer, sharp::lifter_cm1>(
-        parcel_class, mu_pcl_hght_cm1_doc.c_str());
-
-    std::string mu_pcl_pres_wobus_doc = fmt::format(
-        mu_pcl_template_doc, "nwsspc.sharp.calc.layer.PressureLayer",
-        "nwsspc.sharp.calc.parcel.lifter_wobus");
-    bind_mu_parcel<sharp::PressureLayer, sharp::lifter_wobus>(
-        parcel_class, mu_pcl_pres_wobus_doc.c_str());
-
-    std::string mu_pcl_hght_wobus_doc =
-        fmt::format(mu_pcl_template_doc, "nwsspc.sharp.calc.layer.HeightLayer",
-                    "nwsspc.sharp.calc.parcel.lifter_wobus");
-    bind_mu_parcel<sharp::HeightLayer, sharp::lifter_wobus>(
-        parcel_class, mu_pcl_hght_wobus_doc.c_str());
-
-    std::string mu_pcl_pres_lut_cm1_doc = fmt::format(
-        mu_pcl_template_doc, "nwsspc.sharp.calc.layer.PressureLayer",
-        "nwsspc.sharp.calc.parcel.lifter_lut_cm1");
-    bind_mu_parcel<sharp::PressureLayer, sharp::lifter_lut<sharp::lifter_cm1>>(
-        parcel_class, mu_pcl_pres_lut_cm1_doc.c_str());
-
-    std::string mu_pcl_hght_lut_cm1_doc =
-        fmt::format(mu_pcl_template_doc, "nwsspc.sharp.calc.layer.HeightLayer",
-                    "nwsspc.sharp.calc.parcel.lifter_lut_cm1");
-    bind_mu_parcel<sharp::HeightLayer, sharp::lifter_lut<sharp::lifter_cm1>>(
-        parcel_class, mu_pcl_hght_lut_cm1_doc.c_str());
-
-    std::string mu_pcl_pres_lut_wobus_doc = fmt::format(
-        mu_pcl_template_doc, "nwsspc.sharp.calc.layer.PressureLayer",
-        "nwsspc.sharp.calc.parcel.lifter_lut_wobus");
-    bind_mu_parcel<sharp::PressureLayer,
-                   sharp::lifter_lut<sharp::lifter_wobus>>(
-        parcel_class, mu_pcl_pres_lut_wobus_doc.c_str());
-
-    std::string mu_pcl_hght_lut_wobus_doc =
-        fmt::format(mu_pcl_template_doc, "nwsspc.sharp.calc.layer.HeightLayer",
-                    "nwsspc.sharp.calc.parcel.lifter_lut_wobus");
-    bind_mu_parcel<sharp::HeightLayer, sharp::lifter_lut<sharp::lifter_wobus>>(
-        parcel_class, mu_pcl_hght_lut_wobus_doc.c_str());
+    for_each_lifter([&](auto tag, const char* lifter_name) {
+        using Lft = typename decltype(tag)::type;
+        bind_mu_parcel<sharp::PressureLayer, Lft>(
+            parcel_class, mu_pcl_template_doc,
+            "nwsspc.sharp.calc.layer.PressureLayer", lifter_name);
+        bind_mu_parcel<sharp::HeightLayer, Lft>(
+            parcel_class, mu_pcl_template_doc,
+            "nwsspc.sharp.calc.layer.HeightLayer", lifter_name);
+    });
 
     bind_ml_parcel<sharp::PressureLayer>(parcel_class, ml_pcl_pres_doc);
     bind_ml_parcel<sharp::HeightLayer>(parcel_class, ml_pcl_hght_doc);
@@ -1071,24 +1038,11 @@ nwsspc.sharp.calc.parcel.DowndraftParcel
     Downdraft Parcel
     )pbdoc");
 
-    std::string lower_pcl_wobus_doc = fmt::format(
-        lower_parcel_template_doc, "nwsspc.sharp.calc.parcel.lifter_wobus");
-    bind_lower_parcel<sharp::lifter_wobus>(dpcl_class,
-                                           lower_pcl_wobus_doc.c_str());
-
-    std::string lower_pcl_cm1_doc = fmt::format(
-        lower_parcel_template_doc, "nwsspc.sharp.calc.parcel.lifter_cm1");
-    bind_lower_parcel<sharp::lifter_cm1>(dpcl_class, lower_pcl_cm1_doc.c_str());
-
-    std::string lower_pcl_lut_wobus_doc = fmt::format(
-        lower_parcel_template_doc, "nwsspc.sharp.calc.parcel.lifter_lut_wobus");
-    bind_lower_parcel<sharp::lifter_lut<sharp::lifter_wobus>>(
-        dpcl_class, lower_pcl_lut_wobus_doc.c_str());
-
-    std::string lower_pcl_lut_cm1_doc = fmt::format(
-        lower_parcel_template_doc, "nwsspc.sharp.calc.parcel.lifter_lut_cm1");
-    bind_lower_parcel<sharp::lifter_lut<sharp::lifter_cm1>>(
-        dpcl_class, lower_pcl_lut_cm1_doc.c_str());
+    for_each_lifter([&](auto tag, const char* lifter_name) {
+        using Lft = typename decltype(tag)::type;
+        bind_lower_parcel<Lft>(dpcl_class, lower_parcel_template_doc,
+                               lifter_name);
+    });
 }
 
 #endif
