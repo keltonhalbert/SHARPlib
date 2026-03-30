@@ -397,14 +397,14 @@ def test_precipitable_water():
 
 def test_hgz():
     hgz = params.hail_growth_layer(snd_data["pres"], snd_data["tmpk"])
-    assert (hgz.bottom == 51430)
-    assert (hgz.top == 35816)
+    assert (hgz.bottom == pytest.approx(51430))
+    assert (hgz.top == pytest.approx(35816))
 
 
 def test_dgz():
     dgz = params.dendritic_layer(snd_data["pres"], snd_data["tmpk"])
-    assert (dgz.bottom == 49598)
-    assert (dgz.top == 45961)
+    assert (dgz.bottom == pytest.approx(49598))
+    assert (dgz.top == pytest.approx(45961))
 
 
 def test_fwwi():

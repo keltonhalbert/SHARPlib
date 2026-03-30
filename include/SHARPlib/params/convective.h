@@ -538,47 +538,47 @@ template <typename Lifter>
     float tmpk_sfc = temperature[0];
     float dwpk_sfc = temperature_at_mixratio(mean_mixratio, pres_sfc);
 
-    float max_sfc_t = tmpk_sfc + 25.0f;
-    Parcel pcl = Parcel(pres_sfc, max_sfc_t, dwpk_sfc, LPL::USR);
+    float tmpk_hi = tmpk_sfc + 25.0f;
+    Parcel pcl = Parcel(pres_sfc, tmpk_hi, dwpk_sfc, LPL::USR);
     pcl.lift_parcel(lifter, pressure, pcl_virtemp, N);
     buoyancy(pcl_virtemp, virtemp, pcl_buoyancy, N);
     pcl.cape_cinh(pressure, height, pcl_buoyancy, N);
-    if ((pcl.cape <= 0.0) || (pcl.cinh < cinh_thresh)) {
+    if ((pcl.cape <= 0.0) || std::isnan(pcl.cinh) || (pcl.cinh < cinh_thresh)) {
         return MISSING;
     }
 
-    float excess = dwpk_sfc - tmpk_sfc;
+    float tmpk_lo = tmpk_sfc;
+    float excess = dwpk_sfc - tmpk_lo;
     if (excess > 0.0f) {
-        tmpk_sfc = tmpk_sfc + excess + 4.0f;
+        tmpk_lo = tmpk_lo + excess + 4.0f;
     }
 
-    pcl = Parcel(pres_sfc, tmpk_sfc, dwpk_sfc, LPL::USR);
+    pcl = Parcel(pres_sfc, tmpk_lo, dwpk_sfc, LPL::USR);
     pcl.lift_parcel(lifter, pressure, pcl_virtemp, N);
     buoyancy(pcl_virtemp, virtemp, pcl_buoyancy, N);
     pcl.cape_cinh(pressure, height, pcl_buoyancy, N);
-
-    if (pcl.cape <= 0.0) {
-        pcl.cinh = MISSING;
+    if ((pcl.cape > 0.0) && !std::isnan(pcl.cinh) &&
+        (pcl.cinh >= cinh_thresh)) {
+        return tmpk_lo;
     }
 
-    while (pcl.cinh < cinh_thresh) {
-        if (tmpk_sfc > max_sfc_t) return MISSING;
-        if (pcl.cinh < -100.0f) {
-            tmpk_sfc += 2.0f;
-        } else {
-            tmpk_sfc += 0.5f;
-        }
+    while ((tmpk_hi - tmpk_lo) > 0.25f) {
+        float tmpk_mid = 0.5f * (tmpk_lo + tmpk_hi);
 
-        pcl = Parcel(pres_sfc, tmpk_sfc, dwpk_sfc, LPL::USR);
+        pcl = Parcel(pres_sfc, tmpk_mid, dwpk_sfc, LPL::USR);
         pcl.lift_parcel(lifter, pressure, pcl_virtemp, N);
         buoyancy(pcl_virtemp, virtemp, pcl_buoyancy, N);
         pcl.cape_cinh(pressure, height, pcl_buoyancy, N);
-        if (pcl.cape <= 0.0) {
-            pcl.cinh = MISSING;
+
+        if ((pcl.cape > 0.0) && !std::isnan(pcl.cinh) &&
+            (pcl.cinh >= cinh_thresh)) {
+            tmpk_hi = tmpk_mid;
+        } else {
+            tmpk_lo = tmpk_mid;
         }
     }
 
-    return tmpk_sfc;
+    return tmpk_hi;
 }
 
 /// @cond DOXYGEN_IGNORE
