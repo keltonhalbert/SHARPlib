@@ -23,13 +23,42 @@ struct type_tag {
 };
 
 template <typename F>
-void for_each_lifter(F&& f) {
-    f(type_tag<sharp::lifter_wobus>{}, "nwsspc.sharp.calc.parcel.lifter_wobus");
-    f(type_tag<sharp::lifter_cm1>{}, "nwsspc.sharp.calc.parcel.lifter_cm1");
-    f(type_tag<sharp::lifter_lut<sharp::lifter_wobus>>{},
+void for_each_base_lifter(F&& f) {
+    f(type_tag<sharp::lifter_wobus>{}, "wobus", "Wobus",
+      "nwsspc.sharp.calc.parcel.lifter_wobus",
+      "nwsspc.sharp.calc.parcel.lut_data_wobus",
       "nwsspc.sharp.calc.parcel.lifter_lut_wobus");
-    f(type_tag<sharp::lifter_lut<sharp::lifter_cm1>>{},
+    f(type_tag<sharp::lifter_cm1>{}, "cm1", "CM1",
+      "nwsspc.sharp.calc.parcel.lifter_cm1",
+      "nwsspc.sharp.calc.parcel.lut_data_cm1",
       "nwsspc.sharp.calc.parcel.lifter_lut_cm1");
+}
+
+template <typename F>
+void for_each_lifter(F&& f) {
+    for_each_base_lifter([&](auto tag, const char* suffix, const char*,
+                             const char* lifter_fqn, const char*,
+                             const char* lifter_lut_fqn) {
+        using Lft = typename decltype(tag)::type;
+        f(type_tag<Lft>{}, lifter_fqn);
+        f(type_tag<sharp::lifter_lut<Lft>>{}, lifter_lut_fqn);
+    });
+}
+
+template <typename First, typename... Rest>
+void check_equal_sizes(const First& first, const Rest&... rest) {
+    if (((first.size() != rest.size()) || ...)) {
+        throw nb::buffer_error("All input arrays must have the same size!");
+    }
+}
+
+template <typename Func>
+out_arr_t make_output_array(std::size_t NZ, Func&& compute) {
+    auto buf = std::make_unique<float[]>(NZ);
+    compute(buf.get());
+    float* raw = buf.release();
+    nb::capsule owner(raw, [](void* p) noexcept { delete[] (float*)p; });
+    return out_arr_t(raw, {NZ}, owner);
 }
 
 template <typename Lft>
@@ -39,15 +68,9 @@ void bind_lift_parcel(nb::class_<sharp::Parcel>& cls, const char* doc_template,
     cls.def(
         "lift_parcel",
         [](sharp::Parcel& pcl, Lft& lifter, const_prof_arr_t pressure) {
-            const std::size_t NZ = pressure.size();
-            auto virtemp_arr = std::make_unique<float[]>(NZ);
-
-            pcl.lift_parcel(lifter, pressure.data(), virtemp_arr.get(), NZ);
-
-            float* raw = virtemp_arr.release();
-            nb::capsule owner(raw,
-                              [](void* p) noexcept { delete[] (float*)p; });
-            return out_arr_t(raw, {NZ}, owner);
+            return make_output_array(pressure.size(), [&](float* out) {
+                pcl.lift_parcel(lifter, pressure.data(), out, pressure.size());
+            });
         },
         nb::arg("lifter"), nb::arg("pressure"), doc.c_str());
 }
@@ -61,13 +84,7 @@ void bind_mu_parcel(nb::class_<sharp::Parcel>& cls, const char* doc_template,
         [](Layer& layer, Lft& lifter, const_prof_arr_t pressure,
            const_prof_arr_t height, const_prof_arr_t temperature,
            const_prof_arr_t virtemp, const_prof_arr_t dewpoint) {
-            if ((pressure.size() != temperature.size()) ||
-                (pressure.size() != dewpoint.size()) ||
-                (pressure.size() != height.size()) ||
-                (pressure.size() != virtemp.size())) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
+            check_equal_sizes(pressure, temperature, dewpoint, height, virtemp);
 
             const std::size_t NZ = height.size();
             auto pcl_virtemp_arr = std::make_unique<float[]>(NZ);
@@ -93,12 +110,8 @@ void bind_ml_parcel(nb::class_<sharp::Parcel>& cls, const char* doc) {
             [](Layer& mix_layer, const_prof_arr_t pressure,
                const_prof_arr_t height, const_prof_arr_t potential_temperature,
                const_prof_arr_t mixing_ratio) {
-                if ((pressure.size() != potential_temperature.size()) ||
-                    (pressure.size() != mixing_ratio.size()) ||
-                    (pressure.size() != height.size())) {
-                    throw nb::buffer_error(
-                        "All input arrays must have the same size!");
-                }
+                check_equal_sizes(pressure, potential_temperature, mixing_ratio,
+                                  height);
                 return sharp::Parcel::mixed_layer_parcel(
                     mix_layer, pressure.data(), height.data(),
                     potential_temperature.data(), mixing_ratio.data(),
@@ -112,11 +125,8 @@ void bind_ml_parcel(nb::class_<sharp::Parcel>& cls, const char* doc) {
             [](Layer& mix_layer, const_prof_arr_t pressure,
                const_prof_arr_t potential_temperature,
                const_prof_arr_t mixing_ratio) {
-                if ((pressure.size() != potential_temperature.size()) ||
-                    (pressure.size() != mixing_ratio.size())) {
-                    throw nb::buffer_error(
-                        "All input arrays must have the same size!");
-                }
+                check_equal_sizes(pressure, potential_temperature,
+                                  mixing_ratio);
                 return sharp::Parcel::mixed_layer_parcel(
                     mix_layer, pressure.data(), nullptr,
                     potential_temperature.data(), mixing_ratio.data(),
@@ -244,15 +254,9 @@ void bind_lower_parcel(nb::class_<sharp::DowndraftParcel>& cls,
         "lower_parcel",
         [](sharp::DowndraftParcel& pcl, Lft& lifter,
            const_prof_arr_t pressure) {
-            const std::size_t NZ = pressure.size();
-            auto tmpk_arr = std::make_unique<float[]>(NZ);
-
-            pcl.lower_parcel(lifter, pressure.data(), tmpk_arr.get(), NZ);
-
-            float* raw = tmpk_arr.release();
-            nb::capsule owner(raw,
-                              [](void* p) noexcept { delete[] (float*)p; });
-            return out_arr_t(raw, {pressure.size()}, owner);
+            return make_output_array(pressure.size(), [&](float* out) {
+                pcl.lower_parcel(lifter, pressure.data(), out, pressure.size());
+            });
         },
         nb::arg("lifter"), nb::arg("pressure"), doc.c_str());
 }
@@ -386,6 +390,25 @@ Returns
 -------
 {}
    A lookup table for the given lifter
+)pbdoc";
+
+    const char* lifter_lut_class_template_doc =
+        R"pbdoc(
+A parcel lifter functor that uses a pseudoadiabatic lookup table (LUT)
+for fast moist adiabatic ascent calculations.
+
+Instead of directly solving the moist ascent ODEs, this lifter uses
+bilinear interpolation of a precomputed lookup table to determine the
+parcel temperature. If the parcel's LCL falls outside the table bounds,
+it falls back to the direct {} solver automatically.
+
+LUT based parcel ascent only works for pseudoadiabats. Constructing the
+LUT with a reversible adiabat type will result in an error being thrown.
+
+Parameters
+----------
+data : {}
+    A shared lookup table constructed with a lifter_{} instance.
 )pbdoc";
 
     const char* lifter_lut_template_doc =
@@ -576,72 +599,30 @@ float
     The virtual temperature of the parcel (K)
              )pbdoc");
 
-    auto lut_data_wobus = nb::class_<sharp::lut_data<sharp::lifter_wobus>>(
-        m_parcel, "lut_data_wobus");
-    bind_lut_data_class(lut_data_wobus);
+    for_each_base_lifter([&](auto tag, const char* suffix,
+                             const char* display_name, const char* lifter_fqn,
+                             const char* lut_data_fqn,
+                             const char* lifter_lut_fqn) {
+        using Lft = typename decltype(tag)::type;
 
-    auto lut_data_cm1 = nb::class_<sharp::lut_data<sharp::lifter_cm1>>(
-        m_parcel, "lut_data_cm1");
-    bind_lut_data_class(lut_data_cm1);
+        std::string lut_data_cls_name = fmt::format("lut_data_{}", suffix);
+        auto lut_data_cls = nb::class_<sharp::lut_data<Lft>>(
+            m_parcel, lut_data_cls_name.c_str());
+        bind_lut_data_class(lut_data_cls);
 
-    bind_lut_data<sharp::lifter_wobus>(
-        m_parcel, lut_data_template_doc,
-        "nwsspc.sharp.calc.parcel.lifter_wobus",
-        "nwsspc.sharp.calc.parcel.lut_data_wobus");
-    bind_lut_data<sharp::lifter_cm1>(m_parcel, lut_data_template_doc,
-                                     "nwsspc.sharp.calc.parcel.lifter_cm1",
-                                     "nwsspc.sharp.calc.parcel.lut_data_cm1");
+        bind_lut_data<Lft>(m_parcel, lut_data_template_doc, lifter_fqn,
+                           lut_data_fqn);
 
-    auto lifter_lut_wobus = nb::class_<sharp::lifter_lut<sharp::lifter_wobus>>(
-        m_parcel, "lifter_lut_wobus",
-        R"pbdoc(
-A parcel lifter functor that uses a pseudoadiabatic lookup table (LUT)
-for fast moist adiabatic ascent calculations.
+        std::string lifter_lut_cls_name = fmt::format("lifter_lut_{}", suffix);
+        std::string lifter_lut_cls_doc = fmt::format(
+            lifter_lut_class_template_doc, display_name, lut_data_fqn, suffix);
+        auto lifter_lut_cls = nb::class_<sharp::lifter_lut<Lft>>(
+            m_parcel, lifter_lut_cls_name.c_str(), lifter_lut_cls_doc.c_str());
+        bind_lifter_lut_class(lifter_lut_cls);
 
-Instead of directly solving the moist ascent ODEs, this lifter uses
-bilinear interpolation of a precomputed lookup table to determine the
-parcel temperature. If the parcel's LCL falls outside the table bounds,
-it falls back to the direct Wobus solver automatically.
-
-LUT based parcel ascent only works for pseudoadiabats. Constructing the
-LUT with a reversible adiabat type will result in an error being thrown.
-
-Parameters
-----------
-data : nwsspc.sharp.calc.parcel.lut_data
-    A shared lookup table constructed with a lifter_wobus instance.
-)pbdoc");
-
-    auto lifter_lut_cm1 = nb::class_<sharp::lifter_lut<sharp::lifter_cm1>>(
-        m_parcel, "lifter_lut_cm1",
-        R"pbdoc(
-A parcel lifter functor that uses a pseudoadiabatic lookup table (LUT)
-for fast moist adiabatic ascent calculations.
-
-Instead of directly solving the moist ascent ODEs, this lifter uses
-bilinear interpolation of a precomputed lookup table to determine the
-parcel temperature. If the parcel's LCL falls outside the table bounds,
-it falls back to the direct CM1 solver automatically.
-
-LUT based parcel ascent only works for pseudoadiabats. Constructing the
-LUT with a reversible adiabat type will result in an error being thrown.
-
-Parameters
-----------
-data : lut_data
-    A shared lookup table constructed with a lifter_cm1 instance.
-)pbdoc");
-    bind_lifter_lut_class(lifter_lut_wobus);
-    bind_lifter_lut_class(lifter_lut_cm1);
-
-    bind_lifter_lut<sharp::lifter_wobus>(
-        m_parcel, lifter_lut_template_doc,
-        "nwsspc.sharp.calc.parcel.lut_data_wobus",
-        "nwsspc.sharp.calc.parcel.lifter_lut_wobus");
-    bind_lifter_lut<sharp::lifter_cm1>(
-        m_parcel, lifter_lut_template_doc,
-        "nwsspc.sharp.calc.parcel.lut_data_cm1",
-        "nwsspc.sharp.calc.parcel.lifter_lut_cm1");
+        bind_lifter_lut<Lft>(m_parcel, lifter_lut_template_doc, lut_data_fqn,
+                             lifter_lut_fqn);
+    });
 
     nb::enum_<sharp::LPL>(m_parcel, "LPL")
         .value("SFC", sharp::LPL::SFC, "A Surface Based Parcel")
@@ -705,11 +686,7 @@ lpl : nwsspc.sharp.calc.parcel.LPL
                 "find_lfc_el",
                 [](sharp::Parcel& pcl, const_prof_arr_t pres,
                    const_prof_arr_t hght, const_prof_arr_t buoy) {
-                    if ((pres.size() != hght.size()) ||
-                        (pres.size() != buoy.size())) {
-                        throw nb::buffer_error(
-                            "All input arrays must have the same size!");
-                    }
+                    check_equal_sizes(pres, hght, buoy);
                     pcl.find_lfc_el(pres.data(), hght.data(), buoy.data(),
                                     buoy.size());
                     return std::make_tuple(pcl.lfc_pressure, pcl.eql_pressure);
@@ -747,12 +724,7 @@ tuple[float, float]
                 "maximum_parcel_level",
                 [](sharp::Parcel& pcl, const_prof_arr_t pres,
                    const_prof_arr_t hght, const_prof_arr_t buoy) {
-                    if ((pres.size() != hght.size()) ||
-                        (pres.size() != buoy.size())) {
-                        throw nb::buffer_error(
-                            "All input arrays must have the same size!");
-                    }
-
+                    check_equal_sizes(pres, hght, buoy);
                     return pcl.maximum_parcel_level(pres.data(), hght.data(),
                                                     buoy.data(), pres.size());
                 },
@@ -799,11 +771,7 @@ float
                 "cape_cinh",
                 [](sharp::Parcel& pcl, const_prof_arr_t pres,
                    const_prof_arr_t hght, const_prof_arr_t buoy) {
-                    if ((pres.size() != hght.size()) ||
-                        (pres.size() != buoy.size())) {
-                        throw nb::buffer_error(
-                            "All input arrays must have the same size!");
-                    }
+                    check_equal_sizes(pres, hght, buoy);
                     pcl.cape_cinh(pres.data(), hght.data(), buoy.data(),
                                   buoy.size());
                     return std::make_tuple(pcl.cape, pcl.cinh);
@@ -842,11 +810,7 @@ tuple[float, float]
                 "lifted_index",
                 [](sharp::Parcel& pcl, const float plev, const_prof_arr_t pres,
                    const_prof_arr_t vtmpk, const_prof_arr_t pcl_vtmpk) {
-                    if ((pres.size() != vtmpk.size()) ||
-                        (pres.size() != pcl_vtmpk.size())) {
-                        throw nb::buffer_error(
-                            "All input arrays must have the same size!");
-                    }
+                    check_equal_sizes(pres, vtmpk, pcl_vtmpk);
                     return pcl.lifted_index(plev, pres.data(), vtmpk.data(),
                                             pcl_vtmpk.data(), pres.size());
                 },
@@ -956,11 +920,7 @@ dewpoint : float
                 "cape_cinh",
                 [](sharp::DowndraftParcel& pcl, const_prof_arr_t pres,
                    const_prof_arr_t hght, const_prof_arr_t buoy) {
-                    if ((pres.size() != hght.size()) ||
-                        (pres.size() != buoy.size())) {
-                        throw nb::buffer_error(
-                            "All input arrays must have the same size!");
-                    }
+                    check_equal_sizes(pres, hght, buoy);
                     pcl.cape_cinh(pres.data(), hght.data(), buoy.data(),
                                   buoy.size());
                     return std::make_tuple(pcl.cape, pcl.cinh);
@@ -994,12 +954,7 @@ tuple[float, float]
                    const_prof_arr_t pressure, const_prof_arr_t temperature,
                    const_prof_arr_t dewpoint, const_prof_arr_t thetae,
                    const float mean_depth) {
-                    if ((pressure.size() != temperature.size()) ||
-                        (pressure.size() != dewpoint.size()) ||
-                        (pressure.size() != thetae.size())) {
-                        throw nb::buffer_error(
-                            "All input arrays must have the same size!");
-                    }
+                    check_equal_sizes(pressure, temperature, dewpoint, thetae);
                     return sharp::DowndraftParcel::min_thetae(
                         search_layer, pressure.data(), temperature.data(),
                         dewpoint.data(), thetae.data(), pressure.size(),
