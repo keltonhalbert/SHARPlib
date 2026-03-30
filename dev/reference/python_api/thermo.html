@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>thermo &#8212; SHARPlib v1.4.0.dev-43-g703bc15 Manual</title>
+    <title>thermo &#8212; SHARPlib v1.4.0.dev-46-g99537be Manual</title>
   
   
   
@@ -56,8 +56,8 @@
     <link rel="prev" title="parcel" href="parcel.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.4.0.dev-43-g703bc15" />
-    <meta name="docbuild:last-update" content="Mar 27, 2026"/>
+  <meta name="docsearch:version" content="1.4.0.dev-46-g99537be" />
+    <meta name="docbuild:last-update" content="Mar 30, 2026"/>
   </head>
   
   
@@ -1987,7 +1987,7 @@ the surface.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.temperature_layer">
-<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">temperature_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">tmpk_lo:</span> <span class="pre">float,</span> <span class="pre">tmpk_hi:</span> <span class="pre">float</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></a></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.temperature_layer" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">temperature_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">tmpk_lo:</span> <span class="pre">float,</span> <span class="pre">tmpk_hi:</span> <span class="pre">float,</span> <span class="pre">pres_min:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">10000.0</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></a></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.temperature_layer" title="Link to this definition">#</a></dt>
 <dd><p>Performs a top-down search for a PressureLayer that bounds
 the given temperature range. Uses a geometric approach to
 find the intersection of the temperature line with the given range.</p>
@@ -1998,6 +1998,7 @@ find the intersection of the temperature line with the given range.</p>
 <li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of temperature values (K)</p></li>
 <li><p><strong>tmpk_lo</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The low end of the temperature range (K)</p></li>
 <li><p><strong>tmpk_hi</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The high end of the temperature range (K)</p></li>
+<li><p><strong>pres_min</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Restricts the search pressure levels (Pa)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
