@@ -1722,7 +1722,7 @@ float
     m_therm.def(
         "temperature_layer",
         [](const_prof_arr_t pressure, const_prof_arr_t temperature,
-           const float tmpk_1, const float tmpk_2) {
+           const float tmpk_1, const float tmpk_2, const float pres_min) {
             auto pres = pressure.view();
             auto tmpk = temperature.view();
             std::size_t len = pressure.size();
@@ -1732,10 +1732,10 @@ float
             }
 
             return sharp::temperature_layer(pres.data(), tmpk.data(), tmpk_1,
-                                            tmpk_2, len);
+                                            tmpk_2, len, pres_min);
         },
         nb::arg("pressure"), nb::arg("temperature"), nb::arg("tmpk_lo"),
-        nb::arg("tmpk_hi"),
+        nb::arg("tmpk_hi"), nb::arg("pres_min") = 10000.0,
         R"pbdoc(
 Performs a top-down search for a PressureLayer that bounds 
 the given temperature range. Uses a geometric approach to 
@@ -1751,6 +1751,8 @@ tmpk_lo : float
     The low end of the temperature range (K)
 tmpk_hi : float 
     The high end of the temperature range (K)
+pres_min : float 
+    Restricts the search pressure levels (Pa)
 
 Returns 
 -------
