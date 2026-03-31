@@ -16,13 +16,11 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
+#include <fmt/core.h>
 
 #include <cmath>
 #include <functional>
 #include <stdexcept>
-
-#define FMT_HEADER_ONLY
-#include <fmt/core.h>
 
 namespace sharp {
 

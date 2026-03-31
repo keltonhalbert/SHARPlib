@@ -18,7 +18,6 @@
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
-#define FMT_HEADER_ONLY
 #include <fmt/core.h>
 
 #include <algorithm>
