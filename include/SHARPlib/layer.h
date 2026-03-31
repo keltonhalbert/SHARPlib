@@ -489,6 +489,10 @@ template <typename L>
     float var_lyr_bottom;
     float var_lyr_top;
 
+    auto include = [integ_sign, isign](float layer_avg) -> float {
+        return (float)((!integ_sign) | (isign == std::signbit(layer_avg)));
+    };
+
     if constexpr (layer.coord == LayerCoordinate::height) {
         var_lyr_bottom = interp_height(layer.bottom, coord_array, var_array, N);
         var_lyr_top = interp_height(layer.top, coord_array, var_array, N);
@@ -500,6 +504,10 @@ template <typename L>
 
     // When the layer falls entirely between two native levels
     // with no interior points, handle as a single trapezoid.
+    // NOTE: weights is accumulated by _integ_trapz through its
+    // reference parameter whenever weighted=true. The same weights
+    // variable must be passed to every _integ_trapz call in this
+    // function for the final division to be correct.
     if (idx.ktop < idx.kbot) {
         if ((var_lyr_bottom == MISSING) || (var_lyr_top == MISSING)) {
             return MISSING;
@@ -507,9 +515,7 @@ template <typename L>
         float layer_avg = _integ_trapz(var_lyr_top, var_lyr_bottom, layer.top,
                                        layer.bottom, weights, weighted);
 
-        float cond =
-            (float)((!integ_sign) | (isign == std::signbit(layer_avg)));
-        integrated += cond * layer_avg;
+        integrated += include(layer_avg) * layer_avg;
     } else {
         // Start from the interpolated layer bottom and walk
         // through native levels to the interpolated top.
@@ -519,6 +525,7 @@ template <typename L>
         float coord_prev = layer.bottom;
         float var_prev = var_lyr_bottom;
         bool have_prev = (var_lyr_bottom != MISSING);
+        bool any_segment = false;
 
         for (std::ptrdiff_t k = idx.kbot; k <= idx.ktop; ++k) {
 #ifndef NO_QC
@@ -531,9 +538,8 @@ template <typename L>
                     _integ_trapz(var_array[k], var_prev, coord_array[k],
                                  coord_prev, weights, weighted);
 
-                float cond =
-                    (float)((!integ_sign) | (isign == std::signbit(layer_avg)));
-                integrated += cond * layer_avg;
+                integrated += include(layer_avg) * layer_avg;
+                any_segment = true;
             }
 
             coord_prev = coord_array[k];
@@ -547,10 +553,10 @@ template <typename L>
             float layer_avg = _integ_trapz(var_lyr_top, var_prev, layer.top,
                                            coord_prev, weights, weighted);
 
-            float cond =
-                (float)((!integ_sign) | (isign == std::signbit(layer_avg)));
-            integrated += cond * layer_avg;
+            integrated += include(layer_avg) * layer_avg;
+            any_segment = true;
         }
+        if (!any_segment) return MISSING;
     }
 
     if constexpr (layer.coord == LayerCoordinate::pressure) {
@@ -558,7 +564,10 @@ template <typename L>
         weights *= -1.0f;
     }
 
-    if (weighted) integrated /= weights;
+    if (weighted) {
+        if (weights == 0.0f) return MISSING;
+        integrated /= weights;
+    }
     return integrated;
 }
 
