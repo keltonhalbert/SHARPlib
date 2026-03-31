@@ -103,7 +103,7 @@ def get_layer_index(layer: PressureLayer, pressure: Annotated[NDArray[numpy.floa
     ----------
     layer : nwsspc.sharp.calc.layer.PressureLayer
     pressure : numpy.ndarray[dtype=float32]
-        1D NumPy array of pressures
+        1D NumPy array of pressure values
 
     Returns
     -------
@@ -129,7 +129,7 @@ def get_layer_index(layer: HeightLayer, height: Annotated[NDArray[numpy.float32]
     ----------
     layer : nwsspc.sharp.calc.layer.HeightLayer
     height : numpy.ndarray[dtype=float32]
-        1D NumPy array of heights
+        1D NumPy array of height values
 
     Returns
     -------
@@ -158,6 +158,7 @@ def height_layer_to_pressure(layer: HeightLayer, pressure: Annotated[NDArray[num
     Returns
     -------
     nwsspc.sharp.calc.layer.PressureLayer
+        The HeightLayer converted to a PressureLayer
     """
 
 def pressure_layer_to_height(layer: PressureLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], toAGL: bool = False) -> HeightLayer:
@@ -181,6 +182,7 @@ def pressure_layer_to_height(layer: PressureLayer, pressure: Annotated[NDArray[n
     Returns 
     -------
     nwsspc.sharp.calc.layer.HeightLayer
+        The PressureLayer converted to a HeightLayer
     """
 
 @overload
@@ -193,9 +195,9 @@ def layer_min(layer: HeightLayer, height: Annotated[NDArray[numpy.float32], dict
     ----------
     layer : nwsspc.sharp.calc.layer.HeightLayer 
     height : numpy.ndarray[dtype=float32]
-        1D NumPy array of heights 
+        1D NumPy array of height values 
     data : numpy.ndarray[dtype=float32]
-        1D array of data 
+        1D NumPy array of data values
 
     Returns
     -------
@@ -212,10 +214,10 @@ def layer_min(layer: PressureLayer, pressure: Annotated[NDArray[numpy.float32], 
     Parameters
     ----------
     layer : nwsspc.sharp.calc.layer.PressureLayer 
-    pressure : numpy.ndarray[dtype=float32] 
-        1D NumPy array of pressure 
-    data : numpy.ndarray[dtype=float32] 
-        1D array of data 
+    pressure : numpy.ndarray[dtype=float32]
+        1D NumPy array of pressure values 
+    data : numpy.ndarray[dtype=float32]
+        1D NumPy array of data values
 
     Returns
     -------
@@ -226,9 +228,8 @@ def layer_min(layer: PressureLayer, pressure: Annotated[NDArray[numpy.float32], 
 @overload
 def layer_max(layer: HeightLayer, height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], data: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> tuple[float, float]:
     """
-    Returns the maximum value observed within the given data array over
-    the given HeightLayer. The function bounds checks the layer by calling 
-    get_layer_index. 
+    Returns the maximum value of the data array within the given HeightLayer. The 
+    function bounds checks the layer by calling get_layer_index. 
 
     Parameters
     ----------
@@ -247,13 +248,13 @@ def layer_max(layer: HeightLayer, height: Annotated[NDArray[numpy.float32], dict
 @overload
 def layer_max(layer: PressureLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], data: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> tuple[float, float]:
     """
-    Returns the maximum value observed within the given data array over the given 
-    PressureLayer. The function bounds checks the layer by calling get_layer_index. 
+    Returns the maximum value of the data array within the given PressureLayer. The 
+    function bounds checks the layer by calling get_layer_index. 
 
     Parameters
     ----------
     layer : nwsspc.sharp.calc.layer.PressureLayer 
-    pressure : numpy.ndarray[dtype=float32]
+    pressure : numpy.ndarray[dtype=float32] 
         1D NumPy array of pressure values 
     data : numpy.ndarray[dtype=float32] 
         1D NumPy array of data values
@@ -265,7 +266,7 @@ def layer_max(layer: PressureLayer, pressure: Annotated[NDArray[numpy.float32], 
     """
 
 @overload
-def layer_mean(PressureLayer: PressureLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], data: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> float:
+def layer_mean(layer: PressureLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], data: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> float:
     """
     Computes the pressure-weighted mean value of a field over 
     a given PressureLayer. 
@@ -281,10 +282,11 @@ def layer_mean(PressureLayer: PressureLayer, pressure: Annotated[NDArray[numpy.f
     Returns
     -------
     float
+        The layer mean
     """
 
 @overload
-def layer_mean(HeightLayer: HeightLayer, height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], data: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], isAGL: bool = False) -> float:
+def layer_mean(layer: HeightLayer, height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], data: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], isAGL: bool = False) -> float:
     """
     Computes the pressure-weighted mean value of a field over 
     a given HeightLayer. 
@@ -304,12 +306,13 @@ def layer_mean(HeightLayer: HeightLayer, height: Annotated[NDArray[numpy.float32
     Returns
     -------
     float
+        The layer mean
     """
 
 @overload
 def integrate_layer_trapz(layer: HeightLayer, data: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], integ_sign: int = 0, weighted: bool = False) -> float:
     """
-    Returns a trapezoidal integration of the given data array over 
+    Returns the trapezoidal integration of the given data array over 
     the given HeightLayer. There is an additional argument that 
     determines whether this is a weighted average or not. The sign 
     of the integration may be passed as well, i.e. integrating only 
@@ -317,19 +320,20 @@ def integrate_layer_trapz(layer: HeightLayer, data: Annotated[NDArray[numpy.floa
 
     Parameters
     ----------
-    layer : nwsspc.sharp.calc.layer.HeightLayer 
+    layer : nwsspc.sharp.calc.layer.HeightLayer
     data : numpy.ndarray[dtype=float32] 
-        1D NumPy array of data values 
-    height : numpy.ndarray[dtype=float32]
+        1D NumPy array of data values
+    height : numpy.ndarray[dtype=float32] 
         1D NumPy array of height values 
     integ_sign : int 
         The sign of the area to integrate (-1: negative; 1: positive; 0: both; default: 0)
     weighted : bool 
-        Boolean determining whether or not the integration is weighted by the coordinate array 
+        Boolean determining whether or not the integration is weighted by the coordinate array
 
-    Returns
+    Returns 
     -------
     float
+        The integrated value
     """
 
 @overload
@@ -356,4 +360,5 @@ def integrate_layer_trapz(layer: PressureLayer, data: Annotated[NDArray[numpy.fl
     Returns 
     -------
     float
+        The integrated value
     """

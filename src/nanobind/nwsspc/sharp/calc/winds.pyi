@@ -60,8 +60,8 @@ def helicity(layer: nwsspc.sharp.calc.layer.HeightLayer, storm_motion: WindCompo
 
     Parameters
     ----------
-    layer : nwsspc.sharp.calc.layer.HeightLayer 
-        A HeightLayer to integrate over (meters AGL)
+    layer : nwsspc.sharp.calc.layer.HeightLayer
+        A layer to integrate over (meters AGL)
     storm_motion : nwsspc.sharp.calc.winds.WindComponents 
         A WindComponents object with the storm motion in m/s 
     height : numpy.ndarray[dtype=float32] 
@@ -89,12 +89,12 @@ def helicity(layer: nwsspc.sharp.calc.layer.PressureLayer, storm_motion: WindCom
 
     Parameters
     ----------
-    layer : nwsspc.sharp.calc.layer.PressureLayer 
-        A PressureLayer to integrate over (Pa)
+    layer : nwsspc.sharp.calc.layer.PressureLayer
+        A layer to integrate over (Pa)
     storm_motion : nwsspc.sharp.calc.winds.WindComponents 
         A WindComponents object with the storm motion in m/s 
-    height : numpy.ndarray[dtype=float32] 
-        1D NumPy array of height values (meters)
+    pressure : numpy.ndarray[dtype=float32] 
+        1D NumPy array of pressure values (Pa)
     u_wind : numpy.ndarray[dtype=float32]
         1D NumPy array of environment U-wind components (m/s)
     v_wind : numpy.ndarray[dtype=float32]
@@ -116,7 +116,7 @@ def wind_shear(layer: nwsspc.sharp.calc.layer.HeightLayer, height: Annotated[NDA
     Parameters
     ----------
     layer : nwsspc.sharp.calc.layer.HeightLayer 
-        HeightLayer for which to compute wind shear 
+        Layer for which to compute wind shear (meters AGL)
     height : numpy.ndarray[dtype=float32] 
         1D NumPy array of height values (meters)
     u_wind : numpy.ndarray[dtype=float32] 
@@ -140,9 +140,9 @@ def wind_shear(layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated
     Parameters
     ----------
     layer : nwsspc.sharp.calc.layer.PressureLayer 
-        PressureLayer for which to compute wind shear 
-    height : numpy.ndarray[dtype=float32] 
-        1D NumPy array of height values (meters)
+        Layer for which to compute wind shear (Pa)
+    pressure : numpy.ndarray[dtype=float32] 
+        1D NumPy array of pressure values (Pa)
     u_wind : numpy.ndarray[dtype=float32] 
         1D NumPy array of U-wind components (m/s)
     v_wind : numpy.ndarray[dtype=float32] 
@@ -154,7 +154,7 @@ def wind_shear(layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated
         WindComponents of U and V wind shear components (m/s)
     """
 
-def mean_wind(layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], u_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], v_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu')], weighted: bool = False) -> WindComponents:
+def mean_wind(layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], u_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], v_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], weighted: bool = False) -> WindComponents:
     """
     Computes the mean wind over the given PressureLayer and input profile
     arrays of pressure, U-wind, and V-wind components. 
@@ -175,21 +175,21 @@ def mean_wind(layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated[
     Returns
     -------
     nwsspc.sharp.calc.winds.WindComponents
-        WindComponents of U anf V mean wind components (m/s)
+        WindComponents of U and V mean wind components (m/s)
     """
 
 @overload
-def max_wind(layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], u_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], v_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> WindComponents:
+def max_wind(layer: nwsspc.sharp.calc.layer.HeightLayer, height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], u_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], v_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> WindComponents:
     """
-    Finds the maximum wind speed over a given nwsspc.sharp.calc.layer.PressureLayer,
+    Finds the maximum wind speed over a given layer,
     returning the vector components.
 
     Parameters
     ----------
-    layer : nwsspc.sharp.calc.layer.PressureLayer 
-        PressureLayer over which to compute mean
-    pressure : numpy.ndarray[dtype=float32]
-        1D NumPy array of pressure coordinate values (Pa)
+    layer : nwsspc.sharp.calc.layer.HeightLayer
+        Layer over which to compute the max (meters AGL)
+    height : numpy.ndarray[dtype=float32]
+        1D NumPy array of height coordinate values (meters)
     u_wind : numpy.ndarray[dtype=float32] 
         1D NumPy array of U-wind component values (m/s)
     v_wind : numpy.ndarray[dtype=float32] 
@@ -201,17 +201,17 @@ def max_wind(layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated[N
     """
 
 @overload
-def max_wind(layer: nwsspc.sharp.calc.layer.HeightLayer, height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], u_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], v_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> WindComponents:
+def max_wind(layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], u_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], v_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> WindComponents:
     """
-    Finds the maximum wind speed over a given nwsspc.sharp.calc.layer.HeightLayer,
+    Finds the maximum wind speed over a given layer,
     returning the vector components.
 
     Parameters
     ----------
-    layer : nwsspc.sharp.calc.layer.HeightLayer 
-        PressureLayer over which to compute mean
-    height : numpy.ndarray[dtype=float32]
-        1D NumPy array of height coordinate values (m)
+    layer : nwsspc.sharp.calc.layer.PressureLayer
+        Layer over which to compute the max (Pa)
+    pressure : numpy.ndarray[dtype=float32]
+        1D NumPy array of pressure coordinate values (Pa)
     u_wind : numpy.ndarray[dtype=float32] 
         1D NumPy array of U-wind component values (m/s)
     v_wind : numpy.ndarray[dtype=float32] 
@@ -426,7 +426,7 @@ def components_to_vector(u_comp: Annotated[NDArray[numpy.float32], dict(shape=(N
     tuple[numpy.ndarray[dtype=float32], numpy.ndarray[dtype=float32]]
         wspd: 1D NumPy array of wind speeds (m/s)
 
-        wdir: 1D NumPy array of wind directiond (degrees from North)
+        wdir: 1D NumPy array of wind directions (degrees from North)
     """
 
 @overload
@@ -458,7 +458,7 @@ def vector_to_components(wind_vector: WindVector) -> WindComponents:
     Parameters
     ----------
     wind_vector : nwsspc.sharp.calc.winds.WindVector 
-        WindVector containing wind wpeed (m/s) and direction (degrees from North)
+        WindVector containing wind speed (m/s) and direction (degrees from North)
 
     Returns
     -------
@@ -470,8 +470,8 @@ def vector_to_components(wind_vector: WindVector) -> WindComponents:
 def vector_to_components(wspd: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], wdir: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> tuple[Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')], Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]]:
     """
     Given 1D NumPy arrays of the wind speed (m/s) and direction (degrees from North),
-    compute and return 1D NumPy arays of the zonal (U) and meridional (V) vector 
-    componenWindComponents.
+    compute and return 1D NumPy arrays of the zonal (U) and meridional (V) vector 
+    components.
 
     Parameters
     ----------

@@ -9,7 +9,7 @@
 
 namespace nb = nanobind;
 
-void make_constants_bindings(nb::module_ m) {
+inline void make_constants_bindings(nb::module_ m) {
     nb::module_ m_const =
         m.def_submodule("constants",
                         "Sounding and Hodograph Analysis and Research Program "
