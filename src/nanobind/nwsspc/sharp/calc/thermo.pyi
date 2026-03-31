@@ -734,103 +734,7 @@ def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_wobus, pressure: float, temp
 
     Parameters
     ----------
-    lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
-        a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-    pressure : float 
-        The ambient pressure (Pa)
-    temperature : float 
-        The ambient temperature (K)
-    dewpoint : float 
-        The ambient dewpoint temperature (K)
-
-    Returns
-    -------
-    float
-        The wetbulb temperature (K)
-    """
-
-@overload
-def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure: float, temperature: float, dewpoint: float) -> float:
-    """
-    Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
-    temperature (K), and dewpoint temperature (K).
-
-    First, it lifts a parcel with the given pressure, temperature, and
-    dewpoint temperature to its Lifted Condensation Level (LCL). To compute the 
-    temperature and pressure of the LCL, an approximation is used. See the 
-    lcl_temperature function for further detail. 
-
-    After the parcel has reached the LCL, the lifter passed to the function 
-    lowers the parcel to its initial pressure level along a moist adiabat or 
-    pseudoadiabat. 
-
-    Parameters
-    ----------
-    lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
-        a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-    pressure : float 
-        The ambient pressure (Pa)
-    temperature : float 
-        The ambient temperature (K)
-    dewpoint : float 
-        The ambient dewpoint temperature (K)
-
-    Returns
-    -------
-    float
-        The wetbulb temperature (K)
-    """
-
-@overload
-def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_wobus, pressure: float, temperature: float, dewpoint: float) -> float:
-    """
-    Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
-    temperature (K), and dewpoint temperature (K).
-
-    First, it lifts a parcel with the given pressure, temperature, and
-    dewpoint temperature to its Lifted Condensation Level (LCL). To compute the 
-    temperature and pressure of the LCL, an approximation is used. See the 
-    lcl_temperature function for further detail. 
-
-    After the parcel has reached the LCL, the lifter passed to the function 
-    lowers the parcel to its initial pressure level along a moist adiabat or 
-    pseudoadiabat. 
-
-    Parameters
-    ----------
-    lifter : nwsspc.sharp.calc.parcel.lifter_lut 
-        a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-    pressure : float 
-        The ambient pressure (Pa)
-    temperature : float 
-        The ambient temperature (K)
-    dewpoint : float 
-        The ambient dewpoint temperature (K)
-
-    Returns
-    -------
-    float
-        The wetbulb temperature (K)
-    """
-
-@overload
-def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_cm1, pressure: float, temperature: float, dewpoint: float) -> float:
-    """
-    Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
-    temperature (K), and dewpoint temperature (K).
-
-    First, it lifts a parcel with the given pressure, temperature, and
-    dewpoint temperature to its Lifted Condensation Level (LCL). To compute the 
-    temperature and pressure of the LCL, an approximation is used. See the 
-    lcl_temperature function for further detail. 
-
-    After the parcel has reached the LCL, the lifter passed to the function 
-    lowers the parcel to its initial pressure level along a moist adiabat or 
-    pseudoadiabat. 
-
-    Parameters
-    ----------
-    lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+    lifter : nwsspc.sharp.calc.parcel.lifter_wobus
         a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
     pressure : float 
         The ambient pressure (Pa)
@@ -862,12 +766,12 @@ def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_wobus, pressure: Annotated[N
 
     Parameters
     ----------
-    lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+    lifter : nwsspc.sharp.calc.parcel.lifter_wobus
         a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
     pressure : numpy.ndarray[dtype=float32] 
         1D NumPy array of ambient pressures (Pa)
     temperature : numpy.ndarray[dtype=float32] 
-        1D NumPy array of ambient temperatureds (K)
+        1D NumPy array of ambient temperatures (K)
     dewpoint : numpy.ndarray[dtype=float32] 
         1D NumPy array of ambient dewpoint temperatures (K)
 
@@ -878,7 +782,7 @@ def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_wobus, pressure: Annotated[N
     """
 
 @overload
-def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
+def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_wobus, pressure: float, temperature: float, dewpoint: float) -> float:
     """
     Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
     temperature (K), and dewpoint temperature (K).
@@ -894,19 +798,19 @@ def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure: Annotated[NDA
 
     Parameters
     ----------
-    lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
+    lifter : nwsspc.sharp.calc.parcel.lifter_lut_wobus
         a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-    pressure : numpy.ndarray[dtype=float32] 
-        1D NumPy array of ambient pressures (Pa)
-    temperature : numpy.ndarray[dtype=float32] 
-        1D NumPy array of ambient temperatureds (K)
-    dewpoint : numpy.ndarray[dtype=float32] 
-        1D NumPy array of ambient dewpoint temperatures (K)
+    pressure : float 
+        The ambient pressure (Pa)
+    temperature : float 
+        The ambient temperature (K)
+    dewpoint : float 
+        The ambient dewpoint temperature (K)
 
     Returns
     -------
-    numpy.ndarray[dtype=float32]
-        1D NumPy array of wetbulb temperatures (K)
+    float
+        The wetbulb temperature (K)
     """
 
 @overload
@@ -926,12 +830,12 @@ def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_wobus, pressure: Annotat
 
     Parameters
     ----------
-    lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+    lifter : nwsspc.sharp.calc.parcel.lifter_lut_wobus
         a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
     pressure : numpy.ndarray[dtype=float32] 
         1D NumPy array of ambient pressures (Pa)
     temperature : numpy.ndarray[dtype=float32] 
-        1D NumPy array of ambient temperatureds (K)
+        1D NumPy array of ambient temperatures (K)
     dewpoint : numpy.ndarray[dtype=float32] 
         1D NumPy array of ambient dewpoint temperatures (K)
 
@@ -939,6 +843,102 @@ def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_wobus, pressure: Annotat
     -------
     numpy.ndarray[dtype=float32]
         1D NumPy array of wetbulb temperatures (K)
+    """
+
+@overload
+def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure: float, temperature: float, dewpoint: float) -> float:
+    """
+    Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
+    temperature (K), and dewpoint temperature (K).
+
+    First, it lifts a parcel with the given pressure, temperature, and
+    dewpoint temperature to its Lifted Condensation Level (LCL). To compute the 
+    temperature and pressure of the LCL, an approximation is used. See the 
+    lcl_temperature function for further detail. 
+
+    After the parcel has reached the LCL, the lifter passed to the function 
+    lowers the parcel to its initial pressure level along a moist adiabat or 
+    pseudoadiabat. 
+
+    Parameters
+    ----------
+    lifter : nwsspc.sharp.calc.parcel.lifter_cm1
+        a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+    pressure : float 
+        The ambient pressure (Pa)
+    temperature : float 
+        The ambient temperature (K)
+    dewpoint : float 
+        The ambient dewpoint temperature (K)
+
+    Returns
+    -------
+    float
+        The wetbulb temperature (K)
+    """
+
+@overload
+def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
+    """
+    Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
+    temperature (K), and dewpoint temperature (K).
+
+    First, it lifts a parcel with the given pressure, temperature, and
+    dewpoint temperature to its Lifted Condensation Level (LCL). To compute the 
+    temperature and pressure of the LCL, an approximation is used. See the 
+    lcl_temperature function for further detail. 
+
+    After the parcel has reached the LCL, the lifter passed to the function 
+    lowers the parcel to its initial pressure level along a moist adiabat or 
+    pseudoadiabat. 
+
+    Parameters
+    ----------
+    lifter : nwsspc.sharp.calc.parcel.lifter_cm1
+        a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+    pressure : numpy.ndarray[dtype=float32] 
+        1D NumPy array of ambient pressures (Pa)
+    temperature : numpy.ndarray[dtype=float32] 
+        1D NumPy array of ambient temperatures (K)
+    dewpoint : numpy.ndarray[dtype=float32] 
+        1D NumPy array of ambient dewpoint temperatures (K)
+
+    Returns
+    -------
+    numpy.ndarray[dtype=float32]
+        1D NumPy array of wetbulb temperatures (K)
+    """
+
+@overload
+def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_cm1, pressure: float, temperature: float, dewpoint: float) -> float:
+    """
+    Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
+    temperature (K), and dewpoint temperature (K).
+
+    First, it lifts a parcel with the given pressure, temperature, and
+    dewpoint temperature to its Lifted Condensation Level (LCL). To compute the 
+    temperature and pressure of the LCL, an approximation is used. See the 
+    lcl_temperature function for further detail. 
+
+    After the parcel has reached the LCL, the lifter passed to the function 
+    lowers the parcel to its initial pressure level along a moist adiabat or 
+    pseudoadiabat. 
+
+    Parameters
+    ----------
+    lifter : nwsspc.sharp.calc.parcel.lifter_lut_cm1
+        a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+    pressure : float 
+        The ambient pressure (Pa)
+    temperature : float 
+        The ambient temperature (K)
+    dewpoint : float 
+        The ambient dewpoint temperature (K)
+
+    Returns
+    -------
+    float
+        The wetbulb temperature (K)
     """
 
 @overload
@@ -958,12 +958,12 @@ def wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_cm1, pressure: Annotated
 
     Parameters
     ----------
-    lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+    lifter : nwsspc.sharp.calc.parcel.lifter_lut_cm1
         a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
     pressure : numpy.ndarray[dtype=float32] 
         1D NumPy array of ambient pressures (Pa)
     temperature : numpy.ndarray[dtype=float32] 
-        1D NumPy array of ambient temperatureds (K)
+        1D NumPy array of ambient temperatures (K)
     dewpoint : numpy.ndarray[dtype=float32] 
         1D NumPy array of ambient dewpoint temperatures (K)
 
@@ -982,118 +982,22 @@ def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_wobus, pressure: float
     First, it lifts a parcel with the given pressure, temperature, 
     and dewpoint temperature to its Lifted Condensation Level (LCL). 
     To compute the temperature and pressure of the LCL, an approximation 
-    is used. See the lcl_temperature fuction for further detail. 
+    is used. See the lcl_temperature function for further detail. 
 
-    After the parcel has reached the LCL, the lifted passed to the function 
+    After the parcel has reached the LCL, the lifter passed to the function 
     lowers the parcel to the standard parcel reference pressure level 
     (1000 hPa) along a moist adiabat.
 
     Parameters
     ----------
-    lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+    lifter : nwsspc.sharp.calc.parcel.lifter_wobus
         a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
     pressure : float 
         the ambient air pressure (Pa)
     temperature : float 
         the ambient air temperature (K)
     dewpoint : float 
-        the ambient dewpoint temperature
-
-    Returns
-    -------
-    float
-        The wet-bulb potential temperature (K)
-    """
-
-@overload
-def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure: float, temperature: float, dewpoint: float) -> float:
-    """
-    Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
-    temperature (K), and dewpoint temperature (K).
-
-    First, it lifts a parcel with the given pressure, temperature, 
-    and dewpoint temperature to its Lifted Condensation Level (LCL). 
-    To compute the temperature and pressure of the LCL, an approximation 
-    is used. See the lcl_temperature fuction for further detail. 
-
-    After the parcel has reached the LCL, the lifted passed to the function 
-    lowers the parcel to the standard parcel reference pressure level 
-    (1000 hPa) along a moist adiabat.
-
-    Parameters
-    ----------
-    lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
-        a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-    pressure : float 
-        the ambient air pressure (Pa)
-    temperature : float 
-        the ambient air temperature (K)
-    dewpoint : float 
-        the ambient dewpoint temperature
-
-    Returns
-    -------
-    float
-        The wet-bulb potential temperature (K)
-    """
-
-@overload
-def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_wobus, pressure: float, temperature: float, dewpoint: float) -> float:
-    """
-    Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
-    temperature (K), and dewpoint temperature (K).
-
-    First, it lifts a parcel with the given pressure, temperature, 
-    and dewpoint temperature to its Lifted Condensation Level (LCL). 
-    To compute the temperature and pressure of the LCL, an approximation 
-    is used. See the lcl_temperature fuction for further detail. 
-
-    After the parcel has reached the LCL, the lifted passed to the function 
-    lowers the parcel to the standard parcel reference pressure level 
-    (1000 hPa) along a moist adiabat.
-
-    Parameters
-    ----------
-    lifter : nwsspc.sharp.calc.parcel.lifter_lut 
-        a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-    pressure : float 
-        the ambient air pressure (Pa)
-    temperature : float 
-        the ambient air temperature (K)
-    dewpoint : float 
-        the ambient dewpoint temperature
-
-    Returns
-    -------
-    float
-        The wet-bulb potential temperature (K)
-    """
-
-@overload
-def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_cm1, pressure: float, temperature: float, dewpoint: float) -> float:
-    """
-    Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
-    temperature (K), and dewpoint temperature (K).
-
-    First, it lifts a parcel with the given pressure, temperature, 
-    and dewpoint temperature to its Lifted Condensation Level (LCL). 
-    To compute the temperature and pressure of the LCL, an approximation 
-    is used. See the lcl_temperature fuction for further detail. 
-
-    After the parcel has reached the LCL, the lifted passed to the function 
-    lowers the parcel to the standard parcel reference pressure level 
-    (1000 hPa) along a moist adiabat.
-
-    Parameters
-    ----------
-    lifter : nwsspc.sharp.calc.parcel.lifter_lut 
-        a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-    pressure : float 
-        the ambient air pressure (Pa)
-    temperature : float 
-        the ambient air temperature (K)
-    dewpoint : float 
-        the ambient dewpoint temperature
+        the ambient dewpoint temperature (K)
 
     Returns
     -------
@@ -1110,22 +1014,22 @@ def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_wobus, pressure: Annot
     First, it lifts a parcel with the given pressure, temperature, 
     and dewpoint temperature to its Lifted Condensation Level (LCL). 
     To compute the temperature and pressure of the LCL, an approximation 
-    is used. See the lcl_temperature fuction for further detail. 
+    is used. See the lcl_temperature function for further detail. 
 
-    After the parcel has reached the LCL, the lifted passed to the function 
+    After the parcel has reached the LCL, the lifter passed to the function 
     lowers the parcel to the standard parcel reference pressure level 
     (1000 hPa) along a moist adiabat.
 
     Parameters
     ----------
-    lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+    lifter : nwsspc.sharp.calc.parcel.lifter_wobus
         a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
     pressure : numpy.ndarray[dtype=float32] 
         1D NumPy array of ambient air pressure (Pa)
     temperature : numpy.ndarray[dtype=float32] 
         1D NumPy array of ambient air temperature (K)
     dewpoint : numpy.ndarray[dtype=float32] 
-        1D NumPy array of ambient dewpoint temperature
+        1D NumPy array of ambient dewpoint temperature (K)
 
     Returns
     -------
@@ -1134,7 +1038,7 @@ def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_wobus, pressure: Annot
     """
 
 @overload
-def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
+def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_wobus, pressure: float, temperature: float, dewpoint: float) -> float:
     """
     Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
     temperature (K), and dewpoint temperature (K).
@@ -1142,27 +1046,27 @@ def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure: Annotat
     First, it lifts a parcel with the given pressure, temperature, 
     and dewpoint temperature to its Lifted Condensation Level (LCL). 
     To compute the temperature and pressure of the LCL, an approximation 
-    is used. See the lcl_temperature fuction for further detail. 
+    is used. See the lcl_temperature function for further detail. 
 
-    After the parcel has reached the LCL, the lifted passed to the function 
+    After the parcel has reached the LCL, the lifter passed to the function 
     lowers the parcel to the standard parcel reference pressure level 
     (1000 hPa) along a moist adiabat.
 
     Parameters
     ----------
-    lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
+    lifter : nwsspc.sharp.calc.parcel.lifter_lut_wobus
         a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-    pressure : numpy.ndarray[dtype=float32] 
-        1D NumPy array of ambient air pressure (Pa)
-    temperature : numpy.ndarray[dtype=float32] 
-        1D NumPy array of ambient air temperature (K)
-    dewpoint : numpy.ndarray[dtype=float32] 
-        1D NumPy array of ambient dewpoint temperature
+    pressure : float 
+        the ambient air pressure (Pa)
+    temperature : float 
+        the ambient air temperature (K)
+    dewpoint : float 
+        the ambient dewpoint temperature (K)
 
     Returns
     -------
-    numpy.ndarray[dtype=float32]
-        1D NumPy array of wet-bulb potential temperatures (K)
+    float
+        The wet-bulb potential temperature (K)
     """
 
 @overload
@@ -1174,27 +1078,123 @@ def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_wobus, pressure: A
     First, it lifts a parcel with the given pressure, temperature, 
     and dewpoint temperature to its Lifted Condensation Level (LCL). 
     To compute the temperature and pressure of the LCL, an approximation 
-    is used. See the lcl_temperature fuction for further detail. 
+    is used. See the lcl_temperature function for further detail. 
 
-    After the parcel has reached the LCL, the lifted passed to the function 
+    After the parcel has reached the LCL, the lifter passed to the function 
     lowers the parcel to the standard parcel reference pressure level 
     (1000 hPa) along a moist adiabat.
 
     Parameters
     ----------
-    lifter : nwsspc.sharp.calc.parcel.lifter_lut 
+    lifter : nwsspc.sharp.calc.parcel.lifter_lut_wobus
         a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
     pressure : numpy.ndarray[dtype=float32] 
         1D NumPy array of ambient air pressure (Pa)
     temperature : numpy.ndarray[dtype=float32] 
         1D NumPy array of ambient air temperature (K)
     dewpoint : numpy.ndarray[dtype=float32] 
-        1D NumPy array of ambient dewpoint temperature
+        1D NumPy array of ambient dewpoint temperature (K)
 
     Returns
     -------
     numpy.ndarray[dtype=float32]
         1D NumPy array of wet-bulb potential temperatures (K)
+    """
+
+@overload
+def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure: float, temperature: float, dewpoint: float) -> float:
+    """
+    Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
+    temperature (K), and dewpoint temperature (K).
+
+    First, it lifts a parcel with the given pressure, temperature, 
+    and dewpoint temperature to its Lifted Condensation Level (LCL). 
+    To compute the temperature and pressure of the LCL, an approximation 
+    is used. See the lcl_temperature function for further detail. 
+
+    After the parcel has reached the LCL, the lifter passed to the function 
+    lowers the parcel to the standard parcel reference pressure level 
+    (1000 hPa) along a moist adiabat.
+
+    Parameters
+    ----------
+    lifter : nwsspc.sharp.calc.parcel.lifter_cm1
+        a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+    pressure : float 
+        the ambient air pressure (Pa)
+    temperature : float 
+        the ambient air temperature (K)
+    dewpoint : float 
+        the ambient dewpoint temperature (K)
+
+    Returns
+    -------
+    float
+        The wet-bulb potential temperature (K)
+    """
+
+@overload
+def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_cm1, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
+    """
+    Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
+    temperature (K), and dewpoint temperature (K).
+
+    First, it lifts a parcel with the given pressure, temperature, 
+    and dewpoint temperature to its Lifted Condensation Level (LCL). 
+    To compute the temperature and pressure of the LCL, an approximation 
+    is used. See the lcl_temperature function for further detail. 
+
+    After the parcel has reached the LCL, the lifter passed to the function 
+    lowers the parcel to the standard parcel reference pressure level 
+    (1000 hPa) along a moist adiabat.
+
+    Parameters
+    ----------
+    lifter : nwsspc.sharp.calc.parcel.lifter_cm1
+        a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+    pressure : numpy.ndarray[dtype=float32] 
+        1D NumPy array of ambient air pressure (Pa)
+    temperature : numpy.ndarray[dtype=float32] 
+        1D NumPy array of ambient air temperature (K)
+    dewpoint : numpy.ndarray[dtype=float32] 
+        1D NumPy array of ambient dewpoint temperature (K)
+
+    Returns
+    -------
+    numpy.ndarray[dtype=float32]
+        1D NumPy array of wet-bulb potential temperatures (K)
+    """
+
+@overload
+def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_cm1, pressure: float, temperature: float, dewpoint: float) -> float:
+    """
+    Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
+    temperature (K), and dewpoint temperature (K).
+
+    First, it lifts a parcel with the given pressure, temperature, 
+    and dewpoint temperature to its Lifted Condensation Level (LCL). 
+    To compute the temperature and pressure of the LCL, an approximation 
+    is used. See the lcl_temperature function for further detail. 
+
+    After the parcel has reached the LCL, the lifter passed to the function 
+    lowers the parcel to the standard parcel reference pressure level 
+    (1000 hPa) along a moist adiabat.
+
+    Parameters
+    ----------
+    lifter : nwsspc.sharp.calc.parcel.lifter_lut_cm1
+        a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+    pressure : float 
+        the ambient air pressure (Pa)
+    temperature : float 
+        the ambient air temperature (K)
+    dewpoint : float 
+        the ambient dewpoint temperature (K)
+
+    Returns
+    -------
+    float
+        The wet-bulb potential temperature (K)
     """
 
 @overload
@@ -1206,22 +1206,22 @@ def theta_wetbulb(lifter: nwsspc.sharp.calc.parcel.lifter_lut_cm1, pressure: Ann
     First, it lifts a parcel with the given pressure, temperature, 
     and dewpoint temperature to its Lifted Condensation Level (LCL). 
     To compute the temperature and pressure of the LCL, an approximation 
-    is used. See the lcl_temperature fuction for further detail. 
+    is used. See the lcl_temperature function for further detail. 
 
-    After the parcel has reached the LCL, the lifted passed to the function 
+    After the parcel has reached the LCL, the lifter passed to the function 
     lowers the parcel to the standard parcel reference pressure level 
     (1000 hPa) along a moist adiabat.
 
     Parameters
     ----------
-    lifter : nwsspc.sharp.calc.parcel.lifter_lut
+    lifter : nwsspc.sharp.calc.parcel.lifter_lut_cm1
         a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
     pressure : numpy.ndarray[dtype=float32] 
         1D NumPy array of ambient air pressure (Pa)
     temperature : numpy.ndarray[dtype=float32] 
         1D NumPy array of ambient air temperature (K)
     dewpoint : numpy.ndarray[dtype=float32] 
-        1D NumPy array of ambient dewpoint temperature
+        1D NumPy array of ambient dewpoint temperature (K)
 
     Returns
     -------
