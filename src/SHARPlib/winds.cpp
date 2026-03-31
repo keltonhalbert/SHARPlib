@@ -113,21 +113,69 @@ WindComponents mean_wind(PressureLayer layer, const float pressure[],
     if (layer.bottom > pressure[0]) layer.bottom = pressure[0];
     if (layer.top < pressure[N - 1]) layer.top = pressure[N - 1];
 
-    float pr_lvl = layer.bottom;
-    float u_sum = 0;
-    float v_sum = 0;
-    float weight = 0;
-    while (pr_lvl >= layer.top) {
-        float w = (weighted) ? pr_lvl : 1.0f;
-        u_sum += interp_pressure(pr_lvl, pressure, u_wind, N) * w;
-        v_sum += interp_pressure(pr_lvl, pressure, v_wind, N) * w;
-        weight += w;
-        pr_lvl += layer.delta;
+    LayerIndex idx = get_layer_index(layer, pressure, N);
+
+    float u_lyr_bot = interp_pressure(layer.bottom, pressure, u_wind, N);
+    float v_lyr_bot = interp_pressure(layer.bottom, pressure, v_wind, N);
+    float u_lyr_top = interp_pressure(layer.top, pressure, u_wind, N);
+    float v_lyr_top = interp_pressure(layer.top, pressure, v_wind, N);
+
+#ifndef NO_QC
+    if ((u_lyr_bot == MISSING) || (v_lyr_bot == MISSING) ||
+        (u_lyr_top == MISSING) || (v_lyr_top == MISSING)) {
+        return {MISSING, MISSING};
+    }
+#endif
+
+    float u_integ = 0.0f;
+    float v_integ = 0.0f;
+    float w_integ = 0.0f;
+
+    float p_prev = layer.bottom;
+    float u_prev = u_lyr_bot;
+    float v_prev = v_lyr_bot;
+
+    for (std::ptrdiff_t k = idx.kbot; k <= idx.ktop; ++k) {
+#ifndef NO_QC
+        if ((u_wind[k] == MISSING) || (v_wind[k] == MISSING)) {
+            continue;
+        }
+#endif
+        const float p_curr = pressure[k];
+        const float u_curr = u_wind[k];
+        const float v_curr = v_wind[k];
+        const float dp = p_prev - p_curr;
+
+        if (weighted) {
+            u_integ += 0.5f * (u_prev * p_prev + u_curr * p_curr) * dp;
+            v_integ += 0.5f * (v_prev * p_prev + v_curr * p_curr) * dp;
+            w_integ += 0.5f * (p_prev + p_curr) * dp;
+        } else {
+            u_integ += 0.5f * (u_prev + u_curr) * dp;
+            v_integ += 0.5f * (v_prev + v_curr) * dp;
+            w_integ += dp;
+        }
+
+        p_prev = p_curr;
+        u_prev = u_curr;
+        v_prev = v_curr;
     }
 
-    const float mean_u = u_sum / weight;
-    const float mean_v = v_sum / weight;
-    return {mean_u, mean_v};
+    {
+        const float dp = p_prev - layer.top;
+
+        if (weighted) {
+            u_integ += 0.5f * (u_prev * p_prev + u_lyr_top * layer.top) * dp;
+            v_integ += 0.5f * (v_prev * p_prev + v_lyr_top * layer.top) * dp;
+            w_integ += 0.5f * (p_prev + layer.top) * dp;
+        } else {
+            u_integ += 0.5f * (u_prev + u_lyr_top) * dp;
+            v_integ += 0.5f * (v_prev + v_lyr_top) * dp;
+            w_integ += dp;
+        }
+    }
+
+    return {u_integ / w_integ, v_integ / w_integ};
 }
 
 /// @cond DOXYGEN_IGNORE
