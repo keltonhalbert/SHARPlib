@@ -12,12 +12,103 @@
 #include <SHARPlib/params/winter.h>
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/winds.h>
+#include <fmt/core.h>
 
 #include <cstddef>
 
+#include "binding_utils.h"
 #include "sharplib_types.h"
 
 namespace nb = nanobind;
+
+template <typename Lft>
+void bind_effective_inflow(nb::module_& mod, const char* template_doc,
+                           const char* lifter_name) {
+    std::string doc = fmt::format(template_doc, lifter_name);
+    mod.def(
+        "effective_inflow_layer",
+        [](Lft& lifter, const_prof_arr_t pressure, const_prof_arr_t height,
+           const_prof_arr_t temperature, const_prof_arr_t dewpoint,
+           const_prof_arr_t virtemp, const float cape_thresh,
+           const float cinh_thresh,
+           sharp::Parcel* mupcl) -> sharp::PressureLayer {
+            check_equal_sizes(pressure, height, temperature, dewpoint, virtemp);
+
+            std::size_t NZ = height.size();
+            auto pcl_vtmp = std::make_unique<float[]>(NZ);
+            auto pcl_buoy = std::make_unique<float[]>(NZ);
+
+            sharp::PressureLayer eil = sharp::effective_inflow_layer(
+                lifter, pressure.data(), height.data(), temperature.data(),
+                dewpoint.data(), virtemp.data(), pcl_vtmp.get(), pcl_buoy.get(),
+                NZ, cape_thresh, cinh_thresh, mupcl);
+
+            return eil;
+        },
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("height"),
+        nb::arg("temperature"), nb::arg("dewpoint"), nb::arg("virtemp"),
+        nb::arg("cape_thresh") = 100.0f, nb::arg("cinh_thresh") = -250.0f,
+        nb::arg("mupcl") = nb::none(), doc.c_str());
+}
+
+template <typename Lft>
+void bind_convective_temperature(nb::module_& mod, const char* template_doc,
+                                 const char* lifter_name) {
+    std::string doc = fmt::format(template_doc, lifter_name);
+
+    mod.def(
+        "convective_temperature",
+        [](Lft& lifter, const_prof_arr_t pres, const_prof_arr_t hght,
+           const_prof_arr_t tmpk, const_prof_arr_t vtmpk, const_prof_arr_t mixr,
+           float cinh_thresh) {
+            check_equal_sizes(pres, hght, tmpk, vtmpk, mixr);
+
+            const std::size_t NZ = pres.size();
+            auto pcl_vtmp = std::make_unique<float[]>(NZ);
+            auto pcl_buoy = std::make_unique<float[]>(NZ);
+
+            float cnvtv_tmpk = sharp::convective_temperature(
+                lifter, pres.data(), hght.data(), tmpk.data(), vtmpk.data(),
+                mixr.data(), pcl_vtmp.get(), pcl_buoy.get(), pres.size());
+
+            return cnvtv_tmpk;
+        },
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("height"),
+        nb::arg("temperature"), nb::arg("virtual_temperature"),
+        nb::arg("mixratio"), nb::arg("cinh_thresh") = -1.0, doc.c_str());
+}
+
+template <typename Lft>
+void bind_pyrocb_firepower(nb::module_& mod, const char* template_doc,
+                           const char* lifter_name) {
+    std::string doc = fmt::format(template_doc, lifter_name);
+
+    mod.def(
+        "pyrocumulonimbus_firepower_threshold",
+        [](Lft& lifter, sharp::PressureLayer& mix_layer, const_prof_arr_t pres,
+           const_prof_arr_t hght, const_prof_arr_t tmpk, const_prof_arr_t mixr,
+           const_prof_arr_t vtmpk, const_prof_arr_t uwin, const_prof_arr_t vwin,
+           const_prof_arr_t theta, sharp::Parcel* pcl, float phi,
+           float beta_incr) {
+            check_equal_sizes(pres, hght, tmpk, mixr, vtmpk, uwin, vwin, theta);
+            const std::size_t NZ = pres.size();
+            auto pcl_vtmp = std::make_unique<float[]>(NZ);
+            auto pcl_buoy = std::make_unique<float[]>(NZ);
+
+            float pft = sharp::pyrocumulonimbus_firepower_threshold(
+                lifter, mix_layer, pres.data(), hght.data(), tmpk.data(),
+                mixr.data(), vtmpk.data(), uwin.data(), vwin.data(),
+                theta.data(), pcl_vtmp.get(), pcl_buoy.get(), pres.size(), pcl,
+                phi, beta_incr);
+
+            return pft;
+        },
+        nb::arg("lifter"), nb::arg("mix_layer"), nb::arg("pressure"),
+        nb::arg("height"), nb::arg("temperature"), nb::arg("mixratio"),
+        nb::arg("virtual_temperature"), nb::arg("u_wind"), nb::arg("v_wind"),
+        nb::arg("potential_temperature"), nb::arg("pcl") = nb::none(),
+        nb::arg("phi") = 6.67e-5, nb::arg("beta_incr") = 0.005, doc.c_str());
+}
 
 inline void make_params_bindings(nb::module_ m) {
     nb::module_ m_params =
@@ -25,36 +116,7 @@ inline void make_params_bindings(nb::module_ m) {
                         "Sounding and Hodograph Analysis and Research Program "
                         "Library (SHARPlib) :: Derived Parameters");
 
-    m_params.def(
-        "effective_inflow_layer",
-        [](sharp::lifter_wobus& lifter, const_prof_arr_t pressure,
-           const_prof_arr_t height, const_prof_arr_t temperature,
-           const_prof_arr_t dewpoint, const_prof_arr_t virtemp,
-           float cape_thresh, float cinh_thresh, sharp::Parcel* mupcl) {
-            if ((pressure.shape(0) != height.shape(0)) ||
-                (pressure.shape(0) != temperature.shape(0)) ||
-                (pressure.shape(0) != dewpoint.shape(0)) ||
-                (pressure.shape(0) != virtemp.shape(0))) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
-            float* pcl_vtmp = new float[height.size()];
-            float* pcl_buoy = new float[height.size()];
-
-            sharp::PressureLayer eil = sharp::effective_inflow_layer(
-                lifter, pressure.data(), height.data(), temperature.data(),
-                dewpoint.data(), virtemp.data(), pcl_vtmp, pcl_buoy,
-                height.size(), cape_thresh, cinh_thresh, mupcl);
-
-            delete[] pcl_vtmp;
-            delete[] pcl_buoy;
-
-            return eil;
-        },
-        nb::arg("lifter"), nb::arg("pressure"), nb::arg("height"),
-        nb::arg("temperature"), nb::arg("dewpoint"), nb::arg("virtemp"),
-        nb::arg("cape_thresh") = 100.0f, nb::arg("cinh_thresh") = -250.0f,
-        nb::arg("mupcl") = nb::none(),
+    const char* eil_template_doc =
         R"pbdoc(
 Computes the Effective Inflow Layer, or the layer of the atmosphere
 beliefed to be the primary source of inflow for supercell thunderstorms. 
@@ -74,7 +136,7 @@ Thompson et al. 2007: https://www.spc.noaa.gov/publications/thompson/effective.p
 
 Parameters 
 ----------
-lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+lifter : {}
 pressure : numpy.ndarray[dtype=float32]
     A 1D NumPy array of pressure values (Pa)
 height : numpy.ndarray[dtype=float32] 
@@ -95,225 +157,12 @@ Returns
 -------
 nwsspc.sharp.calc.layer.PressureLayer
     The Effective Inflow Layer
-    )pbdoc");
+    )pbdoc";
 
-    m_params.def(
-        "effective_inflow_layer",
-        [](sharp::lifter_cm1& lifter, const_prof_arr_t pressure,
-           const_prof_arr_t height, const_prof_arr_t temperature,
-           const_prof_arr_t dewpoint, const_prof_arr_t virtemp,
-           float cape_thresh, float cinh_thresh, sharp::Parcel* mupcl) {
-            if ((pressure.shape(0) != height.shape(0)) ||
-                (pressure.shape(0) != temperature.shape(0)) ||
-                (pressure.shape(0) != dewpoint.shape(0)) ||
-                (pressure.shape(0) != virtemp.shape(0))) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
-            float* pcl_vtmp = new float[height.size()];
-            float* pcl_buoy = new float[height.size()];
-
-            sharp::PressureLayer eil = sharp::effective_inflow_layer(
-                lifter, pressure.data(), height.data(), temperature.data(),
-                dewpoint.data(), virtemp.data(), pcl_vtmp, pcl_buoy,
-                height.size(), cape_thresh, cinh_thresh, mupcl);
-
-            delete[] pcl_vtmp;
-            delete[] pcl_buoy;
-
-            return eil;
-        },
-        nb::arg("lifter"), nb::arg("pressure"), nb::arg("height"),
-        nb::arg("temperature"), nb::arg("dewpoint"), nb::arg("virtemp"),
-        nb::arg("cape_thresh") = 100.0f, nb::arg("cinh_thresh") = -250.0f,
-        nb::arg("mupcl") = nb::none(),
-        R"pbdoc(
-Computes the Effective Inflow Layer, or the layer of the atmosphere
-beliefed to be the primary source of inflow for supercell thunderstorms. 
-The Effective Inflow Layer, and its use in computing shear and storm 
-relative helicity, is described by Thompson et al. 2007:
-https://www.spc.noaa.gov/publications/thompson/effective.pdf
-
-Standard/default values for cape_thresh and cinh_thresh have been 
-experimentally determined to be cape_thresh = 100 J/kg and 
-cinh_thresh = -250.0 J/kg. If an empty parcel object is passed via the 
-'mupcl' kwarg, the Most Unstable parcel found during the EIL search will 
-be returned. 
-
-References 
-----------
-Thompson et al. 2007: https://www.spc.noaa.gov/publications/thompson/effective.pdf
-
-Parameters 
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
-pressure : numpy.ndarray[dtype=float32]
-    A 1D NumPy array of pressure values (Pa)
-height : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of height values (Pa)
-temperature : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of temperature values (K)
-dewpoint : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of dewpoint values (K)
-virtemp : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of virtual temperature values (K)
-cape_thresh : float, default = 100.0
-    The CAPE threshold used to compute the Effective Inflow Layer 
-cinh_thresh : float, default = -250.0 
-    The CINH threshold used to compute the Effective Inflow Layer
-mupcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
-
-Returns 
--------
-nwsspc.sharp.calc.layer.PressureLayer
-    The Effective Inflow Layer
-    )pbdoc");
-
-    m_params.def(
-        "effective_inflow_layer",
-        [](sharp::lifter_lut<sharp::lifter_wobus>& lifter,
-           const_prof_arr_t pressure, const_prof_arr_t height,
-           const_prof_arr_t temperature, const_prof_arr_t dewpoint,
-           const_prof_arr_t virtemp, float cape_thresh, float cinh_thresh,
-           sharp::Parcel* mupcl) {
-            if ((pressure.shape(0) != height.shape(0)) ||
-                (pressure.shape(0) != temperature.shape(0)) ||
-                (pressure.shape(0) != dewpoint.shape(0)) ||
-                (pressure.shape(0) != virtemp.shape(0))) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
-            float* pcl_vtmp = new float[height.size()];
-            float* pcl_buoy = new float[height.size()];
-
-            sharp::PressureLayer eil = sharp::effective_inflow_layer(
-                lifter, pressure.data(), height.data(), temperature.data(),
-                dewpoint.data(), virtemp.data(), pcl_vtmp, pcl_buoy,
-                height.size(), cape_thresh, cinh_thresh, mupcl);
-
-            delete[] pcl_vtmp;
-            delete[] pcl_buoy;
-
-            return eil;
-        },
-        nb::arg("lifter"), nb::arg("pressure"), nb::arg("height"),
-        nb::arg("temperature"), nb::arg("dewpoint"), nb::arg("virtemp"),
-        nb::arg("cape_thresh") = 100.0f, nb::arg("cinh_thresh") = -250.0f,
-        nb::arg("mupcl") = nb::none(),
-        R"pbdoc(
-Computes the Effective Inflow Layer, or the layer of the atmosphere
-beliefed to be the primary source of inflow for supercell thunderstorms. 
-The Effective Inflow Layer, and its use in computing shear and storm 
-relative helicity, is described by Thompson et al. 2007: 
-https://www.spc.noaa.gov/publications/thompson/effective.pdf
-
-Standard/default values for cape_thresh and cinh_thresh have been 
-experimentally determined to be cape_thresh = 100 J/kg and 
-cinh_thresh = -250.0 J/kg. If an empty parcel object is passed via the 
-'mupcl' kwarg, the Most Unstable parcel found during the EIL search will 
-be returned. 
-
-References 
-----------
-Thompson et al. 2007: https://www.spc.noaa.gov/publications/thompson/effective.pdf
-
-Parameters 
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_lut 
-pressure : numpy.ndarray[dtype=float32]
-    A 1D NumPy array of pressure values (Pa)
-height : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of height values (Pa)
-temperature : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of temperature values (K)
-dewpoint : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of dewpoint values (K)
-virtemp : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of virtual temperature values (K)
-cape_thresh : float, default = 100.0
-    The CAPE threshold used to compute the Effective Inflow Layer 
-cinh_thresh : float, default = -250.0 
-    The CINH threshold used to compute the Effective Inflow Layer
-mupcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
-
-Returns 
--------
-nwsspc.sharp.calc.layer.PressureLayer
-    The Effective Inflow Layer
-    )pbdoc");
-
-    m_params.def(
-        "effective_inflow_layer",
-        [](sharp::lifter_lut<sharp::lifter_cm1>& lifter,
-           const_prof_arr_t pressure, const_prof_arr_t height,
-           const_prof_arr_t temperature, const_prof_arr_t dewpoint,
-           const_prof_arr_t virtemp, float cape_thresh, float cinh_thresh,
-           sharp::Parcel* mupcl) {
-            if ((pressure.shape(0) != height.shape(0)) ||
-                (pressure.shape(0) != temperature.shape(0)) ||
-                (pressure.shape(0) != dewpoint.shape(0)) ||
-                (pressure.shape(0) != virtemp.shape(0))) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
-            float* pcl_vtmp = new float[height.size()];
-            float* pcl_buoy = new float[height.size()];
-
-            sharp::PressureLayer eil = sharp::effective_inflow_layer(
-                lifter, pressure.data(), height.data(), temperature.data(),
-                dewpoint.data(), virtemp.data(), pcl_vtmp, pcl_buoy,
-                height.size(), cape_thresh, cinh_thresh, mupcl);
-
-            delete[] pcl_vtmp;
-            delete[] pcl_buoy;
-
-            return eil;
-        },
-        nb::arg("lifter"), nb::arg("pressure"), nb::arg("height"),
-        nb::arg("temperature"), nb::arg("dewpoint"), nb::arg("virtemp"),
-        nb::arg("cape_thresh") = 100.0f, nb::arg("cinh_thresh") = -250.0f,
-        nb::arg("mupcl") = nb::none(),
-        R"pbdoc(
-Computes the Effective Inflow Layer, or the layer of the atmosphere
-beliefed to be the primary source of inflow for supercell thunderstorms. 
-The Effective Inflow Layer, and its use in computing shear and storm 
-relative helicity, is described by Thompson et al. 2007:
-https://www.spc.noaa.gov/publications/thompson/effective.pdf
-
-Standard/default values for cape_thresh and cinh_thresh have been 
-experimentally determined to be cape_thresh = 100 J/kg and 
-cinh_thresh = -250.0 J/kg. If an empty parcel object is passed via the 
-'mupcl' kwarg, the Most Unstable parcel found during the EIL search will 
-be returned. 
-
-References 
-----------
-Thompson et al. 2007: https://www.spc.noaa.gov/publications/thompson/effective.pdf
-
-Parameters 
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_lut 
-pressure : numpy.ndarray[dtype=float32]
-    A 1D NumPy array of pressure values (Pa)
-height : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of height values (Pa)
-temperature : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of temperature values (K)
-dewpoint : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of dewpoint values (K)
-virtemp : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of virtual temperature values (K)
-cape_thresh : float, default = 100.0
-    The CAPE threshold used to compute the Effective Inflow Layer 
-cinh_thresh : float, default = -250.0 
-    The CINH threshold used to compute the Effective Inflow Layer
-mupcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
-
-Returns 
--------
-nwsspc.sharp.calc.layer.PressureLayer
-    The Effective Inflow Layer
-    )pbdoc");
+    for_each_lifter([&](auto tag, const char* lifter_name) {
+        using Lft = typename decltype(tag)::type;
+        bind_effective_inflow<Lft>(m_params, eil_template_doc, lifter_name);
+    });
 
     m_params.def(
         "storm_motion_bunkers",
@@ -322,12 +171,7 @@ nwsspc.sharp.calc.layer.PressureLayer
            sharp::HeightLayer mean_wind_layer_agl,
            sharp::HeightLayer wind_shear_layer_agl, const bool leftMover,
            const bool pressureWeighted) {
-            if ((pressure.shape(0) != height.shape(0)) ||
-                (pressure.shape(0) != u_wind.shape(0)) ||
-                (pressure.shape(0) != v_wind.shape(0))) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
+            check_equal_sizes(pressure, height, u_wind, v_wind);
             sharp::WindComponents storm_mtn = sharp::storm_motion_bunkers(
                 pressure.data(), height.data(), u_wind.data(), v_wind.data(),
                 height.size(), mean_wind_layer_agl, wind_shear_layer_agl,
@@ -384,12 +228,7 @@ nwsspc.sharp.calc.winds.WindComponents
            const_prof_arr_t u_wind, const_prof_arr_t v_wind,
            sharp::PressureLayer eff_infl_lyr, sharp::Parcel& mupcl,
            const bool leftMover) {
-            if ((pressure.shape(0) != height.shape(0)) ||
-                (pressure.shape(0) != u_wind.shape(0)) ||
-                (pressure.shape(0) != v_wind.shape(0))) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
+            check_equal_sizes(pressure, height, u_wind, v_wind);
             sharp::WindComponents storm_mtn = sharp::storm_motion_bunkers(
                 pressure.data(), height.data(), u_wind.data(), v_wind.data(),
                 height.size(), eff_infl_lyr, mupcl, leftMover);
@@ -451,21 +290,10 @@ nwsspc.sharp.calc.winds.WindComponents
         [](const_prof_arr_t pressure, const_prof_arr_t height,
            const_prof_arr_t u_wind, const_prof_arr_t v_wind)
             -> std::pair<sharp::WindComponents, sharp::WindComponents> {
-            auto pres = pressure.view();
-            auto hght = height.view();
-            auto uwin = u_wind.view();
-            auto vwin = v_wind.view();
+            check_equal_sizes(pressure, height, u_wind, v_wind);
 
-            if ((pres.shape(0) != hght.shape(0)) ||
-                (pres.shape(0) != uwin.shape(0)) ||
-                (pres.shape(0) != vwin.shape(0))) {
-                throw nb::buffer_error(
-                    "pressure, height, u_wind, and v_wind must have the "
-                    "same sizes!");
-            }
-
-            return sharp::mcs_motion_corfidi(pres.data(), hght.data(),
-                                             uwin.data(), vwin.data(),
+            return sharp::mcs_motion_corfidi(pressure.data(), height.data(),
+                                             u_wind.data(), v_wind.data(),
                                              pressure.size());
         },
         nb::arg("pressure"), nb::arg("height"), nb::arg("u_wind"),
@@ -504,16 +332,10 @@ tuple[nwsspc.sharp.calc.winds.WindComponents, nwsspc.sharp.calc.winds.WindCompon
         [](const_prof_arr_t pres, const_prof_arr_t hght, const_prof_arr_t uwin,
            const_prof_arr_t vwin, sharp::PressureLayer eil,
            const float eql_pres) {
-            if ((pres.shape(0) != hght.shape(0)) ||
-                (pres.shape(0) != uwin.shape(0)) ||
-                (pres.shape(0) != vwin.shape(0))) {
-                throw nb::buffer_error(
-                    "pressure, height, u_wind, and v_wind must have the "
-                    "same sizes!");
-            }
+            check_equal_sizes(pres, hght, uwin, vwin);
             return sharp::effective_bulk_wind_difference(
-                pres.data(), hght.data(), uwin.data(), vwin.data(),
-                pres.shape(0), eil, eql_pres);
+                pres.data(), hght.data(), uwin.data(), vwin.data(), pres.size(),
+                eil, eql_pres);
         },
         nb::arg("pressure"), nb::arg("height"), nb::arg("u_wind"),
         nb::arg("v_wind"), nb::arg("effective_inflow_layer"),
@@ -528,6 +350,25 @@ of 0-6 km wind shear, but allows more flexibility for elevated
 convection. Returns MISSING if the effective inflow layer or 
 equilibrium level pressure are MISSING.
 
+Parameters 
+----------
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of height values (meters)
+u_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of u-wind components (m/s)
+v_wind : numpy.ndarray[dtype=float32]
+    1D NumPy array of v-wind components (m/s)
+effective_inflow_layer : nwsspc.sharp.calc.layer.PressureLayer 
+    The PressureLayer that defines the Effective Inflow layer 
+equilibrium_level_pressure : float 
+    The pressure of the equilibrium level of the most unstable parcel (Pa)
+
+Returns
+-------
+nwsspc.sharp.calc.winds.WindComponents 
+    The (u, v) wind components of the effective bulk wind difference (m/s)
     )pbdoc");
 
     m_params.def("energy_helicity_index", &sharp::energy_helicity_index,
@@ -741,13 +582,7 @@ float
            const sharp::WindComponents storm_motion, const_prof_arr_t pres,
            const_prof_arr_t hght, const_prof_arr_t uwin,
            const_prof_arr_t vwin) {
-            if ((pres.shape(0) != hght.shape(0)) ||
-                (pres.shape(0) != uwin.shape(0)) ||
-                (pres.shape(0) != vwin.shape(0))) {
-                throw nb::buffer_error(
-                    "pressure, height, u_wind, and v_wind must have the "
-                    "same sizes!");
-            }
+            check_equal_sizes(pres, hght, uwin, vwin);
 
             return sharp::large_hail_parameter(
                 mu_pcl, lapse_rate_700_500mb, hail_growth_zone, storm_motion,
@@ -787,35 +622,14 @@ u_wind : numpy.ndarray[dtype=float32]
     1D NumPy array of u_wind values (m/s)
 v_wind : numpy.ndarray[dtype=float32]
     1D NumPy array of v_wind values (m/s)
+
+Returns 
+-------
+float 
+   Large Hail Parameter
     )pbdoc");
 
-    m_params.def(
-        "convective_temperature",
-        [](sharp::lifter_wobus& lifter, const_prof_arr_t pres,
-           const_prof_arr_t hght, const_prof_arr_t tmpk, const_prof_arr_t vtmpk,
-           const_prof_arr_t mixr, float cinh_thresh) {
-            if ((pres.shape(0) != hght.shape(0)) ||
-                (pres.shape(0) != tmpk.shape(0)) ||
-                (pres.shape(0) != mixr.shape(0)) ||
-                (pres.shape(0) != vtmpk.shape(0))) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
-            float* pcl_vtmp = new float[hght.size()];
-            float* pcl_buoy = new float[hght.size()];
-
-            float cnvtv_tmpk = sharp::convective_temperature(
-                lifter, pres.data(), hght.data(), tmpk.data(), vtmpk.data(),
-                mixr.data(), pcl_vtmp, pcl_buoy, pres.size());
-
-            delete[] pcl_vtmp;
-            delete[] pcl_buoy;
-
-            return cnvtv_tmpk;
-        },
-        nb::arg("lifter"), nb::arg("pressure"), nb::arg("height"),
-        nb::arg("temperature"), nb::arg("virtual_temperature"),
-        nb::arg("mixratio"), nb::arg("cinh_thresh") = -1.0,
+    const char* convective_temp_template_doc =
         R"pbdoc(
 Computes the convective temperature by iteratively lifting parcels from 
 the surface using a lowest 100 hPa mean mixing ratio and increasing 
@@ -824,7 +638,7 @@ threshold. The first guess is the current surface temperature.
 
 Parameters 
 ----------
-lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
+lifter : {}
 pressure : numpy.ndarray[dtype=float32]
     A 1D NumPy array of pressure values (Pa)
 height : numpy.ndarray[dtype=float32] 
@@ -842,181 +656,19 @@ Returns
 -------
 float
     The convective temperature (K)
-)pbdoc");
+)pbdoc";
 
-    m_params.def(
-        "convective_temperature",
-        [](sharp::lifter_cm1& lifter, const_prof_arr_t pres,
-           const_prof_arr_t hght, const_prof_arr_t tmpk, const_prof_arr_t vtmpk,
-           const_prof_arr_t mixr, float cinh_thresh) {
-            if ((pres.shape(0) != hght.shape(0)) ||
-                (pres.shape(0) != tmpk.shape(0)) ||
-                (pres.shape(0) != mixr.shape(0)) ||
-                (pres.shape(0) != vtmpk.shape(0))) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
-            float* pcl_vtmp = new float[hght.size()];
-            float* pcl_buoy = new float[hght.size()];
-
-            float cnvtv_tmpk = sharp::convective_temperature(
-                lifter, pres.data(), hght.data(), tmpk.data(), vtmpk.data(),
-                mixr.data(), pcl_vtmp, pcl_buoy, pres.size());
-
-            delete[] pcl_vtmp;
-            delete[] pcl_buoy;
-
-            return cnvtv_tmpk;
-        },
-        nb::arg("lifter"), nb::arg("pressure"), nb::arg("height"),
-        nb::arg("temperature"), nb::arg("virtual_temperature"),
-        nb::arg("mixratio"), nb::arg("cinh_thresh") = -1.0,
-        R"pbdoc(
-Computes the convective temperature by iteratively lifting parcels from 
-the surface using a lowest 100 hPa mean mixing ratio and increasing 
-surface temperatures to find the first parcel that reaches the CINH 
-threshold. The first guess is the current surface temperature.
-
-Parameters 
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
-pressure : numpy.ndarray[dtype=float32]
-    A 1D NumPy array of pressure values (Pa)
-height : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of height values (Pa)
-temperature : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of temperature values (K)
-virtemp : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of virtual temperature values (K)
-mixratio : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of water vapor mixing ratio values (g/g)
-cinh_thresh : float, default = -1.0 
-    The CINH threshold used to compute the convective temperature (J/kg)
-
-Returns
--------
-float
-    The convective temperature (K)
-)pbdoc");
-
-    m_params.def(
-        "convective_temperature",
-        [](sharp::lifter_lut<sharp::lifter_wobus>& lifter,
-           const_prof_arr_t pres, const_prof_arr_t hght, const_prof_arr_t tmpk,
-           const_prof_arr_t vtmpk, const_prof_arr_t mixr, float cinh_thresh) {
-            if ((pres.shape(0) != hght.shape(0)) ||
-                (pres.shape(0) != tmpk.shape(0)) ||
-                (pres.shape(0) != mixr.shape(0)) ||
-                (pres.shape(0) != vtmpk.shape(0))) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
-            float* pcl_vtmp = new float[hght.size()];
-            float* pcl_buoy = new float[hght.size()];
-
-            float cnvtv_tmpk = sharp::convective_temperature(
-                lifter, pres.data(), hght.data(), tmpk.data(), vtmpk.data(),
-                mixr.data(), pcl_vtmp, pcl_buoy, pres.size());
-
-            delete[] pcl_vtmp;
-            delete[] pcl_buoy;
-
-            return cnvtv_tmpk;
-        },
-        nb::arg("lifter"), nb::arg("pressure"), nb::arg("height"),
-        nb::arg("temperature"), nb::arg("virtual_temperature"),
-        nb::arg("mixratio"), nb::arg("cinh_thresh") = -1.0,
-        R"pbdoc(
-Computes the convective temperature by iteratively lifting parcels from 
-the surface using a lowest 100 hPa mean mixing ratio and increasing 
-surface temperatures to find the first parcel that reaches the CINH 
-threshold. The first guess is the current surface temperature.
-
-Parameters 
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_lut 
-pressure : numpy.ndarray[dtype=float32]
-    A 1D NumPy array of pressure values (Pa)
-height : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of height values (Pa)
-temperature : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of temperature values (K)
-virtemp : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of virtual temperature values (K)
-mixratio : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of water vapor mixing ratio values (g/g)
-cinh_thresh : float, default = -1.0 
-    The CINH threshold used to compute the convective temperature (J/kg)
-
-Returns
--------
-float
-    The convective temperature (K)
-)pbdoc");
-
-    m_params.def(
-        "convective_temperature",
-        [](sharp::lifter_lut<sharp::lifter_cm1>& lifter, const_prof_arr_t pres,
-           const_prof_arr_t hght, const_prof_arr_t tmpk, const_prof_arr_t vtmpk,
-           const_prof_arr_t mixr, float cinh_thresh) {
-            if ((pres.shape(0) != hght.shape(0)) ||
-                (pres.shape(0) != tmpk.shape(0)) ||
-                (pres.shape(0) != mixr.shape(0)) ||
-                (pres.shape(0) != vtmpk.shape(0))) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
-            float* pcl_vtmp = new float[hght.size()];
-            float* pcl_buoy = new float[hght.size()];
-
-            float cnvtv_tmpk = sharp::convective_temperature(
-                lifter, pres.data(), hght.data(), tmpk.data(), vtmpk.data(),
-                mixr.data(), pcl_vtmp, pcl_buoy, pres.size());
-
-            delete[] pcl_vtmp;
-            delete[] pcl_buoy;
-
-            return cnvtv_tmpk;
-        },
-        nb::arg("lifter"), nb::arg("pressure"), nb::arg("height"),
-        nb::arg("temperature"), nb::arg("virtual_temperature"),
-        nb::arg("mixratio"), nb::arg("cinh_thresh") = -1.0,
-        R"pbdoc(
-Computes the convective temperature by iteratively lifting parcels from 
-the surface using a lowest 100 hPa mean mixing ratio and increasing 
-surface temperatures to find the first parcel that reaches the CINH 
-threshold. The first guess is the current surface temperature.
-
-Parameters 
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_lut 
-pressure : numpy.ndarray[dtype=float32]
-    A 1D NumPy array of pressure values (Pa)
-height : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of height values (Pa)
-temperature : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of temperature values (K)
-virtemp : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of virtual temperature values (K)
-mixratio : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of water vapor mixing ratio values (g/g)
-cinh_thresh : float, default = -1.0 
-    The CINH threshold used to compute the convective temperature (J/kg)
-
-Returns
--------
-float
-    The convective temperature (K)
-)pbdoc");
+    for_each_lifter([&](auto tag, const char* lifter_name) {
+        using Lft = typename decltype(tag)::type;
+        bind_convective_temperature<Lft>(m_params, convective_temp_template_doc,
+                                         lifter_name);
+    });
 
     m_params.def(
         "precipitable_water",
         [](sharp::PressureLayer& layer, const_prof_arr_t pres,
            const_prof_arr_t mixr) {
-            if ((pres.shape(0) != mixr.shape(0))) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
+            check_equal_sizes(pres, mixr);
             return sharp::precipitable_water(layer, pres.data(), mixr.data(),
                                              pres.size());
         },
@@ -1044,10 +696,7 @@ float
     m_params.def(
         "hail_growth_layer",
         [](const_prof_arr_t pres, const_prof_arr_t tmpk) {
-            if ((pres.shape(0) != tmpk.shape(0))) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
+            check_equal_sizes(pres, tmpk);
             return sharp::hail_growth_layer(pres.data(), tmpk.data(),
                                             pres.size());
         },
@@ -1074,10 +723,7 @@ nwsspc.sharp.calc.layer.PressureLayer
     m_params.def(
         "dendritic_layer",
         [](const_prof_arr_t pres, const_prof_arr_t tmpk) {
-            if ((pres.shape(0) != tmpk.shape(0))) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
+            check_equal_sizes(pres, tmpk);
             return sharp::dendritic_layer(pres.data(), tmpk.data(),
                                           pres.size());
         },
@@ -1155,22 +801,17 @@ float
     m_params.def(
         "equilibrium_moisture_content",
         [](const_prof_arr_t temperature, const_prof_arr_t rel_humidity) {
+            check_equal_sizes(temperature, rel_humidity);
+            const std::size_t NZ = temperature.size();
             auto tmpk = temperature.view();
             auto relh = rel_humidity.view();
-            if ((tmpk.shape(0) != relh.shape(0))) {
-                throw nb::buffer_error(
-                    "temperature and rel_humidity must have the same size!");
-            }
 
-            float* emc_arr = new float[tmpk.shape(0)];
-            for (size_t k = 0; k < tmpk.shape(0); ++k) {
-                emc_arr[k] =
-                    sharp::equilibrium_moisture_content(tmpk(k), relh(k));
-            }
-
-            nb::capsule owner(emc_arr,
-                              [](void* p) noexcept { delete[] (float*)p; });
-            return out_arr_t(emc_arr, {tmpk.shape(0)}, owner);
+            return make_output_array(NZ, [&](float* out) {
+                for (size_t k = 0; k < NZ; ++k) {
+                    out[k] =
+                        sharp::equilibrium_moisture_content(tmpk(k), relh(k));
+                }
+            });
         },
         nb::arg("temperature"), nb::arg("rel_humidity"),
         R"pbdoc(
@@ -1215,24 +856,18 @@ float
         "fosberg_fire_index",
         [](const_prof_arr_t temperature, const_prof_arr_t rel_humidity,
            const_prof_arr_t wind_speed) {
+            check_equal_sizes(temperature, rel_humidity, wind_speed);
+            const std::size_t NZ = temperature.size();
             auto tmpk = temperature.view();
             auto relh = rel_humidity.view();
             auto wspd = wind_speed.view();
-            if ((tmpk.shape(0) != relh.shape(0)) ||
-                (tmpk.shape(0) != wspd.shape(0))) {
-                throw nb::buffer_error(
-                    "temperature, rel_humidity, and wind_speed must have the "
-                    "same sizes!");
-            }
 
-            float* fwwi = new float[tmpk.shape(0)];
-            for (size_t k = 0; k < tmpk.shape(0); ++k) {
-                fwwi[k] = sharp::fosberg_fire_index(tmpk(k), relh(k), wspd(k));
-            }
-
-            nb::capsule owner(fwwi,
-                              [](void* p) noexcept { delete[] (float*)p; });
-            return out_arr_t(fwwi, {tmpk.shape(0)}, owner);
+            return make_output_array(NZ, [&](float* out) {
+                for (size_t k = 0; k < NZ; ++k) {
+                    out[k] =
+                        sharp::fosberg_fire_index(tmpk(k), relh(k), wspd(k));
+                }
+            });
         },
         nb::arg("temperature"), nb::arg("rel_humidity"), nb::arg("wind_speed"),
         R"pbdoc(
@@ -1253,42 +888,7 @@ numpy.ndarray[dtype=float32]
     Fosberg Fire-Weather Index
     )pbdoc");
 
-    m_params.def(
-        "pyrocumulonimbus_firepower_threshold",
-        [](sharp::lifter_cm1& lifter, sharp::PressureLayer& mix_layer,
-           const_prof_arr_t pres, const_prof_arr_t hght, const_prof_arr_t tmpk,
-           const_prof_arr_t mixr, const_prof_arr_t vtmpk, const_prof_arr_t uwin,
-           const_prof_arr_t vwin, const_prof_arr_t theta, sharp::Parcel* pcl,
-           float phi, float beta_incr) {
-            if ((pres.shape(0) != hght.shape(0)) ||
-                (pres.shape(0) != tmpk.shape(0)) ||
-                (pres.shape(0) != mixr.shape(0)) ||
-                (pres.shape(0) != vtmpk.shape(0)) ||
-                (pres.shape(0) != uwin.shape(0)) ||
-                (pres.shape(0) != vwin.shape(0)) ||
-                (pres.shape(0) != theta.shape(0))) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
-            float* pcl_vtmp = new float[hght.size()];
-            float* pcl_buoy = new float[hght.size()];
-
-            float pft = sharp::pyrocumulonimbus_firepower_threshold(
-                lifter, mix_layer, pres.data(), hght.data(), tmpk.data(),
-                mixr.data(), vtmpk.data(), uwin.data(), vwin.data(),
-                theta.data(), pcl_vtmp, pcl_buoy, pres.size(), pcl, phi,
-                beta_incr);
-
-            delete[] pcl_vtmp;
-            delete[] pcl_buoy;
-
-            return pft;
-        },
-        nb::arg("lifter"), nb::arg("mix_layer"), nb::arg("pressure"),
-        nb::arg("height"), nb::arg("temperature"), nb::arg("mixratio"),
-        nb::arg("virtual_temperature"), nb::arg("u_wind"), nb::arg("v_wind"),
-        nb::arg("potential_temperature"), nb::arg("pcl") = nb::none(),
-        nb::arg("phi") = 6.67e-5, nb::arg("beta_incr") = 0.005,
+    const char* pft_template_doc =
         R"pbdoc(
 Computes the Pyrocumulonimbus Firepower Threshold (PFT), or the minimum 
 amount of firepower required to generate pyrocumulonimbus clouds for a 
@@ -1308,7 +908,7 @@ Tory et al. 2021: https://journals.ametsoc.org/view/journals/wefo/36/2/WAF-D-20-
 
 Parameters 
 ----------
-lifter : nwsspc.sharp.calc.parcel.lifter_cm1
+lifter : {}
 mix_layer : nwsspc.sharp.calc.layer.PressureLayer
     A mixing layer to take average values of the environment from
 pressure : numpy.ndarray[dtype=float32]
@@ -1339,273 +939,12 @@ Returns
 float 
     The PyroCB Firepower Threshold (Watts)
 
-)pbdoc");
+)pbdoc";
 
-    m_params.def(
-        "pyrocumulonimbus_firepower_threshold",
-        [](sharp::lifter_wobus& lifter, sharp::PressureLayer& mix_layer,
-           const_prof_arr_t pres, const_prof_arr_t hght, const_prof_arr_t tmpk,
-           const_prof_arr_t mixr, const_prof_arr_t vtmpk, const_prof_arr_t uwin,
-           const_prof_arr_t vwin, const_prof_arr_t theta, sharp::Parcel* pcl,
-           float phi, float beta_incr) {
-            if ((pres.shape(0) != hght.shape(0)) ||
-                (pres.shape(0) != tmpk.shape(0)) ||
-                (pres.shape(0) != mixr.shape(0)) ||
-                (pres.shape(0) != vtmpk.shape(0)) ||
-                (pres.shape(0) != uwin.shape(0)) ||
-                (pres.shape(0) != vwin.shape(0)) ||
-                (pres.shape(0) != theta.shape(0))) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
-            float* pcl_vtmp = new float[hght.size()];
-            float* pcl_buoy = new float[hght.size()];
-
-            float pft = sharp::pyrocumulonimbus_firepower_threshold(
-                lifter, mix_layer, pres.data(), hght.data(), tmpk.data(),
-                mixr.data(), vtmpk.data(), uwin.data(), vwin.data(),
-                theta.data(), pcl_vtmp, pcl_buoy, pres.size(), pcl, phi,
-                beta_incr);
-
-            delete[] pcl_vtmp;
-            delete[] pcl_buoy;
-
-            return pft;
-        },
-        nb::arg("lifter"), nb::arg("mix_layer"), nb::arg("pressure"),
-        nb::arg("height"), nb::arg("temperature"), nb::arg("mixratio"),
-        nb::arg("virtual_temperature"), nb::arg("u_wind"), nb::arg("v_wind"),
-        nb::arg("potential_temperature"), nb::arg("pcl") = nb::none(),
-        nb::arg("phi") = 6.67e-5, nb::arg("beta_incr") = 0.005,
-        R"pbdoc(
-Computes the Pyrocumulonimbus Firepower Threshold (PFT), or the minimum 
-amount of firepower required to generate pyrocumulonimbus clouds for a 
-given atmospheric profile. Requires a PressureLayer to define a mixing 
-layer used to average values of potential temperature, mixing ratio, 
-and wind speed. The beta increment determines how to vary the plume 
-buoyancy factor, with smaller values resulting in more iteration steps. 
-Phi is the fire moisture to potential temperature increment ratio.
-
-Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
-If a parcel is passed, the values will be set with the PFT fire parcel.
-
-References 
-----------
-Tory et al. 2018: https://journals.ametsoc.org/view/journals/mwre/146/8/mwr-d-17-0377.1.xml
-Tory et al. 2021: https://journals.ametsoc.org/view/journals/wefo/36/2/WAF-D-20-0027.1.xml
-
-Parameters 
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_wobus
-mix_layer : nwsspc.sharp.calc.layer.PressureLayer
-    A mixing layer to take average values of the environment from
-pressure : numpy.ndarray[dtype=float32]
-    A 1D NumPy array of pressure values (Pa)
-height : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of height values (Pa)
-temperature : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of temperature values (K)
-mixratio : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of water vapor mixing ratio values (g/g)
-virtual_temperature : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of virtual temperature values (K)
-u_wind : numpy.ndarray[dtype=float32]
-    1D NumPy array of U wind component values (m/s)
-v_wind : numpy.ndarray[dtype=float32]
-    1D NumPy array of V wind compnent values (m/s)
-potential_temperature : numpy.ndarray[dtype=float32]
-    1D NumPy array of potential temperature values (K)
-pcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
-    If a parcel is provided, returns the parcel for the PFT
-phi : float 
-    The fire moisture to potential temperature increment ratio (kg/(kg*K))
-beta_incr : float 
-    The fire plume buoyancy factor (unitless)
-
-Returns 
--------
-float 
-    The PyroCB Firepower Threshold (Watts)
-
-)pbdoc");
-
-    m_params.def(
-        "pyrocumulonimbus_firepower_threshold",
-        [](sharp::lifter_lut<sharp::lifter_cm1>& lifter,
-           sharp::PressureLayer& mix_layer, const_prof_arr_t pres,
-           const_prof_arr_t hght, const_prof_arr_t tmpk, const_prof_arr_t mixr,
-           const_prof_arr_t vtmpk, const_prof_arr_t uwin, const_prof_arr_t vwin,
-           const_prof_arr_t theta, sharp::Parcel* pcl, float phi,
-           float beta_incr) {
-            if ((pres.shape(0) != hght.shape(0)) ||
-                (pres.shape(0) != tmpk.shape(0)) ||
-                (pres.shape(0) != mixr.shape(0)) ||
-                (pres.shape(0) != vtmpk.shape(0)) ||
-                (pres.shape(0) != uwin.shape(0)) ||
-                (pres.shape(0) != vwin.shape(0)) ||
-                (pres.shape(0) != theta.shape(0))) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
-            float* pcl_vtmp = new float[hght.size()];
-            float* pcl_buoy = new float[hght.size()];
-
-            float pft = sharp::pyrocumulonimbus_firepower_threshold(
-                lifter, mix_layer, pres.data(), hght.data(), tmpk.data(),
-                mixr.data(), vtmpk.data(), uwin.data(), vwin.data(),
-                theta.data(), pcl_vtmp, pcl_buoy, pres.size(), pcl, phi,
-                beta_incr);
-
-            delete[] pcl_vtmp;
-            delete[] pcl_buoy;
-
-            return pft;
-        },
-        nb::arg("lifter"), nb::arg("mix_layer"), nb::arg("pressure"),
-        nb::arg("height"), nb::arg("temperature"), nb::arg("mixratio"),
-        nb::arg("virtual_temperature"), nb::arg("u_wind"), nb::arg("v_wind"),
-        nb::arg("potential_temperature"), nb::arg("pcl") = nb::none(),
-        nb::arg("phi") = 6.67e-5, nb::arg("beta_incr") = 0.005,
-        R"pbdoc(
-Computes the Pyrocumulonimbus Firepower Threshold (PFT), or the minimum 
-amount of firepower required to generate pyrocumulonimbus clouds for a 
-given atmospheric profile. Requires a PressureLayer to define a mixing 
-layer used to average values of potential temperature, mixing ratio, 
-and wind speed. The beta increment determines how to vary the plume 
-buoyancy factor, with smaller values resulting in more iteration steps. 
-Phi is the fire moisture to potential temperature increment ratio.
-
-Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
-If a parcel is passed, the values will be set with the PFT fire parcel.
-
-References 
-----------
-Tory et al. 2018: https://journals.ametsoc.org/view/journals/mwre/146/8/mwr-d-17-0377.1.xml
-Tory et al. 2021: https://journals.ametsoc.org/view/journals/wefo/36/2/WAF-D-20-0027.1.xml
-
-Parameters 
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_lut
-mix_layer : nwsspc.sharp.calc.layer.PressureLayer
-    A mixing layer to take average values of the environment from
-pressure : numpy.ndarray[dtype=float32]
-    A 1D NumPy array of pressure values (Pa)
-height : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of height values (Pa)
-temperature : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of temperature values (K)
-mixratio : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of water vapor mixing ratio values (g/g)
-virtual_temperature : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of virtual temperature values (K)
-u_wind : numpy.ndarray[dtype=float32]
-    1D NumPy array of U wind component values (m/s)
-v_wind : numpy.ndarray[dtype=float32]
-    1D NumPy array of V wind compnent values (m/s)
-potential_temperature : numpy.ndarray[dtype=float32]
-    1D NumPy array of potential temperature values (K)
-pcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
-    If a parcel is provided, returns the parcel for the PFT
-phi : float 
-    The fire moisture to potential temperature increment ratio (kg/(kg*K))
-beta_incr : float 
-    The fire plume buoyancy factor (unitless)
-
-Returns 
--------
-float 
-    The PyroCB Firepower Threshold (Watts)
-
-)pbdoc");
-
-    m_params.def(
-        "pyrocumulonimbus_firepower_threshold",
-        [](sharp::lifter_lut<sharp::lifter_wobus>& lifter,
-           sharp::PressureLayer& mix_layer, const_prof_arr_t pres,
-           const_prof_arr_t hght, const_prof_arr_t tmpk, const_prof_arr_t mixr,
-           const_prof_arr_t vtmpk, const_prof_arr_t uwin, const_prof_arr_t vwin,
-           const_prof_arr_t theta, sharp::Parcel* pcl, float phi,
-           float beta_incr) {
-            if ((pres.shape(0) != hght.shape(0)) ||
-                (pres.shape(0) != tmpk.shape(0)) ||
-                (pres.shape(0) != mixr.shape(0)) ||
-                (pres.shape(0) != vtmpk.shape(0)) ||
-                (pres.shape(0) != uwin.shape(0)) ||
-                (pres.shape(0) != vwin.shape(0)) ||
-                (pres.shape(0) != theta.shape(0))) {
-                throw nb::buffer_error(
-                    "All input arrays must have the same size!");
-            }
-            float* pcl_vtmp = new float[hght.size()];
-            float* pcl_buoy = new float[hght.size()];
-
-            float pft = sharp::pyrocumulonimbus_firepower_threshold(
-                lifter, mix_layer, pres.data(), hght.data(), tmpk.data(),
-                mixr.data(), vtmpk.data(), uwin.data(), vwin.data(),
-                theta.data(), pcl_vtmp, pcl_buoy, pres.size(), pcl, phi,
-                beta_incr);
-
-            delete[] pcl_vtmp;
-            delete[] pcl_buoy;
-
-            return pft;
-        },
-        nb::arg("lifter"), nb::arg("mix_layer"), nb::arg("pressure"),
-        nb::arg("height"), nb::arg("temperature"), nb::arg("mixratio"),
-        nb::arg("virtual_temperature"), nb::arg("u_wind"), nb::arg("v_wind"),
-        nb::arg("potential_temperature"), nb::arg("pcl") = nb::none(),
-        nb::arg("phi") = 6.67e-5, nb::arg("beta_incr") = 0.005,
-        R"pbdoc(
-Computes the Pyrocumulonimbus Firepower Threshold (PFT), or the minimum 
-amount of firepower required to generate pyrocumulonimbus clouds for a 
-given atmospheric profile. Requires a PressureLayer to define a mixing 
-layer used to average values of potential temperature, mixing ratio, 
-and wind speed. The beta increment determines how to vary the plume 
-buoyancy factor, with smaller values resulting in more iteration steps. 
-Phi is the fire moisture to potential temperature increment ratio.
-
-Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
-If a parcel is passed, the values will be set with the PFT fire parcel.
-
-References 
-----------
-Tory et al. 2018: https://journals.ametsoc.org/view/journals/mwre/146/8/mwr-d-17-0377.1.xml
-Tory et al. 2021: https://journals.ametsoc.org/view/journals/wefo/36/2/WAF-D-20-0027.1.xml
-
-Parameters 
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_lut
-mix_layer : nwsspc.sharp.calc.layer.PressureLayer
-    A mixing layer to take average values of the environment from
-pressure : numpy.ndarray[dtype=float32]
-    A 1D NumPy array of pressure values (Pa)
-height : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of height values (Pa)
-temperature : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of temperature values (K)
-mixratio : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of water vapor mixing ratio values (g/g)
-virtual_temperature : numpy.ndarray[dtype=float32] 
-    A 1D NumPy array of virtual temperature values (K)
-u_wind : numpy.ndarray[dtype=float32]
-    1D NumPy array of U wind component values (m/s)
-v_wind : numpy.ndarray[dtype=float32]
-    1D NumPy array of V wind compnent values (m/s)
-potential_temperature : numpy.ndarray[dtype=float32]
-    1D NumPy array of potential temperature values (K)
-pcl : None or nwsspc.sharp.calc.parcel.Parcel, optional
-    If a parcel is provided, returns the parcel for the PFT
-phi : float 
-    The fire moisture to potential temperature increment ratio (kg/(kg*K))
-beta_incr : float 
-    The fire plume buoyancy factor (unitless)
-
-Returns 
--------
-float 
-    The PyroCB Firepower Threshold (Watts)
-
-)pbdoc");
+    for_each_lifter([&](auto tag, const char* lifter_name) {
+        using Lft = typename decltype(tag)::type;
+        bind_pyrocb_firepower<Lft>(m_params, pft_template_doc, lifter_name);
+    });
 }
 
 #endif

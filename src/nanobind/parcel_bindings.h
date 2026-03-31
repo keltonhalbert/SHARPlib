@@ -18,34 +18,6 @@
 
 namespace nb = nanobind;
 
-template <typename T>
-struct type_tag {
-    using type = T;
-};
-
-template <typename F>
-void for_each_base_lifter(F&& f) {
-    f(type_tag<sharp::lifter_wobus>{}, "wobus", "Wobus",
-      "nwsspc.sharp.calc.parcel.lifter_wobus",
-      "nwsspc.sharp.calc.parcel.lut_data_wobus",
-      "nwsspc.sharp.calc.parcel.lifter_lut_wobus");
-    f(type_tag<sharp::lifter_cm1>{}, "cm1", "CM1",
-      "nwsspc.sharp.calc.parcel.lifter_cm1",
-      "nwsspc.sharp.calc.parcel.lut_data_cm1",
-      "nwsspc.sharp.calc.parcel.lifter_lut_cm1");
-}
-
-template <typename F>
-void for_each_lifter(F&& f) {
-    for_each_base_lifter([&](auto tag, const char* suffix, const char*,
-                             const char* lifter_fqn, const char*,
-                             const char* lifter_lut_fqn) {
-        using Lft = typename decltype(tag)::type;
-        f(type_tag<Lft>{}, lifter_fqn);
-        f(type_tag<sharp::lifter_lut<Lft>>{}, lifter_lut_fqn);
-    });
-}
-
 template <typename Lft>
 void bind_lift_parcel(nb::class_<sharp::Parcel>& cls, const char* doc_template,
                       const char* lifter_name) {
