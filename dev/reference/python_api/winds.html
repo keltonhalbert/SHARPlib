@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>winds &#8212; SHARPlib v1.4.0.dev-46-g99537be Manual</title>
+    <title>winds &#8212; SHARPlib v1.4.0.dev-47-gcc487f3 Manual</title>
   
   
   
@@ -56,8 +56,8 @@
     <link rel="prev" title="thermo" href="thermo.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.4.0.dev-46-g99537be" />
-    <meta name="docbuild:last-update" content="Mar 30, 2026"/>
+  <meta name="docsearch:version" content="1.4.0.dev-47-gcc487f3" />
+    <meta name="docbuild:last-update" content="Mar 31, 2026"/>
   </head>
   
   
@@ -556,7 +556,7 @@ compute the wind speed (m/s) and direction (degrees from North).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><p>wspd: 1D NumPy array of wind speeds (m/s)</p>
-<p>wdir: 1D NumPy array of wind directiond (degrees from North)</p>
+<p>wdir: 1D NumPy array of wind directions (degrees from North)</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -600,7 +600,7 @@ compute and return the zonal (U) and meridional (V) vector
 components as WindComponents.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>wind_vector</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.winds.WindVector" title="nwsspc.sharp.calc.winds.WindVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.winds.WindVector</span></code></a>) – WindVector containing wind wpeed (m/s) and direction (degrees from North)</p>
+<dd class="field-odd"><p><strong>wind_vector</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.winds.WindVector" title="nwsspc.sharp.calc.winds.WindVector"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.winds.WindVector</span></code></a>) – WindVector containing wind speed (m/s) and direction (degrees from North)</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>U and V wind components (m/s) in a WindComponents object</p>
@@ -613,8 +613,8 @@ components as WindComponents.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">vector_to_components(wspd:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">wdir:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">tuple[numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C'],</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']]</span></code></p></li>
 </ol>
 <p>Given 1D NumPy arrays of the wind speed (m/s) and direction (degrees from North),
-compute and return 1D NumPy arays of the zonal (U) and meridional (V) vector
-componenWindComponents.</p>
+compute and return 1D NumPy arrays of the zonal (U) and meridional (V) vector
+components.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -834,7 +834,7 @@ in between.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>layer</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.HeightLayer" title="nwsspc.sharp.calc.layer.HeightLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer</span></code></a>) – A HeightLayer to integrate over (meters AGL)</p></li>
+<li><p><strong>layer</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.HeightLayer" title="nwsspc.sharp.calc.layer.HeightLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer</span></code></a>) – A layer to integrate over (meters AGL)</p></li>
 <li><p><strong>storm_motion</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.winds.WindComponents" title="nwsspc.sharp.calc.winds.WindComponents"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.winds.WindComponents</span></code></a>) – A WindComponents object with the storm motion in m/s</p></li>
 <li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of height values (meters)</p></li>
 <li><p><strong>u_wind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of environment U-wind components (m/s)</p></li>
@@ -859,9 +859,9 @@ in between.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>layer</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a>) – A PressureLayer to integrate over (Pa)</p></li>
+<li><p><strong>layer</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a>) – A layer to integrate over (Pa)</p></li>
 <li><p><strong>storm_motion</strong> (<a class="reference internal" href="#nwsspc.sharp.calc.winds.WindComponents" title="nwsspc.sharp.calc.winds.WindComponents"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.winds.WindComponents</span></code></a>) – A WindComponents object with the storm motion in m/s</p></li>
-<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of height values (meters)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure values (Pa)</p></li>
 <li><p><strong>u_wind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of environment U-wind components (m/s)</p></li>
 <li><p><strong>v_wind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of environment V-wind components (m/s)</p></li>
 </ul>
@@ -890,7 +890,7 @@ and v_wind.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>layer</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.HeightLayer" title="nwsspc.sharp.calc.layer.HeightLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer</span></code></a>) – HeightLayer for which to compute wind shear</p></li>
+<li><p><strong>layer</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.HeightLayer" title="nwsspc.sharp.calc.layer.HeightLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer</span></code></a>) – Layer for which to compute wind shear (meters AGL)</p></li>
 <li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of height values (meters)</p></li>
 <li><p><strong>u_wind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of U-wind components (m/s)</p></li>
 <li><p><strong>v_wind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of V-wind components (m/s)</p></li>
@@ -912,8 +912,8 @@ and v_wind.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>layer</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a>) – PressureLayer for which to compute wind shear</p></li>
-<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of height values (meters)</p></li>
+<li><p><strong>layer</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a>) – Layer for which to compute wind shear (Pa)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure values (Pa)</p></li>
 <li><p><strong>u_wind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of U-wind components (m/s)</p></li>
 <li><p><strong>v_wind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of V-wind components (m/s)</p></li>
 </ul>
@@ -929,7 +929,7 @@ and v_wind.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.winds.mean_wind">
-<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.winds.</span></span><span class="sig-name descname"><span class="pre">mean_wind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">u_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">v_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu'],</span> <span class="pre">weighted:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nwsspc.sharp.calc.winds.WindComponents" title="nwsspc.sharp.calc.winds.WindComponents"><span class="pre">nwsspc.sharp.calc.winds.WindComponents</span></a></span></span><a class="headerlink" href="#nwsspc.sharp.calc.winds.mean_wind" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.winds.</span></span><span class="sig-name descname"><span class="pre">mean_wind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">u_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">v_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">weighted:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nwsspc.sharp.calc.winds.WindComponents" title="nwsspc.sharp.calc.winds.WindComponents"><span class="pre">nwsspc.sharp.calc.winds.WindComponents</span></a></span></span><a class="headerlink" href="#nwsspc.sharp.calc.winds.mean_wind" title="Link to this definition">#</a></dt>
 <dd><p>Computes the mean wind over the given PressureLayer and input profile
 arrays of pressure, U-wind, and V-wind components.</p>
 <dl class="field-list simple">
@@ -943,7 +943,7 @@ arrays of pressure, U-wind, and V-wind components.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>WindComponents of U anf V mean wind components (m/s)</p>
+<dd class="field-even"><p>WindComponents of U and V mean wind components (m/s)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#nwsspc.sharp.calc.winds.WindComponents" title="nwsspc.sharp.calc.winds.WindComponents"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.winds.WindComponents</span></code></a></p>
@@ -953,20 +953,20 @@ arrays of pressure, U-wind, and V-wind components.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.winds.max_wind">
-<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.winds.</span></span><span class="sig-name descname"><span class="pre">max_wind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">u_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">v_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nwsspc.sharp.calc.winds.WindComponents" title="nwsspc.sharp.calc.winds.WindComponents"><span class="pre">nwsspc.sharp.calc.winds.WindComponents</span></a></span></span><a class="headerlink" href="#nwsspc.sharp.calc.winds.max_wind" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.winds.</span></span><span class="sig-name descname"><span class="pre">max_wind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">u_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">v_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nwsspc.sharp.calc.winds.WindComponents" title="nwsspc.sharp.calc.winds.WindComponents"><span class="pre">nwsspc.sharp.calc.winds.WindComponents</span></a></span></span><a class="headerlink" href="#nwsspc.sharp.calc.winds.max_wind" title="Link to this definition">#</a></dt>
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.winds.</span></span><span class="sig-name descname"><span class="pre">max_wind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">u_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">v_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nwsspc.sharp.calc.winds.WindComponents" title="nwsspc.sharp.calc.winds.WindComponents"><span class="pre">nwsspc.sharp.calc.winds.WindComponents</span></a></span></span></dt>
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.winds.</span></span><span class="sig-name descname"><span class="pre">max_wind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">u_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">v_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nwsspc.sharp.calc.winds.WindComponents" title="nwsspc.sharp.calc.winds.WindComponents"><span class="pre">nwsspc.sharp.calc.winds.WindComponents</span></a></span></span></dt>
 <dd><p>Overloaded function.</p>
 <ol class="arabic simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">max_wind(layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">u_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">v_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">nwsspc.sharp.calc.winds.WindComponents</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_wind(layer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">u_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">v_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">nwsspc.sharp.calc.winds.WindComponents</span></code></p></li>
 </ol>
-<p>Finds the maximum wind speed over a given nwsspc.sharp.calc.layer.PressureLayer,
+<p>Finds the maximum wind speed over a given layer,
 returning the vector components.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>layer</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a>) – PressureLayer over which to compute mean</p></li>
-<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure coordinate values (Pa)</p></li>
+<li><p><strong>layer</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.HeightLayer" title="nwsspc.sharp.calc.layer.HeightLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer</span></code></a>) – Layer over which to compute the max (meters AGL)</p></li>
+<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of height coordinate values (meters)</p></li>
 <li><p><strong>u_wind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of U-wind component values (m/s)</p></li>
 <li><p><strong>v_wind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of V-wind component values (m/s)</p></li>
 </ul>
@@ -976,15 +976,15 @@ returning the vector components.</p>
 </dd>
 </dl>
 <ol class="arabic simple" start="2">
-<li><p><code class="docutils literal notranslate"><span class="pre">max_wind(layer:</span> <span class="pre">nwsspc.sharp.calc.layer.HeightLayer,</span> <span class="pre">height:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">u_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">v_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">nwsspc.sharp.calc.winds.WindComponents</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_wind(layer:</span> <span class="pre">nwsspc.sharp.calc.layer.PressureLayer,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">u_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">v_wind:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">nwsspc.sharp.calc.winds.WindComponents</span></code></p></li>
 </ol>
-<p>Finds the maximum wind speed over a given nwsspc.sharp.calc.layer.HeightLayer,
+<p>Finds the maximum wind speed over a given layer,
 returning the vector components.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>layer</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.HeightLayer" title="nwsspc.sharp.calc.layer.HeightLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.HeightLayer</span></code></a>) – PressureLayer over which to compute mean</p></li>
-<li><p><strong>height</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of height coordinate values (m)</p></li>
+<li><p><strong>layer</strong> (<a class="reference internal" href="layer.html#nwsspc.sharp.calc.layer.PressureLayer" title="nwsspc.sharp.calc.layer.PressureLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.layer.PressureLayer</span></code></a>) – Layer over which to compute the max (Pa)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of pressure coordinate values (Pa)</p></li>
 <li><p><strong>u_wind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of U-wind component values (m/s)</p></li>
 <li><p><strong>v_wind</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of V-wind component values (m/s)</p></li>
 </ul>

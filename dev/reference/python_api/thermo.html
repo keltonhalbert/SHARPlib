@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>thermo &#8212; SHARPlib v1.4.0.dev-46-g99537be Manual</title>
+    <title>thermo &#8212; SHARPlib v1.4.0.dev-47-gcc487f3 Manual</title>
   
   
   
@@ -56,8 +56,8 @@
     <link rel="prev" title="parcel" href="parcel.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.4.0.dev-46-g99537be" />
-    <meta name="docbuild:last-update" content="Mar 30, 2026"/>
+  <meta name="docsearch:version" content="1.4.0.dev-47-gcc487f3" />
+    <meta name="docbuild:last-update" content="Mar 31, 2026"/>
   </head>
   
   
@@ -1300,17 +1300,17 @@ formulation of theta-e.</p>
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.wetbulb">
 <span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_wobus" title="nwsspc.sharp.calc.parcel.lifter_wobus"><span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.wetbulb" title="Link to this definition">#</a></dt>
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1" title="nwsspc.sharp.calc.parcel.lifter_cm1"><span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span></dt>
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut_wobus" title="nwsspc.sharp.calc.parcel.lifter_lut_wobus"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_wobus</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span></dt>
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut_cm1" title="nwsspc.sharp.calc.parcel.lifter_lut_cm1"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_cm1</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span></dt>
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1" title="nwsspc.sharp.calc.parcel.lifter_cm1"><span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span></dt>
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut_cm1" title="nwsspc.sharp.calc.parcel.lifter_lut_cm1"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_cm1</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span></dt>
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_cm1,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
 <dd><p>Overloaded function.</p>
@@ -1343,6 +1343,90 @@ pseudoadiabat.</p>
 </dd>
 </dl>
 <ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the wet bulb temperature (K) given the ambient pressure (Pa),
+temperature (K), and dewpoint temperature (K).</p>
+<p>First, it lifts a parcel with the given pressure, temperature, and
+dewpoint temperature to its Lifted Condensation Level (LCL). To compute the
+temperature and pressure of the LCL, an approximation is used. See the
+lcl_temperature function for further detail.</p>
+<p>After the parcel has reached the LCL, the lifter passed to the function
+lowers the parcel to its initial pressure level along a moist adiabat or
+pseudoadiabat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_wobus" title="nwsspc.sharp.calc.parcel.lifter_wobus"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient pressures (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient temperatures (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperatures (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1D NumPy array of wetbulb temperatures (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="3">
+<li><p><code class="docutils literal notranslate"><span class="pre">wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_wobus,</span> <span class="pre">pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">dewpoint:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the wet bulb temperature (K) given the ambient pressure (Pa),
+temperature (K), and dewpoint temperature (K).</p>
+<p>First, it lifts a parcel with the given pressure, temperature, and
+dewpoint temperature to its Lifted Condensation Level (LCL). To compute the
+temperature and pressure of the LCL, an approximation is used. See the
+lcl_temperature function for further detail.</p>
+<p>After the parcel has reached the LCL, the lifter passed to the function
+lowers the parcel to its initial pressure level along a moist adiabat or
+pseudoadiabat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut_wobus" title="nwsspc.sharp.calc.parcel.lifter_lut_wobus"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_wobus</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient dewpoint temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The wetbulb temperature (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="4">
+<li><p><code class="docutils literal notranslate"><span class="pre">wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+</ol>
+<p>Compute the wet bulb temperature (K) given the ambient pressure (Pa),
+temperature (K), and dewpoint temperature (K).</p>
+<p>First, it lifts a parcel with the given pressure, temperature, and
+dewpoint temperature to its Lifted Condensation Level (LCL). To compute the
+temperature and pressure of the LCL, an approximation is used. See the
+lcl_temperature function for further detail.</p>
+<p>After the parcel has reached the LCL, the lifter passed to the function
+lowers the parcel to its initial pressure level along a moist adiabat or
+pseudoadiabat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut_wobus" title="nwsspc.sharp.calc.parcel.lifter_lut_wobus"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_wobus</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient pressures (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient temperatures (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperatures (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>1D NumPy array of wetbulb temperatures (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="5">
 <li><p><code class="docutils literal notranslate"><span class="pre">wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1,</span> <span class="pre">pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">dewpoint:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
 </ol>
 <p>Compute the wet bulb temperature (K) given the ambient pressure (Pa),
@@ -1370,90 +1454,6 @@ pseudoadiabat.</p>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
 </dd>
 </dl>
-<ol class="arabic simple" start="3">
-<li><p><code class="docutils literal notranslate"><span class="pre">wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_wobus,</span> <span class="pre">pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">dewpoint:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
-</ol>
-<p>Compute the wet bulb temperature (K) given the ambient pressure (Pa),
-temperature (K), and dewpoint temperature (K).</p>
-<p>First, it lifts a parcel with the given pressure, temperature, and
-dewpoint temperature to its Lifted Condensation Level (LCL). To compute the
-temperature and pressure of the LCL, an approximation is used. See the
-lcl_temperature function for further detail.</p>
-<p>After the parcel has reached the LCL, the lifter passed to the function
-lowers the parcel to its initial pressure level along a moist adiabat or
-pseudoadiabat.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut" title="nwsspc.sharp.calc.parcel.lifter_lut"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
-<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient pressure (Pa)</p></li>
-<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient temperature (K)</p></li>
-<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient dewpoint temperature (K)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The wetbulb temperature (K)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
-</dd>
-</dl>
-<ol class="arabic simple" start="4">
-<li><p><code class="docutils literal notranslate"><span class="pre">wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_cm1,</span> <span class="pre">pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">dewpoint:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
-</ol>
-<p>Compute the wet bulb temperature (K) given the ambient pressure (Pa),
-temperature (K), and dewpoint temperature (K).</p>
-<p>First, it lifts a parcel with the given pressure, temperature, and
-dewpoint temperature to its Lifted Condensation Level (LCL). To compute the
-temperature and pressure of the LCL, an approximation is used. See the
-lcl_temperature function for further detail.</p>
-<p>After the parcel has reached the LCL, the lifter passed to the function
-lowers the parcel to its initial pressure level along a moist adiabat or
-pseudoadiabat.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut" title="nwsspc.sharp.calc.parcel.lifter_lut"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
-<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient pressure (Pa)</p></li>
-<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient temperature (K)</p></li>
-<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient dewpoint temperature (K)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The wetbulb temperature (K)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
-</dd>
-</dl>
-<ol class="arabic simple" start="5">
-<li><p><code class="docutils literal notranslate"><span class="pre">wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
-</ol>
-<p>Compute the wet bulb temperature (K) given the ambient pressure (Pa),
-temperature (K), and dewpoint temperature (K).</p>
-<p>First, it lifts a parcel with the given pressure, temperature, and
-dewpoint temperature to its Lifted Condensation Level (LCL). To compute the
-temperature and pressure of the LCL, an approximation is used. See the
-lcl_temperature function for further detail.</p>
-<p>After the parcel has reached the LCL, the lifter passed to the function
-lowers the parcel to its initial pressure level along a moist adiabat or
-pseudoadiabat.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_wobus" title="nwsspc.sharp.calc.parcel.lifter_wobus"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
-<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient pressures (Pa)</p></li>
-<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient temperatureds (K)</p></li>
-<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperatures (K)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>1D NumPy array of wetbulb temperatures (K)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
-</dd>
-</dl>
 <ol class="arabic simple" start="6">
 <li><p><code class="docutils literal notranslate"><span class="pre">wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
 </ol>
@@ -1471,7 +1471,7 @@ pseudoadiabat.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1" title="nwsspc.sharp.calc.parcel.lifter_cm1"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
 <li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient pressures (Pa)</p></li>
-<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient temperatureds (K)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient temperatures (K)</p></li>
 <li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperatures (K)</p></li>
 </ul>
 </dd>
@@ -1483,7 +1483,7 @@ pseudoadiabat.</p>
 </dd>
 </dl>
 <ol class="arabic simple" start="7">
-<li><p><code class="docutils literal notranslate"><span class="pre">wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_cm1,</span> <span class="pre">pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">dewpoint:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
 </ol>
 <p>Compute the wet bulb temperature (K) given the ambient pressure (Pa),
 temperature (K), and dewpoint temperature (K).</p>
@@ -1497,17 +1497,17 @@ pseudoadiabat.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut" title="nwsspc.sharp.calc.parcel.lifter_lut"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
-<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient pressures (Pa)</p></li>
-<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient temperatureds (K)</p></li>
-<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperatures (K)</p></li>
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut_cm1" title="nwsspc.sharp.calc.parcel.lifter_lut_cm1"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_cm1</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – The ambient dewpoint temperature (K)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>1D NumPy array of wetbulb temperatures (K)</p>
+<dd class="field-even"><p>The wetbulb temperature (K)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
 </dd>
 </dl>
 <ol class="arabic simple" start="8">
@@ -1525,9 +1525,9 @@ pseudoadiabat.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut" title="nwsspc.sharp.calc.parcel.lifter_lut"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut_cm1" title="nwsspc.sharp.calc.parcel.lifter_lut_cm1"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_cm1</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
 <li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient pressures (Pa)</p></li>
-<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient temperatureds (K)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient temperatures (K)</p></li>
 <li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperatures (K)</p></li>
 </ul>
 </dd>
@@ -1544,17 +1544,17 @@ pseudoadiabat.</p>
 <dt class="sig sig-object py" id="nwsspc.sharp.calc.thermo.theta_wetbulb">
 <span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_wobus" title="nwsspc.sharp.calc.parcel.lifter_wobus"><span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#nwsspc.sharp.calc.thermo.theta_wetbulb" title="Link to this definition">#</a></dt>
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1" title="nwsspc.sharp.calc.parcel.lifter_cm1"><span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span></dt>
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut_wobus" title="nwsspc.sharp.calc.parcel.lifter_lut_wobus"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_wobus</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span></dt>
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut_cm1" title="nwsspc.sharp.calc.parcel.lifter_lut_cm1"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_cm1</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span></dt>
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1" title="nwsspc.sharp.calc.parcel.lifter_cm1"><span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span></dt>
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
 <dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
+<span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lifter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut_cm1" title="nwsspc.sharp.calc.parcel.lifter_lut_cm1"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_cm1</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span></dt>
 <dt class="sig sig-object py">
 <span class="sig-prename descclassname"><span class="pre">nwsspc.sharp.calc.thermo.</span></span><span class="sig-name descname"><span class="pre">theta_wetbulb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_cm1,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False]</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></span></span></dt>
 <dd><p>Overloaded function.</p>
@@ -1566,8 +1566,8 @@ temperature (K), and dewpoint temperature (K).</p>
 <p>First, it lifts a parcel with the given pressure, temperature,
 and dewpoint temperature to its Lifted Condensation Level (LCL).
 To compute the temperature and pressure of the LCL, an approximation
-is used. See the lcl_temperature fuction for further detail.</p>
-<p>After the parcel has reached the LCL, the lifted passed to the function
+is used. See the lcl_temperature function for further detail.</p>
+<p>After the parcel has reached the LCL, the lifter passed to the function
 lowers the parcel to the standard parcel reference pressure level
 (1000 hPa) along a moist adiabat.</p>
 <dl class="field-list simple">
@@ -1576,7 +1576,7 @@ lowers the parcel to the standard parcel reference pressure level
 <li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_wobus" title="nwsspc.sharp.calc.parcel.lifter_wobus"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
 <li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air pressure (Pa)</p></li>
 <li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air temperature (K)</p></li>
-<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient dewpoint temperature</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient dewpoint temperature (K)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1587,31 +1587,31 @@ lowers the parcel to the standard parcel reference pressure level
 </dd>
 </dl>
 <ol class="arabic simple" start="2">
-<li><p><code class="docutils literal notranslate"><span class="pre">theta_wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1,</span> <span class="pre">pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">dewpoint:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">theta_wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
 </ol>
 <p>Compute the wet-bulb potential temperature (K) given the pressure (Pa),
 temperature (K), and dewpoint temperature (K).</p>
 <p>First, it lifts a parcel with the given pressure, temperature,
 and dewpoint temperature to its Lifted Condensation Level (LCL).
 To compute the temperature and pressure of the LCL, an approximation
-is used. See the lcl_temperature fuction for further detail.</p>
-<p>After the parcel has reached the LCL, the lifted passed to the function
+is used. See the lcl_temperature function for further detail.</p>
+<p>After the parcel has reached the LCL, the lifter passed to the function
 lowers the parcel to the standard parcel reference pressure level
 (1000 hPa) along a moist adiabat.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1" title="nwsspc.sharp.calc.parcel.lifter_cm1"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
-<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air pressure (Pa)</p></li>
-<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air temperature (K)</p></li>
-<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient dewpoint temperature</p></li>
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_wobus" title="nwsspc.sharp.calc.parcel.lifter_wobus"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperature (K)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The wet-bulb potential temperature (K)</p>
+<dd class="field-even"><p>1D NumPy array of wet-bulb potential temperatures (K)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
 </dd>
 </dl>
 <ol class="arabic simple" start="3">
@@ -1622,17 +1622,17 @@ temperature (K), and dewpoint temperature (K).</p>
 <p>First, it lifts a parcel with the given pressure, temperature,
 and dewpoint temperature to its Lifted Condensation Level (LCL).
 To compute the temperature and pressure of the LCL, an approximation
-is used. See the lcl_temperature fuction for further detail.</p>
-<p>After the parcel has reached the LCL, the lifted passed to the function
+is used. See the lcl_temperature function for further detail.</p>
+<p>After the parcel has reached the LCL, the lifter passed to the function
 lowers the parcel to the standard parcel reference pressure level
 (1000 hPa) along a moist adiabat.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut" title="nwsspc.sharp.calc.parcel.lifter_lut"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut_wobus" title="nwsspc.sharp.calc.parcel.lifter_lut_wobus"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_wobus</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
 <li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air pressure (Pa)</p></li>
 <li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air temperature (K)</p></li>
-<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient dewpoint temperature</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient dewpoint temperature (K)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1643,52 +1643,24 @@ lowers the parcel to the standard parcel reference pressure level
 </dd>
 </dl>
 <ol class="arabic simple" start="4">
-<li><p><code class="docutils literal notranslate"><span class="pre">theta_wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_cm1,</span> <span class="pre">pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">dewpoint:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">theta_wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
 </ol>
 <p>Compute the wet-bulb potential temperature (K) given the pressure (Pa),
 temperature (K), and dewpoint temperature (K).</p>
 <p>First, it lifts a parcel with the given pressure, temperature,
 and dewpoint temperature to its Lifted Condensation Level (LCL).
 To compute the temperature and pressure of the LCL, an approximation
-is used. See the lcl_temperature fuction for further detail.</p>
-<p>After the parcel has reached the LCL, the lifted passed to the function
+is used. See the lcl_temperature function for further detail.</p>
+<p>After the parcel has reached the LCL, the lifter passed to the function
 lowers the parcel to the standard parcel reference pressure level
 (1000 hPa) along a moist adiabat.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut" title="nwsspc.sharp.calc.parcel.lifter_lut"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
-<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air pressure (Pa)</p></li>
-<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air temperature (K)</p></li>
-<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient dewpoint temperature</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The wet-bulb potential temperature (K)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
-</dd>
-</dl>
-<ol class="arabic simple" start="5">
-<li><p><code class="docutils literal notranslate"><span class="pre">theta_wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
-</ol>
-<p>Compute the wet-bulb potential temperature (K) given the pressure (Pa),
-temperature (K), and dewpoint temperature (K).</p>
-<p>First, it lifts a parcel with the given pressure, temperature,
-and dewpoint temperature to its Lifted Condensation Level (LCL).
-To compute the temperature and pressure of the LCL, an approximation
-is used. See the lcl_temperature fuction for further detail.</p>
-<p>After the parcel has reached the LCL, the lifted passed to the function
-lowers the parcel to the standard parcel reference pressure level
-(1000 hPa) along a moist adiabat.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_wobus" title="nwsspc.sharp.calc.parcel.lifter_wobus"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_wobus</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut_wobus" title="nwsspc.sharp.calc.parcel.lifter_lut_wobus"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_wobus</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
 <li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air pressure (Pa)</p></li>
 <li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air temperature (K)</p></li>
-<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperature</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperature (K)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1696,6 +1668,34 @@ lowers the parcel to the standard parcel reference pressure level
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+</dd>
+</dl>
+<ol class="arabic simple" start="5">
+<li><p><code class="docutils literal notranslate"><span class="pre">theta_wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1,</span> <span class="pre">pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">dewpoint:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
+</ol>
+<p>Compute the wet-bulb potential temperature (K) given the pressure (Pa),
+temperature (K), and dewpoint temperature (K).</p>
+<p>First, it lifts a parcel with the given pressure, temperature,
+and dewpoint temperature to its Lifted Condensation Level (LCL).
+To compute the temperature and pressure of the LCL, an approximation
+is used. See the lcl_temperature function for further detail.</p>
+<p>After the parcel has reached the LCL, the lifter passed to the function
+lowers the parcel to the standard parcel reference pressure level
+(1000 hPa) along a moist adiabat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1" title="nwsspc.sharp.calc.parcel.lifter_cm1"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient dewpoint temperature (K)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The wet-bulb potential temperature (K)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
 </dd>
 </dl>
 <ol class="arabic simple" start="6">
@@ -1706,8 +1706,8 @@ temperature (K), and dewpoint temperature (K).</p>
 <p>First, it lifts a parcel with the given pressure, temperature,
 and dewpoint temperature to its Lifted Condensation Level (LCL).
 To compute the temperature and pressure of the LCL, an approximation
-is used. See the lcl_temperature fuction for further detail.</p>
-<p>After the parcel has reached the LCL, the lifted passed to the function
+is used. See the lcl_temperature function for further detail.</p>
+<p>After the parcel has reached the LCL, the lifter passed to the function
 lowers the parcel to the standard parcel reference pressure level
 (1000 hPa) along a moist adiabat.</p>
 <dl class="field-list simple">
@@ -1716,7 +1716,7 @@ lowers the parcel to the standard parcel reference pressure level
 <li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_cm1" title="nwsspc.sharp.calc.parcel.lifter_cm1"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_cm1</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
 <li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air pressure (Pa)</p></li>
 <li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air temperature (K)</p></li>
-<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperature</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperature (K)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1727,31 +1727,31 @@ lowers the parcel to the standard parcel reference pressure level
 </dd>
 </dl>
 <ol class="arabic simple" start="7">
-<li><p><code class="docutils literal notranslate"><span class="pre">theta_wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_wobus,</span> <span class="pre">pressure:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">temperature:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False],</span> <span class="pre">dewpoint:</span> <span class="pre">ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C',</span> <span class="pre">device='cpu',</span> <span class="pre">writable=False])</span> <span class="pre">-&gt;</span> <span class="pre">numpy.ndarray[dtype=float32,</span> <span class="pre">shape=(*),</span> <span class="pre">order='C']</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">theta_wetbulb(lifter:</span> <span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_cm1,</span> <span class="pre">pressure:</span> <span class="pre">float,</span> <span class="pre">temperature:</span> <span class="pre">float,</span> <span class="pre">dewpoint:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p></li>
 </ol>
 <p>Compute the wet-bulb potential temperature (K) given the pressure (Pa),
 temperature (K), and dewpoint temperature (K).</p>
 <p>First, it lifts a parcel with the given pressure, temperature,
 and dewpoint temperature to its Lifted Condensation Level (LCL).
 To compute the temperature and pressure of the LCL, an approximation
-is used. See the lcl_temperature fuction for further detail.</p>
-<p>After the parcel has reached the LCL, the lifted passed to the function
+is used. See the lcl_temperature function for further detail.</p>
+<p>After the parcel has reached the LCL, the lifter passed to the function
 lowers the parcel to the standard parcel reference pressure level
 (1000 hPa) along a moist adiabat.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut" title="nwsspc.sharp.calc.parcel.lifter_lut"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
-<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air pressure (Pa)</p></li>
-<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air temperature (K)</p></li>
-<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperature</p></li>
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut_cm1" title="nwsspc.sharp.calc.parcel.lifter_lut_cm1"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_cm1</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air pressure (Pa)</p></li>
+<li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient air temperature (K)</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – the ambient dewpoint temperature (K)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>1D NumPy array of wet-bulb potential temperatures (K)</p>
+<dd class="field-even"><p>The wet-bulb potential temperature (K)</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
 </dd>
 </dl>
 <ol class="arabic simple" start="8">
@@ -1762,17 +1762,17 @@ temperature (K), and dewpoint temperature (K).</p>
 <p>First, it lifts a parcel with the given pressure, temperature,
 and dewpoint temperature to its Lifted Condensation Level (LCL).
 To compute the temperature and pressure of the LCL, an approximation
-is used. See the lcl_temperature fuction for further detail.</p>
-<p>After the parcel has reached the LCL, the lifted passed to the function
+is used. See the lcl_temperature function for further detail.</p>
+<p>After the parcel has reached the LCL, the lifter passed to the function
 lowers the parcel to the standard parcel reference pressure level
 (1000 hPa) along a moist adiabat.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut" title="nwsspc.sharp.calc.parcel.lifter_lut"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
+<li><p><strong>lifter</strong> (<a class="reference internal" href="parcel.html#nwsspc.sharp.calc.parcel.lifter_lut_cm1" title="nwsspc.sharp.calc.parcel.lifter_lut_cm1"><code class="xref py py-class docutils literal notranslate"><span class="pre">nwsspc.sharp.calc.parcel.lifter_lut_cm1</span></code></a>) – a parcel lifter (e.g. lifter_cm1 or lifter_wobus)</p></li>
 <li><p><strong>pressure</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air pressure (Pa)</p></li>
 <li><p><strong>temperature</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient air temperature (K)</p></li>
-<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperature</p></li>
+<li><p><strong>dewpoint</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray[dtype=float32]</span></code>) – 1D NumPy array of ambient dewpoint temperature (K)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
