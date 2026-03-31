@@ -7,6 +7,7 @@
 // clang-format on
 #include <SHARPlib/interp.h>
 
+#include "binding_utils.h"
 #include "sharplib_types.h"
 
 namespace nb = nanobind;
@@ -21,10 +22,7 @@ inline void make_interp_bindings(nb::module_ m) {
         "interp_height",
         [](const float hght_val, const_prof_arr_t hght_arr,
            const_prof_arr_t data_arr) -> float {
-            if ((hght_arr.size() != data_arr.size())) {
-                throw nb::buffer_error(
-                    "hght_arr and data_arr must have the same size!");
-            }
+            check_equal_sizes(hght_arr, data_arr);
             return sharp::interp_height(hght_val, hght_arr.data(),
                                         data_arr.data(), hght_arr.size());
         },
@@ -52,10 +50,7 @@ float
         "interp_pressure",
         [](const float pres_val, const_prof_arr_t pres_arr,
            const_prof_arr_t data_arr) -> float {
-            if ((pres_arr.size() != data_arr.size())) {
-                throw nb::buffer_error(
-                    "hght_arr and data_arr must have the same size!");
-            }
+            check_equal_sizes(pres_arr, data_arr);
             return sharp::interp_pressure(pres_val, pres_arr.data(),
                                           data_arr.data(), pres_arr.size());
         },
@@ -69,7 +64,7 @@ Parameters
 ----------
 pres_val : float 
     The coordinate pressure value to interpolate to (Pa)
-pres_arr : nump.ndarray[dtype=float32] 
+pres_arr : numpy.ndarray[dtype=float32] 
     1D numpy array of pressure values to interpolate from (Pa)
 data_arr : numpy.ndarray[dtype=float32]
     1D numpy array of data values to interpolate from 
@@ -84,6 +79,7 @@ float
         "find_first_pressure",
         [](float data_val, const_prof_arr_t pres_arr,
            const_prof_arr_t data_arr) {
+            check_equal_sizes(pres_arr, data_arr);
             return sharp::find_first_pressure(data_val, pres_arr.data(),
                                               data_arr.data(), pres_arr.size());
         },
@@ -111,6 +107,7 @@ float
         "find_first_height",
         [](float data_val, const_prof_arr_t hght_arr,
            const_prof_arr_t data_arr) {
+            check_equal_sizes(hght_arr, data_arr);
             return sharp::find_first_height(data_val, hght_arr.data(),
                                             data_arr.data(), hght_arr.size());
         },
