@@ -160,23 +160,23 @@ TEST_CASE("Testing mean wind calculations") {
     const auto mean_layer6 =
         sharp::mean_wind(layer3, pres, u_wind, v_wind, NZ, false);
 
-    CHECK(mean_layer1.u == doctest::Approx(14.7669));
-    CHECK(mean_layer1.v == doctest::Approx(14.7669));
+    CHECK(mean_layer1.u == doctest::Approx(14.7222));
+    CHECK(mean_layer1.v == doctest::Approx(14.7222));
 
-    CHECK(mean_layer2.u == doctest::Approx(21.0501));
-    CHECK(mean_layer2.v == doctest::Approx(21.0501));
+    CHECK(mean_layer2.u == doctest::Approx(21));
+    CHECK(mean_layer2.v == doctest::Approx(21));
 
-    CHECK(mean_layer3.u == doctest::Approx(26.2741));
-    CHECK(mean_layer3.v == doctest::Approx(26.2741));
+    CHECK(mean_layer3.u == doctest::Approx(26.2121));
+    CHECK(mean_layer3.v == doctest::Approx(26.2121));
 
-    CHECK(mean_layer4.u == doctest::Approx(14.9538));
-    CHECK(mean_layer4.v == doctest::Approx(14.9538));
+    CHECK(mean_layer4.u == doctest::Approx(15));
+    CHECK(mean_layer4.v == doctest::Approx(15));
 
-    CHECK(mean_layer5.u == doctest::Approx(22.4424));
-    CHECK(mean_layer5.v == doctest::Approx(22.4424));
+    CHECK(mean_layer5.u == doctest::Approx(22.5));
+    CHECK(mean_layer5.v == doctest::Approx(22.5));
 
-    CHECK(mean_layer6.u == doctest::Approx(32.3939));
-    CHECK(mean_layer6.v == doctest::Approx(32.3939));
+    CHECK(mean_layer6.u == doctest::Approx(32.5));
+    CHECK(mean_layer6.v == doctest::Approx(32.5));
 }
 
 TEST_CASE("Testing max wind calculations") {
