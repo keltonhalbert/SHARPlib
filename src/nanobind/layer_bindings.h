@@ -12,9 +12,98 @@
 // clang-format on
 #include <SHARPlib/layer.h>
 
+#include "binding_utils.h"
 #include "sharplib_types.h"
 
 namespace nb = nanobind;
+
+template <typename Layer>
+void bind_get_layer_index(nb::module_& mod, const char* doc_template,
+                          const char* layer_type, const char* coord_name) {
+    std::string doc = fmt::format(doc_template, layer_type, coord_name,
+                                  coord_name, layer_type);
+    mod.def(
+        "get_layer_index",
+        [](Layer& layer, const_prof_arr_t coord) -> sharp::LayerIndex {
+            return sharp::get_layer_index(layer, coord.data(), coord.size());
+        },
+        nb::arg("layer"), nb::arg(coord_name), doc.c_str());
+}
+
+template <typename Layer>
+void bind_layer_min(nb::module_& mod, const char* doc_template,
+                    const char* layer_type, const char* coord_name) {
+    std::string doc = fmt::format(doc_template, layer_type, coord_name);
+    mod.def(
+        "layer_min",
+        [](Layer& layer, const_prof_arr_t coord, const_prof_arr_t data) {
+            check_equal_sizes(coord, data);
+            float lvl_of_min;
+            float min = sharp::layer_min(layer, coord.data(), data.data(),
+                                         data.size(), &lvl_of_min);
+            return std::make_tuple(min, lvl_of_min);
+        },
+        nb::arg("layer"), nb::arg(coord_name), nb::arg("data"), doc.c_str());
+}
+
+template <typename Layer>
+void bind_layer_max(nb::module_& mod, const char* doc_template,
+                    const char* layer_type, const char* coord_name) {
+    std::string doc = fmt::format(doc_template, layer_type, coord_name);
+    mod.def(
+        "layer_max",
+        [](Layer& layer, const_prof_arr_t coord, const_prof_arr_t data) {
+            check_equal_sizes(coord, data);
+            float lvl_of_max;
+            float max = sharp::layer_max(layer, coord.data(), data.data(),
+                                         data.size(), &lvl_of_max);
+            return std::make_tuple(max, lvl_of_max);
+        },
+        nb::arg("layer"), nb::arg(coord_name), nb::arg("data"), doc.c_str());
+}
+
+template <typename Layer>
+void bind_layer_mean(nb::module_& mod, const char* doc) {
+    if constexpr (Layer::coord == sharp::LayerCoordinate::height) {
+        mod.def(
+            "layer_mean",
+            [](Layer layer, const_prof_arr_t height, const_prof_arr_t pressure,
+               const_prof_arr_t data, const bool isAGL) {
+                check_equal_sizes(height, pressure, data);
+                return sharp::layer_mean(layer, height.data(), pressure.data(),
+                                         data.data(), data.size(), isAGL);
+            },
+            nb::arg("layer"), nb::arg("height"), nb::arg("pressure"),
+            nb::arg("data"), nb::arg("isAGL") = false, doc);
+    } else {
+        mod.def(
+            "layer_mean",
+            [](Layer layer, const_prof_arr_t pressure, const_prof_arr_t data) {
+                check_equal_sizes(pressure, data);
+                return sharp::layer_mean(layer, pressure.data(), data.data(),
+                                         data.size());
+            },
+            nb::arg("layer"), nb::arg("pressure"), nb::arg("data"), doc);
+    }
+}
+
+template <typename Layer>
+void bind_integrate_layer_trapz(nb::module_& mod, const char* doc_template,
+                                const char* layer_type,
+                                const char* coord_name) {
+    std::string doc = fmt::format(doc_template, layer_type, coord_name);
+    mod.def(
+        "integrate_layer_trapz",
+        [](Layer layer, const_prof_arr_t data, const_prof_arr_t coord,
+           const int integ_sign, const bool weighted) {
+            check_equal_sizes(coord, data);
+            return sharp::integrate_layer_trapz(layer, data.data(),
+                                                coord.data(), data.size(),
+                                                integ_sign, weighted);
+        },
+        nb::arg("layer"), nb::arg("data"), nb::arg(coord_name),
+        nb::arg("integ_sign") = 0, nb::arg("weighted") = false, doc.c_str());
+}
 
 inline void make_layer_bindings(nb::module_ m) {
     nb::module_ m_layer = m.def_submodule(
@@ -22,7 +111,6 @@ inline void make_layer_bindings(nb::module_ m) {
         "Sounding and Hodograph Analysis and Research Program Library "
         "(SHARPlib) :: Atmospheric Layer Routines");
 
-    // Bind the constructors, named fields, and default arguments
     nb::class_<sharp::HeightLayer>(m_layer, "HeightLayer")
         .def(nb::init<>())
         .def(nb::init<float, float, float>(), nb::arg("bottom"), nb::arg("top"),
@@ -68,16 +156,9 @@ inline void make_layer_bindings(nb::module_ m) {
                                layer.ktop);
         });
 
-    m_layer.def(
-        "get_layer_index",
-        [](sharp::PressureLayer& layer,
-           const_prof_arr_t pressure_array) -> sharp::LayerIndex {
-            return sharp::get_layer_index(layer, pressure_array.data(),
-                                          pressure_array.size());
-        },
-        nb::arg("layer"), nb::arg("pressure"),
+    const char* get_layer_index_template_doc =
         R"pbdoc(
-Finds the interior array indices encapsulated by the given PressureLayer. 
+Finds the interior array indices encapsulated by the given {0}. 
 More specifically, the returned LayerIndex excludes the exact top and bottom 
 values (in mathematical notation, [bottom, top]). This behavior is due to the 
 fact many algorithms use interpolation to get the exact values of arbitrary
@@ -86,56 +167,30 @@ top/bottom locations within a profile.
 If layer.bottom or layer.top are out of bounds, this function 
 will truncate the layer to the coordinate range of data provided 
 by coord[] in an attempt to gracefully continue and produce a result. 
-This will modify the value of the given PressureLayer.
+This will modify the value of the given {3}.
 
 Parameters
 ----------
-layer : nwsspc.sharp.calc.layer.PressureLayer
-pressure : numpy.ndarray[dtype=float32]
-    1D NumPy array of pressures
+layer : nwsspc.sharp.calc.layer.{0}
+{1} : numpy.ndarray[dtype=float32]
+    1D NumPy array of {2} values
 
 Returns
 -------
 nwsspc.sharp.calc.layer.LayerIndex
-    A LayerIndex with {kbot, ktop}.
-            )pbdoc");
+    A LayerIndex with {{kbot, ktop}}.
+)pbdoc";
 
-    m_layer.def(
-        "get_layer_index",
-        [](sharp::HeightLayer& layer,
-           const_prof_arr_t height_array) -> sharp::LayerIndex {
-            return sharp::get_layer_index(layer, height_array.data(),
-                                          height_array.size());
-        },
-        nb::arg("layer"), nb::arg("height"),
-        R"pbdoc(
-Finds the interior array indices encapsulated by the given HeightLayer. 
-More specifically, the returned LayerIndex excludes the exact top and bottom 
-values (in mathematical notation, [bottom, top]). This behavior is due to the 
-fact many algorithms use interpolation to get the exact values of arbitrary
-top/bottom locations within a profile. 
-
-If layer.bottom or layer.top are out of bounds, this function 
-will truncate the layer to the coordinate range of data provided 
-by coord[] in an attempt to gracefully continue and produce a result. 
-This will modify the value of the given HeightLayer.
-
-Parameters
-----------
-layer : nwsspc.sharp.calc.layer.HeightLayer
-height : numpy.ndarray[dtype=float32]
-    1D NumPy array of heights
-
-Returns
--------
-nwsspc.sharp.calc.layer.LayerIndex
-    A LayerIndex with {kbot, ktop}.
-        )pbdoc");
+    bind_get_layer_index<sharp::PressureLayer>(
+        m_layer, get_layer_index_template_doc, "PressureLayer", "pressure");
+    bind_get_layer_index<sharp::HeightLayer>(
+        m_layer, get_layer_index_template_doc, "HeightLayer", "height");
 
     m_layer.def(
         "height_layer_to_pressure",
         [](sharp::HeightLayer& layer, const_prof_arr_t pressure,
            const_prof_arr_t height, const bool isAGL) -> sharp::PressureLayer {
+            check_equal_sizes(pressure, height);
             return sharp::height_layer_to_pressure(
                 layer, pressure.data(), height.data(), height.size(), isAGL);
         },
@@ -161,13 +216,14 @@ isAGL : bool
 Returns
 -------
 nwsspc.sharp.calc.layer.PressureLayer
-
-    )pbdoc");
+    The HeightLayer converted to a PressureLayer
+)pbdoc");
 
     m_layer.def(
         "pressure_layer_to_height",
         [](sharp::PressureLayer& layer, const_prof_arr_t pressure,
            const_prof_arr_t height, const bool toAGL) -> sharp::HeightLayer {
+            check_equal_sizes(pressure, height);
             return sharp::pressure_layer_to_height(
                 layer, pressure.data(), height.data(), height.size(), toAGL);
         },
@@ -193,89 +249,43 @@ toAGL : bool
 Returns 
 -------
 nwsspc.sharp.calc.layer.HeightLayer
+    The PressureLayer converted to a HeightLayer
+)pbdoc");
 
-    )pbdoc");
-
-    m_layer.def(
-        "layer_min",
-        [](sharp::HeightLayer& layer, const_prof_arr_t height,
-           const_prof_arr_t data) {
-            float lvl_of_min;
-            float min = sharp::layer_min(layer, height.data(), data.data(),
-                                         data.size(), &lvl_of_min);
-
-            return std::make_tuple(min, lvl_of_min);
-        },
-        nb::arg("layer"), nb::arg("height"), nb::arg("data"),
+    const char* layer_min_template_doc =
         R"pbdoc(
-Returns the minimum value of the data array within the given HeightLayer. The 
+Returns the minimum value of the data array within the given {0}. The 
 function bounds checks the layer by calling get_layer_index. 
 
 Parameters
 ----------
-layer : nwsspc.sharp.calc.layer.HeightLayer 
-height : numpy.ndarray[dtype=float32]
-    1D NumPy array of heights 
+layer : nwsspc.sharp.calc.layer.{0} 
+{1} : numpy.ndarray[dtype=float32]
+    1D NumPy array of {1} values 
 data : numpy.ndarray[dtype=float32]
-    1D array of data 
+    1D NumPy array of data values
 
 Returns
 -------
 tuple[float, float]
     (min_value, level_of_min)
+)pbdoc";
 
-    )pbdoc");
+    bind_layer_min<sharp::HeightLayer>(m_layer, layer_min_template_doc,
+                                       "HeightLayer", "height");
+    bind_layer_min<sharp::PressureLayer>(m_layer, layer_min_template_doc,
+                                         "PressureLayer", "pressure");
 
-    m_layer.def(
-        "layer_min",
-        [](sharp::PressureLayer& layer, const_prof_arr_t pressure,
-           const_prof_arr_t data) {
-            float lvl_of_min;
-            float min = sharp::layer_min(layer, pressure.data(), data.data(),
-                                         data.size(), &lvl_of_min);
-
-            return std::make_tuple(min, lvl_of_min);
-        },
-        nb::arg("layer"), nb::arg("pressure"), nb::arg("data"),
+    const char* layer_max_template_doc =
         R"pbdoc(
-Returns the minimum value of the data array within the given PressureLayer. The 
+Returns the maximum value of the data array within the given {0}. The 
 function bounds checks the layer by calling get_layer_index. 
 
 Parameters
 ----------
-layer : nwsspc.sharp.calc.layer.PressureLayer 
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of pressure 
-data : numpy.ndarray[dtype=float32] 
-    1D array of data 
-
-Returns
--------
-tuple[float, float]
-    (min_value, level_of_min)
-    )pbdoc");
-
-    m_layer.def(
-        "layer_max",
-        [](sharp::HeightLayer& layer, const_prof_arr_t height,
-           const_prof_arr_t data) {
-            float lvl_of_max;
-            float max = sharp::layer_max(layer, height.data(), data.data(),
-                                         data.size(), &lvl_of_max);
-
-            return std::make_tuple(max, lvl_of_max);
-        },
-        nb::arg("layer"), nb::arg("height"), nb::arg("data"),
-        R"pbdoc(
-Returns the maximum value observed within the given data array over
-the given HeightLayer. The function bounds checks the layer by calling 
-get_layer_index. 
-
-Parameters
-----------
-layer : nwsspc.sharp.calc.layer.HeightLayer 
-height : numpy.ndarray[dtype=float32] 
-    1D NumPy array of height values 
+layer : nwsspc.sharp.calc.layer.{0} 
+{1} : numpy.ndarray[dtype=float32] 
+    1D NumPy array of {1} values 
 data : numpy.ndarray[dtype=float32] 
     1D NumPy array of data values
 
@@ -283,47 +293,14 @@ Returns
 -------
 tuple[float, float]
     (max_value, level_of_max)
+)pbdoc";
 
-    )pbdoc");
+    bind_layer_max<sharp::HeightLayer>(m_layer, layer_max_template_doc,
+                                       "HeightLayer", "height");
+    bind_layer_max<sharp::PressureLayer>(m_layer, layer_max_template_doc,
+                                         "PressureLayer", "pressure");
 
-    m_layer.def(
-        "layer_max",
-        [](sharp::PressureLayer& layer, const_prof_arr_t pressure,
-           const_prof_arr_t data) {
-            float lvl_of_max;
-            float max = sharp::layer_max(layer, pressure.data(), data.data(),
-                                         data.size(), &lvl_of_max);
-
-            return std::make_tuple(max, lvl_of_max);
-        },
-        nb::arg("layer"), nb::arg("pressure"), nb::arg("data"),
-        R"pbdoc(
-Returns the maximum value observed within the given data array over the given 
-PressureLayer. The function bounds checks the layer by calling get_layer_index. 
-
-Parameters
-----------
-layer : nwsspc.sharp.calc.layer.PressureLayer 
-pressure : numpy.ndarray[dtype=float32]
-    1D NumPy array of pressure values 
-data : numpy.ndarray[dtype=float32] 
-    1D NumPy array of data values
-
-Returns
--------
-tuple[float, float]
-    (max_value, level_of_max)
-
-    )pbdoc");
-
-    m_layer.def(
-        "layer_mean",
-        [](sharp::PressureLayer layer, const_prof_arr_t pressure,
-           const_prof_arr_t data) {
-            return sharp::layer_mean(layer, pressure.data(), data.data(),
-                                     data.size());
-        },
-        nb::arg("PressureLayer"), nb::arg("pressure"), nb::arg("data"),
+    const char* layer_mean_pres_doc =
         R"pbdoc(
 Computes the pressure-weighted mean value of a field over 
 a given PressureLayer. 
@@ -339,18 +316,10 @@ data : numpy.ndarray[dtype=float32]
 Returns
 -------
 float
+    The layer mean
+)pbdoc";
 
-    )pbdoc");
-
-    m_layer.def(
-        "layer_mean",
-        [](sharp::HeightLayer layer, const_prof_arr_t height,
-           const_prof_arr_t pressure, const_prof_arr_t data, const bool isAGL) {
-            return sharp::layer_mean(layer, height.data(), pressure.data(),
-                                     data.data(), data.size(), isAGL);
-        },
-        nb::arg("HeightLayer"), nb::arg("height"), nb::arg("pressure"),
-        nb::arg("data"), nb::arg("isAGL") = false,
+    const char* layer_mean_hght_doc =
         R"pbdoc(
 Computes the pressure-weighted mean value of a field over 
 a given HeightLayer. 
@@ -370,68 +339,27 @@ isAGL : bool
 Returns
 -------
 float
+    The layer mean
+)pbdoc";
 
-    )pbdoc");
+    bind_layer_mean<sharp::PressureLayer>(m_layer, layer_mean_pres_doc);
+    bind_layer_mean<sharp::HeightLayer>(m_layer, layer_mean_hght_doc);
 
-    m_layer.def(
-        "integrate_layer_trapz",
-        [](sharp::HeightLayer layer, const_prof_arr_t data,
-           const_prof_arr_t height, const int integ_sign, const bool weighted) {
-            return sharp::integrate_layer_trapz(layer, data.data(),
-                                                height.data(), data.size(),
-                                                integ_sign, weighted);
-        },
-        nb::arg("layer"), nb::arg("data"), nb::arg("height"),
-        nb::arg("integ_sign") = 0, nb::arg("weighted") = false,
-        R"pbdoc(
-Returns a trapezoidal integration of the given data array over 
-the given HeightLayer. There is an additional argument that 
-determines whether this is a weighted average or not. The sign 
-of the integration may be passed as well, i.e. integrating only 
-positive or negative area, by passing a 1, 0, or -1 to integ_sign. 
-
-Parameters
-----------
-layer : nwsspc.sharp.calc.layer.HeightLayer 
-data : numpy.ndarray[dtype=float32] 
-    1D NumPy array of data values 
-height : numpy.ndarray[dtype=float32]
-    1D NumPy array of height values 
-integ_sign : int 
-    The sign of the area to integrate (-1: negative; 1: positive; 0: both; default: 0)
-weighted : bool 
-    Boolean determining whether or not the integration is weighted by the coordinate array 
-
-Returns
--------
-float
-    )pbdoc");
-
-    m_layer.def(
-        "integrate_layer_trapz",
-        [](sharp::PressureLayer layer, const_prof_arr_t data,
-           const_prof_arr_t pressure, const int integ_sign,
-           const bool weighted) {
-            return sharp::integrate_layer_trapz(layer, data.data(),
-                                                pressure.data(), data.size(),
-                                                integ_sign, weighted);
-        },
-        nb::arg("layer"), nb::arg("data"), nb::arg("pressure"),
-        nb::arg("integ_sign") = 0, nb::arg("weighted") = false,
+    const char* integrate_trapz_template_doc =
         R"pbdoc(
 Returns the trapezoidal integration of the given data array over 
-the given PressureLayer. There is an additional argument that 
+the given {0}. There is an additional argument that 
 determines whether this is a weighted average or not. The sign 
 of the integration may be passed as well, i.e. integrating only 
 positive or negative area, by passing a 1, 0, or -1 to integ_sign. 
 
 Parameters
 ----------
-layer : nwsspc.sharp.calc.layer.PressureLayer
+layer : nwsspc.sharp.calc.layer.{0}
 data : numpy.ndarray[dtype=float32] 
     1D NumPy array of data values
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of pressure values 
+{1} : numpy.ndarray[dtype=float32] 
+    1D NumPy array of {1} values 
 integ_sign : int 
     The sign of the area to integrate (-1: negative; 1: positive; 0: both; default: 0)
 weighted : bool 
@@ -440,8 +368,13 @@ weighted : bool
 Returns 
 -------
 float
+    The integrated value
+)pbdoc";
 
-    )pbdoc");
+    bind_integrate_layer_trapz<sharp::HeightLayer>(
+        m_layer, integrate_trapz_template_doc, "HeightLayer", "height");
+    bind_integrate_layer_trapz<sharp::PressureLayer>(
+        m_layer, integrate_trapz_template_doc, "PressureLayer", "pressure");
 }
 
 #endif

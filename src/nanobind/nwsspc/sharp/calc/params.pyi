@@ -314,6 +314,26 @@ def effective_bulk_wind_difference(pressure: Annotated[NDArray[numpy.float32], d
     of 0-6 km wind shear, but allows more flexibility for elevated 
     convection. Returns MISSING if the effective inflow layer or 
     equilibrium level pressure are MISSING.
+
+    Parameters 
+    ----------
+    pressure : numpy.ndarray[dtype=float32]
+        1D NumPy array of pressure values (Pa)
+    height : numpy.ndarray[dtype=float32]
+        1D NumPy array of height values (meters)
+    u_wind : numpy.ndarray[dtype=float32]
+        1D NumPy array of u-wind components (m/s)
+    v_wind : numpy.ndarray[dtype=float32]
+        1D NumPy array of v-wind components (m/s)
+    effective_inflow_layer : nwsspc.sharp.calc.layer.PressureLayer 
+        The PressureLayer that defines the Effective Inflow layer 
+    equilibrium_level_pressure : float 
+        The pressure of the equilibrium level of the most unstable parcel (Pa)
+
+    Returns
+    -------
+    nwsspc.sharp.calc.winds.WindComponents 
+        The (u, v) wind components of the effective bulk wind difference (m/s)
     """
 
 def energy_helicity_index(cape: float, helicity: float) -> float:
@@ -538,6 +558,11 @@ def large_hail_parameter(mu_pcl: nwsspc.sharp.calc.parcel.Parcel, lapse_rate_700
         1D NumPy array of u_wind values (m/s)
     v_wind : numpy.ndarray[dtype=float32]
         1D NumPy array of v_wind values (m/s)
+
+    Returns 
+    -------
+    float 
+       Large Hail Parameter
     """
 
 @overload
