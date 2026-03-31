@@ -14,6 +14,7 @@
 #include <tuple>
 
 #include "sharplib_types.h"
+#include "binding_utils.h"
 
 namespace nb = nanobind;
 

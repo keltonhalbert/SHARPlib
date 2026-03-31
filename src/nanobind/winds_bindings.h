@@ -1,6 +1,7 @@
 #ifndef SHARPLIB_WINDS_BINDINGS
 #define SHARPLIB_WINDS_BINDINGS
 
+// clang-format off
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/tuple.h>
 
