@@ -19,6 +19,8 @@
 #include <cmath>
 #include <cstddef>
 
+#include "SHARPlib/algorithms.h"
+
 namespace sharp {
 
 float u_component(float wind_speed, float wind_direction) {
@@ -130,6 +132,7 @@ WindComponents mean_wind(PressureLayer layer, const float pressure[],
     float u_integ = 0.0f;
     float v_integ = 0.0f;
     float w_integ = 0.0f;
+    float dummy_w = 0.0f;
 
     float p_prev = layer.bottom;
     float u_prev = u_lyr_bot;
@@ -144,16 +147,19 @@ WindComponents mean_wind(PressureLayer layer, const float pressure[],
         const float p_curr = pressure[k];
         const float u_curr = u_wind[k];
         const float v_curr = v_wind[k];
-        const float dp = p_prev - p_curr;
 
         if (weighted) {
-            u_integ += 0.5f * (u_prev * p_prev + u_curr * p_curr) * dp;
-            v_integ += 0.5f * (v_prev * p_prev + v_curr * p_curr) * dp;
-            w_integ += 0.5f * (p_prev + p_curr) * dp;
+            u_integ += _integ_trapz(u_curr * p_curr, u_prev * p_prev, p_curr,
+                                    p_prev, dummy_w, false);
+            v_integ += _integ_trapz(v_curr * p_curr, v_prev * p_prev, p_curr,
+                                    p_prev, dummy_w, false);
+            w_integ +=
+                _integ_trapz(p_curr, p_prev, p_curr, p_prev, dummy_w, false);
         } else {
-            u_integ += 0.5f * (u_prev + u_curr) * dp;
-            v_integ += 0.5f * (v_prev + v_curr) * dp;
-            w_integ += dp;
+            u_integ +=
+                _integ_trapz(u_curr, u_prev, p_curr, p_prev, w_integ, true);
+            v_integ +=
+                _integ_trapz(v_curr, v_prev, p_curr, p_prev, dummy_w, false);
         }
 
         p_prev = p_curr;
@@ -162,16 +168,18 @@ WindComponents mean_wind(PressureLayer layer, const float pressure[],
     }
 
     {
-        const float dp = p_prev - layer.top;
-
         if (weighted) {
-            u_integ += 0.5f * (u_prev * p_prev + u_lyr_top * layer.top) * dp;
-            v_integ += 0.5f * (v_prev * p_prev + v_lyr_top * layer.top) * dp;
-            w_integ += 0.5f * (p_prev + layer.top) * dp;
+            u_integ += _integ_trapz(u_lyr_top * layer.top, u_prev * p_prev,
+                                    layer.top, p_prev, dummy_w, false);
+            v_integ += _integ_trapz(v_lyr_top * layer.top, v_prev * p_prev,
+                                    layer.top, p_prev, dummy_w, false);
+            w_integ += _integ_trapz(layer.top, p_prev, layer.top, p_prev,
+                                    dummy_w, false);
         } else {
-            u_integ += 0.5f * (u_prev + u_lyr_top) * dp;
-            v_integ += 0.5f * (v_prev + v_lyr_top) * dp;
-            w_integ += dp;
+            u_integ += _integ_trapz(u_lyr_top, u_prev, layer.top, p_prev,
+                                    w_integ, true);
+            v_integ += _integ_trapz(v_lyr_top, v_prev, layer.top, p_prev,
+                                    dummy_w, false);
         }
     }
 
