@@ -107,7 +107,52 @@ void bind_lut_data_class(nb::class_<sharp::lut_data<Lft>>& cls) {
         .def_ro("thte_min", &sharp::lut_data<Lft>::thetae_min)
         .def_ro("thte_max", &sharp::lut_data<Lft>::thetae_max)
         .def_ro("num_logp", &sharp::lut_data<Lft>::num_logp)
-        .def_ro("num_thetae", &sharp::lut_data<Lft>::num_thetae);
+        .def_ro("num_thetae", &sharp::lut_data<Lft>::num_thetae)
+        .def("__getstate__",
+             [](const sharp::lut_data<Lft>& self) {
+                 constexpr int version = 1;
+                 // Serialize the LUT as raw bytes to avoid per-element overhead
+                 const auto& tbl = self.m_LUT_pcl_tmpk;
+                 nb::bytes table_bytes(
+                     reinterpret_cast<const char*>(tbl.data()),
+                     tbl.size() * sizeof(float));
+                 return nb::make_tuple(version, self.m_lifter, self.pres_min,
+                                       self.pres_max, self.thetae_min,
+                                       self.thetae_max, self.num_logp,
+                                       self.num_thetae, table_bytes);
+             })
+        .def("__setstate__", [](sharp::lut_data<Lft>& self, nb::tuple state) {
+            auto ver = nb::cast<int>(state[0]);
+            if (ver != 1) {
+                throw std::runtime_error(
+                    "lut_data: unsupported pickled object version");
+            }
+            auto lifter = nb::cast<Lft>(state[1]);
+            auto pmin = nb::cast<float>(state[2]);
+            auto pmax = nb::cast<float>(state[3]);
+            auto thte_min = nb::cast<float>(state[4]);
+            auto thte_max = nb::cast<float>(state[5]);
+            auto n_logp = nb::cast<std::size_t>(state[6]);
+            auto n_thetae = nb::cast<std::size_t>(state[7]);
+            auto tbl_bytes = nb::cast<nb::bytes>(state[8]);
+
+            // Reconstruct the vector from the raw bytes
+            const std::size_t n_floats = n_logp * n_thetae;
+            const std::size_t expected_bytes = n_floats * sizeof(float);
+            if (static_cast<std::size_t>(tbl_bytes.size()) != expected_bytes) {
+                throw std::runtime_error(
+                    "lut_data: serialized table size mismatch");
+            }
+            const float* src =
+                reinterpret_cast<const float*>(tbl_bytes.c_str());
+            std::vector<float> table(src, src + n_floats);
+
+            // Placement-new with the deserialization constructor —
+            // skips generate_table()
+            new (&self) sharp::lut_data<Lft>(
+                sharp::lut_data<Lft>::from_serialized, std::move(lifter), pmin,
+                pmax, thte_min, thte_max, n_logp, n_thetae, std::move(table));
+        });
 }
 
 template <typename Lft>
@@ -460,6 +505,15 @@ Returns
 float
     The temperature of the lifted parcel (K)
              )pbdoc")
+        .def("__getstate__",
+             [](const sharp::lifter_wobus& self) {
+                 return nb::make_tuple(self.converge);
+             })
+        .def("__setstate__",
+             [](sharp::lifter_wobus& self, nb::tuple state) {
+                 new (&self) sharp::lifter_wobus{};
+                 self.converge = nb::cast<float>(state[0]);
+             })
         .def("parcel_virtual_temperature",
              &sharp::lifter_wobus::parcel_virtual_temperature, nb::arg("pres"),
              nb::arg("tmpk"), R"pbdoc(
@@ -537,7 +591,19 @@ Returns
 float
     The temperature of the lifted parcel (K)
              )pbdoc")
-
+        .def("__getstate__",
+             [](const sharp::lifter_cm1& self) {
+                 return nb::make_tuple(static_cast<int>(self.ma_type),
+                                       self.pressure_incr, self.converge);
+             })
+        .def("__setstate__",
+             [](sharp::lifter_cm1& self, nb::tuple state) {
+                 new (&self) sharp::lifter_cm1{};
+                 self.ma_type =
+                     static_cast<sharp::adiabat>(nb::cast<int>(state[0]));
+                 self.pressure_incr = nb::cast<float>(state[1]);
+                 self.converge = nb::cast<float>(state[2]);
+             })
         .def("parcel_virtual_temperature",
              &sharp::lifter_cm1::parcel_virtual_temperature, nb::arg("pres"),
              nb::arg("tmpk"), R"pbdoc(

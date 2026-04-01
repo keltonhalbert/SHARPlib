@@ -70,6 +70,10 @@ class lifter_wobus:
             The temperature of the lifted parcel (K)
         """
 
+    def __getstate__(self) -> tuple: ...
+
+    def __setstate__(self, arg: tuple, /) -> None: ...
+
     def parcel_virtual_temperature(self, pres: float, tmpk: float) -> float:
         """
         Computes the virtual temperature of the parcel (after saturation).
@@ -165,6 +169,10 @@ class lifter_cm1:
             The temperature of the lifted parcel (K)
         """
 
+    def __getstate__(self) -> tuple: ...
+
+    def __setstate__(self, arg: tuple, /) -> None: ...
+
     def parcel_virtual_temperature(self, pres: float, tmpk: float) -> float:
         """
         Computes the virtual temperature of the parcel (after saturation).
@@ -202,6 +210,10 @@ class lut_data_wobus:
 
     @property
     def num_thetae(self) -> int: ...
+
+    def __getstate__(self) -> tuple: ...
+
+    def __setstate__(self, arg: tuple, /) -> None: ...
 
 @overload
 def lut_data(lifter: lifter_wobus, pmin: float = 5000.0, pmax: float = 110000.0, thte_min: float = 210.0, thte_max: float = 430.0, n_logp: int = 201, n_thetae: int = 221) -> lut_data_wobus:
@@ -387,6 +399,10 @@ class lut_data_cm1:
 
     @property
     def num_thetae(self) -> int: ...
+
+    def __getstate__(self) -> tuple: ...
+
+    def __setstate__(self, arg: tuple, /) -> None: ...
 
 class lifter_lut_cm1:
     """
