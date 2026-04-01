@@ -110,28 +110,39 @@ void bind_lut_data_class(nb::class_<sharp::lut_data<Lft>>& cls) {
         .def_ro("num_thetae", &sharp::lut_data<Lft>::num_thetae)
         .def("__getstate__",
              [](const sharp::lut_data<Lft>& self) {
+                 constexpr int version = 1;
                  // Serialize the LUT as raw bytes to avoid per-element overhead
                  const auto& tbl = self.m_LUT_pcl_tmpk;
                  nb::bytes table_bytes(
                      reinterpret_cast<const char*>(tbl.data()),
                      tbl.size() * sizeof(float));
-                 return nb::make_tuple(self.m_lifter, self.pres_min,
+                 return nb::make_tuple(version, self.m_lifter, self.pres_min,
                                        self.pres_max, self.thetae_min,
                                        self.thetae_max, self.num_logp,
                                        self.num_thetae, table_bytes);
              })
         .def("__setstate__", [](sharp::lut_data<Lft>& self, nb::tuple state) {
-            auto lifter = nb::cast<Lft>(state[0]);
-            auto pmin = nb::cast<float>(state[1]);
-            auto pmax = nb::cast<float>(state[2]);
-            auto thte_min = nb::cast<float>(state[3]);
-            auto thte_max = nb::cast<float>(state[4]);
-            auto n_logp = nb::cast<std::size_t>(state[5]);
-            auto n_thetae = nb::cast<std::size_t>(state[6]);
-            auto tbl_bytes = nb::cast<nb::bytes>(state[7]);
+            auto ver = nb::cast<int>(state[0]);
+            if (ver != 1) {
+                throw std::runtime_error(
+                    "lut_data: unsupported pickled object version");
+            }
+            auto lifter = nb::cast<Lft>(state[1]);
+            auto pmin = nb::cast<float>(state[2]);
+            auto pmax = nb::cast<float>(state[3]);
+            auto thte_min = nb::cast<float>(state[4]);
+            auto thte_max = nb::cast<float>(state[5]);
+            auto n_logp = nb::cast<std::size_t>(state[6]);
+            auto n_thetae = nb::cast<std::size_t>(state[7]);
+            auto tbl_bytes = nb::cast<nb::bytes>(state[8]);
 
             // Reconstruct the vector from the raw bytes
             const std::size_t n_floats = n_logp * n_thetae;
+            const std::size_t expected_bytes = n_floats * sizeof(float);
+            if (static_cast<std::size_t>(tbl_bytes.size()) != expected_bytes) {
+                throw std::runtime_error(
+                    "lut_data: serialized table size mismatch");
+            }
             const float* src =
                 reinterpret_cast<const float*>(tbl_bytes.c_str());
             std::vector<float> table(src, src + n_floats);

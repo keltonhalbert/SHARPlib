@@ -368,7 +368,12 @@ struct lut_data {
                              (thte_max - thte_min)),
           m_delta_logp_inv(static_cast<float>(n_logp - 1) /
                            (std::log(pmin) - std::log(pmax))),
-          m_LUT_pcl_tmpk(std::move(table)) {}
+          m_LUT_pcl_tmpk(std::move(table)) {
+        if (m_LUT_pcl_tmpk.size() != num_logp * num_thetae) {
+            throw std::invalid_argument(
+                "lut_data: table size does not match dimensions");
+        }
+    }
 
     /**
      * \author Kelton Halbert - NWS Storm Prediction Center
