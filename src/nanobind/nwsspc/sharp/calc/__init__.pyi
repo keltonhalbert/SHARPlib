@@ -9,4 +9,4 @@ from . import (
 )
 
 
-__version_tuple__: tuple = (1, 4, 0)
+__version_tuple__: tuple = (1, 5, 0)
