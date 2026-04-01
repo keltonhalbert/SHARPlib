@@ -279,6 +279,16 @@ struct lut_data {
     std::vector<float> m_LUT_pcl_tmpk;
 
     /**
+     * \brief Dispatch tag for constructing from serialized data
+     */
+    struct from_serialized_t {};
+
+    /**
+     * \brief Dispatch tag for constructing from serialized data
+     */
+    static constexpr from_serialized_t from_serialized{};
+
+    /**
      * \author Kelton Halbert - NWS Storm Prediction Center
      *
      * \brief Create a pseudoadiabatic lookup table (LUT)
@@ -322,6 +332,43 @@ struct lut_data {
         }
         generate_table();
     }
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Create a pseudoadiabatic lookup table (LUT)
+     *
+     * Construct the pseudoadiabatic lookup table (LUT) using
+     * the provided lifter and LUT configuration options. This
+     * lookup data is safe to share with many threads, but each
+     * thread must use its own sharp::lifter_lut. This constructor
+     * is intended only for loading serialized data.
+     *
+     * \param   lifter      Parcel lifting function/functor
+     * \param   pmin        Minimum Pressure (Pa)
+     * \param   pmax        Maximum pressure (Pa)
+     * \param   thte_min    Minimum theta-e (K)
+     * \param   thte_max    Maximum theta-e (K)
+     * \param   n_logp      Number of logarithmic pressure levels
+     * \param   n_thetae    Number of theta-e levels
+     * \param   table       Previously constructed LUT data.
+     */
+    lut_data(from_serialized_t, Lft lifter, float pmin, float pmax,
+             float thte_min, float thte_max, std::size_t n_logp,
+             std::size_t n_thetae, std::vector<float> table)
+        : m_lifter(std::move(lifter)),
+          pres_min(pmin),
+          pres_max(pmax),
+          thetae_min(thte_min),
+          thetae_max(thte_max),
+          num_logp(n_logp),
+          num_thetae(n_thetae),
+          m_logp_max(std::log(pmax)),
+          m_delta_thetae_inv(static_cast<float>(n_thetae - 1) /
+                             (thte_max - thte_min)),
+          m_delta_logp_inv(static_cast<float>(n_logp - 1) /
+                           (std::log(pmin) - std::log(pmax))),
+          m_LUT_pcl_tmpk(std::move(table)) {}
 
     /**
      * \author Kelton Halbert - NWS Storm Prediction Center
