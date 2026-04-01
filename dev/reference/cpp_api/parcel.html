@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>parcel &#8212; SHARPlib v1.5.0.dev Manual</title>
+    <title>parcel &#8212; SHARPlib v1.4.0-2-gdbb67e4 Manual</title>
   
   
   
@@ -39,14 +39,14 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=f8f0f945"></script>
+    <script src="../../_static/documentation_options.js?v=ea36c55f"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/cpp_api/parcel';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://keltonhalbert.github.io/SHARPlib/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.4.0-2-gdbb67e4';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
@@ -56,7 +56,7 @@
     <link rel="prev" title="params" href="params.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.5.0.dev" />
+  <meta name="docsearch:version" content="1.4.0-2-gdbb67e4" />
     <meta name="docbuild:last-update" content="Apr 01, 2026"/>
   </head>
   
@@ -691,6 +691,32 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp8lut_data8lut_dataE17from_serialized_t3LftffffNSt6size_tENSt6size_tENSt6vectorIfEE">
+<span id="_CPPv3N5sharp8lut_data8lut_dataE17from_serialized_t3LftffffNSt6size_tENSt6size_tENSt6vectorIfEE"></span><span id="_CPPv2N5sharp8lut_data8lut_dataE17from_serialized_t3LftffffNSt6size_tENSt6size_tENSt6vectorIfEE"></span><span id="sharp::lut_data::lut_data__from_serialized_t.Lft.float.float.float.float.std::s.std::s.std::vector:float:"></span><span class="target" id="structsharp_1_1lut__data_1a68dff2729e8ec77b38d9a66963056f46"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lut_data</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5sharp8lut_data17from_serialized_tE" title="sharp::lut_data::from_serialized_t"><span class="n"><span class="pre">from_serialized_t</span></span></a>, <a class="reference internal" href="#_CPPv4I0EN5sharp8lut_dataE" title="sharp::lut_data::Lft"><span class="n"><span class="pre">Lft</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">lifter</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pmin</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pmax</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">thte_min</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">thte_max</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n_logp</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n_thetae</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">table</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5sharp8lut_data8lut_dataE17from_serialized_t3LftffffNSt6size_tENSt6size_tENSt6vectorIfEE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a pseudoadiabatic lookup table (LUT) </p>
+<p><dl class="simple">
+<dt><strong>Author</strong></dt><dd><p>Kelton Halbert - NWS Storm Prediction Center</p>
+</dd>
+</dl>
+</p>
+<p>Construct the pseudoadiabatic lookup table (LUT) using the provided lifter and LUT configuration options. This lookup data is safe to share with many threads, but each thread must use its own <a class="reference internal" href="#structsharp_1_1lifter__lut"><span class="std std-ref">sharp::lifter_lut</span></a>. This constructor is intended only for loading serialized data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lifter</strong> – <a class="reference internal" href="#structsharp_1_1Parcel"><span class="std std-ref">Parcel</span></a> lifting function/functor </p></li>
+<li><p><strong>pmin</strong> – Minimum Pressure (Pa) </p></li>
+<li><p><strong>pmax</strong> – Maximum pressure (Pa) </p></li>
+<li><p><strong>thte_min</strong> – Minimum theta-e (K) </p></li>
+<li><p><strong>thte_max</strong> – Maximum theta-e (K) </p></li>
+<li><p><strong>n_logp</strong> – Number of logarithmic pressure levels </p></li>
+<li><p><strong>n_thetae</strong> – Number of theta-e levels </p></li>
+<li><p><strong>table</strong> – Previously constructed LUT data. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5sharp8lut_data16get_logp_indicesEKf">
 <span id="_CPPv3NK5sharp8lut_data16get_logp_indicesEKf"></span><span id="_CPPv2NK5sharp8lut_data16get_logp_indicesEKf"></span><span id="sharp::lut_data::get_logp_indices__floatCC"></span><span class="target" id="structsharp_1_1lut__data_1a6a1f2d3a583311607dee804c2317324d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_logp_indices</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pres</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5sharp8lut_data16get_logp_indicesEKf" title="Link to this definition">#</a><br /></dt>
 <dd><p>Get the bounding vertical indices for a given pressure. </p>
@@ -832,6 +858,21 @@
 </dd></dl>
 
 </div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp8lut_data15from_serializedE">
+<span id="_CPPv3N5sharp8lut_data15from_serializedE"></span><span id="_CPPv2N5sharp8lut_data15from_serializedE"></span><span id="sharp::lut_data::from_serialized__from_serialized_t"></span><span class="target" id="structsharp_1_1lut__data_1a4ec403e7403f36e85c4fed7c7d2cdace"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp8lut_data17from_serialized_tE" title="sharp::lut_data::from_serialized_t"><span class="n"><span class="pre">from_serialized_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">from_serialized</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5sharp8lut_data15from_serializedE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Dispatch tag for constructing from serialized data. </p>
+</dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5sharp8lut_data17from_serialized_tE">
+<span id="_CPPv3N5sharp8lut_data17from_serialized_tE"></span><span id="_CPPv2N5sharp8lut_data17from_serialized_tE"></span><span id="sharp::lut_data::from_serialized_t"></span><span class="target" id="structsharp_1_1lut__data_1_1from__serialized__t"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">from_serialized_t</span></span></span><a class="headerlink" href="#_CPPv4N5sharp8lut_data17from_serialized_tE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Dispatch tag for constructing from serialized data. </p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="cpp struct">
@@ -1496,6 +1537,7 @@
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN5sharp8lut_dataE"><code class="docutils literal notranslate"><span class="pre">sharp::lut_data</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp8lut_data8lut_dataE3LftffffNSt6size_tENSt6size_tE"><code class="docutils literal notranslate"><span class="pre">lut_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp8lut_data8lut_dataE17from_serialized_t3LftffffNSt6size_tENSt6size_tENSt6vectorIfEE"><code class="docutils literal notranslate"><span class="pre">lut_data()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK5sharp8lut_data16get_logp_indicesEKf"><code class="docutils literal notranslate"><span class="pre">get_logp_indices()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK5sharp8lut_data17find_thetae_indexEKfKNSt6size_tEKNSt6size_tEKf"><code class="docutils literal notranslate"><span class="pre">find_thetae_index()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK5sharp8lut_data15bilinear_interpEKNSt6size_tEKNSt6size_tEKfKNSt6size_tEKNSt6size_tEKf"><code class="docutils literal notranslate"><span class="pre">bilinear_interp()</span></code></a></li>
@@ -1510,6 +1552,8 @@
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp8lut_data18m_delta_thetae_invE"><code class="docutils literal notranslate"><span class="pre">m_delta_thetae_inv</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp8lut_data16m_delta_logp_invE"><code class="docutils literal notranslate"><span class="pre">m_delta_logp_inv</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp8lut_data14m_LUT_pcl_tmpkE"><code class="docutils literal notranslate"><span class="pre">m_LUT_pcl_tmpk</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp8lut_data15from_serializedE"><code class="docutils literal notranslate"><span class="pre">from_serialized</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N5sharp8lut_data17from_serialized_tE"><code class="docutils literal notranslate"><span class="pre">sharp::lut_data::from_serialized_t</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN5sharp10lifter_lutE"><code class="docutils literal notranslate"><span class="pre">sharp::lifter_lut</span></code></a><ul class="nav section-nav flex-column">
