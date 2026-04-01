@@ -33,6 +33,11 @@
     {
         "version": "v1.3.0",
         "url": "https://keltonhalbert.github.io/SHARPlib/v1.3.0",
+        "is_latest": false
+    },
+    {
+        "version": "v1.4.0",
+        "url": "https://keltonhalbert.github.io/SHARPlib/v1.4.0",
         "is_latest": true
     }
 ]
