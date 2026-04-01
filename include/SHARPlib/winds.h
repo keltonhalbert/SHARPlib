@@ -244,7 +244,7 @@ struct WindComponents {
  * sharp::HeightLayer, returning the vector components.
  *
  * \param   layer       {bottom, top}
- * \param   coordinate  (pressure (Pa) or height (m))
+ * \param   coordinate  (pressure (Pa) or height (m AGL))
  * \param   u_wind      (m/s)
  * \param   v_wind      (m/s)
  * \param   N           (length of arrays)
@@ -261,11 +261,20 @@ template <typename Layer>
     float u_bot, u_top;
     float v_bot, v_top;
     if constexpr (layer.coord == LayerCoordinate::pressure) {
+        if (layer.bottom > coordinate[0]) layer.bottom = coordinate[0];
+        if (layer.top < coordinate[N - 1]) layer.top = coordinate[N - 1];
+
         u_bot = interp_pressure(layer.bottom, coordinate, u_wind, N);
         v_bot = interp_pressure(layer.bottom, coordinate, v_wind, N);
         u_top = interp_pressure(layer.top, coordinate, u_wind, N);
         v_top = interp_pressure(layer.top, coordinate, v_wind, N);
     } else {
+        layer.bottom += coordinate[0];
+        layer.top += coordinate[0];
+
+        if (layer.bottom < coordinate[0]) layer.bottom = coordinate[0];
+        if (layer.top > coordinate[N - 1]) layer.top = coordinate[N - 1];
+
         u_bot = interp_height(layer.bottom, coordinate, u_wind, N);
         v_bot = interp_height(layer.bottom, coordinate, v_wind, N);
         u_top = interp_height(layer.top, coordinate, u_wind, N);

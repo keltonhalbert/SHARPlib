@@ -18,7 +18,13 @@
 #include <SHARPlib/layer.h>
 #include <SHARPlib/thermo.h>
 
+#include <algorithm>
+#include <cmath>
 #include <cstddef>
+#include <memory>
+#include <stdexcept>
+#include <tuple>
+#include <vector>
 
 namespace sharp {
 
@@ -44,7 +50,15 @@ namespace sharp {
  * the parcel lifting algorithm to their specifications.
  */
 struct lifter_wobus {
+    /**
+     * \brief Whether the parcel should be lifted from the LCL or last level
+     */
     static constexpr bool lift_from_lcl = true;
+
+    /**
+     * \brief The type of moist adiabat to use, as defined by sharp::adiabat
+     */
+    static constexpr adiabat ma_type = adiabat::pseudo_liq;
 
     /**
      * \brief The iterative convergence criteria (K)
@@ -107,6 +121,9 @@ struct lifter_wobus {
  * the parcel lifting algorithm to their specifications.
  */
 struct lifter_cm1 {
+    /**
+     * \brief Whether the parcel should be lifted from the LCL or last level
+     */
     static constexpr bool lift_from_lcl = false;
 
     /**
@@ -188,30 +205,551 @@ struct lifter_cm1 {
     }
 };
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Pseudoadiabatic ascent lookup table (LUT)
+ *
+ * This data structure contains everything necessary to construct,
+ * store, and interrogate a pseudoadiabatic ascent lookup table (LUT).
+ * The LUT is generated using the passed lifter (e.g. sharp::lifter_cm1).
+ * Due to the complex nature of reversible adiabatic ascent, it is
+ * not supported in this lookup table. Any sharp::adiabat::adiab_liq
+ * or sharp::adiabat::adiab_ice configured lifters will throw an error.
+ *
+ * This is intended to be used by sharp::lifter_lut for actual parcel
+ * lifting operations. While this data structure can be accessed by
+ * multiple threads, each thread must have its own sharp::lifter_lut.
+ */
+template <typename Lft>
+struct lut_data {
+    /**
+     * \brief The moist adiabatic ascent solver to use
+     */
+    Lft m_lifter;
+
+    /**
+     * \brief The minimum pressure of the lookup table
+     */
+    const float pres_min;
+
+    /**
+     * \brief The maximum pressure of the lookup table
+     */
+    const float pres_max;
+
+    /**
+     * \brief The minimum thetae of the lookup table
+     */
+    const float thetae_min;
+
+    /**
+     * \brief The maximum thetae of the lookup table
+     */
+    const float thetae_max;
+
+    /**
+     * \brief The number of pressure levels (in log space) for the LUT
+     */
+    const std::size_t num_logp;
+
+    /**
+     * \brief The number of thetae levels for the LUT
+     */
+    const std::size_t num_thetae;
+
+    /**
+     * \brief Storage for the maximum logp
+     */
+    const float m_logp_max;
+
+    /**
+     * \brief Storage for inverse delta theta
+     */
+    const float m_delta_thetae_inv;
+
+    /**
+     * \brief Storage for inverse delta logarithmic pressure
+     */
+    const float m_delta_logp_inv;
+
+    /**
+     * \brief The parcel temperature LUT
+     */
+    std::vector<float> m_LUT_pcl_tmpk;
+
+    /**
+     * \brief Dispatch tag for constructing from serialized data
+     */
+    struct from_serialized_t {};
+
+    /**
+     * \brief Dispatch tag for constructing from serialized data
+     */
+    static constexpr from_serialized_t from_serialized{};
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Create a pseudoadiabatic lookup table (LUT)
+     *
+     * Construct the pseudoadiabatic lookup table (LUT) using
+     * the provided lifter and LUT configuration options. This
+     * lookup data is safe to share with many threads, but each
+     * thread must use its own sharp::lifter_lut.
+     *
+     * \param   lifter      Parcel lifting function/functor
+     * \param   pmin        Minimum Pressure (Pa)
+     * \param   pmax        Maximum pressure (Pa)
+     * \param   thte_min    Minimum theta-e (K)
+     * \param   thte_max    Maximum theta-e (K)
+     * \param   n_logp      Number of logarithmic pressure levels
+     * \param   n_thetae    Number of theta-e levels
+     */
+    explicit lut_data(Lft lifter, float pmin = 5000.0f, float pmax = 110000.0f,
+                      float thte_min = 210.0f, float thte_max = 430.0f,
+                      std::size_t n_logp = 201, std::size_t n_thetae = 221)
+        : m_lifter(std::move(lifter)),
+          pres_min(pmin),
+          pres_max(pmax),
+          thetae_min(thte_min),
+          thetae_max(thte_max),
+          num_logp(n_logp),
+          num_thetae(n_thetae),
+          m_logp_max(std::log(pmax)),
+          m_delta_thetae_inv(static_cast<float>(n_thetae - 1) /
+                             (thte_max - thte_min)),
+          m_delta_logp_inv(static_cast<float>(n_logp - 1) /
+                           (std::log(pmin) - std::log(pmax))) {
+        if (m_lifter.ma_type == sharp::adiabat::adiab_liq ||
+            m_lifter.ma_type == sharp::adiabat::adiab_ice) {
+            throw std::invalid_argument(
+                "CRITICAL ERROR: sharp::lut_data does not support reversible "
+                "adiabatic ascent (adiab_liq or adiab_ice). The 2D lookup "
+                "table cannot track conserved total water mass. Please "
+                "configure the lifter to use pseudo_liq or pseudo_ice "
+                "instead.");
+        }
+        generate_table();
+    }
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Create a pseudoadiabatic lookup table (LUT)
+     *
+     * Construct the pseudoadiabatic lookup table (LUT) using
+     * the provided lifter and LUT configuration options. This
+     * lookup data is safe to share with many threads, but each
+     * thread must use its own sharp::lifter_lut. This constructor
+     * is intended only for loading serialized data.
+     *
+     * \param   lifter      Parcel lifting function/functor
+     * \param   pmin        Minimum Pressure (Pa)
+     * \param   pmax        Maximum pressure (Pa)
+     * \param   thte_min    Minimum theta-e (K)
+     * \param   thte_max    Maximum theta-e (K)
+     * \param   n_logp      Number of logarithmic pressure levels
+     * \param   n_thetae    Number of theta-e levels
+     * \param   table       Previously constructed LUT data.
+     */
+    lut_data(from_serialized_t, Lft lifter, float pmin, float pmax,
+             float thte_min, float thte_max, std::size_t n_logp,
+             std::size_t n_thetae, std::vector<float> table)
+        : m_lifter(std::move(lifter)),
+          pres_min(pmin),
+          pres_max(pmax),
+          thetae_min(thte_min),
+          thetae_max(thte_max),
+          num_logp(n_logp),
+          num_thetae(n_thetae),
+          m_logp_max(std::log(pmax)),
+          m_delta_thetae_inv(static_cast<float>(n_thetae - 1) /
+                             (thte_max - thte_min)),
+          m_delta_logp_inv(static_cast<float>(n_logp - 1) /
+                           (std::log(pmin) - std::log(pmax))),
+          m_LUT_pcl_tmpk(std::move(table)) {
+        if (m_LUT_pcl_tmpk.size() != num_logp * num_thetae) {
+            throw std::invalid_argument(
+                "lut_data: table size does not match dimensions");
+        }
+    }
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Get the bounding vertical indices for a given pressure
+     *
+     * Returns the bounding vertical indices for the LUT given a
+     * pressure value, along with the interpolation weight.
+     *
+     * \param   pres    Pa
+     *
+     * \return  tuple of (k0, k1, weight_k): bottom index, top index,
+     *          and interpolation weight
+     */
+    [[nodiscard]] inline std::tuple<std::size_t, std::size_t, float>
+    get_logp_indices(const float pres) const {
+        const float target_logp = std::log(pres);
+
+        const float frac_k =
+            std::max((target_logp - m_logp_max) * m_delta_logp_inv, 0.0f);
+        const std::size_t k0 =
+            std::min(static_cast<std::size_t>(frac_k), num_logp - 2);
+
+        const std::size_t k1 = k0 + 1;
+        const float weight_k =
+            std::clamp(frac_k - static_cast<float>(k0), 0.0f, 1.0f);
+
+        return {k0, k1, weight_k};
+    }
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Get the fractional thetae coordinate index
+     *
+     * Returns the fractional index for the thetae coordinate
+     * of the LUT given the lcl temperature and the bounding
+     * vertical coordinate indices, along with the vertical
+     * interpolation weight.
+     *
+     * \param   lcl_tmpk    lifted condensation level temperature (K)
+     * \param   k0          The bottom bounding index of pressure
+     * \param   k1          The top bounding index of pressure
+     * \param   weight_k    The vertical interpolation weight
+     *
+     * \return  fractional index of thetae axis for LUT
+     */
+    [[nodiscard]] inline float find_thetae_index(const float lcl_tmpk,
+                                                 const std::size_t k0,
+                                                 const std::size_t k1,
+                                                 const float weight_k) const {
+        float frac_i_lo = 0.0f;
+        float frac_i_hi = static_cast<float>(num_thetae - 1);
+        float frac_i_mid = 0.0f;
+
+        constexpr int max_iter = 20;
+        constexpr float tol = 0.005f;  // Kelvin
+        const float* lut = m_LUT_pcl_tmpk.data();
+        for (int step = 0; step < max_iter; ++step) {
+            frac_i_mid = 0.5f * (frac_i_lo + frac_i_hi);
+
+            const std::size_t i0 =
+                std::min(static_cast<std::size_t>(frac_i_mid), num_thetae - 2);
+            const std::size_t i1 = i0 + 1;
+            const float weight_i =
+                std::clamp(frac_i_mid - static_cast<float>(i0), 0.0f, 1.0f);
+
+            const std::size_t idx1 = i0 * num_logp + k0;
+            const std::size_t idx2 = i0 * num_logp + k1;
+            const std::size_t idx3 = i1 * num_logp + k0;
+            const std::size_t idx4 = i1 * num_logp + k1;
+
+            const float t0 = sharp::lerp(lut[idx1], lut[idx2], weight_k);
+            const float t1 = sharp::lerp(lut[idx3], lut[idx4], weight_k);
+            const float t_interp = sharp::lerp(t0, t1, weight_i);
+
+            const float residual = t_interp - lcl_tmpk;
+            if (std::abs(residual) < tol) break;
+
+            if (residual > 0.0f) {
+                frac_i_hi = frac_i_mid;
+            } else {
+                frac_i_lo = frac_i_mid;
+            }
+        }
+        return frac_i_mid;
+    }
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Perform bilinear interpolation of LUT
+     *
+     * Performs the bilinear interpolation of the LUT to
+     * return a parcel temperature along a pseudoadiabat.
+     *
+     * \param   i0  thetae left bounding index
+     * \param   i1  thetae right bounding index
+     * \param   wi  thetae interpolation weight
+     * \param   k0  pressure bottom bounding index
+     * \param   k1  pressure top bounding index
+     * \param   wk  pressure interpolation weight
+     *
+     * \return  parcel temperature (K)
+     */
+    [[nodiscard]] inline float bilinear_interp(
+        const std::size_t i0, const std::size_t i1, const float wi,
+        const std::size_t k0, const std::size_t k1, const float wk) const {
+        const float* lut = m_LUT_pcl_tmpk.data();
+        const float val00 = lut[i0 * num_logp + k0];
+        const float val01 = lut[i0 * num_logp + k1];
+        const float val10 = lut[i1 * num_logp + k0];
+        const float val11 = lut[i1 * num_logp + k1];
+
+        const float val0 = sharp::lerp(val00, val01, wk);
+        const float val1 = sharp::lerp(val10, val11, wk);
+        return sharp::lerp(val0, val1, wi);
+    }
+
+   private:
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Constructs pseudoadiabatic LUT
+     *
+     * Called by the constructor, this creates and fills
+     * the pseudoadiabatic parcel ascent LUT.
+     */
+    inline void generate_table() {
+        std::vector<float> logp_coord(num_logp);
+        std::vector<float> thetae_coord(num_thetae);
+
+        const float delta_thetae = (thetae_max - thetae_min) / (num_thetae - 1);
+        for (std::size_t i = 0; i < num_thetae; ++i) {
+            thetae_coord[i] = thetae_min + i * delta_thetae;
+        }
+
+        const float logp_min = std::log(pres_min);
+        const float delta_logp = (logp_min - m_logp_max) / (num_logp - 1);
+        for (std::size_t i = 0; i < num_logp; ++i) {
+            logp_coord[i] = m_logp_max + i * delta_logp;
+        }
+
+        const std::size_t size_2D = num_logp * num_thetae;
+        m_LUT_pcl_tmpk.resize(size_2D);
+
+        for (std::size_t i = 0; i < num_thetae; ++i) {
+            const float thetae_target = thetae_coord[i];
+            const float tmpk = solve_tmpk_for_thetae(pres_max, thetae_target);
+
+            m_lifter.setup(pres_max, tmpk);
+            float pres_curr = pres_max;
+            float tmpk_curr = tmpk;
+
+            for (std::size_t k = 0; k < num_logp; ++k) {
+                const float pres = std::exp(logp_coord[k]);
+                if (k > 0) {
+                    tmpk_curr = m_lifter(pres_curr, tmpk_curr, pres);
+                }
+
+                const std::size_t idx_2D = i * num_logp + k;
+                m_LUT_pcl_tmpk[idx_2D] = tmpk_curr;
+
+                pres_curr = pres;
+            }
+        }
+    }
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Finds and returns a temperature for a given pressure and thetae.
+     *
+     * Iteratively inverts theta-e to find the saturated temperature at a
+     * single pressure level. Used for finding the starting parcel
+     * temperature during LUT construction.
+     *
+     * \param   pressure            (Pa)
+     * \param   thetae_target       (K)
+     *
+     * \return  lcl_temperature     (K)
+     */
+    [[nodiscard]] float solve_tmpk_for_thetae(float pressure,
+                                              float thetae_target) const {
+        float tmpk_lo = 200.0f;
+        float tmpk_hi = 330.0f;
+        float tmpk_mid = ZEROCNK;
+
+        const float tol = 0.001f;
+        const std::size_t max_iters = 50;
+
+        for (std::size_t i = 0; i < max_iters; ++i) {
+            tmpk_mid = 0.5f * (tmpk_lo + tmpk_hi);
+            const float curr_thetae =
+                sharp::thetae(pressure, tmpk_mid, tmpk_mid);
+
+            if (std::abs(curr_thetae - thetae_target) < tol) {
+                return tmpk_mid;
+            }
+
+            if (curr_thetae < thetae_target) {
+                tmpk_lo = tmpk_mid;
+            } else {
+                tmpk_hi = tmpk_mid;
+            }
+        }
+        return tmpk_mid;
+    }
+};
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Parcel lifter functor for LUT based calculations.
+ *
+ * This functor is used to wrap sharp::lut_data, which creates
+ * a pseudoadiabatic ascent lookup table based on the type of
+ * parcel lifter used to construct the table. Instead of
+ * directly solving the moist ascent ODEs, this lifter uses
+ * the LUT to perform bilinear interpolation to get the
+ * parcel temperature.
+ *
+ * LUT based parcel ascent only works for pseudoadiabats.
+ * Constructing the LUT with a reversible adiabat type will
+ * result in an error being thrown.
+ */
+template <typename Lft>
+struct lifter_lut {
+    /**
+     * \brief Whether the parcel should be lifted from the LCL or last level
+     */
+    static constexpr bool lift_from_lcl = Lft::lift_from_lcl;
+
+    /**
+     * \brief Shared pointer to a previously created LUT
+     */
+    std::shared_ptr<const lut_data<Lft>> m_data;
+
+    /**
+     * Used to signal a fallback to the direct solver
+     */
+    bool m_use_lifter = false;
+
+    /**
+     * Fractional index used to determine the pseudoadiabat
+     */
+    float m_fi = 0.0f;
+
+    /**
+     * An instantiation of a parcel lifter for fallback computation
+     */
+    Lft m_lifter;
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Constructor for lifter_lut
+     *
+     * Constructs lifter_lut given a sared pointer to a previously
+     * generated table.
+     *
+     * \param   data    Shared pointer to a sharp::lut_data
+     */
+    explicit lifter_lut(std::shared_ptr<const lut_data<Lft>> data)
+        : m_data(std::move(data)), m_lifter(m_data->m_lifter) {}
+
+    /**
+     * \author Kelton Halbert - NWS Storm Prediction Center
+     *
+     * \brief Performs a setup step based on the LCL attributes
+     *
+     * Computes the fractional index needed to select the
+     * correct pseudoadiabat for lookup. If the LCL is outside
+     * the table bounds, it falls back to the direct solver.
+     */
+    inline void setup(const float lcl_pres, const float lcl_tmpk) {
+        const auto [k0, k1, wk] = m_data->get_logp_indices(lcl_pres);
+        const std::size_t i_max = m_data->num_thetae - 1;
+
+        const float t_min_bound =
+            sharp::lerp(m_data->m_LUT_pcl_tmpk[0 * m_data->num_logp + k0],
+                        m_data->m_LUT_pcl_tmpk[0 * m_data->num_logp + k1], wk);
+
+        const float t_max_bound = sharp::lerp(
+            m_data->m_LUT_pcl_tmpk[i_max * m_data->num_logp + k0],
+            m_data->m_LUT_pcl_tmpk[i_max * m_data->num_logp + k1], wk);
+
+        if (lcl_tmpk < t_min_bound || lcl_tmpk > t_max_bound ||
+            lcl_pres < m_data->pres_min || lcl_pres > m_data->pres_max) {
+            m_use_lifter = true;
+            m_lifter.setup(lcl_pres, lcl_tmpk);
+            return;
+        }
+
+        m_use_lifter = false;
+        m_fi = m_data->find_thetae_index(lcl_tmpk, k0, k1, wk);
+    }
+
+    /**
+     * \brief Overloads operator() to perform LUT interpolation
+     *
+     * \param   pres        Parcel pressure (Pa)
+     * \param   tmpk        Parcel temperature (K)
+     * \param   new_pres    Final level of parcel after lift (Pa)
+     *
+     * \return  The temperature of the lifted parcel
+     */
+    [[nodiscard]] inline float operator()(const float pres, const float tmpk,
+                                          const float new_pres) {
+        if ((pres == MISSING) || (tmpk == MISSING) || (new_pres == MISSING)) {
+            return MISSING;
+        }
+
+        if (std::isnan(pres) || std::isnan(tmpk) || std::isnan(new_pres)) {
+            return std::nanf("");
+        }
+
+        if (m_use_lifter) {
+            return m_lifter(pres, tmpk, new_pres);
+        }
+
+        if ((new_pres < m_data->pres_min) || (new_pres > m_data->pres_max))
+            return MISSING;
+
+        const std::size_t i0 =
+            std::min(static_cast<std::size_t>(m_fi), m_data->num_thetae - 2);
+        const std::size_t i1 = i0 + 1;
+        const float weight_i =
+            std::clamp(m_fi - static_cast<float>(i0), 0.0f, 1.0f);
+        const auto [k0, k1, weight_k] = m_data->get_logp_indices(new_pres);
+
+        return m_data->bilinear_interp(i0, i1, weight_i, k0, k1, weight_k);
+    }
+
+    /**
+     * \brief Computes the virtual temperature of the parcel
+     * \param   pres        Parcel pressure (Pa)
+     * \param   tmpk        Parcel temperature (K)
+     *
+     * \return  The virtual temperature of the parcel
+     */
+    [[nodiscard]] inline float parcel_virtual_temperature(
+        const float pres, const float tmpk) const {
+        if (m_use_lifter) {
+            return m_lifter.parcel_virtual_temperature(pres, tmpk);
+        } else {
+            return sharp::virtual_temperature(tmpk,
+                                              sharp::mixratio(pres, tmpk));
+        }
+    }
+};
+
 //
 ////////////  END FUNCTORS   ///////////
 
 /**
  * \brief Enum that defines the lifted parcel level (LPL) of origin.
  *
- * The SFC parcel is a surface-based parcel, where the parcel initial attributes
- * are set to the surface pressure, temperature, and dewpoint.
+ * The SFC parcel is a surface-based parcel, where the parcel initial
+ * attributes are set to the surface pressure, temperature, and dewpoint.
  *
- * The FCST parcel is a forecast-surface-based parcel, in which the afternoon
- * surface temperature and dewpoint are estimated and set as the parcel starting
- * values.
+ * The FCST parcel is a forecast-surface-based parcel, in which the
+ * afternoon surface temperature and dewpoint are estimated and set as the
+ * parcel starting values.
  *
- * The MU parcel is the most unstable parcel, in which the parcel attributes are
- * set to the pressure, temperature, and dewpoint of the maximum Theta-E level
- * within the bottom 400 hPa of the profile.
+ * The MU parcel is the most unstable parcel, in which the parcel attributes
+ * are set to the pressure, temperature, and dewpoint of the maximum Theta-E
+ * level within the bottom 400 hPa of the profile.
  *
- * The ML parcel is the mixed-layer parcel, in which the mean theta and water
- * vapor mixing ratio within the lowest 100 hPa are used to estimate a boundary
- * layer mean, and lifted from the surface.
+ * The ML parcel is the mixed-layer parcel, in which the mean theta and
+ * water vapor mixing ratio within the lowest 100 hPa are used to estimate a
+ * boundary layer mean, and lifted from the surface.
  *
- * The USR parcel means that the parcel initial lifting attributes have already
- * been set by the programmer or user, and there is no need for them to be
- * set or modified.
+ * The USR parcel means that the parcel initial lifting attributes have
+ * already been set by the programmer or user, and there is no need for them
+ * to be set or modified.
  */
 enum class LPL : int {
     /**
@@ -244,7 +782,8 @@ enum class LPL : int {
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
  *
- * \brief Data that defines a Parcel, its attributes, and derived quantities.
+ * \brief Data that defines a Parcel, its attributes, and derived
+ * quantities.
  *
  * Contains information about a Parcel's starting level and
  * thermodynamic attributes, as well as paramaters computed
@@ -287,8 +826,8 @@ struct Parcel {
     float mpl_pressure = MISSING;
 
     /**
-     * \brief Parcel Convective Available Potential Energy (J/kg) between the
-     * LFC and EL
+     * \brief Parcel Convective Available Potential Energy (J/kg) between
+     * the LFC and EL
      */
     float cape = 0.0;
 
@@ -344,7 +883,8 @@ struct Parcel {
         PressureLayer dry_lyr = {this->pres, this->lcl_pressure};
         PressureLayer sat_lyr = {this->lcl_pressure, pressure_arr[N - 1]};
 
-        // The LayerIndex excludes the top and bottom for interpolation reasons
+        // The LayerIndex excludes the top and bottom for interpolation
+        // reasons
         const LayerIndex dry_idx = get_layer_index(dry_lyr, pressure_arr, N);
         const LayerIndex sat_idx = get_layer_index(sat_lyr, pressure_arr, N);
 
@@ -384,19 +924,20 @@ struct Parcel {
     /**
      * \author Kelton Halbert - NWS Storm Prediction Center
      *
-     * \brief Find the LFC and EL that bounds the layer with the maximum CAPE
+     * \brief Find the LFC and EL that bounds the layer with the maximum
+     * CAPE
      *
      * Searches the buoyancy array for the LFC and EL combination that
      * results in the most CAPE in the given profile. The buoyancy array is
-     * typically computed by calling sharp::Parcel::lift_parcel. Once the LFC
-     * and EL are found, the values are set in sharp::Parcel::lfc_pres and
-     * sharp::Parcel::eql_pres.
+     * typically computed by calling sharp::Parcel::lift_parcel. Once the
+     * LFC and EL are found, the values are set in sharp::Parcel::lfc_pres
+     * and sharp::Parcel::eql_pres.
      *
      * The value of sharp::Parcel::eql_pres is sharp::MISSING if there there
      * is no qualifying level found within the data bounds (e.g. incomplete
      * data, or an EL above the available data). Any calls to
-     * sharp::Parcel::cape_cinh will still compute CAPE without the presence of
-     * an EL, using the best-available data.
+     * sharp::Parcel::cape_cinh will still compute CAPE without the presence
+     * of an EL, using the best-available data.
      *
      * \param   pres_arr    The pressure coordinate array (Pa)
      * \param   hght_arr    The height coordinate array (meters)
@@ -427,7 +968,8 @@ struct Parcel {
      * - CAPE is 0
      * - sharp::Parcel::eql_pressure is sharp::MISSING
      * - No valid MPL candidate is found within the profile.
-     *     - In this scenario, it likely exceeds the top of the available data.
+     *     - In this scenario, it likely exceeds the top of the available
+     * data.
      *
      * In addition to being returned, the result is stored inside of
      * sharp::Parcel::mpl_pressure.
@@ -523,11 +1065,13 @@ struct Parcel {
      * sharp::HeightLayer, compute and return a mixed-layer
      * Parcel.
      *
-     * \param   mix_layer           sharp::PressureLayer or sharp::HeightLayer
+     * \param   mix_layer           sharp::PressureLayer or
+     * sharp::HeightLayer
      * \param   pressure            Array of pressure (Pa)
      * \param   height              Array of height (meters)
      * \param   pot_temperature     Array of potential temperature (K)
-     * \param   wv_mixratio         Array of water vapor mixing ratio (unitless)
+     * \param   wv_mixratio         Array of water vapor mixing ratio
+     * (unitless)
      * \param   N                   Length of arrays
      * \return sharp::Parcel with mixed-layer values
      */
@@ -572,11 +1116,14 @@ struct Parcel {
      * \param   temperature         Array of temperature (K)
      * \param   virtemp             Array of virtual temperature (K)
      * \param   dewpoint            Array of dewpoint temperature (K)
-     * \param   pcl_virtemp         Writeable array for parcel lifting calcs (K)
-     * \param   buoy_arr            Writeable array for buoyancy calcs (m/s^2)
+     * \param   pcl_virtemp         Writeable array for parcel lifting calcs
+     * (K)
+     * \param   buoy_arr            Writeable array for buoyancy calcs
+     * (m/s^2)
      * \param   N                   Length of arrays
      * \param   search_layer        sharp::PressureLayer or sharp::HeightLay
-     * \param   lifter              The parcel moist adiabatic ascent function
+     * \param   lifter              The parcel moist adiabatic ascent
+     * function
      * \return The most unstable sharp::Parcel within the search layer
      */
     template <typename Lyr, typename Lft>
@@ -643,8 +1190,8 @@ struct DowndraftParcel {
     float cape = 0.0;
 
     /**
-     * \brief DowndraftParcel Convective Inhibition (J/kg) between the LFC and
-     * EL
+     * \brief DowndraftParcel Convective Inhibition (J/kg) between the LFC
+     * and EL
      */
     float cinh = std::nanf("");
 
@@ -795,6 +1342,34 @@ extern template Parcel Parcel::most_unstable_parcel<HeightLayer, lifter_cm1>(
     const float dewpoint[], float pcl_virtemp[], float buoy_arr[],
     const std::ptrdiff_t N);
 
+extern template Parcel
+Parcel::most_unstable_parcel<PressureLayer, lifter_lut<lifter_wobus>>(
+    PressureLayer& search_layer, lifter_lut<lifter_wobus>& lifter,
+    const float pressure[], const float height[], const float temperature[],
+    const float virtemp[], const float dewpoint[], float pcl_virtemp[],
+    float buoy_arr[], const std::ptrdiff_t N);
+
+extern template Parcel
+Parcel::most_unstable_parcel<HeightLayer, lifter_lut<lifter_wobus>>(
+    HeightLayer& search_layer, lifter_lut<lifter_wobus>& lifter,
+    const float pressure[], const float height[], const float temperature[],
+    const float virtemp[], const float dewpoint[], float pcl_virtemp[],
+    float buoy_arr[], const std::ptrdiff_t N);
+
+extern template Parcel
+Parcel::most_unstable_parcel<PressureLayer, lifter_lut<lifter_cm1>>(
+    PressureLayer& search_layer, lifter_lut<lifter_cm1>& lifter,
+    const float pressure[], const float height[], const float temperature[],
+    const float virtemp[], const float dewpoint[], float pcl_virtemp[],
+    float buoy_arr[], const std::ptrdiff_t N);
+
+extern template Parcel
+Parcel::most_unstable_parcel<HeightLayer, lifter_lut<lifter_cm1>>(
+    HeightLayer& search_layer, lifter_lut<lifter_cm1>& lifter,
+    const float pressure[], const float height[], const float temperature[],
+    const float virtemp[], const float dewpoint[], float pcl_virtemp[],
+    float buoy_arr[], const std::ptrdiff_t N);
+
 extern template Parcel Parcel::mixed_layer_parcel<PressureLayer>(
     PressureLayer& mix_layer, const float pressure[], const float height[],
     const float pot_temperature[], const float wv_mixratio[],
@@ -814,6 +1389,14 @@ extern template void Parcel::lift_parcel<lifter_cm1>(lifter_cm1& liftpcl,
                                                      float pcl_vtmpk_arr[],
                                                      const std::ptrdiff_t N);
 
+extern template void Parcel::lift_parcel<lifter_lut<lifter_wobus>>(
+    lifter_lut<lifter_wobus>& liftpcl, const float pressure_arr[],
+    float pcl_vtmpk_arr[], const std::ptrdiff_t N);
+
+extern template void Parcel::lift_parcel<lifter_lut<lifter_cm1>>(
+    lifter_lut<lifter_cm1>& liftpcl, const float pressure_arr[],
+    float pcl_vtmpk_arr[], const std::ptrdiff_t N);
+
 extern template void DowndraftParcel::lower_parcel<lifter_wobus>(
     lifter_wobus& liftpcl, const float pressure_arr[], float pcl_tmpk_arr[],
     const std::ptrdiff_t N);
@@ -821,6 +1404,14 @@ extern template void DowndraftParcel::lower_parcel<lifter_wobus>(
 extern template void DowndraftParcel::lower_parcel<lifter_cm1>(
     lifter_cm1& liftpcl, const float pressure_arr[], float pcl_tmpk_arr[],
     const std::ptrdiff_t N);
+
+extern template void DowndraftParcel::lower_parcel<lifter_lut<lifter_wobus>>(
+    lifter_lut<lifter_wobus>& liftpcl, const float pressure_arr[],
+    float pcl_tmpk_arr[], const std::ptrdiff_t N);
+
+extern template void DowndraftParcel::lower_parcel<lifter_lut<lifter_cm1>>(
+    lifter_lut<lifter_cm1>& liftpcl, const float pressure_arr[],
+    float pcl_tmpk_arr[], const std::ptrdiff_t N);
 
 /// @endcond
 

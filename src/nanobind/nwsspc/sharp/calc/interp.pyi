@@ -34,7 +34,7 @@ def interp_pressure(pres_val: float, pres_arr: Annotated[NDArray[numpy.float32],
     ----------
     pres_val : float 
         The coordinate pressure value to interpolate to (Pa)
-    pres_arr : nump.ndarray[dtype=float32] 
+    pres_arr : numpy.ndarray[dtype=float32] 
         1D numpy array of pressure values to interpolate from (Pa)
     data_arr : numpy.ndarray[dtype=float32]
         1D numpy array of data values to interpolate from 

@@ -9,13 +9,84 @@
 #include <SHARPlib/layer.h>
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/thermo.h>
+#include <fmt/core.h>
 
 #include <cstddef>
 #include <tuple>
 
+#include "binding_utils.h"
 #include "sharplib_types.h"
 
 namespace nb = nanobind;
+
+template <typename Lft>
+void bind_wetbulb(nb::module_& mod, const char* scalar_doc_template,
+                  const char* array_doc_template, const char* lifter_name) {
+    std::string scalar_doc = fmt::format(scalar_doc_template, lifter_name);
+    mod.def(
+        "wetbulb",
+        [](Lft& lifter, float pressure, float temperature, float dewpoint) {
+            return sharp::wetbulb(lifter, pressure, temperature, dewpoint);
+        },
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
+        nb::arg("dewpoint"), scalar_doc.c_str());
+
+    std::string array_doc = fmt::format(array_doc_template, lifter_name);
+    mod.def(
+        "wetbulb",
+        [](Lft& lifter, const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr,
+           const_prof_arr_t dwpk_arr) {
+            check_equal_sizes(pres_arr, tmpk_arr, dwpk_arr);
+            const std::size_t NZ = pres_arr.size();
+            auto pres = pres_arr.view();
+            auto tmpk = tmpk_arr.view();
+            auto dwpk = dwpk_arr.view();
+
+            return make_output_array(NZ, [&](float* out) {
+                for (std::size_t k = 0; k < NZ; ++k) {
+                    out[k] = sharp::wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
+                }
+            });
+        },
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
+        nb::arg("dewpoint"), array_doc.c_str());
+}
+
+template <typename Lft>
+void bind_theta_wetbulb(nb::module_& mod, const char* scalar_doc_template,
+                        const char* array_doc_template,
+                        const char* lifter_name) {
+    std::string scalar_doc = fmt::format(scalar_doc_template, lifter_name);
+    mod.def(
+        "theta_wetbulb",
+        [](Lft& lifter, float pressure, float temperature, float dewpoint) {
+            return sharp::theta_wetbulb(lifter, pressure, temperature,
+                                        dewpoint);
+        },
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
+        nb::arg("dewpoint"), scalar_doc.c_str());
+
+    std::string array_doc = fmt::format(array_doc_template, lifter_name);
+    mod.def(
+        "theta_wetbulb",
+        [](Lft& lifter, const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr,
+           const_prof_arr_t dwpk_arr) {
+            check_equal_sizes(pres_arr, tmpk_arr, dwpk_arr);
+            const std::size_t NZ = pres_arr.size();
+            auto pres = pres_arr.view();
+            auto tmpk = tmpk_arr.view();
+            auto dwpk = dwpk_arr.view();
+
+            return make_output_array(NZ, [&](float* out) {
+                for (std::size_t k = 0; k < NZ; ++k) {
+                    out[k] =
+                        sharp::theta_wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
+                }
+            });
+        },
+        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
+        nb::arg("dewpoint"), array_doc.c_str());
+}
 
 inline void make_thermo_bindings(nb::module_ m) {
     nb::module_ m_therm = m.def_submodule(
@@ -32,6 +103,130 @@ inline void make_thermo_bindings(nb::module_ m) {
                "Use a pseudoadiabatic parcel with liquid and ice processes")
         .value("adiab_ice", sharp::adiabat::adiab_ice,
                "Use an adiabatic parcel with liquid and ice processes");
+
+    const char* wetbulb_scalar_template_doc =
+        R"pbdoc(
+Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
+temperature (K), and dewpoint temperature (K).
+
+First, it lifts a parcel with the given pressure, temperature, and
+dewpoint temperature to its Lifted Condensation Level (LCL). To compute the 
+temperature and pressure of the LCL, an approximation is used. See the 
+lcl_temperature function for further detail. 
+
+After the parcel has reached the LCL, the lifter passed to the function 
+lowers the parcel to its initial pressure level along a moist adiabat or 
+pseudoadiabat. 
+
+Parameters
+----------
+lifter : {}
+    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+pressure : float 
+    The ambient pressure (Pa)
+temperature : float 
+    The ambient temperature (K)
+dewpoint : float 
+    The ambient dewpoint temperature (K)
+
+Returns
+-------
+float
+    The wetbulb temperature (K)
+    )pbdoc";
+
+    const char* wetbulb_array_template_doc =
+        R"pbdoc(
+Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
+temperature (K), and dewpoint temperature (K).
+
+First, it lifts a parcel with the given pressure, temperature, and
+dewpoint temperature to its Lifted Condensation Level (LCL). To compute the 
+temperature and pressure of the LCL, an approximation is used. See the 
+lcl_temperature function for further detail. 
+
+After the parcel has reached the LCL, the lifter passed to the function 
+lowers the parcel to its initial pressure level along a moist adiabat or 
+pseudoadiabat. 
+
+Parameters
+----------
+lifter : {}
+    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient pressures (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient temperatures (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient dewpoint temperatures (K)
+
+Returns
+-------
+numpy.ndarray[dtype=float32]
+    1D NumPy array of wetbulb temperatures (K)
+    )pbdoc";
+
+    const char* theta_wb_scalar_template_doc =
+        R"pbdoc(
+Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
+temperature (K), and dewpoint temperature (K).
+
+First, it lifts a parcel with the given pressure, temperature, 
+and dewpoint temperature to its Lifted Condensation Level (LCL). 
+To compute the temperature and pressure of the LCL, an approximation 
+is used. See the lcl_temperature function for further detail. 
+
+After the parcel has reached the LCL, the lifter passed to the function 
+lowers the parcel to the standard parcel reference pressure level 
+(1000 hPa) along a moist adiabat.
+
+Parameters
+----------
+lifter : {}
+    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+pressure : float 
+    the ambient air pressure (Pa)
+temperature : float 
+    the ambient air temperature (K)
+dewpoint : float 
+    the ambient dewpoint temperature (K)
+
+Returns
+-------
+float
+    The wet-bulb potential temperature (K)
+    )pbdoc";
+
+    const char* theta_wb_array_template_doc =
+        R"pbdoc(
+Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
+temperature (K), and dewpoint temperature (K).
+
+First, it lifts a parcel with the given pressure, temperature, 
+and dewpoint temperature to its Lifted Condensation Level (LCL). 
+To compute the temperature and pressure of the LCL, an approximation 
+is used. See the lcl_temperature function for further detail. 
+
+After the parcel has reached the LCL, the lifter passed to the function 
+lowers the parcel to the standard parcel reference pressure level 
+(1000 hPa) along a moist adiabat.
+
+Parameters
+----------
+lifter : {}
+    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
+pressure : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient air pressure (Pa)
+temperature : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient air temperature (K)
+dewpoint : numpy.ndarray[dtype=float32] 
+    1D NumPy array of ambient dewpoint temperature (K)
+
+Returns
+-------
+numpy.ndarray[dtype=float32]
+    1D NumPy array of wet-bulb potential temperatures (K)
+    )pbdoc";
 
     m_therm.def("wobf", &sharp::wobf, nb::arg("temperature"),
                 R"pbdoc(
@@ -77,19 +272,14 @@ float
     m_therm.def(
         "wobf",
         [](const_prof_arr_t tmpk_arr) {
-            // Get a high performance view
-            // into the array for access
+            const std::size_t NZ = tmpk_arr.size();
             auto tmpk = tmpk_arr.view();
 
-            float *wobf_arr = new float[tmpk.shape(0)];
-            for (size_t k = 0; k < tmpk.shape(0); ++k) {
-                wobf_arr[k] = sharp::wobf(tmpk(k));
-            }
-
-            nb::capsule owner(wobf_arr,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(wobf_arr, {tmpk.shape(0)}, owner);
+            return make_output_array(NZ, [&](float* out) {
+                for (std::size_t k = 0; k < NZ; ++k) {
+                    out[k] = sharp::wobf(tmpk(k));
+                }
+            });
         },
         nb::arg("tmpk_arr"),
         R"pbdoc(
@@ -159,24 +349,16 @@ float
     m_therm.def(
         "lcl_temperature",
         [](const_prof_arr_t tmpk_arr, const_prof_arr_t dwpk_arr) {
-            // Get a high performance view
-            // into these arrays for access
+            check_equal_sizes(tmpk_arr, dwpk_arr);
+            const std::size_t NZ = tmpk_arr.size();
             auto tmpk = tmpk_arr.view();
             auto dwpk = dwpk_arr.view();
-            if ((tmpk.shape(0) != dwpk.shape(0))) {
-                throw nb::buffer_error(
-                    "tmpk_arr and dwpk_arr must have the same size!");
-            }
 
-            float *lcl_tmpk_arr = new float[tmpk.shape(0)];
-            for (size_t k = 0; k < tmpk.shape(0); ++k) {
-                lcl_tmpk_arr[k] = sharp::lcl_temperature(tmpk(k), dwpk(k));
-            }
-
-            nb::capsule owner(lcl_tmpk_arr,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(lcl_tmpk_arr, {tmpk.shape(0)}, owner);
+            return make_output_array(NZ, [&](float* out) {
+                for (std::size_t k = 0; k < NZ; ++k) {
+                    out[k] = sharp::lcl_temperature(tmpk(k), dwpk(k));
+                }
+            });
         },
         nb::arg("tmpk_arr"), nb::arg("dwpk_arr"),
         R"pbdoc(
@@ -233,22 +415,16 @@ float
     m_therm.def(
         "vapor_pressure",
         [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr) {
+            check_equal_sizes(pres_arr, tmpk_arr);
+            const std::size_t NZ = pres_arr.size();
             auto tmpk = tmpk_arr.view();
             auto pres = pres_arr.view();
-            if ((tmpk.shape(0) != pres.shape(0))) {
-                throw nb::buffer_error(
-                    "tmpk_arr and pres_arr must have the same size!");
-            }
 
-            float *vappres_arr = new float[tmpk.shape(0)];
-            for (size_t k = 0; k < tmpk.shape(0); ++k) {
-                vappres_arr[k] = sharp::vapor_pressure(pres(k), tmpk(k));
-            }
-
-            nb::capsule owner(vappres_arr,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(vappres_arr, {tmpk.shape(0)}, owner);
+            return make_output_array(NZ, [&](float* out) {
+                for (std::size_t k = 0; k < NZ; ++k) {
+                    out[k] = sharp::vapor_pressure(pres(k), tmpk(k));
+                }
+            });
         },
         nb::arg("pres_arr"), nb::arg("tmpk_arr"),
         R"pbdoc(
@@ -308,22 +484,16 @@ float
     m_therm.def(
         "vapor_pressure_ice",
         [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr) {
+            check_equal_sizes(pres_arr, tmpk_arr);
+            const std::size_t NZ = pres_arr.size();
             auto tmpk = tmpk_arr.view();
             auto pres = pres_arr.view();
-            if ((tmpk.shape(0) != pres.shape(0))) {
-                throw nb::buffer_error(
-                    "tmpk_arr and pres_arr must have the same size!");
-            }
 
-            float *vappres_arr = new float[tmpk.shape(0)];
-            for (size_t k = 0; k < tmpk.shape(0); ++k) {
-                vappres_arr[k] = sharp::vapor_pressure_ice(pres(k), tmpk(k));
-            }
-
-            nb::capsule owner(vappres_arr,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(vappres_arr, {tmpk.shape(0)}, owner);
+            return make_output_array(NZ, [&](float* out) {
+                for (std::size_t k = 0; k < NZ; ++k) {
+                    out[k] = sharp::vapor_pressure_ice(pres(k), tmpk(k));
+                }
+            });
         },
         nb::arg("pres_arr"), nb::arg("tmpk_arr"),
         R"pbdoc(
@@ -378,22 +548,16 @@ float
     m_therm.def(
         "temperature_at_mixratio",
         [](const_prof_arr_t mixr_arr, const_prof_arr_t pres_arr) {
+            check_equal_sizes(mixr_arr, pres_arr);
+            const std::size_t NZ = pres_arr.size();
             auto mixr = mixr_arr.view();
             auto pres = pres_arr.view();
-            if ((mixr.shape(0) != pres.shape(0))) {
-                throw nb::buffer_error(
-                    "mixr_arr and pres_arr must have the same size!");
-            }
 
-            float *dwpk_arr = new float[mixr.shape(0)];
-            for (size_t k = 0; k < mixr.shape(0); ++k) {
-                dwpk_arr[k] = sharp::temperature_at_mixratio(mixr(k), pres(k));
-            }
-
-            nb::capsule owner(dwpk_arr,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(dwpk_arr, {mixr.shape(0)}, owner);
+            return make_output_array(NZ, [&](float* out) {
+                for (std::size_t k = 0; k < NZ; ++k) {
+                    out[k] = sharp::temperature_at_mixratio(mixr(k), pres(k));
+                }
+            });
         },
         nb::arg("mixr_arr"), nb::arg("pres_arr"),
         R"pbdoc(
@@ -440,21 +604,16 @@ float
     m_therm.def(
         "theta_level",
         [](const_prof_arr_t theta_arr, const_prof_arr_t tmpk_arr) {
+            check_equal_sizes(theta_arr, tmpk_arr);
+            const std::size_t NZ = tmpk_arr.size();
             auto theta = theta_arr.view();
             auto tmpk = tmpk_arr.view();
-            if ((theta.shape(0) != tmpk.shape(0))) {
-                throw nb::buffer_error(
-                    "theta_arr and tmpk_arr must have the same size!");
-            }
-            float *pres_arr = new float[tmpk.shape(0)];
-            for (size_t k = 0; k < tmpk.shape(0); ++k) {
-                pres_arr[k] = sharp::theta_level(theta(k), tmpk(k));
-            }
 
-            nb::capsule owner(pres_arr,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(pres_arr, {tmpk.shape(0)}, owner);
+            return make_output_array(NZ, [&](float* out) {
+                for (std::size_t k = 0; k < NZ; ++k) {
+                    out[k] = sharp::theta_level(theta(k), tmpk(k));
+                }
+            });
         },
         nb::arg("theta_arr"), nb::arg("tmpk_arr"),
         R"pbdoc(
@@ -501,21 +660,16 @@ float
         "theta",
         [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr,
            const float ref_pres) {
+            check_equal_sizes(pres_arr, tmpk_arr);
+            const std::size_t NZ = pres_arr.size();
             auto pres = pres_arr.view();
             auto tmpk = tmpk_arr.view();
-            if ((pres.shape(0) != tmpk.shape(0))) {
-                throw nb::buffer_error(
-                    "pres_arr and tmpk_arr must have the same size!");
-            }
-            float *theta_arr = new float[tmpk.shape(0)];
-            for (size_t k = 0; k < tmpk.shape(0); ++k) {
-                theta_arr[k] = sharp::theta(pres(k), tmpk(k), ref_pres);
-            }
 
-            nb::capsule owner(theta_arr,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(theta_arr, {tmpk.shape(0)}, owner);
+            return make_output_array(NZ, [&](float* out) {
+                for (std::size_t k = 0; k < NZ; ++k) {
+                    out[k] = sharp::theta(pres(k), tmpk(k), ref_pres);
+                }
+            });
         },
         nb::arg("pres_arr"), nb::arg("tmpk_arr"),
         nb::arg("ref_pressure") = sharp::THETA_REF_PRESSURE,
@@ -578,17 +732,14 @@ float
     m_therm.def(
         "mixratio",
         [](const_prof_arr_t spfh_arr) {
+            const std::size_t NZ = spfh_arr.size();
             auto spfh = spfh_arr.view();
 
-            float *mixr_arr = new float[spfh.shape(0)];
-            for (size_t k = 0; k < spfh.shape(0); ++k) {
-                mixr_arr[k] = sharp::mixratio(spfh(k));
-            }
-
-            nb::capsule owner(mixr_arr,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(mixr_arr, {spfh.shape(0)}, owner);
+            return make_output_array(NZ, [&](float* out) {
+                for (std::size_t k = 0; k < NZ; ++k) {
+                    out[k] = sharp::mixratio(spfh(k));
+                }
+            });
         },
         nb::arg("spfh_arr"),
         R"pbdoc(
@@ -609,21 +760,16 @@ numpy.ndarray[dtype=float32]
     m_therm.def(
         "mixratio",
         [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr) {
+            check_equal_sizes(pres_arr, tmpk_arr);
+            const std::size_t NZ = pres_arr.size();
             auto pres = pres_arr.view();
             auto tmpk = tmpk_arr.view();
-            if ((pres.shape(0) != tmpk.shape(0))) {
-                throw nb::buffer_error(
-                    "pres_arr and tmpk_arr must have the same size!");
-            }
-            float *mixr_arr = new float[tmpk.shape(0)];
-            for (size_t k = 0; k < tmpk.shape(0); ++k) {
-                mixr_arr[k] = sharp::mixratio(pres(k), tmpk(k));
-            }
 
-            nb::capsule owner(mixr_arr,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(mixr_arr, {tmpk.shape(0)}, owner);
+            return make_output_array(NZ, [&](float* out) {
+                for (std::size_t k = 0; k < NZ; ++k) {
+                    out[k] = sharp::mixratio(pres(k), tmpk(k));
+                }
+            });
         },
         nb::arg("pres_arr"), nb::arg("tmpk_arr"),
         R"pbdoc(
@@ -668,21 +814,16 @@ float
     m_therm.def(
         "mixratio_ice",
         [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr) {
+            check_equal_sizes(pres_arr, tmpk_arr);
+            const std::size_t NZ = pres_arr.size();
             auto pres = pres_arr.view();
             auto tmpk = tmpk_arr.view();
-            if ((pres.shape(0) != tmpk.shape(0))) {
-                throw nb::buffer_error(
-                    "pres_arr and tmpk_arr must have the same size!");
-            }
-            float *mixr_arr = new float[tmpk.shape(0)];
-            for (size_t k = 0; k < tmpk.shape(0); ++k) {
-                mixr_arr[k] = sharp::mixratio_ice(pres(k), tmpk(k));
-            }
 
-            nb::capsule owner(mixr_arr,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(mixr_arr, {tmpk.shape(0)}, owner);
+            return make_output_array(NZ, [&](float* out) {
+                for (std::size_t k = 0; k < NZ; ++k) {
+                    out[k] = sharp::mixratio_ice(pres(k), tmpk(k));
+                }
+            });
         },
         nb::arg("pres_arr"), nb::arg("tmpk_arr"),
         R"pbdoc(
@@ -722,16 +863,14 @@ float
     m_therm.def(
         "specific_humidity",
         [](const_prof_arr_t mixr_arr) {
+            const std::size_t NZ = mixr_arr.size();
             auto mixr = mixr_arr.view();
-            float *spfh_arr = new float[mixr.shape(0)];
-            for (size_t k = 0; k < mixr.shape(0); ++k) {
-                spfh_arr[k] = sharp::specific_humidity(mixr(k));
-            }
 
-            nb::capsule owner(spfh_arr,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(spfh_arr, {mixr.shape(0)}, owner);
+            return make_output_array(NZ, [&](float* out) {
+                for (std::size_t k = 0; k < NZ; ++k) {
+                    out[k] = sharp::specific_humidity(mixr(k));
+                }
+            });
         },
         nb::arg("mixr_arr"),
         R"pbdoc(
@@ -777,20 +916,18 @@ float
         "relative_humidity",
         [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr,
            const_prof_arr_t dwpk_arr) {
+            check_equal_sizes(pres_arr, tmpk_arr, dwpk_arr);
+            const std::size_t NZ = pres_arr.size();
             auto pres = pres_arr.view();
             auto tmpk = tmpk_arr.view();
             auto dwpk = dwpk_arr.view();
 
-            float *relh = new float[pres.shape(0)];
-
-            for (std::ptrdiff_t k = 0; k < pres.shape(0); ++k) {
-                relh[k] = sharp::relative_humidity(pres(k), tmpk(k), dwpk(k));
-            }
-
-            nb::capsule owner(relh,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(relh, {tmpk.shape(0)}, owner);
+            return make_output_array(NZ, [&](float* out) {
+                for (std::size_t k = 0; k < NZ; ++k) {
+                    out[k] =
+                        sharp::relative_humidity(pres(k), tmpk(k), dwpk(k));
+                }
+            });
         },
         nb::arg("pressure"), nb::arg("temperature"), nb::arg("dewpoint"),
         R"pbdoc(
@@ -813,9 +950,7 @@ Returns
 -------
 numpy.ndarray[dtype=float32]
     1D NumPy array of relative humidity values (fraction, unitless)
-    )pbdoc"
-
-    );
+    )pbdoc");
 
     m_therm.def("virtual_temperature", &sharp::virtual_temperature,
                 nb::arg("temperature"), nb::arg("rv"), nb::arg("rl") = 0.0f,
@@ -848,68 +983,46 @@ float
         "virtual_temperature",
         [](const_prof_arr_t tmpk_arr, const_prof_arr_t rv_arr,
            const_prof_arr_t rl_arr, const_prof_arr_t ri_arr) {
+            check_equal_sizes(tmpk_arr, rv_arr);
+            const std::size_t NZ = tmpk_arr.size();
             auto tmpk = tmpk_arr.view();
             auto rv = rv_arr.view();
-            float *vtmp_arr;
 
-            // tmpk and rv are always defined, check their
-            // sizes and ensure they're equal
-            if (tmpk.shape(0) != rv.shape(0)) {
-                throw nb::buffer_error(
-                    "tmpk_arr and rv_arr must have the same size!");
-            }
-
-            // check if rl_arr and ri_arr are not none
             if (rl_arr.is_valid() && ri_arr.is_valid()) {
+                check_equal_sizes(tmpk_arr, rv_arr, rl_arr, ri_arr);
                 auto rl = rl_arr.view();
                 auto ri = ri_arr.view();
-                // ensure they're the same shape/size
-                if ((tmpk.shape(0) != rl.shape(0)) ||
-                    (tmpk.shape(0) != ri.shape(0))) {
-                    throw nb::buffer_error(
-                        "tmpk_arr and rv_arr must have the same size!");
-                }
-                vtmp_arr = new float[tmpk.shape(0)];
-
-                for (size_t k = 0; k < tmpk.shape(0); ++k) {
-                    vtmp_arr[k] = sharp::virtual_temperature(tmpk(k), rv(k),
-                                                             rl(k), ri(k));
-                }
+                return make_output_array(NZ, [&](float* out) {
+                    for (std::size_t k = 0; k < NZ; ++k) {
+                        out[k] = sharp::virtual_temperature(tmpk(k), rv(k),
+                                                            rl(k), ri(k));
+                    }
+                });
             } else if (rl_arr.is_valid()) {
+                check_equal_sizes(tmpk_arr, rv_arr, rl_arr);
                 auto rl = rl_arr.view();
-                if (tmpk.shape(0) != rl.shape(0)) {
-                    throw nb::buffer_error(
-                        "tmpk_arr, rv_arr, and rl_arr must have the same "
-                        "size!");
-                }
-                vtmp_arr = new float[tmpk.shape(0)];
-                for (size_t k = 0; k < tmpk.shape(0); ++k) {
-                    vtmp_arr[k] =
-                        sharp::virtual_temperature(tmpk(k), rv(k), rl(k));
-                }
+                return make_output_array(NZ, [&](float* out) {
+                    for (std::size_t k = 0; k < NZ; ++k) {
+                        out[k] =
+                            sharp::virtual_temperature(tmpk(k), rv(k), rl(k));
+                    }
+                });
             } else if (ri_arr.is_valid()) {
+                check_equal_sizes(tmpk_arr, rv_arr, ri_arr);
                 auto ri = ri_arr.view();
-                if (tmpk.shape(0) != ri.shape(0)) {
-                    throw nb::buffer_error(
-                        "tmpk_arr, rv_arr, and ri_arr must have the same "
-                        "size!");
-                }
-                vtmp_arr = new float[tmpk.shape(0)];
-                for (size_t k = 0; k < tmpk.shape(0); ++k) {
-                    vtmp_arr[k] =
-                        sharp::virtual_temperature(tmpk(k), rv(k), 0.0, ri(k));
-                }
+                return make_output_array(NZ, [&](float* out) {
+                    for (std::size_t k = 0; k < NZ; ++k) {
+                        out[k] = sharp::virtual_temperature(tmpk(k), rv(k), 0.0,
+                                                            ri(k));
+                    }
+                });
             } else {
-                vtmp_arr = new float[tmpk.shape(0)];
-                for (size_t k = 0; k < tmpk.shape(0); ++k) {
-                    vtmp_arr[k] = sharp::virtual_temperature(tmpk(k), rv(k));
-                }
+                return make_output_array(NZ, [&](float* out) {
+                    for (std::size_t k = 0; k < NZ; ++k) {
+                        out[k] = sharp::virtual_temperature(tmpk(k), rv(k));
+                    }
+                });
             }
-
-            nb::capsule owner(vtmp_arr,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(vtmp_arr, {tmpk.shape(0)}, owner);
         },
         nb::arg("tmpk_arr"), nb::arg("rv_arr"), nb::arg("rl_arr") = nb::none(),
         nb::arg("ri_arr") = nb::none(),
@@ -977,26 +1090,17 @@ float
         "wetlift",
         [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr,
            const_prof_arr_t lifted_pres_arr) {
+            check_equal_sizes(pres_arr, tmpk_arr, lifted_pres_arr);
+            const std::size_t NZ = pres_arr.size();
             auto pres = pres_arr.view();
             auto tmpk = tmpk_arr.view();
             auto lifted_pres = lifted_pres_arr.view();
 
-            if ((pres.shape(0) != tmpk.shape(0)) ||
-                (pres.shape(0) != lifted_pres.shape(0))) {
-                throw nb::buffer_error(
-                    "pres_arr, tmpk_arr, and lifted_pres_arr must have the "
-                    "same sizes!");
-            }
-            float *tmpk_out_arr = new float[tmpk.shape(0)];
-            for (size_t k = 0; k < tmpk.shape(0); ++k) {
-                tmpk_out_arr[k] =
-                    sharp::wetlift(pres(k), tmpk(k), lifted_pres(k));
-            }
-
-            nb::capsule owner(tmpk_out_arr,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(tmpk_out_arr, {tmpk.shape(0)}, owner);
+            return make_output_array(NZ, [&](float* out) {
+                for (std::size_t k = 0; k < NZ; ++k) {
+                    out[k] = sharp::wetlift(pres(k), tmpk(k), lifted_pres(k));
+                }
+            });
         },
         R"pbdoc(
 Compute the temperature of a parcel lifted moist adiabatically to a new level. 
@@ -1062,365 +1166,17 @@ tuple[float, float]
     A tuple of (lcl_pres, lcl_temperature)
     )pbdoc");
 
-    m_therm.def(
-        "wetbulb",
-        [](sharp::lifter_wobus &lifter, float pressure, float temperature,
-           float dewpoint) {
-            return sharp::wetbulb(lifter, pressure, temperature, dewpoint);
-        },
-        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
-        nb::arg("dewpoint"),
-        R"pbdoc(
-Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
-temperature (K), and dewpoint temperature (K).
+    for_each_lifter([&](auto tag, const char* lifter_name) {
+        using Lft = typename decltype(tag)::type;
+        bind_wetbulb<Lft>(m_therm, wetbulb_scalar_template_doc,
+                          wetbulb_array_template_doc, lifter_name);
+    });
 
-First, it lifts a parcel with the given pressure, temperature, and
-dewpoint temperature to its Lifted Condensation Level (LCL). To compute the 
-temperature and pressure of the LCL, an approximation is used. See the 
-lcl_temperature function for further detail. 
-
-After the parcel has reached the LCL, the lifter passed to the function 
-lowers the parcel to its initial pressure level along a moist adiabat or 
-pseudoadiabat. 
-
-Parameters
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
-    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-pressure : float 
-    The ambient pressure (Pa)
-temperature : float 
-    The ambient temperature (K)
-dewpoint : float 
-    The ambient dewpoint temperature (K)
-
-Returns
--------
-float
-    The wetbulb temperature (K)
-    )pbdoc");
-
-    m_therm.def(
-        "wetbulb",
-        [](sharp::lifter_cm1 &lifter, float pressure, float temperature,
-           float dewpoint) {
-            return sharp::wetbulb(lifter, pressure, temperature, dewpoint);
-        },
-        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
-        nb::arg("dewpoint"),
-        R"pbdoc(
-Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
-temperature (K), and dewpoint temperature (K).
-
-First, it lifts a parcel with the given pressure, temperature, and
-dewpoint temperature to its Lifted Condensation Level (LCL). To compute the 
-temperature and pressure of the LCL, an approximation is used. See the 
-lcl_temperature function for further detail. 
-
-After the parcel has reached the LCL, the lifter passed to the function 
-lowers the parcel to its initial pressure level along a moist adiabat or 
-pseudoadiabat. 
-
-Parameters
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
-    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-pressure : float 
-    The ambient pressure (Pa)
-temperature : float 
-    The ambient temperature (K)
-dewpoint : float 
-    The ambient dewpoint temperature (K)
-
-Returns
--------
-float
-    The wetbulb temperature (K)
-    )pbdoc");
-
-    m_therm.def(
-        "wetbulb",
-        [](sharp::lifter_wobus &lifter, const_prof_arr_t pres_arr,
-           const_prof_arr_t tmpk_arr, const_prof_arr_t dwpk_arr) {
-            auto pres = pres_arr.view();
-            auto tmpk = tmpk_arr.view();
-            auto dwpk = dwpk_arr.view();
-
-            float *wb_out = new float[pres.shape(0)];
-
-            for (size_t k = 0; k < pres.shape(0); ++k) {
-                wb_out[k] = sharp::wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
-            }
-
-            nb::capsule owner(wb_out,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(wb_out, {tmpk.shape(0)}, owner);
-        },
-        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
-        nb::arg("dewpoint"),
-        R"pbdoc(
-Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
-temperature (K), and dewpoint temperature (K).
-
-First, it lifts a parcel with the given pressure, temperature, and
-dewpoint temperature to its Lifted Condensation Level (LCL). To compute the 
-temperature and pressure of the LCL, an approximation is used. See the 
-lcl_temperature function for further detail. 
-
-After the parcel has reached the LCL, the lifter passed to the function 
-lowers the parcel to its initial pressure level along a moist adiabat or 
-pseudoadiabat. 
-
-Parameters
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
-    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of ambient pressures (Pa)
-temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of ambient temperatureds (K)
-dewpoint : numpy.ndarray[dtype=float32] 
-    1D NumPy array of ambient dewpoint temperatures (K)
-
-Returns
--------
-numpy.ndarray[dtype=float32]
-    1D NumPy array of wetbulb temperatures (K)
-    )pbdoc");
-
-    m_therm.def(
-        "wetbulb",
-        [](sharp::lifter_cm1 &lifter, const_prof_arr_t pres_arr,
-           const_prof_arr_t tmpk_arr, const_prof_arr_t dwpk_arr) {
-            auto pres = pres_arr.view();
-            auto tmpk = tmpk_arr.view();
-            auto dwpk = dwpk_arr.view();
-
-            float *wb_out = new float[pres.shape(0)];
-
-            for (size_t k = 0; k < pres.shape(0); ++k) {
-                wb_out[k] = sharp::wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
-            }
-
-            nb::capsule owner(wb_out,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(wb_out, {tmpk.shape(0)}, owner);
-        },
-        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
-        nb::arg("dewpoint"),
-        R"pbdoc(
-Compute the wet bulb temperature (K) given the ambient pressure (Pa), 
-temperature (K), and dewpoint temperature (K).
-
-First, it lifts a parcel with the given pressure, temperature, and
-dewpoint temperature to its Lifted Condensation Level (LCL). To compute the 
-temperature and pressure of the LCL, an approximation is used. See the 
-lcl_temperature function for further detail. 
-
-After the parcel has reached the LCL, the lifter passed to the function 
-lowers the parcel to its initial pressure level along a moist adiabat or 
-pseudoadiabat. 
-
-Parameters
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
-    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of ambient pressures (Pa)
-temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of ambient temperatureds (K)
-dewpoint : numpy.ndarray[dtype=float32] 
-    1D NumPy array of ambient dewpoint temperatures (K)
-
-Returns
--------
-numpy.ndarray[dtype=float32]
-    1D NumPy array of wetbulb temperatures (K)
-    )pbdoc");
-
-    m_therm.def(
-        "theta_wetbulb",
-        [](sharp::lifter_wobus &lifter, float pressure, float temperature,
-           float dewpoint) {
-            return sharp::theta_wetbulb(lifter, pressure, temperature,
-                                        dewpoint);
-        },
-        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
-        nb::arg("dewpoint"),
-        R"pbdoc(
-Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
-temperature (K), and dewpoint temperature (K).
-
-First, it lifts a parcel with the given pressure, temperature, 
-and dewpoint temperature to its Lifted Condensation Level (LCL). 
-To compute the temperature and pressure of the LCL, an approximation 
-is used. See the lcl_temperature fuction for further detail. 
-
-After the parcel has reached the LCL, the lifted passed to the function 
-lowers the parcel to the standard parcel reference pressure level 
-(1000 hPa) along a moist adiabat.
-
-Parameters
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
-    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-pressure : float 
-    the ambient air pressure (Pa)
-temperature : float 
-    the ambient air temperature (K)
-dewpoint : float 
-    the ambient dewpoint temperature
-
-Returns
--------
-float
-    The wet-bulb potential temperature (K)
-    )pbdoc");
-
-    m_therm.def(
-        "theta_wetbulb",
-        [](sharp::lifter_cm1 &lifter, float pressure, float temperature,
-           float dewpoint) {
-            return sharp::theta_wetbulb(lifter, pressure, temperature,
-                                        dewpoint);
-        },
-        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
-        nb::arg("dewpoint"),
-        R"pbdoc(
-Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
-temperature (K), and dewpoint temperature (K).
-
-First, it lifts a parcel with the given pressure, temperature, 
-and dewpoint temperature to its Lifted Condensation Level (LCL). 
-To compute the temperature and pressure of the LCL, an approximation 
-is used. See the lcl_temperature fuction for further detail. 
-
-After the parcel has reached the LCL, the lifted passed to the function 
-lowers the parcel to the standard parcel reference pressure level 
-(1000 hPa) along a moist adiabat.
-
-Parameters
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
-    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-pressure : float 
-    the ambient air pressure (Pa)
-temperature : float 
-    the ambient air temperature (K)
-dewpoint : float 
-    the ambient dewpoint temperature
-
-Returns
--------
-float
-    The wet-bulb potential temperature (K)
-    )pbdoc");
-
-    m_therm.def(
-        "theta_wetbulb",
-        [](sharp::lifter_wobus &lifter, const_prof_arr_t pres_arr,
-           const_prof_arr_t tmpk_arr, const_prof_arr_t dwpk_arr) {
-            auto pres = pres_arr.view();
-            auto tmpk = tmpk_arr.view();
-            auto dwpk = dwpk_arr.view();
-
-            float *theta_wb = new float[pres.shape(0)];
-
-            for (size_t k = 0; k < pres.shape(0); ++k) {
-                theta_wb[k] =
-                    sharp::theta_wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
-            }
-
-            nb::capsule owner(theta_wb,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(theta_wb, {tmpk.shape(0)}, owner);
-        },
-        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
-        nb::arg("dewpoint"),
-        R"pbdoc(
-Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
-temperature (K), and dewpoint temperature (K).
-
-First, it lifts a parcel with the given pressure, temperature, 
-and dewpoint temperature to its Lifted Condensation Level (LCL). 
-To compute the temperature and pressure of the LCL, an approximation 
-is used. See the lcl_temperature fuction for further detail. 
-
-After the parcel has reached the LCL, the lifted passed to the function 
-lowers the parcel to the standard parcel reference pressure level 
-(1000 hPa) along a moist adiabat.
-
-Parameters
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_wobus 
-    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of ambient air pressure (Pa)
-temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of ambient air temperature (K)
-dewpoint : numpy.ndarray[dtype=float32] 
-    1D NumPy array of ambient dewpoint temperature
-
-Returns
--------
-numpy.ndarray[dtype=float32]
-    1D NumPy array of wet-bulb potential temperatures (K)
-    )pbdoc");
-
-    m_therm.def(
-        "theta_wetbulb",
-        [](sharp::lifter_cm1 &lifter, const_prof_arr_t pres_arr,
-           const_prof_arr_t tmpk_arr, const_prof_arr_t dwpk_arr) {
-            auto pres = pres_arr.view();
-            auto tmpk = tmpk_arr.view();
-            auto dwpk = dwpk_arr.view();
-
-            float *theta_wb = new float[pres.shape(0)];
-
-            for (size_t k = 0; k < pres.shape(0); ++k) {
-                theta_wb[k] =
-                    sharp::theta_wetbulb(lifter, pres(k), tmpk(k), dwpk(k));
-            }
-
-            nb::capsule owner(theta_wb,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(theta_wb, {tmpk.shape(0)}, owner);
-        },
-        nb::arg("lifter"), nb::arg("pressure"), nb::arg("temperature"),
-        nb::arg("dewpoint"),
-        R"pbdoc(
-Compute the wet-bulb potential temperature (K) given the pressure (Pa), 
-temperature (K), and dewpoint temperature (K).
-
-First, it lifts a parcel with the given pressure, temperature, 
-and dewpoint temperature to its Lifted Condensation Level (LCL). 
-To compute the temperature and pressure of the LCL, an approximation 
-is used. See the lcl_temperature fuction for further detail. 
-
-After the parcel has reached the LCL, the lifted passed to the function 
-lowers the parcel to the standard parcel reference pressure level 
-(1000 hPa) along a moist adiabat.
-
-Parameters
-----------
-lifter : nwsspc.sharp.calc.parcel.lifter_cm1 
-    a parcel lifter (e.g. lifter_cm1 or lifter_wobus)
-pressure : numpy.ndarray[dtype=float32] 
-    1D NumPy array of ambient air pressure (Pa)
-temperature : numpy.ndarray[dtype=float32] 
-    1D NumPy array of ambient air temperature (K)
-dewpoint : numpy.ndarray[dtype=float32] 
-    1D NumPy array of ambient dewpoint temperature
-
-Returns
--------
-numpy.ndarray[dtype=float32]
-    1D NumPy array of wet-bulb potential temperatures (K)
-    )pbdoc");
+    for_each_lifter([&](auto tag, const char* lifter_name) {
+        using Lft = typename decltype(tag)::type;
+        bind_theta_wetbulb<Lft>(m_therm, theta_wb_scalar_template_doc,
+                                theta_wb_array_template_doc, lifter_name);
+    });
 
     m_therm.def("thetae", &sharp::thetae, nb::arg("pressure"),
                 nb::arg("temperature"), nb::arg("dewpoint"),
@@ -1456,20 +1212,17 @@ float
         "thetae",
         [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr,
            const_prof_arr_t dwpk_arr) {
+            check_equal_sizes(pres_arr, tmpk_arr, dwpk_arr);
+            const std::size_t NZ = pres_arr.size();
             auto pres = pres_arr.view();
             auto tmpk = tmpk_arr.view();
             auto dwpk = dwpk_arr.view();
 
-            float *thetae = new float[pres.shape(0)];
-
-            for (size_t k = 0; k < pres.shape(0); ++k) {
-                thetae[k] = sharp::thetae(pres(k), tmpk(k), dwpk(k));
-            }
-
-            nb::capsule owner(thetae,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(thetae, {tmpk.shape(0)}, owner);
+            return make_output_array(NZ, [&](float* out) {
+                for (std::size_t k = 0; k < NZ; ++k) {
+                    out[k] = sharp::thetae(pres(k), tmpk(k), dwpk(k));
+                }
+            });
         },
         nb::arg("pressure"), nb::arg("temperature"), nb::arg("dewpoint"),
         R"pbdoc(
@@ -1504,6 +1257,7 @@ numpy.ndarray[dtype=float32]
         "lapse_rate",
         [](sharp::HeightLayer layer, const_prof_arr_t hght_arr,
            const_prof_arr_t tmpk_arr) {
+            check_equal_sizes(hght_arr, tmpk_arr);
             return sharp::lapse_rate(layer, hght_arr.data(), tmpk_arr.data(),
                                      tmpk_arr.size());
         },
@@ -1532,6 +1286,7 @@ float
         "lapse_rate",
         [](sharp::PressureLayer layer, const_prof_arr_t pres_arr,
            const_prof_arr_t hght_arr, const_prof_arr_t tmpk_arr) {
+            check_equal_sizes(pres_arr, hght_arr, tmpk_arr);
             return sharp::lapse_rate(layer, pres_arr.data(), hght_arr.data(),
                                      tmpk_arr.data(), tmpk_arr.size());
         },
@@ -1561,6 +1316,7 @@ float
         "lapse_rate_max",
         [](sharp::HeightLayer layer, float depth, const_prof_arr_t hght_arr,
            const_prof_arr_t tmpk_arr) -> std::tuple<float, sharp::HeightLayer> {
+            check_equal_sizes(hght_arr, tmpk_arr);
             sharp::HeightLayer out_lyr = {0, 0};
             float max_lr = sharp::lapse_rate_max(layer, depth, hght_arr.data(),
                                                  tmpk_arr.data(),
@@ -1597,6 +1353,7 @@ tuple[float, nwsspc.sharp.calc.layer.HeightLayer]
         [](sharp::PressureLayer layer, float depth, const_prof_arr_t pres_arr,
            const_prof_arr_t hght_arr, const_prof_arr_t tmpk_arr)
             -> std::tuple<float, sharp::PressureLayer> {
+            check_equal_sizes(pres_arr, hght_arr, tmpk_arr);
             sharp::PressureLayer out_lyr = {0, 0};
             float max_lr = sharp::lapse_rate_max(
                 layer, depth, pres_arr.data(), hght_arr.data(), tmpk_arr.data(),
@@ -1653,15 +1410,12 @@ float
     m_therm.def(
         "buoyancy",
         [](const_prof_arr_t pcl_tmpk, const_prof_arr_t env_tmpk) {
-            float *buoy_arr = new float[pcl_tmpk.size()];
+            check_equal_sizes(pcl_tmpk, env_tmpk);
+            const std::size_t NZ = pcl_tmpk.size();
 
-            sharp::buoyancy(pcl_tmpk.data(), env_tmpk.data(), buoy_arr,
-                            pcl_tmpk.size());
-
-            nb::capsule owner(buoy_arr,
-                              [](void *p) noexcept { delete[] (float *)p; });
-
-            return out_arr_t(buoy_arr, {pcl_tmpk.size()}, owner);
+            return make_output_array(NZ, [&](float* out) {
+                sharp::buoyancy(pcl_tmpk.data(), env_tmpk.data(), out, NZ);
+            });
         },
         nb::arg("parcel_temperature"), nb::arg("environment_temperature"),
         R"pbdoc(
@@ -1684,16 +1438,11 @@ numpy.ndarray[dtype=float32]
         "pbl_top",
         [](const_prof_arr_t pres_arr, const_prof_arr_t thetav_arr,
            float offset) {
-            auto pres = pres_arr.view();
-            auto thetav = thetav_arr.view();
-            if ((pres.shape(0) != thetav.shape(0))) {
-                throw nb::buffer_error(
-                    "pressure and virtual potential temperature must have the "
-                    "same size!");
-            }
+            check_equal_sizes(pres_arr, thetav_arr);
+            const std::size_t NZ = pres_arr.size();
 
-            std::size_t pbl_idx = sharp::pbl_top(pres.data(), thetav.data(),
-                                                 pres.shape(0), offset);
+            std::size_t pbl_idx =
+                sharp::pbl_top(pres_arr.data(), thetav_arr.data(), NZ, offset);
 
             return pbl_idx;
         },
@@ -1723,16 +1472,13 @@ float
         "temperature_layer",
         [](const_prof_arr_t pressure, const_prof_arr_t temperature,
            const float tmpk_1, const float tmpk_2, const float pres_min) {
+            check_equal_sizes(pressure, temperature);
+            const std::size_t NZ = pressure.size();
             auto pres = pressure.view();
             auto tmpk = temperature.view();
-            std::size_t len = pressure.size();
-            if ((pres.shape(0) != tmpk.shape(0))) {
-                throw nb::buffer_error(
-                    "Pressure and temperature must have the same size!");
-            }
 
             return sharp::temperature_layer(pres.data(), tmpk.data(), tmpk_1,
-                                            tmpk_2, len, pres_min);
+                                            tmpk_2, NZ, pres_min);
         },
         nb::arg("pressure"), nb::arg("temperature"), nb::arg("tmpk_lo"),
         nb::arg("tmpk_hi"), nb::arg("pres_min") = 10000.0,

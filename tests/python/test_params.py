@@ -123,8 +123,8 @@ def test_bunkers_motion_nonparcel():
         mw_lyr, shr_lyr,
     )
 
-    assert (storm_mtn.u == pytest.approx(10.232333))
-    assert (storm_mtn.v == pytest.approx(5.7385511))
+    assert (storm_mtn.u == pytest.approx(10.197119))
+    assert (storm_mtn.v == pytest.approx(5.7385821))
 
 
 def test_bunkers_motion():
@@ -150,8 +150,8 @@ def test_bunkers_motion():
         eil, mupcl
     )
 
-    assert (storm_mtn.u == pytest.approx(9.65811))
-    assert (storm_mtn.v == pytest.approx(5.558156))
+    assert (storm_mtn.u == pytest.approx(9.701575))
+    assert (storm_mtn.v == pytest.approx(5.622299))
 
 
 def test_corfidi_vectors():
@@ -162,10 +162,10 @@ def test_corfidi_vectors():
         snd_data["vwin"]
     )
 
-    assert (upshear.u == pytest.approx(12.7017, abs=1e-3))
-    assert (upshear.v == pytest.approx(2.99329, abs=1e-3))
-    assert (downshear.u == pytest.approx(23.2054, abs=1e-3))
-    assert (downshear.v == pytest.approx(16.10519, abs=1e-3))
+    assert (upshear.u == pytest.approx(12.5269, abs=1e-3))
+    assert (upshear.v == pytest.approx(2.7875, abs=1e-3))
+    assert (downshear.u == pytest.approx(23.1313, abs=1e-3))
+    assert (downshear.v == pytest.approx(15.99528, abs=1e-3))
 
 
 def test_effective_bulk_wind():
@@ -287,7 +287,7 @@ def test_stp_scp_ship_dcp_lhp():
         esrh,
         ebwd
     )
-    assert (stp == pytest.approx(0.48329, abs=1e-4))
+    assert (stp == pytest.approx(0.48378, abs=1e-4))
 
     scp = params.supercell_composite_parameter(mupcl.cape, esrh, ebwd)
     assert (scp == pytest.approx(7.9699, abs=1e-1))
@@ -326,7 +326,7 @@ def test_stp_scp_ship_dcp_lhp():
         snd_data["uwin"],
         snd_data["vwin"]
     )
-    assert (lhp == pytest.approx(14.2394, abs=1e-2))
+    assert (lhp == pytest.approx(14.1323, abs=1e-2))
 
 
 def test_ehi():
@@ -371,7 +371,7 @@ def test_ehi():
     )
 
     ehi = params.energy_helicity_index(pcl.cape, srh)
-    assert (ehi == pytest.approx(4.41228, abs=1e-5))
+    assert (ehi == pytest.approx(4.38889, abs=1e-5))
 
 
 def test_convective_temperature():
@@ -440,4 +440,4 @@ def test_pft():
         snd_data["vwin"],
         snd_data["theta"]
     )
-    assert (pft == pytest.approx(153856081920.0, abs=1e6))
+    assert (pft == pytest.approx(158187356160.0, abs=1e6))

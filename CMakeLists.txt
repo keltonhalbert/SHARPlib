@@ -31,6 +31,10 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
 
 add_library(SHARPlib ${SOURCES})
 
+target_compile_definitions(SHARPlib PUBLIC 
+    $<BUILD_INTERFACE:FMT_HEADER_ONLY>
+)
+
 target_include_directories(SHARPlib PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/external/fmt/include>

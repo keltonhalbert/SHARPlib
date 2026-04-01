@@ -294,9 +294,10 @@ float _solve_cm1(float& pcl_pres_next, float& pcl_pi_next, float& pcl_t_next,
 
         pcl_theta_next = pcl_theta_prev * std::exp(term);
 
+        float relax = (iter_count > 20) ? 0.05f : 0.3f;
         if (std::abs(pcl_theta_next - pcl_theta_last) > converge) {
             pcl_theta_last =
-                pcl_theta_last + 0.3 * (pcl_theta_next - pcl_theta_last);
+                pcl_theta_last + relax * (pcl_theta_next - pcl_theta_last);
         } else {
             not_converged = false;
         }
@@ -317,6 +318,10 @@ float moist_adiabat_cm1(float pressure, float temperature, float new_pressure,
     if ((temperature == MISSING) || (pressure == MISSING) ||
         (new_pressure == MISSING)) {
         return MISSING;
+    }
+    if (std::isnan(temperature) || std::isnan(pressure) ||
+        std::isnan(new_pressure)) {
+        return std::nanf("");
     }
 #endif
 
@@ -642,17 +647,34 @@ PressureLayer temperature_layer(const float pressure[],
 
 /// @cond DOXYGEN_IGNORE
 
-template float wetbulb<lifter_wobus>(lifter_wobus lifter, float pressure,
+template float wetbulb<lifter_wobus>(lifter_wobus& lifter, float pressure,
                                      float temperature, float dewpoint);
 
-template float wetbulb<lifter_cm1>(lifter_cm1 lifter, float pressure,
+template float wetbulb<lifter_cm1>(lifter_cm1& lifter, float pressure,
                                    float temperature, float dewpoint);
 
-template float theta_wetbulb<lifter_wobus>(lifter_wobus lifter, float pressure,
+template float wetbulb<lifter_lut<lifter_wobus>>(
+    lifter_lut<lifter_wobus>& lifter, float pressure, float temperature,
+    float dewpoint);
+
+template float wetbulb<lifter_lut<lifter_cm1>>(lifter_lut<lifter_cm1>& lifter,
+                                               float pressure,
+                                               float temperature,
+                                               float dewpoint);
+
+template float theta_wetbulb<lifter_wobus>(lifter_wobus& lifter, float pressure,
                                            float temperature, float dewpoint);
 
-template float theta_wetbulb<lifter_cm1>(lifter_cm1 lifter, float pressure,
+template float theta_wetbulb<lifter_cm1>(lifter_cm1& lifter, float pressure,
                                          float temperature, float dewpoint);
+
+template float theta_wetbulb<lifter_lut<lifter_cm1>>(
+    lifter_lut<lifter_cm1>& lifter, float pressure, float temperature,
+    float dewpoint);
+
+template float theta_wetbulb<lifter_lut<lifter_wobus>>(
+    lifter_lut<lifter_wobus>& lifter, float pressure, float temperature,
+    float dewpoint);
 
 /// @endcond
 
