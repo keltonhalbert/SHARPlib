@@ -82,6 +82,7 @@ jobs:
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
+
       - uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # 4.1.0
         with: 
           subject-path: ./wheelhouse/*.whl
@@ -90,6 +91,10 @@ jobs:
     name: Build source distribution
     needs: [validate_input]
     if: always() && (needs.validate_input.result == 'success' || needs.validate_input.result == 'skipped')
+    permissions:
+      id-token: write
+      attestations: write
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # 6.0.2
@@ -117,6 +122,10 @@ jobs:
         with:
           name: cibw-sdist
           path: dist/*.tar.gz
+
+      - uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # 4.1.0
+        with: 
+          subject-path: dist/*.tar.gz
 
   upload_pypi:
     needs: [build_wheels, build_sdist]
