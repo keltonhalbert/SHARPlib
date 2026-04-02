@@ -1,5 +1,8 @@
 name: C++ CI (Linux, MacOS, Windows) 
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [ "main", "develop" ]
@@ -11,7 +14,7 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  build:
+  build-cpp:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
@@ -21,27 +24,10 @@ jobs:
     strategy:
       # Ensures all matrix combinations runs if one fails
       fail-fast: false
-
-      # Set up our build-matrix 
-      # 1) Linux GCC
-      # 2) Linux Clang
-      # 3) MaxOS Clang 
-      # 4) Windows MSVC
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         build_type: [Release]
         cpp_compiler: [g++, clang++, cl]
-        include:
-          - os: ubuntu-latest 
-            cpp_compiler: g++
-          - os: ubuntu-latest
-            cpp_compiler: clang++
-          - os: macos-latest
-            cpp_compiler: g++
-          - os: macos-latest
-            cpp_compiler: clang++
-          - os: windows-latest
-            cpp_compiler: cl
         exclude:
           - os: ubuntu-latest
             cpp_compiler: cl 
@@ -62,7 +48,7 @@ jobs:
           echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
       - name: Checkout 
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # 6.0.2
         with:
           submodules: 'true'
           fetch-tags: 'true'
@@ -91,7 +77,6 @@ jobs:
       - name: Build
         # Build your program with the given configuration
         run: | 
-          cmake --build ${{ steps.strings.outputs.build-output-dir }}
           cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --target SHARPlib_tests
 
       - name: Test

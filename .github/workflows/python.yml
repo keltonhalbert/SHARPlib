@@ -1,5 +1,8 @@
 name: Python CI (Linux, MacOS, Windows) 
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: ["main", "develop"]
@@ -7,7 +10,7 @@ on:
     branches: ["main", "develop"]
 
 jobs:
-  build:
+  build-python:
     runs-on: ${{ matrix.os }} 
     strategy: 
       fail-fast: false
@@ -19,15 +22,12 @@ jobs:
         if: startsWith(matrix.os, 'windows')
         shell: pwsh
         run: |
-          echo "NUGET_PACKAGES=D:\nuget\packages" >> $ENV:GITHUB_ENV
-          echo "DOTNET_ROOT=D:\tools\dotnet" >> $ENV:GITHUB_ENV
-          echo "DOTNET_INSTALL_DIR=D:\tools\dotnet" >> $ENV:GITHUB_ENV
           echo "LocalAppData=D:\a\_LocalAppData" >> $ENV:GITHUB_ENV
           echo "TEMP=D:\a\_temp" >> $ENV:GITHUB_ENV
           echo "TMP=D:\a\_temp" >> $ENV:GITHUB_ENV
 
       - name: Checkout 
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # 6.0.2
         with:
           submodules: 'true'
           fetch-tags: 'true'
@@ -43,9 +43,10 @@ jobs:
           git config --global --add safe.directory ${{ github.workspace }} 
           git submodule update --init --recursive
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # 6.2.0
         with:
           python-version: ${{ matrix.python-version }}
+          cache: 'pip'
 
       - name: Build and install
         run: |

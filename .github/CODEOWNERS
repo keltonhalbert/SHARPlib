@@ -1,0 +1,6 @@
+# Default owner for everything
+* @keltonhalbert
+
+# CI workflows and config require maintainer review
+/.github/ @keltonhalbert
+/.gitmodules @keltonhalbert
