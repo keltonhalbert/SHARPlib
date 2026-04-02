@@ -27,7 +27,7 @@ jobs:
           echo "TMP=D:\a\_temp" >> $ENV:GITHUB_ENV
 
       - name: Checkout 
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: 'true'
           fetch-tags: 'true'
@@ -43,7 +43,7 @@ jobs:
           git config --global --add safe.directory ${{ github.workspace }} 
           git submodule update --init --recursive
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
 
