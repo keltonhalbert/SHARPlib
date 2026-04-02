@@ -1,7 +1,7 @@
 name: documentation
 
 env:
-  DOXY_VER: "1.9.6"
+  DOXY_VER: "1.16.1"
   DOC_VER: "dev"
 
 on:
@@ -10,18 +10,17 @@ on:
     tags:
       - 'v[0-9]+.[0-9]+.0'
 
-permissions:
-  contents: write
-
 jobs:
   build_and_deploy:
     name: Build and Deploy Docs
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     outputs:
       doc_ver: ${{ steps.version_check.outputs.doc_ver }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # 6.0.2
         with:
           submodules: 'true'
           fetch-tags: 'true'
@@ -40,7 +39,9 @@ jobs:
         shell: bash
 
       - name: Python Setup
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # 6.2.0
+        with:
+          cache: 'pip'
 
       - name: Install Doxygen 
         run: |
@@ -52,7 +53,7 @@ jobs:
 
       - name: Install Python Dependencies 
         run: |
-          pip install sphinx pydata-sphinx-theme breathe numpy .
+          pip install --break-system-packages sphinx pydata-sphinx-theme breathe numpy .
 
       - name: Get Documentation Version 
         id: version_check 
@@ -92,7 +93,7 @@ jobs:
       - name: Upload to GH Pages
         env:
           DOC_VER: ${{ steps.version_check.outputs.doc_ver }}
-        uses: peaceiris/actions-gh-pages@v4 
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # 4.0.0
         with: 
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
@@ -103,14 +104,16 @@ jobs:
     needs: build_and_deploy
     if: needs.build_and_deploy.outputs.doc_ver != 'dev'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout gh-pages
-        uses: actions/checkout@v4 
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # 6.0.2
         with:
           ref: "gh-pages"
       
       - name: Setup Python 
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # 6.2.0
 
       - name: Update Versions
         env: 
