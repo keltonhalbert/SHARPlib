@@ -235,6 +235,12 @@ void DowndraftParcel::cape_cinh(const float pres_arr[], const float hght_arr[],
         return;
     }
 
+    if (this->pres == pres_arr[0]) {
+        this->cape = 0.0f;
+        this->cinh = std::nanf("");
+        return;
+    }
+
     sharp::PressureLayer dcape_lyr = {pres_arr[0], this->pres};
     sharp::HeightLayer dcape_hght_lyr =
         pressure_layer_to_height(dcape_lyr, pres_arr, hght_arr, N);
