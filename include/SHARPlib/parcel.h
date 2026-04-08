@@ -1221,6 +1221,11 @@ struct DowndraftParcel {
     template <typename Lft>
     void lower_parcel(Lft& liftpcl, const float pressure_arr[],
                       float pcl_tmpk_arr[], const std::ptrdiff_t N) {
+        if (this->pres >= pressure_arr[0]) {
+            std::fill_n(pcl_tmpk_arr, N, MISSING);
+            return;
+        }
+
         PressureLayer downdraft_layer = {pressure_arr[0], this->pres};
         LayerIndex downdraft_idx =
             get_layer_index(downdraft_layer, pressure_arr, N);
