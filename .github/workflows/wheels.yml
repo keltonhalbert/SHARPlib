@@ -27,6 +27,7 @@ jobs:
           fi
         env:
           VERSION: ${{ inputs.post_release_version }}
+
   build_wheels:
     name: Build wheels for ${{ matrix.os }}
     needs: [validate_input]
@@ -60,15 +61,16 @@ jobs:
           submodules: 'true'
           fetch-tags: 'true'
           fetch-depth: 0
-          
-      - name: Change submodule URLs to HTTPS 
+
+      - name: Change submodule URLs to HTTPS
         run: |
           git submodule foreach '
             git config submodule.$name.url https://github.com/$urlPath
           '
+
       - name: Submodules and Dependencies
         run: |
-          git config --global --add safe.directory ${{ github.workspace }} 
+          git config --global --add safe.directory ${{ github.workspace }}
           git submodule update --init --recursive
 
       - name: Build wheels
@@ -76,6 +78,8 @@ jobs:
         env:
           CIBW_PLATFORM: ${{ matrix.platform }}
           CIBW_ARCHS: ${{ matrix.archs }}
+          CIBW_ENVIRONMENT_PASS: >-
+            ${{ inputs.post_release_version && 'SETUPTOOLS_SCM_PRETEND_VERSION' || '' }}
           SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.post_release_version }}
 
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # 7.0.0
@@ -84,7 +88,8 @@ jobs:
           path: ./wheelhouse/*.whl
 
       - uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # 4.1.0
-        with: 
+        if: github.event_name != 'pull_request'
+        with:
           subject-path: ./wheelhouse/*.whl
 
   build_sdist:
@@ -103,20 +108,25 @@ jobs:
           fetch-tags: 'true'
           fetch-depth: 0
 
-      - name: Change submodule URLs to HTTPS 
+      - name: Change submodule URLs to HTTPS
         run: |
           git submodule foreach '
             git config submodule.$name.url https://github.com/$urlPath
           '
+
       - name: Submodules and Dependencies
         run: |
-          git config --global --add safe.directory ${{ github.workspace }} 
+          git config --global --add safe.directory ${{ github.workspace }}
           git submodule update --init --recursive
+
+      - name: Set version override
+        if: github.event_name == 'workflow_dispatch'
+        run: echo "SETUPTOOLS_SCM_PRETEND_VERSION=$VERSION" >> "$GITHUB_ENV"
+        env:
+          VERSION: ${{ inputs.post_release_version }}
 
       - name: Build sdist
         run: pipx run build --sdist
-        env:
-          SETUPTOOLS_SCM_PRETEND_VERSION: ${{ inputs.post_release_version }}
 
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # 7.0.0
         with:
@@ -124,26 +134,27 @@ jobs:
           path: dist/*.tar.gz
 
       - uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # 4.1.0
-        with: 
+        if: github.event_name != 'pull_request'
+        with:
           subject-path: dist/*.tar.gz
 
   upload_pypi:
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
-    environment: 
+    environment:
       name: pypi
       url: https://pypi.org/p/SHARPlib
     permissions:
       id-token: write
     if: >-
-      (github.event_name == 'release' && github.event.action == 'published') ||
-      github.event_name == 'workflow_dispatch'
-    # or, alternatively, upload to PyPI on every tag starting with 'v' (remove on: release above to use this)
-    # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+      always() &&
+      needs.build_wheels.result == 'success' &&
+      needs.build_sdist.result == 'success' &&
+      ((github.event_name == 'release' && github.event.action == 'published') ||
+      github.event_name == 'workflow_dispatch')
     steps:
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # 8.0.1
         with:
-          # unpacks all CIBW artifacts into dist/
           pattern: cibw-*
           path: dist
           merge-multiple: true
