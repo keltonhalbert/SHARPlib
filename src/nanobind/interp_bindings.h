@@ -31,6 +31,12 @@ inline void make_interp_bindings(nb::module_ m) {
 Interpolate a value from an array in height coordinates (meters).
 The coordinate array (hght_arr) is assumed to be sorted (ascending).
 
+QC builds, the default, treat a level whose data is MISSING or NaN as
+missing. A hght_val exactly on a level with valid data returns that
+level's stored value, even when a neighbouring level is missing. For any
+other hght_val, the routine interpolates between the nearest valid levels
+below and above it, and returns MISSING when one side has none.
+
 Parameters
 ----------
 hght_val : float 
@@ -60,6 +66,12 @@ Interpolate a value from an array in pressure coordinates (Pa).
 All pressure interpolation happens in log10 space.
 The coordinate array (pres_arr) is assumed to be sorted (descending).
 
+QC builds, the default, treat a level whose data is MISSING or NaN as
+missing. A pres_val exactly on a level with valid data returns that
+level's stored value, even when a neighbouring level is missing. For any
+other pres_val, the routine interpolates between the nearest valid levels
+below and above it, and returns MISSING when one side has none.
+
 Parameters
 ----------
 pres_val : float 
@@ -88,6 +100,11 @@ float
 Conducts a bottom-up search for the first occurrence of a given value,
 and interpolates in order to get the pressure level it occurs at.
 
+QC builds, the default, skip levels whose data is MISSING or NaN, so the
+search still finds a crossing between the valid levels on either side of
+them. An exact match returns that level's pressure, even when it is the only
+valid level in the profile. A MISSING or NaN data_val returns MISSING.
+
 Parameters
 ----------
 data_val : float 
@@ -115,6 +132,11 @@ float
         R"pbdoc(
 Conducts a bottom-up search for the first occurrence of a given value,
 and interpolates in order to get the height level it occurs at.
+
+QC builds, the default, skip levels whose data is MISSING or NaN, so the
+search still finds a crossing between the valid levels on either side of
+them. An exact match returns that level's height, even when it is the only
+valid level in the profile. A MISSING or NaN data_val returns MISSING.
 
 Parameters
 ----------
