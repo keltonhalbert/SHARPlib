@@ -1441,10 +1441,8 @@ numpy.ndarray[dtype=float32]
             check_equal_sizes(pres_arr, thetav_arr);
             const std::size_t NZ = pres_arr.size();
 
-            std::size_t pbl_idx =
-                sharp::pbl_top(pres_arr.data(), thetav_arr.data(), NZ, offset);
-
-            return pbl_idx;
+            return sharp::pbl_top(pres_arr.data(), thetav_arr.data(), NZ,
+                                  offset);
         },
         nb::arg("pressure"), nb::arg("thetav"), nb::arg("offset") = 0.5,
         R"pbdoc(
