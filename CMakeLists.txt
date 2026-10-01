@@ -72,8 +72,12 @@ else()
     endif()
 endif()
 
+## PUBLIC, because header templates and inline functions compile in the
+## consumer's translation unit and must see the library's setting.
+## install(EXPORT) carries it too, so find_package(SHARPlib) consumers
+## inherit it.
 if(NO_QC)
-    target_compile_definitions(SHARPlib PRIVATE NO_QC)
+    target_compile_definitions(SHARPlib PUBLIC NO_QC)
 endif()
 
 install(TARGETS SHARPlib
