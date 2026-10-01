@@ -33,8 +33,6 @@ WindComponents storm_motion_bunkers(
     constexpr float deviation = 7.5;  // deviation from mean wind in m/s
 
 #ifndef NO_QC
-    // A MISSING shear layer would otherwise build half-MISSING sublayers
-    // below, which throw.
     if (is_missing(wind_shear_layer_agl.bottom) ||
         is_missing(wind_shear_layer_agl.top)) {
         return {MISSING, MISSING};
@@ -59,8 +57,6 @@ WindComponents storm_motion_bunkers(
         height_layer_to_pressure(h_layer_hi, pressure, height, N, true);
 
 #ifndef NO_QC
-    // A layer that leaves the profile or the valid data converts to MISSING,
-    // and its MISSING mean wind would turn the arithmetic below into garbage.
     if ((mw_lyr.bottom == MISSING) || (p_layer_lo.bottom == MISSING) ||
         (p_layer_hi.bottom == MISSING)) {
         return {MISSING, MISSING};
@@ -95,7 +91,6 @@ WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const std::ptrdiff_t N, PressureLayer eff_infl_lyr,
     const Parcel& mupcl, const bool leftMover) {
-    // m AGL, as the classic overload takes its layers (isAGL = true)
     HeightLayer shr_layer = {0, 6000.0};
     HeightLayer dflt_mw_lyr = {0.0, 6000.0};
 
@@ -110,11 +105,9 @@ WindComponents storm_motion_bunkers(
                                     dflt_mw_lyr, shr_layer, leftMover, false);
     }
 
-    // m AGL: toAGL = true subtracts height[0]
     HeightLayer eil_hght =
         pressure_layer_to_height(eff_infl_lyr, pressure, height, N, true);
 
-    // m MSL, the frame of height[]
     float eql_ht = interp_pressure(eql_pres, pressure, height, N);
 #ifndef NO_QC
     if ((eil_hght.bottom == MISSING) || (eql_ht == MISSING)) {
@@ -122,19 +115,16 @@ WindComponents storm_motion_bunkers(
                                     dflt_mw_lyr, shr_layer, leftMover, false);
     }
 #endif
-    // m AGL, after the check: MISSING - height[0] would pass for a height
+    // get AGL
     eql_ht -= height[0];
 
-    // Bunkers et al. (2014): the mean wind runs from the effective inflow
-    // base to 65% of the MU EL height, with at least 3 km between them.
-    const float mw_top = 0.65 * eql_ht;  // m AGL
+    const float mw_top = 0.65 * eql_ht;
     const float mw_depth = mw_top - eil_hght.bottom;
     if (mw_depth < 3000.0f) {
         return storm_motion_bunkers(pressure, height, u_wind, v_wind, N,
                                     dflt_mw_lyr, shr_layer, leftMover, false);
     }
 
-    // m AGL, like shr_layer
     HeightLayer mw_layer = {eil_hght.bottom, mw_top};
     return storm_motion_bunkers(pressure, height, u_wind, v_wind, N, mw_layer,
                                 shr_layer, leftMover, true);
@@ -148,8 +138,6 @@ WindComponents storm_motion_bunkers(
     PressureLayer low_layer_pres =
         height_layer_to_pressure(low_layer, pressure, height, N, true);
 #ifndef NO_QC
-    // The cloud layer can start at the surface pressure, so without it there
-    // is no answer.
     if (is_missing(pres_sfc) || (low_layer_pres.bottom == MISSING)) {
         constexpr WindComponents missing = {MISSING, MISSING};
         return std::make_pair(missing, missing);
@@ -185,7 +173,6 @@ WindComponents effective_bulk_wind_difference(
         (effective_inflow_lyr.bottom == MISSING))
         return {MISSING, MISSING};
 
-    // wind_shear takes a HeightLayer in meters AGL, so build the layer in AGL.
     sharp::HeightLayer eil_hght = pressure_layer_to_height(
         effective_inflow_lyr, pressure, height, N, true);
     float eql_hght =
@@ -194,7 +181,6 @@ WindComponents effective_bulk_wind_difference(
     if ((eil_hght.bottom == MISSING) || (eql_hght == MISSING))
         return {MISSING, MISSING};
 #endif
-    // get AGL, after the check: MISSING - height[0] would pass for a height
     eql_hght -= height[0];
 
     float depth = 0.5f * (eql_hght - eil_hght.bottom);
@@ -445,8 +431,6 @@ float large_hail_parameter(const Parcel mu_pcl,
     const float el_hght =
         interp_pressure(mu_pcl.eql_pressure, pressure, height, N);
 #ifndef NO_QC
-    // The parcel has an EL, but the data can't place it in height, for
-    // example above the profile top. Building the layer below would throw.
     if (el_hght == MISSING) return MISSING;
 #endif
     HeightLayer el_lyr = {el_hght - 1500.0f, el_hght};

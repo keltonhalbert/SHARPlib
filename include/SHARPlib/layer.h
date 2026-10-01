@@ -377,11 +377,6 @@ template <typename L, typename C>
     LayerIndex layer_idx = get_layer_index(layer, coord_arr, N);
 
 #ifndef NO_QC
-    // Clipping to the profile inverts a correctly ordered layer exactly when
-    // the layer lies wholly outside the profile. Clipping never moves the
-    // endpoint nearest the profile. For a layer above the profile, that is
-    // the bottom, and clipping moves the top onto the last level. For a
-    // layer below the profile, it is the top.
     const bool outside = (layer.coord == LayerCoordinate::pressure)
                              ? (layer.bottom < layer.top)
                              : (layer.bottom > layer.top);
@@ -404,9 +399,6 @@ template <typename L, typename C>
         top_val = interp_height(layer.top, coord_arr, data_arr, N);
     }
 
-    // QC builds skip MISSING and NaN values. A MISSING min_or_max means no
-    // value yet, which happens when the bottom endpoint has no valid level
-    // to interpolate from.
     const auto replaces = [&](const float val) {
 #ifndef NO_QC
         if (is_missing(val)) return false;

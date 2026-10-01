@@ -91,8 +91,6 @@ def test_find_first_height():
     assert (interp.find_first_height(3, hght, data) == 300.0)
 
 
-# QC builds handle NaN data like MISSING, and a query that lands exactly on a
-# valid level returns that level's stored value.
 @pytest.mark.parametrize("interp_at, levels, td_levels, bridged", [
     (interp.interp_height, [0.0, 100.0, 200.0], [2950.0, 3000.0, 3050.0],
      7.0),
@@ -103,13 +101,11 @@ def test_interp_nan_and_missing(interp_at, levels, td_levels, bridged):
     lev0, lev1, lev2 = levels
     coord = np.array(levels, dtype="float32")
 
-    # NaN neighbour is bridged; no valid level on one side gives MISSING
     data = np.array([1.0, np.nan, 9.0], dtype="float32")
     assert (interp_at((lev1 + lev2) / 2, coord, data) == bridged)
     assert (interp_at((lev0 + lev1) / 2, coord[:2], data[:2]) ==
             constants.MISSING)
 
-    # exact level next to a missing level
     for x in (np.nan, constants.MISSING):
         top = np.array([x, 280.0], dtype="float32")
         bot = np.array([280.0, x], dtype="float32")
@@ -125,13 +121,11 @@ def test_find_first_nan_and_missing():
     hght = np.array([0.0, 100.0, 200.0], dtype="float32")
     pres = np.array([100000.0, 90000.0, 80000.0], dtype="float32")
 
-    # a crossing across a NaN level is found
     data = np.array([1.0, np.nan, 9.0], dtype="float32")
     assert (interp.find_first_height(5.0, hght, data) == 100.0)
     assert (interp.find_first_pressure(5.0, pres, data)
             == pytest.approx(89442.67))
 
-    # exact match on the only valid level
     for x in (np.nan, constants.MISSING):
         for levels, idx in (([5.0, x], 0), ([x, 5.0], 1), ([x, 5.0, x], 1)):
             data = np.array(levels, dtype="float32")
@@ -141,7 +135,6 @@ def test_find_first_nan_and_missing():
             assert (interp.find_first_pressure(
                 5.0, pres[:n], data) == pres[idx])
 
-    # single-level profile: an exact match returns its coordinate
     data = np.array([5.0], dtype="float32")
     assert (interp.find_first_height(5.0, hght[:1], data) == 0.0)
     assert (interp.find_first_pressure(5.0, pres[:1], data) == 100000.0)
@@ -150,7 +143,6 @@ def test_find_first_nan_and_missing():
 
 
 def test_interp_empty_and_single_level():
-    # empty arrays return MISSING without being read (SHARPlib-cld)
     empty = np.array([], dtype="float32")
     assert (interp.interp_height(0.0, empty, empty) == constants.MISSING)
     assert (interp.interp_pressure(
@@ -158,8 +150,6 @@ def test_interp_empty_and_single_level():
     assert (interp.find_first_height(5.0, empty, empty) == constants.MISSING)
     assert (interp.find_first_pressure(5.0, empty, empty) == constants.MISSING)
 
-    # a one-level profile returns the stored value for a query exactly on
-    # its level, and MISSING for any other query (SHARPlib-su1)
     hght = np.array([100.0], dtype="float32")
     pres = np.array([85000.0], dtype="float32")
     data = np.array([280.5], dtype="float32")

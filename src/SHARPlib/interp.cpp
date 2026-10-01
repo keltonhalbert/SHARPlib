@@ -24,10 +24,6 @@
 namespace sharp {
 
 #ifndef NO_QC
-// When both bracketing levels are valid, returns nothing, and the caller
-// interpolates between them. Otherwise, a query exactly on the valid level
-// returns its stored value, and any other query bridges idx_bot and idx_top
-// to the nearest valid levels.
 static inline std::optional<float> bridge_missing(
     const float coord_val, const float coord_arr[], const float data_arr[],
     const std::ptrdiff_t N, std::ptrdiff_t& idx_bot, std::ptrdiff_t& idx_top) {
@@ -67,8 +63,6 @@ float interp_height(const float height_val, const float height_arr[],
     if ((height_val > height_arr[N - 1]) || (height_val < height_arr[0]))
         return MISSING;
 
-    // One level brackets nothing. The range check above leaves only a query
-    // exactly on it, which returns the stored value.
     if (N == 1) {
 #ifndef NO_QC
         if (is_missing(data_arr[0])) return MISSING;
@@ -112,8 +106,6 @@ float interp_pressure(const float pressure_val, const float pressure_arr[],
         return MISSING;
     }
 
-    // One level brackets nothing. The range check above leaves only a query
-    // exactly on it, which returns the stored value.
     if (N == 1) {
 #ifndef NO_QC
         if (is_missing(data_arr[0])) return MISSING;

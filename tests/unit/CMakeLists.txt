@@ -6,9 +6,6 @@ add_custom_target(SHARPlib_tests)
 
 include_directories(${CMAKE_SOURCE_DIR}/include ${DOCTEST_INCLUDE_DIR})
 
-## The test targets get NO_QC from linking SHARPlib, which sets it as a
-## PUBLIC definition. This target checks that, and fails to compile if NO_QC
-## stops propagating.
 add_executable(test_sharp_no_qc_propagation EXCLUDE_FROM_ALL test_no_qc_propagation.cpp)
 target_link_libraries(test_sharp_no_qc_propagation SHARPlib)
 target_compile_definitions(test_sharp_no_qc_propagation PRIVATE SHARPLIB_EXPECT_NO_QC=$<BOOL:${NO_QC}>)

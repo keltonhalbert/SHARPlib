@@ -239,7 +239,6 @@ def test_pressure_layer_mean():
     assert (layer.layer_mean(lyr3, pres, data) == pytest.approx(1.111111))
 
 
-# A layer wholly outside the profile has no mean (SHARPlib-4v5).
 @pytest.mark.parametrize("sfc_hght", [0.0, 300.0])
 @pytest.mark.parametrize("isAGL", [False, True])
 def test_layer_mean_outside_profile(sfc_hght, isAGL):
@@ -259,7 +258,6 @@ def test_layer_mean_outside_profile(sfc_hght, isAGL):
     below = layer.PressureLayer(110000.0, 105000.0)
     assert (layer.layer_mean(below, pres, data) == constants.MISSING)
 
-    # a layer partly above the profile is clipped to it
     part = layer.HeightLayer(500.0, 1500.0)
     assert (layer.layer_mean(part, hght, pres, data, True) ==
             pytest.approx(295.5))
@@ -272,9 +270,6 @@ pres5 = np.array([100000.0, 95000.0, 90000.0, 85000.0, 80000.0],
                  dtype="float32")
 
 
-# An endpoint with no valid data level on its open side converts to MISSING,
-# and the conversion returns a MISSING layer instead of raising
-# (SHARPlib-mut).
 def assert_missing_layer(lyr):
     assert (lyr.bottom == constants.MISSING)
     assert (lyr.top == constants.MISSING)
@@ -284,7 +279,6 @@ def assert_missing_layer(lyr):
 def test_layer_conversion_missing_end_level(end):
     data = np.array([300.0, 297.0, 294.0, 291.0, 288.0], dtype="float32")
 
-    # MISSING pressure at the first or last level
     pres_mis = pres5.copy()
     pres_mis[end] = constants.MISSING
     for bottom, top in [(0.0, 2000.0), (250.0, 1750.0)]:
@@ -293,12 +287,10 @@ def test_layer_conversion_missing_end_level(end):
                                                             hght5))
         assert (layer.layer_mean(lyr, hght5, pres_mis, data) ==
                 constants.MISSING)
-    # a layer that doesn't need the MISSING level
     lyr = layer.HeightLayer(500.0, 1500.0)
     out = layer.height_layer_to_pressure(lyr, pres_mis, hght5)
     assert (out.bottom == 95000.0 and out.top == 85000.0)
 
-    # MISSING height at the first or last level
     hght_mis = hght5.copy()
     hght_mis[end] = constants.MISSING
     for bottom, top in [(100000.0, 80000.0), (97500.0, 82500.0)]:
@@ -313,7 +305,6 @@ def test_layer_conversion_missing_end_level(end):
 
 
 def test_layer_conversion_missing_interior_level():
-    # An interior MISSING level is bridged
     pres_mis = pres5.copy()
     pres_mis[2] = constants.MISSING
     out = layer.height_layer_to_pressure(layer.HeightLayer(250.0, 1750.0),
@@ -326,22 +317,18 @@ def test_layer_conversion_missing_interior_level():
     assert (out.bottom == 0.0 and out.top == 2000.0)
 
 
-# QC builds skip MISSING and NaN data in layer_min and layer_max, and return
-# MISSING for a layer wholly outside the profile.
 def test_layer_min_max_missing_data():
     hght = np.array([0.0, 500.0, 1000.0, 1500.0, 2000.0, 2500.0],
                     dtype="float32")
     tmpk = np.array([258.0, 258.0, np.nan, 268.0, 268.0, 268.0],
                     dtype="float32")
 
-    # NaN next to the bottom and the top of the layer
     lyr = layer.HeightLayer(750.0, 2500.0)
     assert (layer.layer_min(lyr, hght, tmpk) == (260.5, 750.0))
     lyr = layer.HeightLayer(0.0, 1250.0)
     assert (layer.layer_min(lyr, hght, tmpk) == (258.0, 0.0))
     assert (layer.layer_max(lyr, hght, tmpk) == (265.5, 1250.0))
 
-    # a MISSING interior level and a MISSING bottom endpoint are skipped
     hght = np.array([0.0, 100.0, 200.0, 300.0, 400.0], dtype="float32")
     data = np.array([3.0, 1.0, constants.MISSING, 6.0, 4.0], dtype="float32")
     lyr = layer.HeightLayer(0.0, 400.0)
@@ -369,7 +356,6 @@ def test_layer_min_max_outside_profile():
     assert (layer.layer_max(above, pres, tmpk_pres) ==
             (constants.MISSING, 70000.0))
 
-    # a layer touching the top of the profile
     touch = layer.HeightLayer(1000.0, 2000.0)
     assert (layer.layer_min(touch, hght, tmpk) == (278.0, 1000.0))
     assert (layer.layer_max(touch, hght, tmpk) == (278.0, 1000.0))

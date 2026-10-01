@@ -476,10 +476,8 @@ float lapse_rate(PressureLayer layer, const float pressure[],
         layer.top = pressure[N - 1];
     }
 
-    // Clipping inverts a layer that lies wholly outside the profile, as in
-    // sharp::layer_minmax. That layer has no lapse rate, and the conversion
-    // to height below can't take it. Complete data reaches this case, so
-    // unlike the MISSING checks it applies in NO_QC builds too.
+    // Clipping inverts a layer wholly outside the profile. Complete data
+    // reaches this, so NO_QC builds keep the check.
     if (layer.bottom < layer.top) return MISSING;
 
     HeightLayer h_layer =
@@ -495,20 +493,11 @@ float lapse_rate_max(HeightLayer layer_agl, const float depth,
         max_lyr->bottom = MISSING;
         max_lyr->top = MISSING;
     }
-    // The search steps up by delta. With a delta of zero or less it never
-    // reaches the top of the layer, and the call never returns. A NaN delta
-    // ends it after one layer. The check is for termination, not missing
-    // data, so NO_QC builds keep it too.
     if (!(layer_agl.delta > 0.0f)) return MISSING;
     float max_lr = MISSING;
     for (float z = layer_agl.bottom; z <= (layer_agl.top - depth);
          z += layer_agl.delta) {
         HeightLayer lyr = {z, z + depth};
-        // Search only layers wholly inside the profile. lapse_rate clips a
-        // layer that extends past either end to a layer shallower than
-        // depth, and a shallower layer can have a larger lapse rate. These
-        // are the comparisons lapse_rate clips with, after its conversion
-        // to MSL.
         const float bottom_msl = lyr.bottom + height[0];
         const float top_msl = lyr.top + height[0];
         if ((bottom_msl < height[0]) || (top_msl > height[N - 1])) continue;
@@ -532,15 +521,10 @@ float lapse_rate_max(PressureLayer layer, const float depth,
         max_lyr->bottom = MISSING;
         max_lyr->top = MISSING;
     }
-    // The search steps toward lower pressure, so delta must be below zero,
-    // as in the sharp::HeightLayer overload.
     if (!(layer.delta < 0.0f)) return MISSING;
     float max_lr = MISSING;
     for (float p = layer.bottom; p >= (layer.top + depth); p += layer.delta) {
         PressureLayer lyr = {p, p - depth};
-        // Search only layers wholly inside the profile, as in the
-        // sharp::HeightLayer overload. These are the comparisons lapse_rate
-        // clips with.
         if ((lyr.bottom > pressure[0]) || (lyr.top < pressure[N - 1])) continue;
         float lr = lapse_rate(lyr, pressure, height, temperature, N);
         if (lr > max_lr) {

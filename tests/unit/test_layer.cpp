@@ -197,13 +197,11 @@ TEST_CASE("Testing layer_min over height layer") {
     CHECK(sharp::layer_min(layer5, hght, data, 10) == -7.5);
 }
 
-// A layer_min or layer_max result: the value and the level reported with it.
 struct Extreme {
     float value;
     float level;
 };
 
-// Checks layer_min and layer_max over one layer.
 template <typename L>
 static void check_min_max(const L layer, const float coord[],
                           const float data[], const std::ptrdiff_t N,
@@ -219,8 +217,6 @@ static void check_min_max(const L layer, const float coord[],
     CHECK(max_lvl == max.level);
 }
 
-// QC builds skip MISSING and NaN data in layer_min and layer_max, and return
-// MISSING for a layer wholly outside the profile (SHARPlib-5yf.2).
 #ifndef NO_QC
 constexpr float MISSING = sharp::MISSING;
 
@@ -231,13 +227,11 @@ TEST_CASE("Testing layer_min and layer_max with missing data at a boundary") {
     constexpr float tmpk_nan[N] = {258, 258, nanval, 268, 268, 268};
     constexpr float tmpk_mis[N] = {258, 258, MISSING, 268, 268, 268};
 
-    // NaN next to the bottom of the layer
     check_min_max(sharp::HeightLayer(750, 2500), hght, tmpk_nan, N,
                   {260.5f, 750}, {268, 1500});
     check_min_max(sharp::PressureLayer(92500, 75000), pres, tmpk_nan, N,
                   {260.397675f, 92500}, {268, 85000});
 
-    // NaN next to the top of the layer
     check_min_max(sharp::HeightLayer(0, 1250), hght, tmpk_nan, N, {258, 0},
                   {265.5f, 1250});
     check_min_max(sharp::HeightLayer(0, 750), hght, tmpk_nan, N, {258, 0},
@@ -245,7 +239,6 @@ TEST_CASE("Testing layer_min and layer_max with missing data at a boundary") {
     check_min_max(sharp::PressureLayer(100000, 87500), pres, tmpk_nan, N,
                   {258, 100000}, {265.393829f, 87500});
 
-    // MISSING next to the bottom and top of the layer
     check_min_max(sharp::HeightLayer(750, 2500), hght, tmpk_mis, N,
                   {260.5f, 750}, {268, 1500});
     check_min_max(sharp::HeightLayer(0, 1250), hght, tmpk_mis, N, {258, 0},
@@ -266,29 +259,24 @@ TEST_CASE("Testing layer_min and layer_max skip MISSING and NaN levels") {
                       {1, 90000}, {6, 70000});
     }
 
-    // an isolated NaN away from the layer bottom and top
     constexpr float data_iso[N] = {1, 2, nanval, 4, 5};
     check_min_max(sharp::HeightLayer(0, 400), hght, data_iso, N, {1, 0},
                   {5, 400});
 }
 
 TEST_CASE("Testing layer_min and layer_max with a MISSING endpoint") {
-    // The endpoint has no valid level on one side of it, so it interpolates
-    // to MISSING and the result comes from the valid levels.
     constexpr std::ptrdiff_t N = 5;
     constexpr float hght[N] = {0, 100, 200, 300, 400};
     constexpr float pres[N] = {100000, 90000, 80000, 70000, 60000};
 
     for (const float bad : {MISSING, nanval}) {
         CAPTURE(bad);
-        // bottom endpoint
         const float bot[N] = {bad, bad, 3, 1, 6};
         check_min_max(sharp::HeightLayer(50, 400), hght, bot, N, {1, 300},
                       {6, 400});
         check_min_max(sharp::PressureLayer(95000, 60000), pres, bot, N,
                       {1, 70000}, {6, 60000});
 
-        // top endpoint
         const float top[N] = {3, 1, 6, bad, bad};
         check_min_max(sharp::HeightLayer(0, 350), hght, top, N, {1, 100},
                       {6, 200});
@@ -324,7 +312,6 @@ constexpr float mm_tmpk_pres[MM_N] = {278, 268, 258};
 
 #ifndef NO_QC
 TEST_CASE("Testing layer_min and layer_max over layers outside the profile") {
-    // Complete data.
     check_min_max(sharp::HeightLayer(1500, 2000), mm_hght, mm_tmpk_hght, MM_N,
                   {MISSING, 1500}, {MISSING, 1500});
     check_min_max(sharp::HeightLayer(-500, -100), mm_hght, mm_tmpk_hght, MM_N,
@@ -334,7 +321,6 @@ TEST_CASE("Testing layer_min and layer_max over layers outside the profile") {
     check_min_max(sharp::PressureLayer(110000, 105000), mm_pres, mm_tmpk_pres,
                   MM_N, {MISSING, 105000}, {MISSING, 105000});
 
-    // without a level pointer
     CHECK(sharp::layer_max(sharp::HeightLayer(1500, 2000), mm_hght,
                            mm_tmpk_hght, MM_N) == MISSING);
     CHECK(sharp::layer_max(sharp::PressureLayer(110000, 105000), mm_pres,
@@ -343,7 +329,6 @@ TEST_CASE("Testing layer_min and layer_max over layers outside the profile") {
 #endif
 
 TEST_CASE("Testing layer_min and layer_max over layers at the profile edge") {
-    // touching at one point
     check_min_max(sharp::HeightLayer(1000, 2000), mm_hght, mm_tmpk_hght, MM_N,
                   {278, 1000}, {278, 1000});
     check_min_max(sharp::HeightLayer(-500, 0), mm_hght, mm_tmpk_hght, MM_N,
@@ -353,7 +338,6 @@ TEST_CASE("Testing layer_min and layer_max over layers at the profile edge") {
     check_min_max(sharp::PressureLayer(105000, 100000), mm_pres, mm_tmpk_pres,
                   MM_N, {278, 100000}, {278, 100000});
 
-    // partly above and partly below
     check_min_max(sharp::HeightLayer(500, 1500), mm_hght, mm_tmpk_hght, MM_N,
                   {268, 500}, {278, 1000});
     check_min_max(sharp::HeightLayer(-500, 500), mm_hght, mm_tmpk_hght, MM_N,
@@ -380,15 +364,11 @@ TEST_CASE("Testing layer_mean over a pressure layer") {
     CHECK(sharp::layer_mean(layer2, pres, data, N) == doctest::Approx(1.1111));
     CHECK(sharp::layer_mean(layer3, pres, data, N) == doctest::Approx(1.1111));
 }
-// layer_mean over layers that leave the profile (SHARPlib-4v5). A layer wholly
-// outside the profile has no mean and returns MISSING in every build. The
-// height overload clipped one end of such a layer and not the other, which
-// inverted it, and the conversion to pressure then threw std::range_error.
+
 constexpr std::ptrdiff_t ME_N = 5;
 constexpr float me_hght[ME_N] = {0, 500, 1000, 1500, 2000};
 constexpr float me_data[ME_N] = {300, 297, 294, 291, 288};
 constexpr float me_pres[ME_N] = {100000, 95000, 90000, 85000, 80000};
-// the same profile with the surface at 300 m
 constexpr float me_hght_300[ME_N] = {300, 800, 1300, 1800, 2300};
 constexpr std::ptrdiff_t LM_N = 3;
 
@@ -397,27 +377,22 @@ TEST_CASE("Testing layer_mean over layers outside the profile") {
         CAPTURE(hght[0]);
         for (const bool agl : {false, true}) {
             CAPTURE(agl);
-            // wholly above
             CHECK(sharp::layer_mean(sharp::HeightLayer(1500, 2000), hght,
                                     me_pres, me_data, LM_N,
                                     agl) == sharp::MISSING);
-            // wholly below
             CHECK(sharp::layer_mean(sharp::HeightLayer(-500, -100), hght,
                                     me_pres, me_data, LM_N,
                                     agl) == sharp::MISSING);
         }
     }
-    // below a 300 m surface in meters MSL
     CHECK(sharp::layer_mean(sharp::HeightLayer(0, 200), me_hght_300, me_pres,
                             me_data, LM_N, false) == sharp::MISSING);
 
-    // pressure layers
     CHECK(sharp::layer_mean(sharp::PressureLayer(85000, 80000), me_pres,
                             me_data, LM_N) == sharp::MISSING);
     CHECK(sharp::layer_mean(sharp::PressureLayer(110000, 105000), me_pres,
                             me_data, LM_N) == sharp::MISSING);
 
-    // one level at 0 m
     constexpr float pres[1] = {100000};
     constexpr float hght[1] = {0};
     constexpr float data[1] = {300};
@@ -428,17 +403,13 @@ TEST_CASE("Testing layer_mean over layers outside the profile") {
 }
 
 TEST_CASE("Testing layer_mean over layers at the profile edge") {
-    // Layers that touch the profile at one point have no depth and return
-    // MISSING. Layers that partly overlap it are clipped to it.
     for (const float* hght : {me_hght, me_hght_300}) {
         CAPTURE(hght[0]);
-        // touching at one point, meters AGL
         CHECK(sharp::layer_mean(sharp::HeightLayer(1000, 2000), hght, me_pres,
                                 me_data, LM_N, true) == sharp::MISSING);
         CHECK(sharp::layer_mean(sharp::HeightLayer(-500, 0), hght, me_pres,
                                 me_data, LM_N, true) == sharp::MISSING);
 
-        // partly above and partly below, meters AGL
         CHECK(sharp::layer_mean(sharp::HeightLayer(500, 1500), hght, me_pres,
                                 me_data, LM_N,
                                 true) == doctest::Approx(295.5f));
@@ -447,7 +418,6 @@ TEST_CASE("Testing layer_mean over layers at the profile edge") {
                                 true) == doctest::Approx(298.5f));
     }
 
-    // a 300 m surface in meters MSL
     CHECK(sharp::layer_mean(sharp::HeightLayer(1300, 2000), me_hght_300,
                             me_pres, me_data, LM_N) == sharp::MISSING);
     CHECK(sharp::layer_mean(sharp::HeightLayer(-500, 300), me_hght_300, me_pres,
@@ -458,7 +428,6 @@ TEST_CASE("Testing layer_mean over layers at the profile edge") {
     CHECK(sharp::layer_mean(sharp::HeightLayer(-500, 500), me_hght_300, me_pres,
                             me_data, LM_N) == doctest::Approx(299.40921f));
 
-    // pressure layers
     CHECK(sharp::layer_mean(sharp::PressureLayer(90000, 80000), me_pres,
                             me_data, LM_N) == sharp::MISSING);
     CHECK(sharp::layer_mean(sharp::PressureLayer(105000, 100000), me_pres,
@@ -469,11 +438,6 @@ TEST_CASE("Testing layer_mean over layers at the profile edge") {
                             me_data, LM_N) == doctest::Approx(298.5f));
 }
 
-// Layer conversions with MISSING data at an end level (SHARPlib-mut). An
-// endpoint with no valid data level on its open side interpolates to
-// MISSING. The conversion now returns the {MISSING, MISSING} layer it returns
-// for a layer outside the profile, and an AGL conversion without a valid
-// height[0] returns it too. NO_QC builds don't change.
 #ifndef NO_QC
 template <typename L>
 static void check_missing_layer(const L layer) {
@@ -488,8 +452,6 @@ static void check_layer_bounds(const L layer, const float bottom,
     CHECK(layer.top == doctest::Approx(top));
 }
 
-// The bead's profile, with MISSING pressure or height at the first, last, or
-// an interior level.
 constexpr float me_pres_bot[ME_N] = {MISSING, 95000, 90000, 85000, 80000};
 constexpr float me_pres_top[ME_N] = {100000, 95000, 90000, 85000, MISSING};
 constexpr float me_pres_mid[ME_N] = {100000, 95000, MISSING, 85000, 80000};
@@ -506,13 +468,11 @@ TEST_CASE("Testing height_layer_to_pressure with MISSING end pressure") {
                 {0, 2000}, pres, me_hght, ME_N, agl));
             check_missing_layer(sharp::height_layer_to_pressure(
                 {250, 1750}, pres, me_hght, ME_N, agl));
-            // a layer that doesn't need the MISSING level
             check_layer_bounds(sharp::height_layer_to_pressure(
                                    {500, 1500}, pres, me_hght, ME_N, agl),
                                95000, 85000);
         }
     }
-    // an interior MISSING level is bridged
     check_layer_bounds(
         sharp::height_layer_to_pressure({0, 2000}, me_pres_mid, me_hght, ME_N),
         100000, 80000);
@@ -533,7 +493,6 @@ TEST_CASE("Testing pressure_layer_to_height with MISSING end height") {
     check_missing_layer(sharp::pressure_layer_to_height({97500, 82500}, me_pres,
                                                         me_hght_bot, ME_N));
 
-    // layers that don't need the MISSING level
     check_layer_bounds(sharp::pressure_layer_to_height({95000, 85000}, me_pres,
                                                        me_hght_top, ME_N, true),
                        500, 1500);
@@ -541,7 +500,6 @@ TEST_CASE("Testing pressure_layer_to_height with MISSING end height") {
                                                        me_hght_bot, ME_N),
                        500, 1500);
 
-    // an interior MISSING level is bridged
     for (const bool agl : {false, true}) {
         CAPTURE(agl);
         check_layer_bounds(
@@ -555,7 +513,6 @@ TEST_CASE("Testing pressure_layer_to_height with MISSING end height") {
 }
 
 TEST_CASE("Testing layer conversion change classes") {
-    // (b) both endpoints MISSING, no AGL flag
     constexpr float pres_mm[ME_N] = {100000, 95000, 90000, MISSING, MISSING};
     check_missing_layer(
         sharp::height_layer_to_pressure({1600, 1900}, pres_mm, me_hght, ME_N));
@@ -563,31 +520,23 @@ TEST_CASE("Testing layer conversion change classes") {
     check_missing_layer(sharp::pressure_layer_to_height({85000, 80000}, me_pres,
                                                         hght_mm, ME_N));
 
-    // (c) toAGL, both endpoints MISSING
     check_missing_layer(sharp::pressure_layer_to_height({85000, 80000}, me_pres,
                                                         hght_mm, ME_N, true));
-    // (d) toAGL, height[0] MISSING makes one endpoint MISSING
     check_missing_layer(sharp::pressure_layer_to_height(
         {100000, 80000}, me_pres, me_hght_bot, ME_N, true));
-    // (e) toAGL, height[0] MISSING, both endpoints valid
     check_missing_layer(sharp::pressure_layer_to_height(
         {95000, 85000}, me_pres, me_hght_bot, ME_N, true));
-    // (f) toAGL, height[0] NaN
     constexpr float hght_nan[ME_N] = {nanval, 500, 1000, 1500, 2000};
     check_missing_layer(sharp::pressure_layer_to_height({95000, 85000}, me_pres,
                                                         hght_nan, ME_N, true));
 
-    // (g) isAGL, height[0] MISSING
     check_missing_layer(sharp::height_layer_to_pressure(
         {500, 1500}, me_pres, me_hght_bot, ME_N, true));
     check_missing_layer(sharp::height_layer_to_pressure(
         {0, 1000}, me_pres, me_hght_bot, ME_N, true));
-    // isAGL, height[0] NaN
     check_missing_layer(sharp::height_layer_to_pressure({500, 1500}, me_pres,
                                                         hght_nan, ME_N, true));
 
-    // (h) one endpoint MISSING with an AGL flag and a valid origin. The
-    // endpoints interpolate to (800, MISSING).
     check_missing_layer(sharp::pressure_layer_to_height({95000, 85000}, me_pres,
                                                         hght_mm, ME_N, true));
     check_missing_layer(sharp::height_layer_to_pressure(
@@ -601,12 +550,9 @@ TEST_CASE("Testing layer_mean with MISSING end pressure") {
                                 me_data, ME_N) == MISSING);
         CHECK(sharp::layer_mean(sharp::HeightLayer(250, 1750), me_hght, pres,
                                 me_data, ME_N) == MISSING);
-        // clipped to the profile
         CHECK(sharp::layer_mean(sharp::HeightLayer(-500, 3000), me_hght, pres,
                                 me_data, ME_N) == MISSING);
     }
-    // Pressure is the integration coordinate, so a MISSING pressure[0] makes
-    // even this layer MISSING and a MISSING pressure[N-1] doesn't.
     CHECK(sharp::layer_mean(sharp::HeightLayer(500, 1500), me_hght, me_pres_bot,
                             me_data, ME_N) == MISSING);
     CHECK(sharp::layer_mean(sharp::HeightLayer(500, 1500), me_hght, me_pres_top,

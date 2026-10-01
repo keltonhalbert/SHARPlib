@@ -180,15 +180,12 @@ TEST_CASE("Testing find_first_pressure_with_missing") {
 }
 #endif
 
-// QC builds handle NaN data like MISSING, and a query that lands exactly on a
-// valid level returns that level's stored value (SHARPlib-5yf.1).
 #ifndef NO_QC
 constexpr float hght[4] = {0, 100, 200, 300};
 constexpr float pres[4] = {100000, 90000, 80000, 70000};
 constexpr float nan_mid[3] = {1, nanval, 9};
 
 TEST_CASE("Testing interp with NaN and MISSING data") {
-    // a NaN neighbour is bridged to the next valid level
     CHECK(sharp::interp_height(150, hght, nan_mid, 3) == 7);
     CHECK(sharp::interp_height(50, hght, nan_mid, 3) == 3);
     CHECK(sharp::interp_pressure(85000, pres, nan_mid, 3) ==
@@ -196,7 +193,6 @@ TEST_CASE("Testing interp with NaN and MISSING data") {
     CHECK(sharp::interp_pressure(95000, pres, nan_mid, 3) ==
           doctest::Approx(2.83893538));
 
-    // no valid level on one side gives MISSING
     constexpr float nan_top[2] = {1, nanval};
     constexpr float nan_below[3] = {nanval, nanval, 9};
     constexpr float nan_above[3] = {1, nanval, nanval};
@@ -210,17 +206,14 @@ TEST_CASE("Testing interp with NaN and MISSING data") {
     constexpr float hght_td[3] = {2950, 3000, 3050};
     for (const float bad : {nanval, sharp::MISSING}) {
         CAPTURE(bad);
-        // exact level at the top of the profile, missing level below
         const float top[2] = {bad, 280};
         CHECK(sharp::interp_height(100, hght, top, 2) == 280);
         CHECK(sharp::interp_pressure(90000, pres, top, 2) == 280);
 
-        // exact level at the bottom of the profile, missing level above
         const float bottom[2] = {280, bad};
         CHECK(sharp::interp_height(0, hght, bottom, 2) == 280);
         CHECK(sharp::interp_pressure(100000, pres, bottom, 2) == 280);
 
-        // exact interior level, missing level above (dewpoint, K)
         const float td[3] = {270.0f, 269.5f, bad};
         CHECK(sharp::interp_height(3000, hght_td, td, 3) == 269.5f);
         CHECK(sharp::interp_pressure(90000, pres, td, 3) == 269.5f);
@@ -231,9 +224,6 @@ TEST_CASE("Testing interp with NaN and MISSING data") {
 }
 
 TEST_CASE("Testing interp at exact levels with a complete bracket") {
-    // Both bracketing levels are valid, so the exact-level shortcut is
-    // skipped and the interpolation path runs as before. Expected values are
-    // the exact outputs measured before the change.
     constexpr float data3[3] = {-1.5f, 2.25f, 7.75f};
     CHECK(sharp::interp_height(0, hght, data3, 3) == -1.5f);
     CHECK(sharp::interp_height(100, hght, data3, 3) == 2.25f);
@@ -250,19 +240,16 @@ TEST_CASE("Testing interp at exact levels with a complete bracket") {
 }
 
 TEST_CASE("Testing find_first with NaN and MISSING data") {
-    // a NaN query value gives MISSING
     constexpr float data3[3] = {1, 5, 9};
     CHECK(sharp::find_first_height(nanval, hght, data3, 3) == sharp::MISSING);
     CHECK(sharp::find_first_pressure(nanval, pres, data3, 3) == sharp::MISSING);
 
-    // a crossing across a NaN level is found
     CHECK(sharp::find_first_height(5, hght, nan_mid, 3) == 100);
     CHECK(sharp::find_first_pressure(5, pres, nan_mid, 3) ==
           doctest::Approx(89442.7));
 
     for (const float bad : {nanval, sharp::MISSING}) {
         CAPTURE(bad);
-        // exact match on the only valid level
         const float v5_bad[2] = {5, bad};
         const float bad_v5[2] = {bad, 5};
         const float bad_v5_bad[3] = {bad, 5, bad};
@@ -273,20 +260,13 @@ TEST_CASE("Testing find_first with NaN and MISSING data") {
         CHECK(sharp::find_first_pressure(5, pres, bad_v5, 2) == 90000);
         CHECK(sharp::find_first_pressure(5, pres, bad_v5_bad, 3) == 90000);
 
-        // a lone valid level that does not match gives MISSING
         CHECK(sharp::find_first_height(6, hght, v5_bad, 2) == sharp::MISSING);
         CHECK(sharp::find_first_pressure(6, pres, v5_bad, 2) == sharp::MISSING);
     }
 }
 #endif
 
-// An empty profile returns MISSING without reading the arrays, and a
-// one-level profile returns the stored value for a query exactly on its
-// level (SHARPlib-cld, SHARPlib-su1). Before, both read out of bounds:
-// height_arr[-1] or pressure_arr[-1] for N = 0, and data_arr[-1] for a
-// query on the level of a one-level profile.
 TEST_CASE("Testing interp on an empty profile") {
-    // nullptr arrays show that no element is read
     CHECK(sharp::interp_height(0, nullptr, nullptr, 0) == sharp::MISSING);
     CHECK(sharp::interp_pressure(100000, nullptr, nullptr, 0) ==
           sharp::MISSING);
@@ -300,11 +280,9 @@ TEST_CASE("Testing interp on a single-level profile") {
     constexpr float pres1[1] = {85000};
     constexpr float data1[1] = {280.5f};
 
-    // a query exactly on the level returns its stored value
     CHECK(sharp::interp_height(100, hght1, data1, 1) == 280.5f);
     CHECK(sharp::interp_pressure(85000, pres1, data1, 1) == 280.5f);
 
-    // any other query lies outside the profile
     CHECK(sharp::interp_height(99, hght1, data1, 1) == sharp::MISSING);
     CHECK(sharp::interp_height(101, hght1, data1, 1) == sharp::MISSING);
     CHECK(sharp::interp_pressure(85001, pres1, data1, 1) == sharp::MISSING);
