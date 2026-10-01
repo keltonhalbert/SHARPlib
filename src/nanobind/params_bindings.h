@@ -842,6 +842,97 @@ Every field defaults to MISSING.
     // Precipitation generation layer from a sounding
     // -----------------------------------------------------------------------
 
+    m_params.def(
+        "precipitation_generation_layer",
+        [](const_prof_arr_t pressure, const_prof_arr_t height,
+           const_prof_arr_t temperature, const_prof_arr_t dewpoint,
+           const float min_depth) {
+            check_equal_sizes(pressure, height, temperature, dewpoint);
+            return sharp::precipitation_generation_layer(
+                pressure.data(), height.data(), temperature.data(),
+                dewpoint.data(), height.size(), min_depth);
+        },
+        nb::arg("pressure"), nb::arg("height"), nb::arg("temperature"),
+        nb::arg("dewpoint"), nb::arg("min_depth") = 0.0f,
+        R"pbdoc(
+Finds the precipitation generation layer of the modified Bourgouin
+method.
+
+Splits the profile into moist layers, where relative humidity is above
+75 %, and dry layers, where it is below 75 %. Returns the highest moist
+layer deeper than 1000 m that lies below the first dry layer deeper than
+1500 m (Birk et al. 2021, section 3e). The paper assumes that
+precipitation falling from above such a dry layer sublimates, so the dry
+layer eliminates every layer above it, even when it starts at the
+surface. Both depths are strict. A 1000 m moist layer is not a
+generation layer, and a 1500 m dry layer eliminates nothing. Layer
+boundaries are the linearly interpolated 75 % crossings. The function
+walks up the profile once and stops at the first eliminating dry layer.
+
+Relative humidity is over ice where the air temperature is below 0 C and
+over liquid water otherwise, from relative_humidity_ice and
+relative_humidity in nwsspc.sharp.calc.thermo. The paper uses relative
+humidity over ice at every temperature, so this deviates from it above
+0 C. The two agree at 0 C. For example, T = 283.15 K with Td = 280 K is
+0.808 over liquid, which is moist, but 0.733 over ice, which is dry.
+
+Levels at exactly 75 % continue the current layer and add their depth to
+it, so a layer ends only where the relative humidity crosses 75 %. For
+example, relative humidities of 0.8, 0.75, 0.75, and 0.8 at 0, 100, 2000,
+and 2100 m form one 2100 m moist layer, which is a generation layer. The
+paper defines moist as above 75 % and dry as below it, and doesn't say
+how levels at exactly 75 % count. Read strictly, they belong to neither
+kind of layer and end both. That reading turns the example into two
+100 m moist layers and no generation layer. The two readings differ only
+where the relative humidity is exactly 0.75.
+
+min_depth is an opt-in filter for noisy, high-resolution profiles. Moist
+and dry runs shallower than min_depth merge into the layers around them.
+Two layers of the same kind absorb the shallow runs between them.
+Shallow runs between a moist and a dry layer all go to whichever kind
+makes up more of their depth, and a tie goes to the lower layer. Shallow
+runs at the bottom or top of the profile join the layer next to them. So
+a dry layer's depth includes the shallow moist runs it absorbs. The
+default of 0 merges nothing, which is the paper as written. With
+min_depth above 0, a dry layer's depth is final once the moist run above
+it is min_depth deep, so the walk stops there.
+
+A result of MISSING does not say why. The profile may have no moist layer
+deeper than 1000 m, a deep dry layer under the cloud may eliminate it
+(virga), or the moisture data may be missing. Callers can't tell these
+cases apart from the result.
+
+The walk skips levels with a MISSING or NaN height, temperature, or
+dewpoint, or a MISSING pressure, and joins their valid neighbors with a
+straight line.
+
+Heights must be strictly increasing. This is not checked.
+
+References
+----------
+Birk et al. 2021: https://doi.org/10.1175/WAF-D-20-0118.1
+
+Parameters
+----------
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of height values (meters)
+temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of temperature values (K)
+dewpoint : numpy.ndarray[dtype=float32]
+    1D NumPy array of dewpoint temperature values (K)
+min_depth : float, default = 0.0
+    Moist and dry runs shallower than this merge into the layers around
+    them (meters; 0 disables merging)
+
+Returns
+-------
+nwsspc.sharp.calc.layer.HeightLayer
+    The precipitation generation layer (meters, AGL or MSL like height).
+    Its bottom and top are MISSING if there is none.
+    )pbdoc");
+
     // -----------------------------------------------------------------------
     // Probability of ice, and precipitation-type probabilities from energies
     // -----------------------------------------------------------------------

@@ -485,6 +485,86 @@ def test_precip_type_probabilities_struct():
 # Precipitation generation layer from a sounding
 # ---------------------------------------------------------------------------
 
+def relh_sounding(hght, relh, tmpk=283.15):
+    """
+    Pressure, height, temperature, and dewpoint arrays with the given
+    relative humidities over liquid, at a temperature above 0 C.
+    """
+    hght = np.asarray(hght, dtype='float32')
+    pres = np.float32(100000.0) - np.float32(10.0) * hght
+    # Invert the saturation vapor pressure, 611.2 exp(17.67 Tc / (Tc + 243.5))
+    tmpc = tmpk - 273.15
+    log_vapr = np.log(relh) + 17.67 * tmpc / (tmpc + 243.5)
+    dwpk = 273.15 + 243.5 * log_vapr / (17.67 - log_vapr)
+    return (
+        pres,
+        hght,
+        np.full(hght.shape, tmpk, dtype='float32'),
+        np.asarray(dwpk, dtype='float32'),
+    )
+
+
+def test_precipitation_generation_layer_phase():
+    pres = np.array([100000.0, 90000.0, 80000.0], dtype='float32')
+    hght = np.array([0.0, 1000.0, 2000.0], dtype='float32')
+
+    # Above 0 C, relative humidity is over liquid: moist, though dry over ice
+    tmpk = np.full(3, 283.15, dtype='float32')
+    dwpk = np.full(3, 280.0, dtype='float32')
+    assert thermo.relative_humidity(
+        pres[0], tmpk[0], dwpk[0]) == pytest.approx(0.808, abs=5e-4)
+    assert thermo.relative_humidity_ice(
+        pres[0], tmpk[0], dwpk[0]) == pytest.approx(0.733, abs=5e-4)
+    lyr = params.precipitation_generation_layer(pres, hght, tmpk, dwpk)
+    assert (lyr.bottom, lyr.top) == (0.0, 2000.0)
+
+    # Below 0 C, relative humidity is over ice: moist, though dry over liquid
+    tmpk = np.full(3, 263.15, dtype='float32')
+    dwpk = np.full(3, 259.15, dtype='float32')
+    assert thermo.relative_humidity(pres[0], tmpk[0], dwpk[0]) < 0.75
+    assert thermo.relative_humidity_ice(pres[0], tmpk[0], dwpk[0]) > 0.75
+    lyr = params.precipitation_generation_layer(pres, hght, tmpk, dwpk)
+    assert (lyr.bottom, lyr.top) == (0.0, 2000.0)
+
+
+def test_precipitation_generation_layer_elimination():
+    # Dry below moist, crossing 75 % halfway between 0.5 and 1.0. A 1400 m
+    # dry layer at the surface leaves the 1300 m moist layer above it.
+    snd = relh_sounding([0.0, 1300.0, 1500.0, 2700.0], [0.5, 0.5, 1.0, 1.0])
+    lyr = params.precipitation_generation_layer(*snd)
+    assert lyr.bottom == pytest.approx(1400.0, abs=1e-2)
+    assert lyr.top == 2700.0
+
+    # A 1600 m dry layer eliminates it
+    snd = relh_sounding([0.0, 1500.0, 1700.0, 2900.0], [0.5, 0.5, 1.0, 1.0])
+    lyr = params.precipitation_generation_layer(*snd)
+    assert lyr.bottom == constants.MISSING
+    assert lyr.top == constants.MISSING
+
+
+def test_precipitation_generation_layer_min_depth():
+    # A 100 m dry sliver splits a moist layer into two 600 m layers
+    snd = relh_sounding(
+        [0.0, 550.0, 650.0, 750.0, 1300.0], [1.0, 1.0, 0.5, 1.0, 1.0])
+    for lyr in (
+        params.precipitation_generation_layer(*snd),
+        params.precipitation_generation_layer(*snd, min_depth=0.0),
+    ):
+        assert lyr.bottom == constants.MISSING
+        assert lyr.top == constants.MISSING
+
+    # With min_depth = 150 m, the sliver is absorbed
+    lyr = params.precipitation_generation_layer(*snd, min_depth=150.0)
+    assert (lyr.bottom, lyr.top) == (0.0, 1300.0)
+
+
+def test_precipitation_generation_layer_empty():
+    empty = np.array([], dtype='float32')
+    lyr = params.precipitation_generation_layer(empty, empty, empty, empty)
+    assert lyr.bottom == constants.MISSING
+    assert lyr.top == constants.MISSING
+
+
 # ---------------------------------------------------------------------------
 # Probability of ice, and precipitation-type probabilities from energies
 # ---------------------------------------------------------------------------

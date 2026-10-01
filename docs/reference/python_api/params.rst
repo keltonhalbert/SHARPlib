@@ -50,6 +50,8 @@ params
 
    .. Precipitation generation layer from a sounding
 
+   .. autofunction:: nwsspc.sharp.calc.params.precipitation_generation_layer
+
    .. Probability of ice, and precipitation-type probabilities from energies
 
    .. autofunction:: nwsspc.sharp.calc.params.probability_of_ice

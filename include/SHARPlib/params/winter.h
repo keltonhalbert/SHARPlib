@@ -163,6 +163,78 @@ struct PrecipTypeProbabilities {
 // Precipitation generation layer from a sounding
 // ---------------------------------------------------------------------------
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Finds the precipitation generation layer of the modified <!--
+ * --> Bourgouin method.
+ *
+ * Splits the profile with sharp::for_each_threshold_layer into moist
+ * layers, where relative humidity is above 75 %, and dry layers, where it
+ * is below 75 %. Returns the highest moist layer deeper than 1000 m that
+ * lies below the first dry layer deeper than 1500 m (Birk et al. 2021,
+ * section 3e). The paper assumes that precipitation falling from above such
+ * a dry layer sublimates, so the dry layer eliminates every layer above it,
+ * even when it starts at the surface. Both depths are strict. A 1000 m
+ * moist layer is not a generation layer, and a 1500 m dry layer eliminates
+ * nothing. Layer boundaries are the linearly interpolated 75 % crossings.
+ * The function walks up the profile once and stops at the first
+ * eliminating dry layer.
+ *
+ * Relative humidity is over ice where the air temperature is below 0 C and
+ * over liquid water otherwise, from sharp::relative_humidity_ice and
+ * sharp::relative_humidity. The paper uses relative humidity over ice at
+ * every temperature, so this deviates from it above 0 C. The two agree at
+ * 0 C. For example, T = 283.15 K with Td = 280 K is 0.808 over liquid,
+ * which is moist, but 0.733 over ice, which is dry.
+ *
+ * Levels at exactly 75 % continue the current layer and add their depth to
+ * it, so a layer ends only where the relative humidity crosses 75 %. For
+ * example, relative humidities of 0.8, 0.75, 0.75, and 0.8 at 0, 100, 2000,
+ * and 2100 m form one 2100 m moist layer, which is a generation layer. The
+ * paper defines moist as above 75 % and dry as below it, and doesn't say how
+ * levels at exactly 75 % count. Read strictly, they belong to neither kind
+ * of layer and end both. That reading turns the example into two 100 m
+ * moist layers and no generation layer. The two readings differ only where
+ * the relative humidity is exactly 0.75.
+ *
+ * min_depth is an opt-in filter for noisy, high-resolution profiles. Moist
+ * and dry runs shallower than min_depth merge into the layers around them,
+ * following the merge rule of sharp::for_each_threshold_layer, so a dry
+ * layer's depth includes the shallow moist runs it absorbs. The default of
+ * 0 merges nothing, which is the paper as written. With min_depth above 0,
+ * a dry layer's depth is final once the moist run above it is min_depth
+ * deep, so the walk stops there.
+ *
+ * A {sharp::MISSING, sharp::MISSING} result does not say why. The profile
+ * may have no moist layer deeper than 1000 m, a deep dry layer under the
+ * cloud may eliminate it (virga), or the moisture data may be missing.
+ * Callers can't tell these cases apart from the result.
+ *
+ * Unless NO_QC is defined, the walk skips levels with a sharp::MISSING or
+ * NaN height, temperature, or dewpoint, or a sharp::MISSING pressure, and
+ * joins their valid neighbors with a straight line.
+ *
+ * Heights must be strictly increasing. This is not checked.
+ *
+ * References:
+ * Birk et al. 2021: https://doi.org/10.1175/WAF-D-20-0118.1
+ *
+ * \param   pressure    (Pa)
+ * \param   height      (meters)
+ * \param   temperature (K)
+ * \param   dewpoint    (K)
+ * \param   N           (length of arrays)
+ * \param   min_depth   (meters; 0 disables merging)
+ *
+ * \return  The precipitation generation layer (meters, AGL or MSL like
+ *          height), or {sharp::MISSING, sharp::MISSING}
+ */
+[[nodiscard]] HeightLayer precipitation_generation_layer(
+    const float pressure[], const float height[], const float temperature[],
+    const float dewpoint[], const std::ptrdiff_t N,
+    const float min_depth = 0.0f);
+
 // ---------------------------------------------------------------------------
 // Probability of ice, and precipitation-type probabilities from energies
 // ---------------------------------------------------------------------------

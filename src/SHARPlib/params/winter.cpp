@@ -51,6 +51,41 @@ float snow_squall_parameter(const float wetbulb_2m, const float mean_relh_0_2km,
 // Precipitation generation layer from a sounding
 // ---------------------------------------------------------------------------
 
+HeightLayer precipitation_generation_layer(
+    const float pressure[], const float height[], const float temperature[],
+    const float dewpoint[], const std::ptrdiff_t N, const float min_depth) {
+    // Birk et al. (2021) section 3e. Relative humidity as a fraction, depths
+    // in meters.
+    constexpr float MOIST_RELH = 0.75f;
+    constexpr float MIN_GENERATION_DEPTH = 1000.0f;
+    constexpr float MAX_DRY_DEPTH = 1500.0f;
+
+    // Over ice below 0 C, over liquid otherwise. MISSING and NaN inputs
+    // give MISSING or NaN, which the walker skips.
+    const auto relh_at = [&](const std::ptrdiff_t k) {
+        return (temperature[k] < ZEROCNK)
+                   ? relative_humidity_ice(pressure[k], temperature[k],
+                                           dewpoint[k])
+                   : relative_humidity(pressure[k], temperature[k],
+                                       dewpoint[k]);
+    };
+
+    // Layers arrive bottom up, so the last eligible one is the highest.
+    HeightLayer generation_layer;
+    for_each_threshold_layer(
+        height, relh_at, N, MOIST_RELH, min_depth, 0.0f,
+        [&](const HeightLayer& layer, const bool moist, float, float) {
+            const float depth = layer.top - layer.bottom;
+            if (moist) {
+                if (depth > MIN_GENERATION_DEPTH) generation_layer = layer;
+                return true;
+            }
+            // Sublimation in a deep dry layer eliminates everything above.
+            return depth <= MAX_DRY_DEPTH;
+        });
+    return generation_layer;
+}
+
 // ---------------------------------------------------------------------------
 // Probability of ice, and precipitation-type probabilities from energies
 // ---------------------------------------------------------------------------

@@ -52,6 +52,8 @@ Precipitation-type probabilities from the modified Bourgouin method
 
 .. Precipitation generation layer from a sounding
 
+.. doxygenfunction:: sharp::precipitation_generation_layer
+
 .. Probability of ice, and precipitation-type probabilities from energies
 
 .. doxygenfunction:: sharp::probability_of_ice
