@@ -7,6 +7,7 @@
 
 #include <cmath>
 #include <limits>
+#include <optional>
 
 #include "doctest.h"
 
@@ -235,16 +236,16 @@ struct BunkersSounding {
         }
     }
 
-    float pres_at(const float z) const {
-        return pres[static_cast<std::ptrdiff_t>(z / 500.0f)];
+    float pres_at(const float z_agl) const {
+        return pres[static_cast<std::ptrdiff_t>(z_agl / 500.0f)];
     }
 
-    sharp::WindComponents effective(const float base, const float el,
+    sharp::WindComponents effective(const float base_agl, const float el_agl,
                                     const bool left) const {
         sharp::Parcel mupcl;
-        mupcl.eql_pressure = pres_at(el);
-        const sharp::PressureLayer eil = {pres_at(base),
-                                          pres_at(base + 1000.0f)};
+        mupcl.eql_pressure = pres_at(el_agl);
+        const sharp::PressureLayer eil = {pres_at(base_agl),
+                                          pres_at(base_agl + 1000.0f)};
         return sharp::storm_motion_bunkers(pres, hght, uwin, vwin, BN, eil,
                                            mupcl, left);
     }
@@ -258,26 +259,27 @@ struct BunkersSounding {
 };
 
 struct BunkersCase {
-    float base;
-    float el;
-    float mw_top;
+    float base_agl;
+    float el_agl;
+    std::optional<float> mw_top_agl;
     float u;
     float v;
 };
 
 void check_bunkers(const BunkersCase c) {
-    CAPTURE(c.base);
-    CAPTURE(c.el);
+    CAPTURE(c.base_agl);
+    CAPTURE(c.el_agl);
     for (const float elevation : {0.0f, 1000.0f, 762.3f}) {
         CAPTURE(elevation);
         const BunkersSounding snd(elevation);
         for (const bool left : {false, true}) {
             CAPTURE(left);
             const sharp::WindComponents motion =
-                snd.effective(c.base, c.el, left);
+                snd.effective(c.base_agl, c.el_agl, left);
             const sharp::WindComponents expected =
-                (c.mw_top > 0.0f) ? snd.classic({c.base, c.mw_top}, left, true)
-                                  : snd.classic({0, 6000}, left, false);
+                c.mw_top_agl
+                    ? snd.classic({c.base_agl, *c.mw_top_agl}, left, true)
+                    : snd.classic({0, 6000}, left, false);
             CHECK(motion.u == doctest::Approx(expected.u).epsilon(1e-6));
             CHECK(motion.v == doctest::Approx(expected.v).epsilon(1e-6));
             if (!left) {
@@ -301,10 +303,10 @@ TEST_CASE("Testing the effective-inflow storm_motion_bunkers mean wind layer") {
 
 TEST_CASE("Testing the effective-inflow storm_motion_bunkers 3 km fallback") {
     for (const BunkersCase c : {
-             BunkersCase{2000, 7000, 0, 15.8496647f, -0.509417534f},
+             BunkersCase{2000, 7000, std::nullopt, 15.8496647f, -0.509417534f},
              BunkersCase{6000, 14000, 9100, 27.9163494f, -0.846437931f},
-             BunkersCase{4000, 10000, 0, 15.8496647f, -0.509417534f},
-             BunkersCase{0, 4000, 0, 15.8496647f, -0.509417534f},
+             BunkersCase{4000, 10000, std::nullopt, 15.8496647f, -0.509417534f},
+             BunkersCase{0, 4000, std::nullopt, 15.8496647f, -0.509417534f},
          }) {
         check_bunkers(c);
     }

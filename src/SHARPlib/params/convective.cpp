@@ -105,27 +105,26 @@ WindComponents storm_motion_bunkers(
                                     dflt_mw_lyr, shr_layer, leftMover, false);
     }
 
-    HeightLayer eil_hght =
+    HeightLayer eil_agl =
         pressure_layer_to_height(eff_infl_lyr, pressure, height, N, true);
 
-    float eql_ht = interp_pressure(eql_pres, pressure, height, N);
+    const float eql_hght_msl = interp_pressure(eql_pres, pressure, height, N);
 #ifndef NO_QC
-    if ((eil_hght.bottom == MISSING) || (eql_ht == MISSING)) {
+    if ((eil_agl.bottom == MISSING) || (eql_hght_msl == MISSING)) {
         return storm_motion_bunkers(pressure, height, u_wind, v_wind, N,
                                     dflt_mw_lyr, shr_layer, leftMover, false);
     }
 #endif
-    // get AGL
-    eql_ht -= height[0];
+    const float eql_hght_agl = eql_hght_msl - height[0];
 
-    const float mw_top = 0.65 * eql_ht;
-    const float mw_depth = mw_top - eil_hght.bottom;
+    const float mw_top = 0.65 * eql_hght_agl;
+    const float mw_depth = mw_top - eil_agl.bottom;
     if (mw_depth < 3000.0f) {
         return storm_motion_bunkers(pressure, height, u_wind, v_wind, N,
                                     dflt_mw_lyr, shr_layer, leftMover, false);
     }
 
-    HeightLayer mw_layer = {eil_hght.bottom, mw_top};
+    HeightLayer mw_layer = {eil_agl.bottom, mw_top};
     return storm_motion_bunkers(pressure, height, u_wind, v_wind, N, mw_layer,
                                 shr_layer, leftMover, true);
 }
@@ -173,18 +172,19 @@ WindComponents effective_bulk_wind_difference(
         (effective_inflow_lyr.bottom == MISSING))
         return {MISSING, MISSING};
 
-    sharp::HeightLayer eil_hght = pressure_layer_to_height(
+    // wind_shear takes a HeightLayer in meters AGL.
+    sharp::HeightLayer eil_agl = pressure_layer_to_height(
         effective_inflow_lyr, pressure, height, N, true);
-    float eql_hght =
+    const float eql_hght_msl =
         interp_pressure(equilibrium_level_pressure, pressure, height, N);
 #ifndef NO_QC
-    if ((eil_hght.bottom == MISSING) || (eql_hght == MISSING))
+    if ((eil_agl.bottom == MISSING) || (eql_hght_msl == MISSING))
         return {MISSING, MISSING};
 #endif
-    eql_hght -= height[0];
+    const float eql_hght_agl = eql_hght_msl - height[0];
 
-    float depth = 0.5f * (eql_hght - eil_hght.bottom);
-    sharp::HeightLayer ebwd_lyr = {eil_hght.bottom, eil_hght.bottom + depth};
+    float depth = 0.5f * (eql_hght_agl - eil_agl.bottom);
+    sharp::HeightLayer ebwd_lyr = {eil_agl.bottom, eil_agl.bottom + depth};
 
     return sharp::wind_shear(ebwd_lyr, height, u_wind, v_wind, N);
 }

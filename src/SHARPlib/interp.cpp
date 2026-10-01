@@ -24,7 +24,7 @@
 namespace sharp {
 
 #ifndef NO_QC
-static inline std::optional<float> bridge_missing(
+static inline std::optional<float> widen_bracket_past_missing(
     const float coord_val, const float coord_arr[], const float data_arr[],
     const std::ptrdiff_t N, std::ptrdiff_t& idx_bot, std::ptrdiff_t& idx_top) {
     const bool bot_missing = is_missing(data_arr[idx_bot]);
@@ -75,9 +75,9 @@ float interp_height(const float height_val, const float height_arr[],
     std::ptrdiff_t idx_bot = idx_top - 1;
 
 #ifndef NO_QC
-    if (const auto bridged = bridge_missing(height_val, height_arr, data_arr, N,
-                                            idx_bot, idx_top))
-        return *bridged;
+    if (const auto early = widen_bracket_past_missing(
+            height_val, height_arr, data_arr, N, idx_bot, idx_top))
+        return *early;
 #endif
 
     const float height_bot = height_arr[idx_bot];
@@ -118,9 +118,9 @@ float interp_pressure(const float pressure_val, const float pressure_arr[],
     std::ptrdiff_t idx_bot = idx_top - 1;
 
 #ifndef NO_QC
-    if (const auto bridged = bridge_missing(pressure_val, pressure_arr,
-                                            data_arr, N, idx_bot, idx_top))
-        return *bridged;
+    if (const auto early = widen_bracket_past_missing(
+            pressure_val, pressure_arr, data_arr, N, idx_bot, idx_top))
+        return *early;
 #endif
 
     const float pressure_bot = pressure_arr[idx_bot];

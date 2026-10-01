@@ -493,6 +493,7 @@ float lapse_rate_max(HeightLayer layer_agl, const float depth,
         max_lyr->bottom = MISSING;
         max_lyr->top = MISSING;
     }
+    // Not a QC check: a zero or wrong-signed delta never ends the loop.
     if (!(layer_agl.delta > 0.0f)) return MISSING;
     float max_lr = MISSING;
     for (float z = layer_agl.bottom; z <= (layer_agl.top - depth);
@@ -521,6 +522,7 @@ float lapse_rate_max(PressureLayer layer, const float depth,
         max_lyr->bottom = MISSING;
         max_lyr->top = MISSING;
     }
+    // Not a QC check: a zero or wrong-signed delta never ends the loop.
     if (!(layer.delta < 0.0f)) return MISSING;
     float max_lr = MISSING;
     for (float p = layer.bottom; p >= (layer.top + depth); p += layer.delta) {

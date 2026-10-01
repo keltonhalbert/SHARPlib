@@ -512,7 +512,7 @@ TEST_CASE("Testing pressure_layer_to_height with MISSING end height") {
     }
 }
 
-TEST_CASE("Testing layer conversion change classes") {
+TEST_CASE("Testing layer conversions with MISSING coordinates") {
     constexpr float pres_mm[ME_N] = {100000, 95000, 90000, MISSING, MISSING};
     check_missing_layer(
         sharp::height_layer_to_pressure({1600, 1900}, pres_mm, me_hght, ME_N));
