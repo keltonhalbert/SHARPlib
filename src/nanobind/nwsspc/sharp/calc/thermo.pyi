@@ -1482,7 +1482,7 @@ def buoyancy(parcel_temperature: Annotated[NDArray[numpy.float32], dict(shape=(N
         1D NumPy array of buoyancy values (m/s^2)
     """
 
-def pbl_top(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], thetav: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], offset: float = 0.5) -> int:
+def pbl_top(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], thetav: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], offset: float = 0.5) -> float:
     """
     Compute the pressure of the top of the Planetary Boundary Layer (PBL). 
     Uses the method described by Stull (1988), by which the virtual potential 
