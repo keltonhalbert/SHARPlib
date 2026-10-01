@@ -371,19 +371,12 @@ TEST_CASE("Testing bourgouin_energy with MISSING and NaN levels") {
         constexpr float tw[4] = {K - 2.0f, MISSING, nanval, K + 2.0f};
         check_energies(sharp::bourgouin_energy(pres, hght, tw, 4), triangle,
                        triangle, triangle);
-        constexpr float hght_2[4] = {0.0f, MISSING, nanval, 1000.0f};
-        constexpr float tw_2[4] = {K - 2.0f, K + 9.0f, K + 9.0f, K + 2.0f};
-        check_energies(sharp::bourgouin_energy(pres, hght_2, tw_2, 4), triangle,
-                       triangle, triangle);
     }
     {
         INFO("one valid level gives MISSING, not zeros");
         constexpr float hght[4] = {0.0f, 250.0f, 750.0f, 1000.0f};
         constexpr float tw[4] = {MISSING, K + 2.0f, nanval, MISSING};
         check_energies_missing(sharp::bourgouin_energy(pres, hght, tw, 4));
-        constexpr float hght_2[4] = {nanval, 250.0f, MISSING, MISSING};
-        constexpr float tw_2[4] = {K + 2.0f, K + 2.0f, K + 2.0f, K + 2.0f};
-        check_energies_missing(sharp::bourgouin_energy(pres, hght_2, tw_2, 4));
     }
     {
         INFO("no valid level gives MISSING");

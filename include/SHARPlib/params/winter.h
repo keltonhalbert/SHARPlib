@@ -253,9 +253,9 @@ struct PrecipTypeProbabilities {
  * pressure_min. A caller can compute the wet-bulb temperature only up to
  * pressure_min and fill the rest of the array with sharp::MISSING.
  *
- * Unless NO_QC is defined, the function skips levels whose height or
- * wet-bulb temperature is sharp::MISSING or NaN, and joins the valid levels
- * on either side with a straight line. With N < 2, or with fewer than 2 valid
+ * Unless NO_QC is defined, the function skips levels whose wet-bulb
+ * temperature is sharp::MISSING or NaN, and joins the valid levels on either
+ * side with a straight line. With N < 2, or with fewer than 2 valid
  * levels at pressures at or above pressure_min, every energy is
  * sharp::MISSING, never 0, since zero energy would read as certain snow.
  * N < 2 returns before any array element is read.
@@ -351,8 +351,8 @@ struct PrecipTypeProbabilities {
  * Callers can't tell these cases apart from the result.
  *
  * Unless NO_QC is defined, the walk skips levels with a sharp::MISSING or
- * NaN height, temperature, or dewpoint, or a sharp::MISSING pressure, and
- * joins their valid neighbors with a straight line.
+ * NaN temperature or dewpoint, and joins their valid neighbors with a
+ * straight line.
  *
  * Heights must be strictly increasing. This is not checked.
  *

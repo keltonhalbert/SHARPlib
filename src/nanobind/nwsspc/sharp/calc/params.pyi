@@ -1003,8 +1003,8 @@ def bourgouin_energy(pressure: Annotated[NDArray[numpy.float32], dict(shape=(Non
     pressure_min. A caller can compute the wet-bulb temperature only up to
     pressure_min and fill the rest of the array with MISSING.
 
-    The function skips levels whose height or wet-bulb temperature is MISSING
-    or NaN, and joins the valid levels on either side with a straight line. With
+    The function skips levels whose wet-bulb temperature is MISSING or NaN,
+    and joins the valid levels on either side with a straight line. With
     fewer than 2 valid levels at pressures at or above pressure_min, including
     empty arrays, every energy is MISSING, never 0, since zero energy would
     read as certain snow.
@@ -1102,9 +1102,8 @@ def precipitation_generation_layer(pressure: Annotated[NDArray[numpy.float32], d
     (virga), or the moisture data may be missing. Callers can't tell these
     cases apart from the result.
 
-    The walk skips levels with a MISSING or NaN height, temperature, or
-    dewpoint, or a MISSING pressure, and joins their valid neighbors with a
-    straight line.
+    The walk skips levels with a MISSING or NaN temperature or dewpoint, and
+    joins their valid neighbors with a straight line.
 
     Heights must be strictly increasing. This is not checked.
 

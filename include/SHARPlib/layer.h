@@ -713,9 +713,8 @@ template <typename L>
  * crossing. A layer at the top of the profile is reported at the end of
  * the walk.
  *
- * Unless NO_QC is defined, levels whose height or value is sharp::MISSING
- * or NaN are skipped, and the walk joins their valid neighbors with a
- * straight line.
+ * Unless NO_QC is defined, levels whose value is sharp::MISSING or NaN are
+ * skipped, and the walk joins their valid neighbors with a straight line.
  *
  * Heights must be strictly increasing. This is not checked.
  *
@@ -742,23 +741,18 @@ std::ptrdiff_t for_each_threshold_layer(const float height[], Accessor data_at,
                                         const float min_depth,
                                         const float min_area,
                                         Callback on_layer) {
-    // Reads the next valid level as its height z and its departure d from
-    // the threshold. Each level is read once, and the data only where the
-    // height is valid.
+    // Reads the next level with valid data as its height z and its
+    // departure d from the threshold. Each level is read once.
     std::ptrdiff_t k = 0;
     auto next_level = [&](float& z, float& d) -> bool {
         for (; k < N; ++k) {
-            const float z_k = height[k];
-#ifndef NO_QC
-            if (is_missing(z_k)) continue;
-#endif
             const float val_k = data_at(k);
 #ifndef NO_QC
             if (is_missing(val_k)) continue;
 #endif
-            ++k;
-            z = z_k;
+            z = height[k];
             d = val_k - threshold;
+            ++k;
             return true;
         }
         return false;

@@ -742,24 +742,15 @@ TEST_CASE("Testing for_each_threshold_layer bridges MISSING and NaN") {
         check_layer(walk, 1, 500.0f, 1000.0f, false, 0.0f, -500.0f);
     }
     {
-        INFO("missing and NaN heights");
-        constexpr float hght[4] = {0.0f, MISSING, nanval, 1000.0f};
-        constexpr float data[4] = {2.0f, 5.0f, 5.0f, -2.0f};
-        const ThresholdWalk walk = walk_threshold(hght, data, 4, 0.0f);
-        CHECK(walk.num_layers == 2);
-        check_layer(walk, 0, 0.0f, 500.0f, true, 500.0f, 0.0f);
-        check_layer(walk, 1, 500.0f, 1000.0f, false, 0.0f, -500.0f);
-    }
-    {
         INFO("missing levels at the bottom and top");
-        constexpr float hght[5] = {nanval, -500.0f, 0.0f, 1000.0f, MISSING};
-        constexpr float data[5] = {5.0f, MISSING, 2.0f, -2.0f, 5.0f};
+        constexpr float hght[5] = {-1000.0f, -500.0f, 0.0f, 1000.0f, 1500.0f};
+        constexpr float data[5] = {MISSING, MISSING, 2.0f, -2.0f, MISSING};
         const ThresholdWalk walk = walk_threshold(hght, data, 5, 0.0f);
         CHECK(walk.num_layers == 2);
         check_layer(walk, 0, 0.0f, 500.0f, true, 500.0f, 0.0f);
         check_layer(walk, 1, 500.0f, 1000.0f, false, 0.0f, -500.0f);
 
-        constexpr float data_2[5] = {5.0f, nanval, 2.0f, -2.0f, nanval};
+        constexpr float data_2[5] = {nanval, nanval, 2.0f, -2.0f, nanval};
         const ThresholdWalk walk_2 = walk_threshold(hght, data_2, 5, 0.0f);
         CHECK(walk_2.num_layers == 2);
         check_layer(walk_2, 0, 0.0f, 500.0f, true, 500.0f, 0.0f);
@@ -767,8 +758,8 @@ TEST_CASE("Testing for_each_threshold_layer bridges MISSING and NaN") {
     }
     {
         INFO("no valid level");
-        constexpr float hght[3] = {0.0f, 100.0f, MISSING};
-        constexpr float data[3] = {MISSING, nanval, 1.0f};
+        constexpr float hght[3] = {0.0f, 100.0f, 200.0f};
+        constexpr float data[3] = {MISSING, nanval, MISSING};
         const ThresholdWalk walk = walk_threshold(hght, data, 3, 0.0f);
         CHECK(walk.num_layers == 0);
     }
