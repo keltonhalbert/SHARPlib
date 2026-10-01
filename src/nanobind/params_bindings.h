@@ -359,15 +359,20 @@ tuple[nwsspc.sharp.calc.winds.WindComponents, nwsspc.sharp.calc.winds.WindCompon
         R"pbdoc(
 Compute the Effective Bulk Wind Difference 
 
-The effective bulk wind difference is the wind shear between 
-the bottom height of the effective inflow layer, and 50% of 
-the equilibrium level depth. This is analogous to the usage 
+The effective bulk wind difference is the wind shear over the layer
+from the base of the effective inflow layer up half the distance from
+that base to the equilibrium level, normally that of the most unstable
+parcel (Thompson et al. 2007). This is analogous to the usage 
 of 0-6 km wind shear, but allows more flexibility for elevated 
-convection. Returns MISSING if the effective inflow layer or 
+convection. The effective inflow layer and the equilibrium level are
+converted to meters AGL internally, so height may be AGL or MSL, and the
+result doesn't depend on the station elevation.
+
+Returns MISSING if the effective inflow layer or 
 equilibrium level pressure are MISSING. In QC builds it also returns
 MISSING if either can't be converted to height (see
 nwsspc.sharp.calc.layer.pressure_layer_to_height), for example because it
-lies outside the profile.
+lies outside the profile or height[0] is MISSING or NaN.
 
 Parameters 
 ----------

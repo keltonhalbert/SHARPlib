@@ -30,7 +30,8 @@ def load_parquet(filename):
     uwin = snd_df["uwin"].to_numpy().astype('float32')
     vwin = snd_df["vwin"].to_numpy().astype('float32')
 
-    # turn into height above ground level
+    # turn into height above ground level, keeping the heights MSL as well
+    hght_msl = hght.copy()
     hght -= hght[0]
 
     # TO-DO - need a better interface to the API for doing this
@@ -46,7 +47,7 @@ def load_parquet(filename):
     )
 
     return {
-        "pres": pres, "hght": hght,
+        "pres": pres, "hght": hght, "hght_msl": hght_msl,
         "tmpk": tmpk, "mixr": mixr,
         "relh": relh,
         "theta": theta,
@@ -168,14 +169,44 @@ def test_corfidi_vectors():
     assert (downshear.v == pytest.approx(15.99528, abs=1e-3))
 
 
-def test_effective_bulk_wind():
+def ebwd_from_definition(pres, hght, uwin, vwin, eil, eql_pres):
+    """The effective bulk wind difference from its definition, in numpy.
+
+    The layer runs from the effective inflow base up half the distance from
+    that base to the EL (Thompson et al. 2007), in meters AGL. Height is
+    linear in log10(pressure), and wind is linear in height. Returns the
+    layer bottom and top (m AGL) and the wind difference (u, v).
+    """
+    logp = np.log10(pres.astype("float64"))[::-1]
+    z = hght.astype("float64")
+
+    def z_agl(p):
+        return np.interp(np.log10(p), logp, z[::-1]) - z[0]
+
+    def wind(agl):
+        return (np.interp(z[0] + agl, z, uwin), np.interp(z[0] + agl, z, vwin))
+
+    bot = z_agl(eil.bottom)
+    top = bot + 0.5 * (z_agl(eql_pres) - bot)
+    (u_bot, v_bot), (u_top, v_top) = wind(bot), wind(top)
+    return bot, top, (u_top - u_bot, v_top - v_bot)
+
+
+# The sounding with heights AGL, as the other tests read it, and MSL, as the
+# file has it, with the station at 790 m. Before SHARPlib-27b the AGL heights
+# gave (14.6, 13.3217), as now. The MSL heights gave (16.7517, 5.89825), the
+# shear over 790 to 6656.09 m AGL, a layer 790 m too high. The definition
+# gives (14.6, 13.32178) over 0 to 5866.09 m AGL: the inflow layer starts at
+# the ground and the EL is at 11732.18 m AGL.
+@pytest.mark.parametrize("hght_key", ["hght", "hght_msl"])
+def test_effective_bulk_wind(hght_key):
     lifter = parcel.lifter_cm1()
     lifter.ma_type = thermo.adiabat.pseudo_liq
     mupcl = parcel.Parcel()
     eil = params.effective_inflow_layer(
         lifter,
         snd_data["pres"],
-        snd_data["hght"],
+        snd_data[hght_key],
         snd_data["tmpk"],
         snd_data["dwpk"],
         snd_data["vtmp"],
@@ -184,18 +215,49 @@ def test_effective_bulk_wind():
 
     ebwd_cmp = params.effective_bulk_wind_difference(
         snd_data["pres"],
-        snd_data["hght"],
+        snd_data[hght_key],
         snd_data["uwin"],
         snd_data["vwin"],
         eil,
         mupcl.eql_pressure
     )
 
-    ebwd = winds.vector_magnitude(ebwd_cmp.u, ebwd_cmp.v)
-    assert (ebwd_cmp.u == pytest.approx(14.6, abs=1e-3))
-    assert (ebwd_cmp.v == pytest.approx(13.321, abs=1e-3))
-    assert (ebwd == pytest.approx(19.764, abs=1e-3))
+    bot, top, expected = ebwd_from_definition(
+        snd_data["pres"], snd_data[hght_key], snd_data["uwin"],
+        snd_data["vwin"], eil, mupcl.eql_pressure)
+    assert (bot == 0.0)
+    assert (top == pytest.approx(5866.089, abs=1e-3))
+    assert (expected[0] == pytest.approx(14.6, abs=1e-5))
+    assert (expected[1] == pytest.approx(13.32178, abs=1e-5))
 
+    ebwd = winds.vector_magnitude(ebwd_cmp.u, ebwd_cmp.v)
+    assert (ebwd_cmp.u == pytest.approx(expected[0], abs=1e-4))
+    assert (ebwd_cmp.v == pytest.approx(expected[1], abs=1e-4))
+    assert (ebwd == pytest.approx(np.hypot(*expected), abs=1e-4))
+
+    # the same as wind_shear over the AGL layer from the definition
+    shear = winds.wind_shear(layer.HeightLayer(bot, top), snd_data[hght_key],
+                             snd_data["uwin"], snd_data["vwin"])
+    assert (ebwd_cmp.u == pytest.approx(shear.u, abs=1e-4))
+    assert (ebwd_cmp.v == pytest.approx(shear.v, abs=1e-4))
+
+
+# The same sounding at another station height gives the same EBWD
+# (SHARPlib-27b). The inflow layer base is the ground and the EL is 4000 m
+# AGL, so the layer is 0 to 2000 m AGL, where u goes from 0 to 12. Before
+# the fix, u was 12, 3, 2.531 and 5.1393 for these shifts.
+@pytest.mark.parametrize("shift", [0.0, 1000.0, 1234.5, 762.3])
+def test_effective_bulk_wind_station_height(shift):
+    pres = np.array([100000, 90000, 80000, 70000, 60000, 50000],
+                    dtype="float32")
+    hght = np.array([0, 1000, 2000, 3000, 4000, 5000],
+                    dtype="float32") + np.float32(shift)
+    uwin = np.array([0, 10, 12, 13, 13, 13], dtype="float32")
+    vwin = np.zeros(6, dtype="float32")
+    ebwd = params.effective_bulk_wind_difference(
+        pres, hght, uwin, vwin, layer.PressureLayer(100000, 90000), 60000)
+    assert (ebwd.u == pytest.approx(12.0))
+    assert (ebwd.v == 0.0)
 
 
 # A layer that converts to MISSING (it extends past the profile, or its end
