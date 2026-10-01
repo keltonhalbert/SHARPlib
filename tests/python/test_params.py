@@ -197,6 +197,50 @@ def test_effective_bulk_wind():
     assert (ebwd == pytest.approx(19.764, abs=1e-3))
 
 
+
+# A layer that converts to MISSING (it extends past the profile, or its end
+# has no valid data beyond it) gives MISSING winds instead of raising or
+# returning garbage (SHARPlib-mut). Each "was" comment is the output measured
+# before that change.
+def test_wind_params_missing_layer():
+    pres = np.array([100000, 95000, 90000, 85000, 80000], dtype="float32")
+    hght = np.array([0, 500, 1000, 1500, 2000], dtype="float32")
+    uwin = np.array([0, 5, 10, 15, 20], dtype="float32")
+    vwin = np.array([0, 2, 4, 6, 8], dtype="float32")
+
+    # the inflow layer top has no valid height above it: was ValueError
+    hght_mis = hght.copy()
+    hght_mis[-1] = constants.MISSING
+    ebwd = params.effective_bulk_wind_difference(
+        pres, hght_mis, uwin, vwin, layer.PressureLayer(100000, 80000), 95000)
+    assert (ebwd.u == constants.MISSING and ebwd.v == constants.MISSING)
+
+    # a mean wind layer past the top of the profile: was (-9996.2, -10006.0)
+    storm_mtn = params.storm_motion_bunkers(
+        pres, hght, uwin, vwin, layer.HeightLayer(0, 3000),
+        layer.HeightLayer(0, 2000))
+    assert (storm_mtn.u == constants.MISSING and
+            storm_mtn.v == constants.MISSING)
+
+
+def test_bunkers_motion_effective_fallback():
+    # An inflow layer below the profile falls back to the non-parcel method
+    # with 0-6 km layers: was ValueError
+    pres = np.array([100000, 80000, 62000, 47000, 35000], dtype="float32")
+    hght = np.array([0, 2000, 4000, 6000, 8000], dtype="float32")
+    uwin = np.array([0, 10, 20, 30, 40], dtype="float32")
+    vwin = np.zeros(5, dtype="float32")
+    mupcl = parcel.Parcel()
+    mupcl.eql_pressure = 80000.0
+    motion = params.storm_motion_bunkers(
+        pres, hght, uwin, vwin, layer.PressureLayer(105000, 95000), mupcl)
+    fallback = params.storm_motion_bunkers(
+        pres, hght, uwin, vwin, layer.HeightLayer(0, 6000),
+        layer.HeightLayer(0, 6000))
+    assert (motion.u == fallback.u and motion.v == fallback.v)
+    assert (motion.u == pytest.approx(14.0566034))
+    assert (motion.v == pytest.approx(-7.5))
+
 def test_stp_scp_ship_dcp_lhp():
     lifter = parcel.lifter_cm1()
     lifter.ma_type = thermo.adiabat.pseudo_liq
