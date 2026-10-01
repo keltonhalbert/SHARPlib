@@ -1348,9 +1348,16 @@ def lapse_rate_max(layer: nwsspc.sharp.calc.layer.HeightLayer, depth: float, hei
     lapse rate over the provided depth (e.g. 2 km) within that given layer. 
     Returns the maximum lapse rate, as well as the layer it was found in. 
 
-    A layer of the given depth that lies wholly outside the profile has
-    no lapse rate (see lapse_rate) and is skipped. If no layer in the search
-    has a lapse rate, the returned lapse rate is MISSING.
+    The search skips every layer of the given depth that extends past the
+    surface or the top of the profile. lapse_rate would clip such a layer to
+    one shallower than depth, and a shallower layer can have a larger lapse
+    rate. A layer that touches the surface or the top level counts as inside
+    the profile. The layers start at the bottom of the search layer and step
+    up by its delta, so when the search layer starts below the surface, the
+    first layer searched starts at the first step at or above the surface,
+    not at the surface itself. If no layer in the search has a lapse rate,
+    the returned lapse rate is MISSING, and so are the bottom and top of the
+    returned layer.
 
     Parameters
     ----------
@@ -1376,9 +1383,16 @@ def lapse_rate_max(layer: nwsspc.sharp.calc.layer.PressureLayer, depth: float, p
     lapse rate over the provided depth (e.g. 100 hPa) within that given layer. 
     Returns the maximum lapse rate, as well as the layer it was found in. 
 
-    A layer of the given depth that lies wholly outside the profile has
-    no lapse rate (see lapse_rate) and is skipped. If no layer in the search
-    has a lapse rate, the returned lapse rate is MISSING.
+    The search skips every layer of the given depth that extends past the
+    surface or the top of the profile. lapse_rate would clip such a layer to
+    one shallower than depth, and a shallower layer can have a larger lapse
+    rate. A layer that touches the surface or the top level counts as inside
+    the profile. The layers start at the bottom of the search layer and step
+    up by its delta, so when the search layer starts below the surface, the
+    first layer searched starts at the first step at or above the surface,
+    not at the surface itself. If no layer in the search has a lapse rate,
+    the returned lapse rate is MISSING, and so are the bottom and top of the
+    returned layer.
 
     Parameters
     ----------
