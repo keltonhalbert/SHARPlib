@@ -14,6 +14,7 @@
 #include <SHARPlib/algorithms.h>
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
+#include <SHARPlib/qc.h>
 
 #include <cmath>
 #include <cstddef>
@@ -21,21 +22,11 @@
 
 namespace sharp {
 
-#ifndef NO_QC
-namespace {
-// QC builds treat NaN data the same as MISSING data.
-[[nodiscard]] bool is_missing(const float val) {
-    return (val == MISSING) || std::isnan(val);
-}
-}  // namespace
-#endif
-
 float interp_height(const float height_val, const float height_arr[],
                     const float data_arr[], const std::ptrdiff_t N) {
     if (N < 1) return MISSING;
 #ifndef NO_QC
-    if (height_val == MISSING) return MISSING;
-    if (std::isnan(height_val)) return MISSING;
+    if (is_missing(height_val)) return MISSING;
 #endif
     // If the height value is beyond the top of the profile,
     // or below the surface, we can't reasonably extrapolate
@@ -99,8 +90,7 @@ float interp_pressure(const float pressure_val, const float pressure_arr[],
                       const float data_arr[], const std::ptrdiff_t N) {
     if (N < 1) return MISSING;
 #ifndef NO_QC
-    if (pressure_val == MISSING) return MISSING;
-    if (std::isnan(pressure_val)) return MISSING;
+    if (is_missing(pressure_val)) return MISSING;
 #endif
     // If the pressure value is beyond the top of the profile,
     // or below the surface, we can't reasonably extrapolate

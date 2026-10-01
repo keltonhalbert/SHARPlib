@@ -18,6 +18,7 @@
 #include <SHARPlib/algorithms.h>
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
+#include <SHARPlib/qc.h>
 
 #include <cmath>
 #include <cstddef>
@@ -408,7 +409,7 @@ template <typename L, typename C>
     // to interpolate from.
     const auto replaces = [&](const float val) {
 #ifndef NO_QC
-        if ((val == MISSING) || std::isnan(val)) return false;
+        if (is_missing(val)) return false;
         if (min_or_max == MISSING) return true;
 #endif
         return comp(val, min_or_max);
