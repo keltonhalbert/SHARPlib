@@ -523,6 +523,166 @@ TEST_CASE("Testing layer_mean over layers at the profile edge") {
                             lm_data, LM_N) == doctest::Approx(298.5f));
 }
 
+// Layer conversions with MISSING data at an end level (SHARPlib-mut). An
+// endpoint with no valid data level on its open side interpolates to
+// MISSING. The conversion now returns the {MISSING, MISSING} layer it returns
+// for a layer outside the profile, and an AGL conversion without a valid
+// height[0] returns it too. Each "was" comment is the output measured before
+// this change. NO_QC builds don't change.
+#ifndef NO_QC
+template <typename L>
+static void check_missing_layer(const L layer) {
+    CHECK(layer.bottom == MISSING);
+    CHECK(layer.top == MISSING);
+}
+
+template <typename L>
+static void check_layer_bounds(const L layer, const float bottom,
+                               const float top) {
+    CHECK(layer.bottom == doctest::Approx(bottom));
+    CHECK(layer.top == doctest::Approx(top));
+}
+
+// The bead's profile, with MISSING pressure or height at the first, last, or
+// an interior level.
+constexpr std::ptrdiff_t ME_N = 5;
+constexpr float me_hght[ME_N] = {0, 500, 1000, 1500, 2000};
+constexpr float me_data[ME_N] = {300, 297, 294, 291, 288};
+constexpr float me_pres[ME_N] = {100000, 95000, 90000, 85000, 80000};
+constexpr float me_pres_bot[ME_N] = {MISSING, 95000, 90000, 85000, 80000};
+constexpr float me_pres_top[ME_N] = {100000, 95000, 90000, 85000, MISSING};
+constexpr float me_pres_mid[ME_N] = {100000, 95000, MISSING, 85000, 80000};
+constexpr float me_hght_bot[ME_N] = {MISSING, 500, 1000, 1500, 2000};
+constexpr float me_hght_top[ME_N] = {0, 500, 1000, 1500, MISSING};
+constexpr float me_hght_mid[ME_N] = {0, 500, MISSING, 1500, 2000};
+
+TEST_CASE("Testing height_layer_to_pressure with MISSING end pressure") {
+    for (const float* pres : {me_pres_bot, me_pres_top}) {
+        CAPTURE(pres[0]);
+        for (const bool agl : {false, true}) {
+            CAPTURE(agl);
+            // was std::range_error
+            check_missing_layer(sharp::height_layer_to_pressure(
+                {0, 2000}, pres, me_hght, ME_N, agl));
+            // was std::range_error
+            check_missing_layer(sharp::height_layer_to_pressure(
+                {250, 1750}, pres, me_hght, ME_N, agl));
+            // a layer that doesn't need the MISSING level, unchanged
+            check_layer_bounds(sharp::height_layer_to_pressure(
+                                   {500, 1500}, pres, me_hght, ME_N, agl),
+                               95000, 85000);
+        }
+    }
+    // an interior MISSING level is bridged, unchanged
+    check_layer_bounds(
+        sharp::height_layer_to_pressure({0, 2000}, me_pres_mid, me_hght, ME_N),
+        100000, 80000);
+    check_layer_bounds(sharp::height_layer_to_pressure({250, 1750}, me_pres_mid,
+                                                       me_hght, ME_N),
+                       97500, 82500);
+}
+
+TEST_CASE("Testing pressure_layer_to_height with MISSING end height") {
+    // was std::range_error, both AGL flags
+    check_missing_layer(sharp::pressure_layer_to_height({97500, 82500}, me_pres,
+                                                        me_hght_top, ME_N));
+    check_missing_layer(sharp::pressure_layer_to_height(
+        {97500, 82500}, me_pres, me_hght_top, ME_N, true));
+    check_missing_layer(sharp::pressure_layer_to_height(
+        {100000, 80000}, me_pres, me_hght_top, ME_N, true));
+    check_missing_layer(sharp::pressure_layer_to_height(
+        {100000, 80000}, me_pres, me_hght_bot, ME_N));
+    check_missing_layer(sharp::pressure_layer_to_height({97500, 82500}, me_pres,
+                                                        me_hght_bot, ME_N));
+
+    // layers that don't need the MISSING level, unchanged
+    check_layer_bounds(sharp::pressure_layer_to_height({95000, 85000}, me_pres,
+                                                       me_hght_top, ME_N, true),
+                       500, 1500);
+    check_layer_bounds(sharp::pressure_layer_to_height({95000, 85000}, me_pres,
+                                                       me_hght_bot, ME_N),
+                       500, 1500);
+
+    // an interior MISSING level is bridged, unchanged
+    for (const bool agl : {false, true}) {
+        CAPTURE(agl);
+        check_layer_bounds(
+            sharp::pressure_layer_to_height({100000, 80000}, me_pres,
+                                            me_hght_mid, ME_N, agl),
+            0, 2000);
+        check_layer_bounds(sharp::pressure_layer_to_height(
+                               {97500, 82500}, me_pres, me_hght_mid, ME_N, agl),
+                           246.794525f, 1746.21484f);
+    }
+}
+
+TEST_CASE("Testing layer conversion change classes") {
+    // (b) both endpoints MISSING, no AGL flag: already the sentinel
+    constexpr float pres_mm[ME_N] = {100000, 95000, 90000, MISSING, MISSING};
+    check_missing_layer(
+        sharp::height_layer_to_pressure({1600, 1900}, pres_mm, me_hght, ME_N));
+    constexpr float hght_mm[ME_N] = {300, 800, 1300, MISSING, MISSING};
+    check_missing_layer(sharp::pressure_layer_to_height({85000, 80000}, me_pres,
+                                                        hght_mm, ME_N));
+
+    // (c) toAGL, both endpoints MISSING: was (-10299, -10299)
+    check_missing_layer(sharp::pressure_layer_to_height({85000, 80000}, me_pres,
+                                                        hght_mm, ME_N, true));
+    // (d) toAGL, height[0] MISSING makes one endpoint MISSING: was (0, 11999)
+    check_missing_layer(sharp::pressure_layer_to_height(
+        {100000, 80000}, me_pres, me_hght_bot, ME_N, true));
+    // (e) toAGL, height[0] MISSING, both endpoints valid: was (10499, 11499)
+    check_missing_layer(sharp::pressure_layer_to_height(
+        {95000, 85000}, me_pres, me_hght_bot, ME_N, true));
+    // (f) toAGL, height[0] NaN: was std::range_error
+    constexpr float hght_nan[ME_N] = {nanval, 500, 1000, 1500, 2000};
+    check_missing_layer(sharp::pressure_layer_to_height({95000, 85000}, me_pres,
+                                                        hght_nan, ME_N, true));
+
+    // (g) isAGL, height[0] MISSING: was (99761.9, 99285.6)
+    check_missing_layer(sharp::height_layer_to_pressure(
+        {500, 1500}, me_pres, me_hght_bot, ME_N, true));
+    // was std::range_error
+    check_missing_layer(sharp::height_layer_to_pressure(
+        {0, 1000}, me_pres, me_hght_bot, ME_N, true));
+    // isAGL, height[0] NaN: was already the sentinel
+    check_missing_layer(sharp::height_layer_to_pressure({500, 1500}, me_pres,
+                                                        hght_nan, ME_N, true));
+
+    // (h) one endpoint MISSING with an AGL flag and a valid origin. The
+    // endpoints interpolate to (800, MISSING); was (500, -10299), which threw
+    // std::range_error.
+    check_missing_layer(sharp::pressure_layer_to_height({95000, 85000}, me_pres,
+                                                        hght_mm, ME_N, true));
+    // was std::range_error
+    constexpr float hght_300[ME_N] = {300, 800, 1300, 1800, 2300};
+    check_missing_layer(sharp::height_layer_to_pressure(
+        {250, 1750}, me_pres_top, hght_300, ME_N, true));
+}
+
+TEST_CASE("Testing layer_mean with MISSING end pressure") {
+    for (const float* pres : {me_pres_bot, me_pres_top}) {
+        CAPTURE(pres[0]);
+        // was std::range_error
+        CHECK(sharp::layer_mean(sharp::HeightLayer(0, 2000), me_hght, pres,
+                                me_data, ME_N) == MISSING);
+        // was std::range_error
+        CHECK(sharp::layer_mean(sharp::HeightLayer(250, 1750), me_hght, pres,
+                                me_data, ME_N) == MISSING);
+        // clipped to the profile; was std::range_error
+        CHECK(sharp::layer_mean(sharp::HeightLayer(-500, 3000), me_hght, pres,
+                                me_data, ME_N) == MISSING);
+    }
+    // Pressure is the integration coordinate, so a MISSING pressure[0] makes
+    // even this layer MISSING and a MISSING pressure[N-1] doesn't. Both
+    // unchanged.
+    CHECK(sharp::layer_mean(sharp::HeightLayer(500, 1500), me_hght, me_pres_bot,
+                            me_data, ME_N) == MISSING);
+    CHECK(sharp::layer_mean(sharp::HeightLayer(500, 1500), me_hght, me_pres_top,
+                            me_data, ME_N) == doctest::Approx(294.0f));
+}
+#endif
+
 // Counts heap allocations, so the threshold-layer tests can show that the
 // walker never allocates.
 static std::size_t heap_allocations = 0;

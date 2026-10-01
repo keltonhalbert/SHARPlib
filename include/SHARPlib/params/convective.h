@@ -139,6 +139,11 @@ template <typename Lifter>
  * 2014, which uses Effective Inflow Layer metricks to get better estimates of
  * storm motion, especially when considering elevated convection.
  *
+ * In QC builds, returns {MISSING, MISSING} if the mean wind layer, or either
+ * 500 m deep end of the wind shear layer, can't be converted to pressure (see
+ * sharp::height_layer_to_pressure), for example because it extends past the
+ * profile.
+ *
  * \param   pressure                (Pa)
  * \param   height                  (meters)
  * \param   u_wind                  (m/s)
@@ -181,6 +186,12 @@ template <typename Lifter>
  *  operations that are presumed to be computed at some other point
  *  in the analysis pipeline, so just pass those variables here.
  *
+ *  In QC builds, if the effective inflow layer or the equilibrium level
+ *  can't be converted to height (see sharp::pressure_layer_to_height), for
+ *  example because it lies outside the profile, this falls back to the
+ *  Bunkers 2000 method with 0-6 km AGL layers, as it does for a MISSING
+ *  effective inflow layer.
+ *
  * \param   pressure        (Pa)
  * \param   height          (meters)
  * \param   u_wind          (m/s)
@@ -210,6 +221,10 @@ template <typename Lifter>
  *
  * https://www.spc.noaa.gov/publications/corfidi/mcs2003.pdf
  *
+ * In QC builds, returns a pair of {MISSING, MISSING} if the 0-1.5 km AGL
+ * layer can't be converted to pressure (see sharp::height_layer_to_pressure),
+ * for example because the profile ends below 1.5 km AGL.
+ *
  * \param   pressure    (Pa)
  * \param   height      (meters)
  * \param   u_wind      (m/s)
@@ -232,7 +247,10 @@ template <typename Lifter>
  * the equilibrium level depth. This is analogous to the usage
  * of 0-6 km wind shear, but allows more flexibility for elevated
  * convection. Returns sharp::MISSING if the effective inflow layer
- * or equilibrium level pressure are sharp::MISSING.
+ * or equilibrium level pressure are sharp::MISSING. In QC builds it also
+ * returns {MISSING, MISSING} if either can't be converted to height (see
+ * sharp::pressure_layer_to_height), for example because it lies outside the
+ * profile.
  *
  * \param   pressure                        (Pa)
  * \param   height                          (meters)
@@ -444,6 +462,12 @@ template <typename Lifter>
  * References:
  * Johnson and Sugden 2014:
  * https://ejssm.org/archives/wp-content/uploads/2021/09/vol9-5.pdf
+ *
+ * In QC builds, returns sharp::MISSING if the hail growth zone, the 1500 m
+ * below the equilibrium level, or the 0-1 km or 3-6 km AGL layer can't be
+ * converted between height and pressure (see sharp::pressure_layer_to_height
+ * and sharp::height_layer_to_pressure), for example because it extends past
+ * the profile or the hail growth zone is MISSING.
  *
  * \param   mu_pcl                  (sharp::Parcel::most_unstable_parcel)
  * \param   lapse_rate_700_500mb    (K)

@@ -145,6 +145,11 @@ def height_layer_to_pressure(layer: HeightLayer, pressure: Annotated[NDArray[num
     you provide a HeightLayer that is out of the bounds of height[], then
     the bottom and top of the output layer will be set to MISSING.
 
+    In QC builds, an endpoint that can't be interpolated, because every
+    pressure level on one side of it is MISSING, gives a MISSING layer
+    instead of an exception. So does an AGL layer when height[0] is MISSING
+    or NaN.
+
     Parameters
     ----------
     layer : nwsspc.sharp.calc.layer.HeightLayer
@@ -168,6 +173,10 @@ def pressure_layer_to_height(layer: PressureLayer, pressure: Annotated[NDArray[n
     the station height from the returned HeightLayer. If for some strange reason
     you provide a PressureLayer that is out of the bounds of pressure[], then 
     the bottom and top of the output layer will be set to MISSING. 
+
+    In QC builds, an endpoint that can't be interpolated, because every
+    height level on one side of it is MISSING, gives a MISSING layer instead
+    of an exception. So does toAGL when height[0] is MISSING or NaN.
 
     Parameters
     ----------
@@ -301,7 +310,10 @@ def layer_mean(layer: PressureLayer, pressure: Annotated[NDArray[numpy.float32],
 
     A layer that extends past the profile is clipped to it. A layer that
     lies wholly outside the profile, or touches it at only one level, has
-    no mean and returns MISSING.
+    no mean and returns MISSING. The pressure array is expected to be
+    complete. A MISSING level in it isn't supported, and in QC builds it
+    can make the result MISSING or wrong, even for a layer that doesn't
+    reach that level.
 
     Parameters
     ----------
@@ -325,7 +337,11 @@ def layer_mean(layer: HeightLayer, height: Annotated[NDArray[numpy.float32], dic
 
     A layer that extends past the profile is clipped to it. A layer that
     lies wholly outside the profile, or touches it at only one level, has
-    no mean and returns MISSING.
+    no mean and returns MISSING. The height and pressure arrays are
+    expected to be complete. A MISSING level in them isn't supported, and
+    in QC builds it can make the result MISSING or wrong, even for a layer
+    that doesn't reach that level. MISSING levels in both arrays can also
+    raise ValueError.
 
     Parameters
     ----------

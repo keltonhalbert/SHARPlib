@@ -107,6 +107,13 @@ PressureLayer height_layer_to_pressure(HeightLayer layer,
                                        const float height[],
                                        const std::ptrdiff_t N,
                                        const bool isAGL) {
+#ifndef NO_QC
+    // An AGL layer is measured from height[0], so without it there's no
+    // answer.
+    if (isAGL && ((height[0] == MISSING) || std::isnan(height[0]))) {
+        return {MISSING, MISSING};
+    }
+#endif
     if (isAGL) {
         layer.bottom += height[0];
         layer.top += height[0];
@@ -119,6 +126,13 @@ PressureLayer height_layer_to_pressure(HeightLayer layer,
     const float pbot = interp_height(layer.bottom, height, pressure, N);
     const float ptop = interp_height(layer.top, height, pressure, N);
 
+#ifndef NO_QC
+    // An endpoint with no valid pressure level on its open side interpolates
+    // to MISSING. A layer with one MISSING end can't be built, so return the
+    // same sentinel as a layer outside the profile.
+    if ((pbot == MISSING) || (ptop == MISSING)) return {MISSING, MISSING};
+#endif
+
     return {pbot, ptop};
 }
 
@@ -126,12 +140,25 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
                                      const float pressure[],
                                      const float height[],
                                      const std::ptrdiff_t N, const bool toAGL) {
+#ifndef NO_QC
+    // An AGL layer is measured from height[0], so without it there's no
+    // answer.
+    if (toAGL && ((height[0] == MISSING) || std::isnan(height[0]))) {
+        return {MISSING, MISSING};
+    }
+#endif
     if ((layer.bottom > pressure[0]) || (layer.top < pressure[N - 1])) {
         return {MISSING, MISSING};
     }
 
     float zbot = interp_pressure(layer.bottom, pressure, height, N);
     float ztop = interp_pressure(layer.top, pressure, height, N);
+
+#ifndef NO_QC
+    // As in height_layer_to_pressure, and before the AGL shift turns MISSING
+    // into a plausible height.
+    if ((zbot == MISSING) || (ztop == MISSING)) return {MISSING, MISSING};
+#endif
 
     if (toAGL) {
         zbot -= height[0];

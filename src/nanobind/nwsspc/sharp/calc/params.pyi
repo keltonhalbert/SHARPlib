@@ -195,6 +195,11 @@ def storm_motion_bunkers(pressure: Annotated[NDArray[numpy.float32], dict(shape=
     which uses Effective Inflow Layer metrics to get better estimates of storm 
     motion, especially when considering elevated convection. 
 
+    In QC builds, returns MISSING components if the mean wind layer, or either
+    500 m deep end of the wind shear layer, can't be converted to pressure (see
+    nwsspc.sharp.calc.layer.height_layer_to_pressure), for example because it
+    extends past the profile.
+
     References 
     ----------
 
@@ -246,6 +251,12 @@ def storm_motion_bunkers(pressure: Annotated[NDArray[numpy.float32], dict(shape=
     operations that are presumed to be computed at some other point 
     in the analysis pipeline. 
 
+    In QC builds, if the effective inflow layer or the equilibrium level
+    can't be converted to height (see
+    nwsspc.sharp.calc.layer.pressure_layer_to_height), for example because it
+    lies outside the profile, this falls back to the Bunkers 2000 method with
+    0-6 km AGL layers, as it does for a MISSING effective inflow layer.
+
     References
     ----------
     Bunkers et al. 2014: http://dx.doi.org/10.15191/nwajom.2014.0211
@@ -283,6 +294,11 @@ def mcs_motion_corfidi(pressure: Annotated[NDArray[numpy.float32], dict(shape=(N
     1) the advection of existing cells by the mean wind and 
     2) the propagation of new convection relative to existing storms.
 
+    In QC builds, returns MISSING components for both vectors if the 0-1.5 km
+    AGL layer can't be converted to pressure (see
+    nwsspc.sharp.calc.layer.height_layer_to_pressure), for example because the
+    profile ends below 1.5 km AGL.
+
     References
     ----------
     Corfidi et al. 2003: https://www.spc.noaa.gov/publications/corfidi/mcs2003.pdf
@@ -313,7 +329,10 @@ def effective_bulk_wind_difference(pressure: Annotated[NDArray[numpy.float32], d
     the equilibrium level depth. This is analogous to the usage 
     of 0-6 km wind shear, but allows more flexibility for elevated 
     convection. Returns MISSING if the effective inflow layer or 
-    equilibrium level pressure are MISSING.
+    equilibrium level pressure are MISSING. In QC builds it also returns
+    MISSING if either can't be converted to height (see
+    nwsspc.sharp.calc.layer.pressure_layer_to_height), for example because it
+    lies outside the profile.
 
     Parameters 
     ----------
@@ -535,6 +554,13 @@ def large_hail_parameter(mu_pcl: nwsspc.sharp.calc.parcel.Parcel, lapse_rate_700
     to detect environments that support very large hail. LHP has shown skill 
     when differentiationg environments that support hail >= 3.5 in from those 
     with < 2.0 in.
+
+    In QC builds, returns MISSING if the hail growth zone, the 1500 m below
+    the equilibrium level, or the 0-1 km or 3-6 km AGL layer can't be
+    converted between height and pressure (see
+    nwsspc.sharp.calc.layer.pressure_layer_to_height and
+    nwsspc.sharp.calc.layer.height_layer_to_pressure), for example because it
+    extends past the profile or the hail growth zone is MISSING.
 
     References
     ----------

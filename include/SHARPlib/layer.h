@@ -284,6 +284,11 @@ template <typename L, typename Cb, typename Ct>
  * then the bottom and top of the output layer will be set to
  * sharp::MISSING.
  *
+ * In QC builds, an endpoint that can't be interpolated, because every
+ * pressure level on one side of it is MISSING, gives {MISSING, MISSING}
+ * instead of an exception. So does an AGL layer when height[0] is MISSING
+ * or NaN.
+ *
  * \param   layer       (meters)
  * \param   pressure    (Pa)
  * \param   height      (meters)
@@ -308,6 +313,10 @@ template <typename L, typename Cb, typename Ct>
  * AGL or MSL. If for some strange reason you provide a PressureLayer
  * that is out of the bounds of pressure[], then the bottom and top
  * of the output layer will be set to sharp::MISSING.
+ *
+ * In QC builds, an endpoint that can't be interpolated, because every
+ * height level on one side of it is MISSING, gives {MISSING, MISSING}
+ * instead of an exception. So does toAGL when height[0] is MISSING or NaN.
  *
  * \param   layer       (Pa)
  * \param   pressure    (Pa)
@@ -630,7 +639,9 @@ template <typename L>
  *
  * A layer that extends past the profile is clipped to it. A layer that lies
  * wholly outside the profile, or touches it at only one level, has no mean
- * and returns sharp::MISSING.
+ * and returns sharp::MISSING. The pressure array is expected to be complete.
+ * A MISSING level in it isn't supported, and in QC builds it can make the
+ * result MISSING or wrong, even for a layer that doesn't reach that level.
  *
  * \param   layer       (sharp::PressureLayer)
  * \param   pressure    (vertical pressure array; Pa)
@@ -655,7 +666,10 @@ template <typename L>
  *
  * A layer that extends past the profile is clipped to it. A layer that lies
  * wholly outside the profile, or touches it at only one level, has no mean
- * and returns sharp::MISSING.
+ * and returns sharp::MISSING. The height and pressure arrays are expected to
+ * be complete. A MISSING level in them isn't supported, and in QC builds it
+ * can make the result MISSING or wrong, even for a layer that doesn't reach
+ * that level. MISSING levels in both arrays can also raise std::range_error.
  *
  * \param   layer       (sharp::HeightLayer)
  * \param   height      (vertical height array; meters)
