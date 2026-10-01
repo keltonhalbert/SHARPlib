@@ -779,11 +779,11 @@ std::ptrdiff_t for_each_threshold_layer(const float height[], Accessor data_at,
         for (; k < N; ++k) {
             const float z_k = height[k];
 #ifndef NO_QC
-            if ((z_k == MISSING) || std::isnan(z_k)) continue;
+            if (is_missing(z_k)) continue;
 #endif
             const float val_k = data_at(k);
 #ifndef NO_QC
-            if ((val_k == MISSING) || std::isnan(val_k)) continue;
+            if (is_missing(val_k)) continue;
 #endif
             ++k;
             z = z_k;

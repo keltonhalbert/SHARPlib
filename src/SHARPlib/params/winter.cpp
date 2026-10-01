@@ -14,6 +14,7 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/params/winter.h>
+#include <SHARPlib/qc.h>
 #include <SHARPlib/thermo.h>
 
 #include <algorithm>
@@ -251,8 +252,7 @@ PrecipTypeProbabilities modified_bourgouin(
     // is none, wetbulb[N - 1] is missing too, and every result is MISSING.
     std::ptrdiff_t surface = 0;
 #ifndef NO_QC
-    while ((surface < N - 1) &&
-           ((wetbulb[surface] == MISSING) || std::isnan(wetbulb[surface]))) {
+    while ((surface < N - 1) && is_missing(wetbulb[surface])) {
         ++surface;
     }
 #endif
