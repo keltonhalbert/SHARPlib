@@ -182,6 +182,12 @@ float layer_mean(HeightLayer layer, const float height[],
         layer.top = height[N - 1];
     }
 
+    // Clipping inverts a layer that lies wholly outside the profile, as in
+    // sharp::layer_minmax. That layer has no mean, and the conversion to
+    // pressure below can't take it. Complete data reaches this case, so
+    // unlike the MISSING checks it applies in NO_QC builds too.
+    if (layer.bottom > layer.top) return MISSING;
+
     PressureLayer pres_layer =
         height_layer_to_pressure(layer, pressure, height, N, false);
 

@@ -427,3 +427,96 @@ TEST_CASE("Testing layer_mean over a pressure layer") {
     CHECK(sharp::layer_mean(layer2, pres, data, N) == doctest::Approx(1.1111));
     CHECK(sharp::layer_mean(layer3, pres, data, N) == doctest::Approx(1.1111));
 }
+// layer_mean over layers that leave the profile (SHARPlib-4v5). A layer wholly
+// outside the profile has no mean and returns MISSING in every build. Each
+// "was" comment is the output measured before this change, in both QC and
+// NO_QC builds. The height overload clipped one end of such a layer and not
+// the other, which inverted it, and the conversion to pressure then threw
+// std::range_error.
+constexpr std::ptrdiff_t LM_N = 3;
+constexpr float lm_pres[LM_N] = {100000, 95000, 90000};
+constexpr float lm_data[LM_N] = {300, 297, 294};
+// the same profile with the surface at 0 m and at 300 m
+constexpr float lm_hght_0[LM_N] = {0, 500, 1000};
+constexpr float lm_hght_300[LM_N] = {300, 800, 1300};
+
+TEST_CASE("Testing layer_mean over layers outside the profile") {
+    for (const float* hght : {lm_hght_0, lm_hght_300}) {
+        CAPTURE(hght[0]);
+        for (const bool agl : {false, true}) {
+            CAPTURE(agl);
+            // wholly above: was std::range_error
+            CHECK(sharp::layer_mean(sharp::HeightLayer(1500, 2000), hght,
+                                    lm_pres, lm_data, LM_N,
+                                    agl) == sharp::MISSING);
+            // wholly below: was std::range_error
+            CHECK(sharp::layer_mean(sharp::HeightLayer(-500, -100), hght,
+                                    lm_pres, lm_data, LM_N,
+                                    agl) == sharp::MISSING);
+        }
+    }
+    // below a 300 m surface in meters MSL: was std::range_error
+    CHECK(sharp::layer_mean(sharp::HeightLayer(0, 200), lm_hght_300, lm_pres,
+                            lm_data, LM_N, false) == sharp::MISSING);
+
+    // pressure layers, unchanged
+    CHECK(sharp::layer_mean(sharp::PressureLayer(85000, 80000), lm_pres,
+                            lm_data, LM_N) == sharp::MISSING);
+    CHECK(sharp::layer_mean(sharp::PressureLayer(110000, 105000), lm_pres,
+                            lm_data, LM_N) == sharp::MISSING);
+
+    // one level at 0 m
+    constexpr float pres[1] = {100000};
+    constexpr float hght[1] = {0};
+    constexpr float data[1] = {300};
+    // was std::range_error
+    CHECK(sharp::layer_mean(sharp::HeightLayer(100, 200), hght, pres, data,
+                            1) == sharp::MISSING);
+    // was std::range_error
+    CHECK(sharp::layer_mean(sharp::HeightLayer(-200, -100), hght, pres, data,
+                            1) == sharp::MISSING);
+}
+
+TEST_CASE("Testing layer_mean over layers at the profile edge") {
+    // Layers that touch the profile at one point have no depth and return
+    // MISSING. Layers that partly overlap it are clipped to it. Both are
+    // unchanged.
+    for (const float* hght : {lm_hght_0, lm_hght_300}) {
+        CAPTURE(hght[0]);
+        // touching at one point, meters AGL
+        CHECK(sharp::layer_mean(sharp::HeightLayer(1000, 2000), hght, lm_pres,
+                                lm_data, LM_N, true) == sharp::MISSING);
+        CHECK(sharp::layer_mean(sharp::HeightLayer(-500, 0), hght, lm_pres,
+                                lm_data, LM_N, true) == sharp::MISSING);
+
+        // partly above and partly below, meters AGL
+        CHECK(sharp::layer_mean(sharp::HeightLayer(500, 1500), hght, lm_pres,
+                                lm_data, LM_N,
+                                true) == doctest::Approx(295.5f));
+        CHECK(sharp::layer_mean(sharp::HeightLayer(-500, 500), hght, lm_pres,
+                                lm_data, LM_N,
+                                true) == doctest::Approx(298.5f));
+    }
+
+    // a 300 m surface in meters MSL
+    CHECK(sharp::layer_mean(sharp::HeightLayer(1300, 2000), lm_hght_300,
+                            lm_pres, lm_data, LM_N) == sharp::MISSING);
+    CHECK(sharp::layer_mean(sharp::HeightLayer(-500, 300), lm_hght_300, lm_pres,
+                            lm_data, LM_N) == sharp::MISSING);
+    CHECK(sharp::layer_mean(sharp::HeightLayer(1000, 2000), lm_hght_300,
+                            lm_pres, lm_data,
+                            LM_N) == doctest::Approx(294.909698f));
+    CHECK(sharp::layer_mean(sharp::HeightLayer(-500, 500), lm_hght_300, lm_pres,
+                            lm_data, LM_N) == doctest::Approx(299.40921f));
+
+    // pressure layers
+    CHECK(sharp::layer_mean(sharp::PressureLayer(90000, 80000), lm_pres,
+                            lm_data, LM_N) == sharp::MISSING);
+    CHECK(sharp::layer_mean(sharp::PressureLayer(105000, 100000), lm_pres,
+                            lm_data, LM_N) == sharp::MISSING);
+    CHECK(sharp::layer_mean(sharp::PressureLayer(95000, 80000), lm_pres,
+                            lm_data, LM_N) == doctest::Approx(295.5f));
+    CHECK(sharp::layer_mean(sharp::PressureLayer(105000, 95000), lm_pres,
+                            lm_data, LM_N) == doctest::Approx(298.5f));
+}
+

@@ -239,6 +239,38 @@ def test_pressure_layer_mean():
     assert (layer.layer_mean(lyr3, pres, data) == pytest.approx(1.111111))
 
 
+# A layer wholly outside the profile has no mean (SHARPlib-4v5). Each "was"
+# comment is the output measured before that change.
+@pytest.mark.parametrize("sfc_hght", [0.0, 300.0])
+@pytest.mark.parametrize("isAGL", [False, True])
+def test_layer_mean_outside_profile(sfc_hght, isAGL):
+    pres = np.array([100000.0, 95000.0, 90000.0], dtype="float32")
+    hght = np.array([0.0, 500.0, 1000.0], dtype="float32") + sfc_hght
+    data = np.array([300.0, 297.0, 294.0], dtype="float32")
+
+    # was ValueError
+    above = layer.HeightLayer(1500.0, 2000.0)
+    assert (layer.layer_mean(above, hght, pres, data, isAGL) ==
+            constants.MISSING)
+    # was ValueError
+    below = layer.HeightLayer(-500.0, -100.0)
+    assert (layer.layer_mean(below, hght, pres, data, isAGL) ==
+            constants.MISSING)
+
+    # unchanged
+    above = layer.PressureLayer(85000.0, 80000.0)
+    assert (layer.layer_mean(above, pres, data) == constants.MISSING)
+    below = layer.PressureLayer(110000.0, 105000.0)
+    assert (layer.layer_mean(below, pres, data) == constants.MISSING)
+
+    # a layer partly above the profile is clipped to it, unchanged
+    part = layer.HeightLayer(500.0, 1500.0)
+    assert (layer.layer_mean(part, hght, pres, data, True) ==
+            pytest.approx(295.5))
+    part = layer.PressureLayer(95000.0, 80000.0)
+    assert (layer.layer_mean(part, pres, data) == pytest.approx(295.5))
+
+
 # QC builds skip MISSING and NaN data in layer_min and layer_max, and return
 # MISSING for a layer wholly outside the profile. Each "was" comment is the
 # output measured before these changes and the interp NaN change.

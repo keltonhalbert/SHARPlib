@@ -317,6 +317,10 @@ tuple[float, float]
 Computes the pressure-weighted mean value of a field over 
 a given PressureLayer. 
 
+A layer that extends past the profile is clipped to it. A layer that
+lies wholly outside the profile, or touches it at only one level, has
+no mean and returns MISSING.
+
 Parameters
 ----------
 layer : nwsspc.sharp.calc.layer.PressureLayer 
@@ -335,6 +339,10 @@ float
         R"pbdoc(
 Computes the pressure-weighted mean value of a field over 
 a given HeightLayer. 
+
+A layer that extends past the profile is clipped to it. A layer that
+lies wholly outside the profile, or touches it at only one level, has
+no mean and returns MISSING.
 
 Parameters
 ----------
