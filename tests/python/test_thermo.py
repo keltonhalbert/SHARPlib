@@ -604,6 +604,57 @@ def test_lapse_rate_max_profile_top(sfc_hght):
     assert (max_lyr.top == constants.MISSING)
 
 
+# lapse_rate_max steps through the search layer by its delta (SHARPlib-l1f).
+# A delta of zero or with the wrong sign never ended the search, so the call
+# never returned and held the GIL. A NaN delta ended it after the first layer.
+# Each search now returns MISSING, and so do the bottom and top of the returned
+# layer.
+@pytest.mark.parametrize("hght_delta, pres_delta",
+                         [(0.0, 0.0), (-100.0, 1000.0), (np.nan, np.nan)])
+def test_lapse_rate_max_bad_delta(hght_delta, pres_delta):
+    pres = np.array([100000.0, 95000.0, 90000.0], dtype="float32")
+    hght = np.array([0.0, 500.0, 1000.0], dtype="float32")
+    tmpk = np.array([300.0, 297.0, 294.0], dtype="float32")
+
+    # was no return (0 and -100 m); 6.0 over 0-500 m, the first layer only
+    # (NaN)
+    max_lr, max_lyr = thermo.lapse_rate_max(
+        layer.HeightLayer(0.0, 1000.0, hght_delta), 500.0, hght, tmpk)
+    assert (max_lr == constants.MISSING)
+    assert (max_lyr.bottom == constants.MISSING)
+    assert (max_lyr.top == constants.MISSING)
+    # was no return (0 and 1000 Pa); 6.0 over 100000-95000 Pa, the first
+    # layer only (NaN)
+    max_lr, max_lyr = thermo.lapse_rate_max(
+        layer.PressureLayer(100000.0, 90000.0, pres_delta), 5000.0,
+        pres, hght, tmpk)
+    assert (max_lr == constants.MISSING)
+    assert (max_lyr.bottom == constants.MISSING)
+    assert (max_lyr.top == constants.MISSING)
+
+
+def test_lapse_rate_max_bad_delta_field():
+    # delta is writable, so a bad one can arrive after construction. was no
+    # return
+    pres = np.array([100000.0, 95000.0, 90000.0], dtype="float32")
+    hght = np.array([0.0, 500.0, 1000.0], dtype="float32")
+    tmpk = np.array([300.0, 297.0, 294.0], dtype="float32")
+
+    hlyr = layer.HeightLayer(0.0, 1000.0)
+    hlyr.delta = 0.0
+    max_lr, max_lyr = thermo.lapse_rate_max(hlyr, 500.0, hght, tmpk)
+    assert (max_lr == constants.MISSING)
+    assert (max_lyr.bottom == constants.MISSING)
+    assert (max_lyr.top == constants.MISSING)
+
+    plyr = layer.PressureLayer(100000.0, 90000.0)
+    plyr.delta = 0.0
+    max_lr, max_lyr = thermo.lapse_rate_max(plyr, 5000.0, pres, hght, tmpk)
+    assert (max_lr == constants.MISSING)
+    assert (max_lyr.bottom == constants.MISSING)
+    assert (max_lyr.top == constants.MISSING)
+
+
 def test_buoyancy():
     buoy = thermo.buoyancy(constants.MISSING, 290.0)
     assert (buoy == constants.MISSING)

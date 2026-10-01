@@ -3,6 +3,8 @@
 #include <SHARPlib/parcel.h>
 #include <SHARPlib/thermo.h>
 
+#include <limits>
+
 #include "doctest.h"
 
 TEST_CASE("Testing theta") {
@@ -388,5 +390,46 @@ TEST_CASE("Testing lapse_rate_max at the top of the profile") {
         // deeper than the profile; was 16.0001 K/km over 2300-5300 m
         CHECK(sharp::lapse_rate_max(sharp::HeightLayer(0, 6000), 3000, hght,
                                     tmpk, N) == sharp::MISSING);
+    }
+}
+
+// lapse_rate_max steps through the search layer by its delta (SHARPlib-l1f).
+// A delta of zero or with the wrong sign never ended the search, so the call
+// never returned. A NaN delta ended it after the first layer. Each search now
+// returns MISSING, and so do the bottom and top of max_lyr. The "was"
+// comments hold for QC and NO_QC builds.
+TEST_CASE("Testing lapse_rate_max with a delta that doesn't step upward") {
+    constexpr std::ptrdiff_t N = 3;
+    constexpr float pres[N] = {100000, 95000, 90000};
+    constexpr float hght[N] = {0, 500, 1000};
+    constexpr float tmpk[N] = {300, 297, 294};
+    constexpr float nanval = std::numeric_limits<float>::quiet_NaN();
+
+    // was no return (0 and -100 m); 6 K/km over 0-500 m, the first layer
+    // only (NaN)
+    for (const float delta : {0.0f, -100.0f, nanval}) {
+        CAPTURE(delta);
+        const sharp::HeightLayer search(0, 1000, delta);
+        sharp::HeightLayer max_lyr = {0, 0};
+        CHECK(sharp::lapse_rate_max(search, 500, hght, tmpk, N, &max_lyr) ==
+              sharp::MISSING);
+        CHECK(max_lyr.bottom == sharp::MISSING);
+        CHECK(max_lyr.top == sharp::MISSING);
+        CHECK(sharp::lapse_rate_max(search, 500, hght, tmpk, N) ==
+              sharp::MISSING);
+    }
+
+    // was no return (0 and 1000 Pa); 6 K/km over 100000-95000 Pa, the first
+    // layer only (NaN)
+    for (const float delta : {0.0f, 1000.0f, nanval}) {
+        CAPTURE(delta);
+        const sharp::PressureLayer search(100000, 90000, delta);
+        sharp::PressureLayer max_lyr = {0, 0};
+        CHECK(sharp::lapse_rate_max(search, 5000, pres, hght, tmpk, N,
+                                    &max_lyr) == sharp::MISSING);
+        CHECK(max_lyr.bottom == sharp::MISSING);
+        CHECK(max_lyr.top == sharp::MISSING);
+        CHECK(sharp::lapse_rate_max(search, 5000, pres, hght, tmpk, N) ==
+              sharp::MISSING);
     }
 }

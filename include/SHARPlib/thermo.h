@@ -641,7 +641,9 @@ template <typename Lft>
  * up by its delta, so when layer_agl starts below the surface, the first
  * layer searched starts at the first step at or above the surface, not at
  * the surface itself. If no layer in the search has a lapse rate, the result
- * is sharp::MISSING, and so are the bottom and top of max_lyr.
+ * is sharp::MISSING, and so are the bottom and top of max_lyr. The delta of
+ * layer_agl must be greater than 0 m. Any other delta, NaN included, gives
+ * the same MISSING result.
  *
  * \param   layer_agl       (meters AGL)
  * \param   depth           (meters)
@@ -676,7 +678,9 @@ template <typename Lft>
  * by its delta, so when layer starts below the surface, the first layer
  * searched starts at the first step at or above the surface, not at the
  * surface itself. If no layer in the search has a lapse rate, the result is
- * sharp::MISSING, and so are the bottom and top of max_lyr.
+ * sharp::MISSING, and so are the bottom and top of max_lyr. The delta of
+ * layer must be less than 0 Pa. Any other delta, NaN included, gives the
+ * same MISSING result.
  *
  * \param   layer           (Pa)
  * \param   depth           (Pa)
