@@ -430,27 +430,35 @@ def test_max_lapse_rate():
     assert (p_max_lyr.top == 63000.0)
 
 
-# A layer wholly outside the profile has no lapse rate (SHARPlib-103). Each
-# "was" comment is the output measured before that change.
+pres3 = np.array([100000.0, 95000.0, 90000.0], dtype="float32")
+hght3 = np.array([0.0, 500.0, 1000.0], dtype="float32")
+tmpk3 = np.array([300.0, 297.0, 294.0], dtype="float32")
+pres5 = np.array([100000.0, 90000.0, 80000.0, 77500.0, 75000.0],
+                 dtype="float32")
+hght5 = np.array([0.0, 1000.0, 2000.0, 2250.0, 2500.0], dtype="float32")
+lr_max_missing = (constants.MISSING,) * 3
+
+
+def lr_max(search, depth, *profile):
+    max_lr, max_lyr = thermo.lapse_rate_max(search, depth, *profile)
+    return max_lr, max_lyr.bottom, max_lyr.top
+
+
+# A layer wholly outside the profile has no lapse rate (SHARPlib-103).
 @pytest.mark.parametrize("sfc_hght", [0.0, 300.0])
 def test_lapse_rate_outside_profile(sfc_hght):
-    pres = np.array([100000.0, 95000.0, 90000.0], dtype="float32")
-    hght = np.array([0.0, 500.0, 1000.0], dtype="float32") + sfc_hght
-    tmpk = np.array([300.0, 297.0, 294.0], dtype="float32")
+    hght = hght3 + sfc_hght
 
-    # was ValueError (0 m), 6.0 (300 m)
     above = layer.PressureLayer(85000.0, 80000.0)
-    assert (thermo.lapse_rate(above, pres, hght, tmpk) == constants.MISSING)
-    # was ValueError
+    assert (thermo.lapse_rate(above, pres3, hght, tmpk3) == constants.MISSING)
     below = layer.PressureLayer(110000.0, 105000.0)
-    assert (thermo.lapse_rate(below, pres, hght, tmpk) == constants.MISSING)
-    # unchanged
+    assert (thermo.lapse_rate(below, pres3, hght, tmpk3) == constants.MISSING)
     above = layer.HeightLayer(1500.0, 2000.0)
-    assert (thermo.lapse_rate(above, hght, tmpk) == constants.MISSING)
+    assert (thermo.lapse_rate(above, hght, tmpk3) == constants.MISSING)
 
-    # a layer partly above the profile is clipped to it, unchanged
+    # a layer partly above the profile is clipped to it
     part = layer.PressureLayer(95000.0, 80000.0)
-    assert (thermo.lapse_rate(part, pres, hght, tmpk) == pytest.approx(6.0))
+    assert (thermo.lapse_rate(part, pres3, hght, tmpk3) == pytest.approx(6.0))
 
 
 @pytest.mark.parametrize("sfc_hght", [0.0, 300.0])
@@ -458,25 +466,17 @@ def test_lapse_rate_max_outside_profile(sfc_hght):
     # The sounding ends at 750 hPa, inside the search layer. The lapse rate of
     # the whole profile is 8.4 K/km, and the largest in the search layer is
     # 6 K/km, from 800 to 750 hPa.
-    pres = np.array([100000.0, 90000.0, 80000.0, 77500.0, 75000.0],
-                    dtype="float32")
-    hght = np.array([0.0, 1000.0, 2000.0, 2250.0, 2500.0],
-                    dtype="float32") + sfc_hght
     tmpk = np.array([310.0, 298.0, 292.0, 290.0, 289.0], dtype="float32")
 
-    # was ValueError (0 m); 8.4 over 74000-69000 Pa, a layer wholly above
-    # the profile (300 m)
-    max_lr, max_lyr = thermo.lapse_rate_max(
-        layer.PressureLayer(80000.0, 60000.0), 5000.0, pres, hght, tmpk)
-    assert (max_lr == pytest.approx(6.0))
-    assert (max_lyr.bottom == 80000.0)
-    assert (max_lyr.top == 75000.0)
+    assert (lr_max(layer.PressureLayer(80000.0, 60000.0), 5000.0,
+                   pres5, hght5 + sfc_hght, tmpk) ==
+            (pytest.approx(6.0), 80000.0, 75000.0))
 
 
 # lapse_rate_max skips every layer of the given depth that is not wholly inside
 # the profile, since lapse_rate would clip it to a shallower layer
-# (SHARPlib-b72). Each "was" comment is the output measured before that change.
-# When no layer fits, the bottom and top of the returned layer are MISSING.
+# (SHARPlib-b72). When no layer fits, the bottom and top of the returned layer
+# are MISSING.
 def test_lapse_rate_max_profile_bottom():
     # The surface is at 850 hPa and 1500 m, above the bottom of each search.
     # The lowest 500 m is the steepest, at 8 K/km.
@@ -485,77 +485,45 @@ def test_lapse_rate_max_profile_bottom():
     hght = np.array([1500.0, 2000.0, 3100.0, 4300.0, 5700.0], dtype="float32")
     tmpk = np.array([295.0, 291.0, 284.0, 276.0, 266.0], dtype="float32")
 
-    # was 8.00005 over 93000-83000 Pa, clipped to 85000-83000 Pa
-    max_lr, max_lyr = thermo.lapse_rate_max(
-        layer.PressureLayer(100000.0, 50000.0), 10000.0, pres, hght, tmpk)
-    assert (max_lr == pytest.approx(7.15671))
-    assert (max_lyr.bottom == 85000.0)
-    assert (max_lyr.top == 75000.0)
+    assert (lr_max(layer.PressureLayer(100000.0, 50000.0), 10000.0,
+                   pres, hght, tmpk) ==
+            (pytest.approx(7.15671), 85000.0, 75000.0))
     # The steps of 2000 Pa miss the surface, so the first layer searched
-    # starts at 84000 Pa. was 8 over 90000-80000 Pa
-    max_lr, max_lyr = thermo.lapse_rate_max(
-        layer.PressureLayer(100000.0, 70000.0, -2000.0), 10000.0,
-        pres, hght, tmpk)
-    assert (max_lr == pytest.approx(6.99398))
-    assert (max_lyr.bottom == 84000.0)
-    assert (max_lyr.top == 74000.0)
-    # deeper than the profile; was 6.90476 over 90000-50000 Pa
-    max_lr, max_lyr = thermo.lapse_rate_max(
-        layer.PressureLayer(100000.0, 40000.0), 40000.0, pres, hght, tmpk)
-    assert (max_lr == constants.MISSING)
-    assert (max_lyr.bottom == constants.MISSING)
-    assert (max_lyr.top == constants.MISSING)
+    # starts at 84000 Pa.
+    assert (lr_max(layer.PressureLayer(100000.0, 70000.0, -2000.0), 10000.0,
+                   pres, hght, tmpk) ==
+            (pytest.approx(6.99398), 84000.0, 74000.0))
+    # deeper than the profile
+    assert (lr_max(layer.PressureLayer(100000.0, 40000.0), 40000.0,
+                   pres, hght, tmpk) == lr_max_missing)
 
-    # was 8.00003 over -800-200 m AGL, clipped to 0-200 m
-    max_lr, max_lyr = thermo.lapse_rate_max(
-        layer.HeightLayer(-1500.0, 4000.0), 1000.0, hght, tmpk)
-    assert (max_lr == pytest.approx(7.18182))
-    assert (max_lyr.bottom == 0.0)
-    assert (max_lyr.top == 1000.0)
+    assert (lr_max(layer.HeightLayer(-1500.0, 4000.0), 1000.0, hght, tmpk) ==
+            (pytest.approx(7.18182), 0.0, 1000.0))
     # The steps of 100 m miss the surface, so the first layer searched starts
-    # at 50 m. was 8.00008 over -850-150 m
-    max_lr, max_lyr = thermo.lapse_rate_max(
-        layer.HeightLayer(-1450.0, 2000.0), 1000.0, hght, tmpk)
-    assert (max_lr == pytest.approx(7.1))
-    assert (max_lyr.bottom == 50.0)
-    assert (max_lyr.top == 1050.0)
+    # at 50 m.
+    assert (lr_max(layer.HeightLayer(-1450.0, 2000.0), 1000.0, hght, tmpk) ==
+            (pytest.approx(7.1), 50.0, 1050.0))
 
 
 @pytest.mark.parametrize("sfc_hght", [0.0, 300.0])
 def test_lapse_rate_max_profile_top(sfc_hght):
     # The sounding ends at 750 hPa and 2500 m AGL, inside each search. The top
     # 250 m is the steepest, at 16 K/km.
-    pres = np.array([100000.0, 90000.0, 80000.0, 77500.0, 75000.0],
-                    dtype="float32")
-    hght = np.array([0.0, 1000.0, 2000.0, 2250.0, 2500.0],
-                    dtype="float32") + sfc_hght
+    hght = hght5 + sfc_hght
     tmpk = np.array([310.0, 298.0, 292.0, 290.0, 286.0], dtype="float32")
 
-    # was 16.0001 over 76000-71000 Pa, clipped to 76000-75000 Pa
-    max_lr, max_lyr = thermo.lapse_rate_max(
-        layer.PressureLayer(80000.0, 60000.0), 5000.0, pres, hght, tmpk)
-    assert (max_lr == pytest.approx(12.0))
-    assert (max_lyr.bottom == 80000.0)
-    assert (max_lyr.top == 75000.0)
-    # no layer fits; was 16.0001 over 76000-66000 Pa
-    max_lr, max_lyr = thermo.lapse_rate_max(
-        layer.PressureLayer(80000.0, 60000.0), 10000.0, pres, hght, tmpk)
-    assert (max_lr == constants.MISSING)
-    assert (max_lyr.bottom == constants.MISSING)
-    assert (max_lyr.top == constants.MISSING)
+    assert (lr_max(layer.PressureLayer(80000.0, 60000.0), 5000.0,
+                   pres5, hght, tmpk) ==
+            (pytest.approx(12.0), 80000.0, 75000.0))
+    # no layer fits
+    assert (lr_max(layer.PressureLayer(80000.0, 60000.0), 10000.0,
+                   pres5, hght, tmpk) == lr_max_missing)
 
-    # was 16.0001 over 2300-2800 m AGL, clipped to 2300-2500 m
-    max_lr, max_lyr = thermo.lapse_rate_max(
-        layer.HeightLayer(2000.0, 6000.0), 500.0, hght, tmpk)
-    assert (max_lr == pytest.approx(12.0))
-    assert (max_lyr.bottom == 2000.0)
-    assert (max_lyr.top == 2500.0)
-    # no layer fits; was 16.0001 over 2300-3300 m
-    max_lr, max_lyr = thermo.lapse_rate_max(
-        layer.HeightLayer(2000.0, 6000.0), 1000.0, hght, tmpk)
-    assert (max_lr == constants.MISSING)
-    assert (max_lyr.bottom == constants.MISSING)
-    assert (max_lyr.top == constants.MISSING)
+    assert (lr_max(layer.HeightLayer(2000.0, 6000.0), 500.0, hght, tmpk) ==
+            (pytest.approx(12.0), 2000.0, 2500.0))
+    # no layer fits
+    assert (lr_max(layer.HeightLayer(2000.0, 6000.0), 1000.0, hght, tmpk) ==
+            lr_max_missing)
 
 
 # lapse_rate_max steps through the search layer by its delta (SHARPlib-l1f).
@@ -566,47 +534,10 @@ def test_lapse_rate_max_profile_top(sfc_hght):
 @pytest.mark.parametrize("hght_delta, pres_delta",
                          [(0.0, 0.0), (-100.0, 1000.0), (np.nan, np.nan)])
 def test_lapse_rate_max_bad_delta(hght_delta, pres_delta):
-    pres = np.array([100000.0, 95000.0, 90000.0], dtype="float32")
-    hght = np.array([0.0, 500.0, 1000.0], dtype="float32")
-    tmpk = np.array([300.0, 297.0, 294.0], dtype="float32")
-
-    # was no return (0 and -100 m); 6.0 over 0-500 m, the first layer only
-    # (NaN)
-    max_lr, max_lyr = thermo.lapse_rate_max(
-        layer.HeightLayer(0.0, 1000.0, hght_delta), 500.0, hght, tmpk)
-    assert (max_lr == constants.MISSING)
-    assert (max_lyr.bottom == constants.MISSING)
-    assert (max_lyr.top == constants.MISSING)
-    # was no return (0 and 1000 Pa); 6.0 over 100000-95000 Pa, the first
-    # layer only (NaN)
-    max_lr, max_lyr = thermo.lapse_rate_max(
-        layer.PressureLayer(100000.0, 90000.0, pres_delta), 5000.0,
-        pres, hght, tmpk)
-    assert (max_lr == constants.MISSING)
-    assert (max_lyr.bottom == constants.MISSING)
-    assert (max_lyr.top == constants.MISSING)
-
-
-def test_lapse_rate_max_bad_delta_field():
-    # delta is writable, so a bad one can arrive after construction. was no
-    # return
-    pres = np.array([100000.0, 95000.0, 90000.0], dtype="float32")
-    hght = np.array([0.0, 500.0, 1000.0], dtype="float32")
-    tmpk = np.array([300.0, 297.0, 294.0], dtype="float32")
-
-    hlyr = layer.HeightLayer(0.0, 1000.0)
-    hlyr.delta = 0.0
-    max_lr, max_lyr = thermo.lapse_rate_max(hlyr, 500.0, hght, tmpk)
-    assert (max_lr == constants.MISSING)
-    assert (max_lyr.bottom == constants.MISSING)
-    assert (max_lyr.top == constants.MISSING)
-
-    plyr = layer.PressureLayer(100000.0, 90000.0)
-    plyr.delta = 0.0
-    max_lr, max_lyr = thermo.lapse_rate_max(plyr, 5000.0, pres, hght, tmpk)
-    assert (max_lr == constants.MISSING)
-    assert (max_lyr.bottom == constants.MISSING)
-    assert (max_lyr.top == constants.MISSING)
+    assert (lr_max(layer.HeightLayer(0.0, 1000.0, hght_delta), 500.0,
+                   hght3, tmpk3) == lr_max_missing)
+    assert (lr_max(layer.PressureLayer(100000.0, 90000.0, pres_delta), 5000.0,
+                   pres3, hght3, tmpk3) == lr_max_missing)
 
 
 def test_buoyancy():
