@@ -16,6 +16,7 @@
 
 #include <SHARPlib/layer.h>
 #include <SHARPlib/parcel.h>
+#include <SHARPlib/qc.h>
 #include <SHARPlib/winds.h>
 
 #include <cstddef>
@@ -121,6 +122,11 @@ namespace sharp {
  *
  * Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
  *
+ * In QC builds, returns sharp::MISSING if the height of the fire parcel's
+ * LFC above the surface is unknown, for example because height[0] is
+ * MISSING, or if the potential temperature is MISSING at the LFC or at the
+ * level where the formula evaluates air density.
+ *
  * References:
  * Tory et al. 2018:
  * https://journals.ametsoc.org/view/journals/mwre/146/8/mwr-d-17-0377.1.xml
@@ -206,19 +212,18 @@ template <typename Lifter>
         }
     }
 
-    if (!found) {
+    const auto no_pft = [&]() {
         std::fill_n(&pcl_vtmpk_arr[0], N, sharp::MISSING);
         std::fill_n(&pcl_buoy_arr[0], N, sharp::MISSING);
         if (pcl) *pcl = Parcel();
         return MISSING;
-    }
+    };
+    if (!found) return no_pft();
 
     candidate_z_fc =
         interp_pressure(candidate_pcl.lfc_pressure, pressure, height, N);
-    float z_fc = candidate_z_fc - height[0];
     float theta_fc = interp_pressure(candidate_pcl.lfc_pressure, pressure,
                                      potential_temperature, N);
-    delta_theta = theta_fc - mean_theta;
 
     constexpr float beta_prime = 0.4;
     constexpr float alpha_prime = 0.32;
@@ -231,6 +236,14 @@ template <typename Lifter>
                       pres_sfc;
     float theta_pl_c =
         sharp::interp_pressure(pres_pl_c, pressure, potential_temperature, N);
+#ifndef NO_QC
+    if (is_missing(candidate_z_fc) || is_missing(height[0]) ||
+        is_missing(theta_fc) || is_missing(theta_pl_c)) {
+        return no_pft();
+    }
+#endif
+    float z_fc = candidate_z_fc - height[0];
+    delta_theta = theta_fc - mean_theta;
     float rho = (pres_pl_c / (sharp::RDGAS * theta_pl_c)) *
                 std::pow(sharp::THETA_REF_PRESSURE / pres_pl_c, sharp::ROCP);
     float PFT = big_const * rho * (z_fc * z_fc) * mean_wspd * delta_theta;

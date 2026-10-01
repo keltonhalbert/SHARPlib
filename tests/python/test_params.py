@@ -733,3 +733,24 @@ def test_pft():
         snd_data["theta"]
     )
     assert (pft == pytest.approx(158187356160.0, abs=1e6))
+
+
+def test_pft_missing():
+    lifter = parcel.lifter_cm1()
+    lifter.ma_type = thermo.adiabat.pseudo_liq
+    M = constants.MISSING
+    pres = snd_data["pres"]
+    mix_layer = layer.PressureLayer(pres[0], pres[0] - 10000.0)
+    # the lowest two heights MISSING: was 6335803949056.0 (SHARPlib-eod)
+    hght = snd_data["hght"].copy()
+    hght[:2] = M
+    # potential temperature MISSING above 750 hPa, so at the LFC: was 0.0
+    theta = snd_data["theta"].copy()
+    theta[pres < 75000.0] = M
+    for h, th in ((hght, snd_data["theta"]), (snd_data["hght"], theta)):
+        pcl = parcel.Parcel()
+        pft = params.pyrocumulonimbus_firepower_threshold(
+            lifter, mix_layer, pres, h, snd_data["tmpk"], snd_data["mixr"],
+            snd_data["vtmp"], snd_data["uwin"], snd_data["vwin"], th, pcl=pcl)
+        assert (pft == M)
+        assert (pcl.pres == M)
