@@ -292,6 +292,38 @@ def test_wind_params_missing_layer():
     assert (storm_mtn.u == constants.MISSING and
             storm_mtn.v == constants.MISSING)
 
+    # a MISSING shear layer: was ValueError (SHARPlib-yni)
+    M = constants.MISSING
+    storm_mtn = params.storm_motion_bunkers(
+        pres, hght, uwin, vwin, layer.HeightLayer(0, 2000),
+        layer.HeightLayer(M, M))
+    assert (storm_mtn.u == M and storm_mtn.v == M)
+
+    # a MISSING surface pressure: was ValueError (SHARPlib-yni)
+    pres_sfc = pres.copy()
+    pres_sfc[0] = M
+    for vector in params.mcs_motion_corfidi(pres_sfc, hght, uwin, vwin):
+        assert (vector.u == M and vector.v == M)
+
+    # an EL above the profile top: was ValueError (SHARPlib-yni)
+    pres6 = np.array([100000, 85000, 70000, 59000, 51000, 40000],
+                     dtype="float32")
+    hght6 = np.array([0, 1500, 3000, 4500, 5500, 7000], dtype="float32")
+    uwin6 = np.array([0, 10, 20, 30, 35, 40], dtype="float32")
+    vwin6 = np.zeros(6, dtype="float32")
+    mu_pcl = parcel.Parcel()
+    mu_pcl.cape = 3000.0
+    mu_pcl.eql_pressure = 30000.0
+    storm = winds.WindComponents()
+    storm.u, storm.v = 5.0, 5.0
+    hgz = layer.PressureLayer(59000.0, 51000.0)
+    assert (params.large_hail_parameter(mu_pcl, 8.0, hgz, storm, pres6, hght6,
+                                        uwin6, vwin6) == M)
+    mu_pcl.eql_pressure = 51000.0  # inside the profile, unchanged
+    assert (params.large_hail_parameter(mu_pcl, 8.0, hgz, storm, pres6, hght6,
+                                        uwin6, vwin6) ==
+            pytest.approx(126.17279, abs=1e-3))
+
 
 def test_bunkers_motion_effective_fallback():
     # An inflow layer below the profile falls back to the non-parcel method

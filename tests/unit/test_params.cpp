@@ -1392,6 +1392,14 @@ TEST_CASE("Testing storm_motion_bunkers with a MISSING layer") {
     check_missing_wind(sharp::storm_motion_bunkers(
         k_pres, k_hght, k_uwin, k_vwin, KN, {0, 2000}, {0, 3000}));
 
+    // a MISSING layer argument (SHARPlib-yni)
+    // shear layer: was std::range_error
+    check_missing_wind(sharp::storm_motion_bunkers(
+        d_pres, d_hght, d_uwin, d_vwin, KN, {0, 6000}, sharp::HeightLayer()));
+    // mean wind layer: was already MISSING
+    check_missing_wind(sharp::storm_motion_bunkers(
+        d_pres, d_hght, d_uwin, d_vwin, KN, sharp::HeightLayer(), {0, 6000}));
+
     // inside the profile, unchanged
     check_wind(sharp::storm_motion_bunkers(k_pres, k_hght, k_uwin, k_vwin, KN,
                                            {0, 2000}, {0, 2000}),
@@ -1452,6 +1460,14 @@ TEST_CASE("Testing mcs_motion_corfidi with a MISSING layer") {
     constexpr float hght_low[KN] = {0, 250, 500, 750, 1000};
     check_missing_pair(
         sharp::mcs_motion_corfidi(k_pres, hght_low, k_uwin, k_vwin, KN));
+    // pressure[0] MISSING: was std::range_error (SHARPlib-yni)
+    constexpr float pres_sfc[KN] = {M, 95000, 90000, 80000, 70000};
+    check_missing_pair(
+        sharp::mcs_motion_corfidi(pres_sfc, hght, k_uwin, k_vwin, KN));
+    // pressure[0] NaN: was already MISSING
+    const float pres_nan[KN] = {std::nanf(""), 95000, 90000, 80000, 70000};
+    check_missing_pair(
+        sharp::mcs_motion_corfidi(pres_nan, hght, k_uwin, k_vwin, KN));
 
     // inside the profile, unchanged
     const auto vectors =
@@ -1490,6 +1506,11 @@ TEST_CASE("Testing large_hail_parameter with a MISSING layer") {
     sharp::Parcel low_el = mu_pcl;
     low_el.eql_pressure = 90000;
     CHECK(sharp::large_hail_parameter(low_el, 8.0f, hgz, storm, pres, hght,
+                                      uwin, vwin, N) == M);
+    // an EL above the profile top: was std::range_error (SHARPlib-yni)
+    sharp::Parcel high_el = mu_pcl;
+    high_el.eql_pressure = 30000;
+    CHECK(sharp::large_hail_parameter(high_el, 8.0f, hgz, storm, pres, hght,
                                       uwin, vwin, N) == M);
 
     // inside the profile, unchanged

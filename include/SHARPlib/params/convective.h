@@ -142,7 +142,7 @@ template <typename Lifter>
  * In QC builds, returns {MISSING, MISSING} if the mean wind layer, or either
  * 500 m deep end of the wind shear layer, can't be converted to pressure (see
  * sharp::height_layer_to_pressure), for example because it extends past the
- * profile.
+ * profile. It also returns {MISSING, MISSING} if either layer is MISSING.
  *
  * \param   pressure                (Pa)
  * \param   height                  (meters)
@@ -235,7 +235,8 @@ template <typename Lifter>
  *
  * In QC builds, returns a pair of {MISSING, MISSING} if the 0-1.5 km AGL
  * layer can't be converted to pressure (see sharp::height_layer_to_pressure),
- * for example because the profile ends below 1.5 km AGL.
+ * for example because the profile ends below 1.5 km AGL, or if the surface
+ * pressure, pressure[0], is MISSING or NaN.
  *
  * \param   pressure    (Pa)
  * \param   height      (meters)
@@ -484,7 +485,9 @@ template <typename Lifter>
  * below the equilibrium level, or the 0-1 km or 3-6 km AGL layer can't be
  * converted between height and pressure (see sharp::pressure_layer_to_height
  * and sharp::height_layer_to_pressure), for example because it extends past
- * the profile or the hail growth zone is MISSING.
+ * the profile or the hail growth zone is MISSING. It also returns
+ * sharp::MISSING if the equilibrium level can't be interpolated to height,
+ * for example because it lies above the top of the profile.
  *
  * \param   mu_pcl                  (sharp::Parcel::most_unstable_parcel)
  * \param   lapse_rate_700_500mb    (K)

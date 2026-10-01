@@ -198,7 +198,8 @@ def storm_motion_bunkers(pressure: Annotated[NDArray[numpy.float32], dict(shape=
     In QC builds, returns MISSING components if the mean wind layer, or either
     500 m deep end of the wind shear layer, can't be converted to pressure (see
     nwsspc.sharp.calc.layer.height_layer_to_pressure), for example because it
-    extends past the profile.
+    extends past the profile. It also returns MISSING components if either layer
+    is MISSING.
 
     References 
     ----------
@@ -308,7 +309,8 @@ def mcs_motion_corfidi(pressure: Annotated[NDArray[numpy.float32], dict(shape=(N
     In QC builds, returns MISSING components for both vectors if the 0-1.5 km
     AGL layer can't be converted to pressure (see
     nwsspc.sharp.calc.layer.height_layer_to_pressure), for example because the
-    profile ends below 1.5 km AGL.
+    profile ends below 1.5 km AGL, or if the surface pressure, pressure[0], is
+    MISSING or NaN.
 
     References
     ----------
@@ -576,7 +578,9 @@ def large_hail_parameter(mu_pcl: nwsspc.sharp.calc.parcel.Parcel, lapse_rate_700
     converted between height and pressure (see
     nwsspc.sharp.calc.layer.pressure_layer_to_height and
     nwsspc.sharp.calc.layer.height_layer_to_pressure), for example because it
-    extends past the profile or the hail growth zone is MISSING.
+    extends past the profile or the hail growth zone is MISSING. It also
+    returns MISSING if the equilibrium level can't be interpolated to height, for
+    example because it lies above the top of the profile.
 
     References
     ----------
