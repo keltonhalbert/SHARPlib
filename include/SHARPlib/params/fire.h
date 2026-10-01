@@ -122,10 +122,9 @@ namespace sharp {
  *
  * Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
  *
- * In QC builds, returns sharp::MISSING if the height of the fire parcel's
- * LFC above the surface is unknown, for example because height[0] is
- * MISSING, or if the potential temperature is MISSING at the LFC or at the
- * level where the formula evaluates air density.
+ * In QC builds, returns sharp::MISSING if the potential temperature is
+ * MISSING at the LFC or at the level where the formula evaluates air
+ * density.
  *
  * References:
  * Tory et al. 2018:
@@ -237,8 +236,7 @@ template <typename Lifter>
     float theta_pl_c =
         sharp::interp_pressure(pres_pl_c, pressure, potential_temperature, N);
 #ifndef NO_QC
-    if (is_missing(candidate_z_fc) || is_missing(height[0]) ||
-        is_missing(theta_fc) || is_missing(theta_pl_c)) {
+    if (is_missing(theta_fc) || is_missing(theta_pl_c)) {
         return no_pft();
     }
 #endif

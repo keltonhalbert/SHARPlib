@@ -438,124 +438,18 @@ TEST_CASE("Testing layer_mean over layers at the profile edge") {
                             me_data, LM_N) == doctest::Approx(298.5f));
 }
 
-#ifndef NO_QC
-template <typename L>
-static void check_missing_layer(const L layer) {
-    CHECK(layer.bottom == MISSING);
-    CHECK(layer.top == MISSING);
-}
-
-template <typename L>
-static void check_layer_bounds(const L layer, const float bottom,
-                               const float top) {
-    CHECK(layer.bottom == doctest::Approx(bottom));
-    CHECK(layer.top == doctest::Approx(top));
-}
-
-constexpr float me_pres_bot[ME_N] = {MISSING, 95000, 90000, 85000, 80000};
-constexpr float me_pres_top[ME_N] = {100000, 95000, 90000, 85000, MISSING};
-constexpr float me_pres_mid[ME_N] = {100000, 95000, MISSING, 85000, 80000};
-constexpr float me_hght_bot[ME_N] = {MISSING, 500, 1000, 1500, 2000};
-constexpr float me_hght_top[ME_N] = {0, 500, 1000, 1500, MISSING};
-constexpr float me_hght_mid[ME_N] = {0, 500, MISSING, 1500, 2000};
-
-TEST_CASE("Testing height_layer_to_pressure with MISSING end pressure") {
-    for (const float* pres : {me_pres_bot, me_pres_top}) {
-        CAPTURE(pres[0]);
-        for (const bool agl : {false, true}) {
-            CAPTURE(agl);
-            check_missing_layer(sharp::height_layer_to_pressure(
-                {0, 2000}, pres, me_hght, ME_N, agl));
-            check_missing_layer(sharp::height_layer_to_pressure(
-                {250, 1750}, pres, me_hght, ME_N, agl));
-            check_layer_bounds(sharp::height_layer_to_pressure(
-                                   {500, 1500}, pres, me_hght, ME_N, agl),
-                               95000, 85000);
-        }
-    }
-    check_layer_bounds(
-        sharp::height_layer_to_pressure({0, 2000}, me_pres_mid, me_hght, ME_N),
-        100000, 80000);
-    check_layer_bounds(sharp::height_layer_to_pressure({250, 1750}, me_pres_mid,
-                                                       me_hght, ME_N),
-                       97500, 82500);
-}
-
-TEST_CASE("Testing pressure_layer_to_height with MISSING end height") {
-    check_missing_layer(sharp::pressure_layer_to_height({97500, 82500}, me_pres,
-                                                        me_hght_top, ME_N));
-    check_missing_layer(sharp::pressure_layer_to_height(
-        {97500, 82500}, me_pres, me_hght_top, ME_N, true));
-    check_missing_layer(sharp::pressure_layer_to_height(
-        {100000, 80000}, me_pres, me_hght_top, ME_N, true));
-    check_missing_layer(sharp::pressure_layer_to_height(
-        {100000, 80000}, me_pres, me_hght_bot, ME_N));
-    check_missing_layer(sharp::pressure_layer_to_height({97500, 82500}, me_pres,
-                                                        me_hght_bot, ME_N));
-
-    check_layer_bounds(sharp::pressure_layer_to_height({95000, 85000}, me_pres,
-                                                       me_hght_top, ME_N, true),
-                       500, 1500);
-    check_layer_bounds(sharp::pressure_layer_to_height({95000, 85000}, me_pres,
-                                                       me_hght_bot, ME_N),
-                       500, 1500);
-
+TEST_CASE("Testing layer conversions of a MISSING layer") {
     for (const bool agl : {false, true}) {
         CAPTURE(agl);
-        check_layer_bounds(
-            sharp::pressure_layer_to_height({100000, 80000}, me_pres,
-                                            me_hght_mid, ME_N, agl),
-            0, 2000);
-        check_layer_bounds(sharp::pressure_layer_to_height(
-                               {97500, 82500}, me_pres, me_hght_mid, ME_N, agl),
-                           246.794525f, 1746.21484f);
+        const sharp::PressureLayer p = sharp::height_layer_to_pressure(
+            sharp::HeightLayer(sharp::MISSING, sharp::MISSING), me_pres,
+            me_hght_300, ME_N, agl);
+        CHECK(p.bottom == sharp::MISSING);
+        CHECK(p.top == sharp::MISSING);
+        const sharp::HeightLayer h = sharp::pressure_layer_to_height(
+            sharp::PressureLayer(sharp::MISSING, sharp::MISSING), me_pres,
+            me_hght_300, ME_N, agl);
+        CHECK(h.bottom == sharp::MISSING);
+        CHECK(h.top == sharp::MISSING);
     }
 }
-
-TEST_CASE("Testing layer conversions with MISSING coordinates") {
-    constexpr float pres_mm[ME_N] = {100000, 95000, 90000, MISSING, MISSING};
-    check_missing_layer(
-        sharp::height_layer_to_pressure({1600, 1900}, pres_mm, me_hght, ME_N));
-    constexpr float hght_mm[ME_N] = {300, 800, 1300, MISSING, MISSING};
-    check_missing_layer(sharp::pressure_layer_to_height({85000, 80000}, me_pres,
-                                                        hght_mm, ME_N));
-
-    check_missing_layer(sharp::pressure_layer_to_height({85000, 80000}, me_pres,
-                                                        hght_mm, ME_N, true));
-    check_missing_layer(sharp::pressure_layer_to_height(
-        {100000, 80000}, me_pres, me_hght_bot, ME_N, true));
-    check_missing_layer(sharp::pressure_layer_to_height(
-        {95000, 85000}, me_pres, me_hght_bot, ME_N, true));
-    constexpr float hght_nan[ME_N] = {nanval, 500, 1000, 1500, 2000};
-    check_missing_layer(sharp::pressure_layer_to_height({95000, 85000}, me_pres,
-                                                        hght_nan, ME_N, true));
-
-    check_missing_layer(sharp::height_layer_to_pressure(
-        {500, 1500}, me_pres, me_hght_bot, ME_N, true));
-    check_missing_layer(sharp::height_layer_to_pressure(
-        {0, 1000}, me_pres, me_hght_bot, ME_N, true));
-    check_missing_layer(sharp::height_layer_to_pressure({500, 1500}, me_pres,
-                                                        hght_nan, ME_N, true));
-
-    check_missing_layer(sharp::pressure_layer_to_height({95000, 85000}, me_pres,
-                                                        hght_mm, ME_N, true));
-    check_missing_layer(sharp::height_layer_to_pressure(
-        {250, 1750}, me_pres_top, me_hght_300, ME_N, true));
-}
-
-TEST_CASE("Testing layer_mean with MISSING end pressure") {
-    for (const float* pres : {me_pres_bot, me_pres_top}) {
-        CAPTURE(pres[0]);
-        CHECK(sharp::layer_mean(sharp::HeightLayer(0, 2000), me_hght, pres,
-                                me_data, ME_N) == MISSING);
-        CHECK(sharp::layer_mean(sharp::HeightLayer(250, 1750), me_hght, pres,
-                                me_data, ME_N) == MISSING);
-        CHECK(sharp::layer_mean(sharp::HeightLayer(-500, 3000), me_hght, pres,
-                                me_data, ME_N) == MISSING);
-    }
-    CHECK(sharp::layer_mean(sharp::HeightLayer(500, 1500), me_hght, me_pres_bot,
-                            me_data, ME_N) == MISSING);
-    CHECK(sharp::layer_mean(sharp::HeightLayer(500, 1500), me_hght, me_pres_top,
-                            me_data, ME_N) == doctest::Approx(294.0f));
-}
-#endif

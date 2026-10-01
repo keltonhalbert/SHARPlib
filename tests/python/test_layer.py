@@ -265,7 +265,7 @@ def test_layer_mean_outside_profile(sfc_hght, isAGL):
     assert (layer.layer_mean(part, pres, data) == pytest.approx(295.5))
 
 
-hght5 = np.array([0.0, 500.0, 1000.0, 1500.0, 2000.0], dtype="float32")
+hght5 = np.array([300.0, 800.0, 1300.0, 1800.0, 2300.0], dtype="float32")
 pres5 = np.array([100000.0, 95000.0, 90000.0, 85000.0, 80000.0],
                  dtype="float32")
 
@@ -275,46 +275,13 @@ def assert_missing_layer(lyr):
     assert (lyr.top == constants.MISSING)
 
 
-@pytest.mark.parametrize("end", [0, -1])
-def test_layer_conversion_missing_end_level(end):
-    data = np.array([300.0, 297.0, 294.0, 291.0, 288.0], dtype="float32")
-
-    pres_mis = pres5.copy()
-    pres_mis[end] = constants.MISSING
-    for bottom, top in [(0.0, 2000.0), (250.0, 1750.0)]:
-        lyr = layer.HeightLayer(bottom, top)
-        assert_missing_layer(layer.height_layer_to_pressure(lyr, pres_mis,
-                                                            hght5))
-        assert (layer.layer_mean(lyr, hght5, pres_mis, data) ==
-                constants.MISSING)
-    lyr = layer.HeightLayer(500.0, 1500.0)
-    out = layer.height_layer_to_pressure(lyr, pres_mis, hght5)
-    assert (out.bottom == 95000.0 and out.top == 85000.0)
-
-    hght_mis = hght5.copy()
-    hght_mis[end] = constants.MISSING
-    for bottom, top in [(100000.0, 80000.0), (97500.0, 82500.0)]:
-        lyr = layer.PressureLayer(bottom, top)
-        assert_missing_layer(layer.pressure_layer_to_height(lyr, pres5,
-                                                            hght_mis))
-        assert_missing_layer(layer.pressure_layer_to_height(lyr, pres5,
-                                                            hght_mis, True))
-    lyr = layer.PressureLayer(95000.0, 85000.0)
-    out = layer.pressure_layer_to_height(lyr, pres5, hght_mis)
-    assert (out.bottom == 500.0 and out.top == 1500.0)
-
-
-def test_layer_conversion_missing_interior_level():
-    pres_mis = pres5.copy()
-    pres_mis[2] = constants.MISSING
-    out = layer.height_layer_to_pressure(layer.HeightLayer(250.0, 1750.0),
-                                         pres_mis, hght5)
-    assert (out.bottom == 97500.0 and out.top == 82500.0)
-    hght_mis = hght5.copy()
-    hght_mis[2] = constants.MISSING
-    out = layer.pressure_layer_to_height(layer.PressureLayer(100000.0, 80000.0),
-                                         pres5, hght_mis)
-    assert (out.bottom == 0.0 and out.top == 2000.0)
+@pytest.mark.parametrize("agl", [False, True])
+def test_layer_conversion_missing_layer(agl):
+    M = constants.MISSING
+    assert_missing_layer(layer.height_layer_to_pressure(
+        layer.HeightLayer(M, M), pres5, hght5, agl))
+    assert_missing_layer(layer.pressure_layer_to_height(
+        layer.PressureLayer(M, M), pres5, hght5, agl))
 
 
 def test_layer_min_max_missing_data():

@@ -137,7 +137,7 @@ WindComponents storm_motion_bunkers(
     PressureLayer low_layer_pres =
         height_layer_to_pressure(low_layer, pressure, height, N, true);
 #ifndef NO_QC
-    if (is_missing(pres_sfc) || (low_layer_pres.bottom == MISSING)) {
+    if (low_layer_pres.bottom == MISSING) {
         constexpr WindComponents missing = {MISSING, MISSING};
         return std::make_pair(missing, missing);
     }

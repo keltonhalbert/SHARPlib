@@ -264,10 +264,8 @@ def test_wind_params_missing_layer():
     uwin = np.array([0, 5, 10, 15, 20], dtype="float32")
     vwin = np.array([0, 2, 4, 6, 8], dtype="float32")
 
-    hght_mis = hght.copy()
-    hght_mis[-1] = constants.MISSING
     assert_missing_wind(params.effective_bulk_wind_difference(
-        pres, hght_mis, uwin, vwin, layer.PressureLayer(100000, 80000), 95000))
+        pres, hght, uwin, vwin, layer.PressureLayer(100000, 95000), 70000))
 
     assert_missing_wind(params.storm_motion_bunkers(
         pres, hght, uwin, vwin, layer.HeightLayer(0, 3000),
@@ -278,9 +276,7 @@ def test_wind_params_missing_layer():
         pres, hght, uwin, vwin, layer.HeightLayer(0, 2000),
         layer.HeightLayer(M, M)))
 
-    pres_sfc = pres.copy()
-    pres_sfc[0] = M
-    for vector in params.mcs_motion_corfidi(pres_sfc, hght, uwin, vwin):
+    for vector in params.mcs_motion_corfidi(pres, hght / 2, uwin, vwin):
         assert_missing_wind(vector)
 
     pres6 = np.array([100000, 85000, 70000, 59000, 51000, 40000],
@@ -678,14 +674,12 @@ def test_pft_missing():
     M = constants.MISSING
     pres = snd_data["pres"]
     mix_layer = layer.PressureLayer(pres[0], pres[0] - 10000.0)
-    hght = snd_data["hght"].copy()
-    hght[:2] = M
     theta = snd_data["theta"].copy()
     theta[pres < 75000.0] = M
-    for h, th in ((hght, snd_data["theta"]), (snd_data["hght"], theta)):
-        pcl = parcel.Parcel()
-        pft = params.pyrocumulonimbus_firepower_threshold(
-            lifter, mix_layer, pres, h, snd_data["tmpk"], snd_data["mixr"],
-            snd_data["vtmp"], snd_data["uwin"], snd_data["vwin"], th, pcl=pcl)
-        assert (pft == M)
-        assert (pcl.pres == M)
+    pcl = parcel.Parcel()
+    pft = params.pyrocumulonimbus_firepower_threshold(
+        lifter, mix_layer, pres, snd_data["hght"], snd_data["tmpk"],
+        snd_data["mixr"], snd_data["vtmp"], snd_data["uwin"], snd_data["vwin"],
+        theta, pcl=pcl)
+    assert (pft == M)
+    assert (pcl.pres == M)

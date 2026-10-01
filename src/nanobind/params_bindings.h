@@ -330,8 +330,7 @@ The method is based on observations that MCS motion is a function of
 In QC builds, returns MISSING components for both vectors if the 0-1.5 km
 AGL layer can't be converted to pressure (see
 nwsspc.sharp.calc.layer.height_layer_to_pressure), for example because the
-profile ends below 1.5 km AGL, or if the surface pressure, pressure[0], is
-MISSING or NaN.
+profile ends below 1.5 km AGL.
 
 References
 ----------
@@ -383,7 +382,7 @@ Returns MISSING if the effective inflow layer or
 equilibrium level pressure are MISSING. In QC builds it also returns
 MISSING if either can't be converted to height (see
 nwsspc.sharp.calc.layer.pressure_layer_to_height), for example because it
-lies outside the profile or height[0] is MISSING or NaN.
+lies outside the profile.
 
 Parameters 
 ----------
@@ -945,10 +944,8 @@ Phi is the fire moisture to potential temperature increment ratio.
 Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
 If a parcel is passed, the values will be set with the PFT fire parcel.
 
-In QC builds, returns MISSING if the height of the fire parcel's LFC above
-the surface is unknown, for example because height[0] is MISSING, or if the
-potential temperature is MISSING at the LFC or at the level where the
-formula evaluates air density.
+In QC builds, returns MISSING if the potential temperature is MISSING at
+the LFC or at the level where the formula evaluates air density.
 
 References 
 ----------

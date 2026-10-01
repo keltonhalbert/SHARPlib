@@ -232,8 +232,7 @@ template <typename Lifter>
  *
  * In QC builds, returns a pair of {MISSING, MISSING} if the 0-1.5 km AGL
  * layer can't be converted to pressure (see sharp::height_layer_to_pressure),
- * for example because the profile ends below 1.5 km AGL, or if the surface
- * pressure, pressure[0], is MISSING or NaN.
+ * for example because the profile ends below 1.5 km AGL.
  *
  * \param   pressure    (Pa)
  * \param   height      (meters)
@@ -265,7 +264,7 @@ template <typename Lifter>
  * or equilibrium level pressure are sharp::MISSING. In QC builds it also
  * returns {MISSING, MISSING} if either can't be converted to height (see
  * sharp::pressure_layer_to_height), for example because it lies outside the
- * profile or height[0] is MISSING or NaN.
+ * profile.
  *
  * \param   pressure                        (Pa)
  * \param   height                          (meters)
