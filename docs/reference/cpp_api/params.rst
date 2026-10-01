@@ -63,3 +63,5 @@ Precipitation-type probabilities from the modified Bourgouin method
 
 .. Precipitation type from a full sounding
 
+.. doxygenfunction:: sharp::modified_bourgouin(const float[], const float[], const float[], const float[], const float[], const std::ptrdiff_t, const float, const float, const float)
+

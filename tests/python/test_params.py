@@ -737,3 +737,257 @@ def test_modified_bourgouin_from_energies():
 # ---------------------------------------------------------------------------
 # Precipitation type from a full sounding
 # ---------------------------------------------------------------------------
+
+def saturated_sounding(hght, tmpc):
+    """
+    Pressure, height, temperature, dewpoint, and wet-bulb arrays (Pa, m, K)
+    of a saturated column, where all three temperatures are equal, from
+    heights (m) and temperatures (C). Pressure falls 10 Pa per meter from
+    1000 hPa.
+    """
+    hght = np.asarray(hght, dtype='float32')
+    tmpk = np.float32(constants.ZEROCNK) + np.asarray(tmpc, dtype='float32')
+    pres = np.float32(100000.0) - np.float32(10.0) * hght
+    return pres, hght, tmpk, tmpk.copy(), tmpk.copy()
+
+
+def assert_all_missing(probs):
+    assert probs.rain == constants.MISSING
+    assert probs.snow == constants.MISSING
+    assert probs.freezing_rain == constants.MISSING
+    assert probs.ice_pellets == constants.MISSING
+
+
+def same_probs(a, b):
+    return ((a.rain, a.snow, a.freezing_rain, a.ice_pellets) ==
+            (b.rain, b.snow, b.freezing_rain, b.ice_pellets))
+
+
+def test_modified_bourgouin_full_column():
+    # Saturated, from the surface up: refreezing below 1400 m, a 2 C warm
+    # nose at 1400-1800 m, then cold to -10 C (ProbIce 0.51) at the top.
+    snd = saturated_sounding([0, 1400, 1600, 1800, 3000], [-8, 0, 2, 0, -10])
+    pres, hght, tmpk, dwpk, wetbulb = snd
+    probs = params.modified_bourgouin(pres, hght, tmpk, dwpk, wetbulb)
+    assert isinstance(probs, params.PrecipTypeProbabilities)
+
+    # Closed-form energies and ProbIce, through the overload that takes
+    # energies
+    g_t0 = constants.GRAVITY / constants.ZEROCNK
+    melting = g_t0 * 0.5 * 2.0 * 400.0
+    refreezing = g_t0 * 0.5 * 8.0 * 1400.0
+    expected = params.modified_bourgouin(
+        params.BourgouinEnergy(melting, melting, refreezing), 0.51,
+        wetbulb[0])
+    assert probs.rain == 0.0
+    assert probs.snow == pytest.approx(expected.snow, rel=1e-4)
+    assert probs.freezing_rain == pytest.approx(
+        expected.freezing_rain, rel=1e-4)
+    assert probs.ice_pellets == pytest.approx(0.51, rel=1e-4)
+
+    # The steps called by hand give the same result, and so do the
+    # defaults written out
+    lyr = params.precipitation_generation_layer(pres, hght, tmpk, dwpk)
+    tmin, _ = layer.layer_min(lyr, hght, tmpk)
+    energy = params.bourgouin_energy(pres, hght, wetbulb)
+    composed = params.modified_bourgouin(
+        energy, params.probability_of_ice(tmin), wetbulb[0])
+    assert same_probs(probs, composed)
+    explicit = params.modified_bourgouin(
+        pres, hght, tmpk, dwpk, wetbulb, min_depth=0.0, min_energy=0.0,
+        pressure_min=25000.0)
+    assert same_probs(probs, explicit)
+
+    # The options reach the steps that use them: min_energy = 100 J/kg
+    # merges the warm nose into the cold air around it
+    probs = params.modified_bourgouin(
+        pres, hght, tmpk, dwpk, wetbulb, min_energy=100.0)
+    energy = params.bourgouin_energy(pres, hght, wetbulb, min_energy=100.0)
+    composed = params.modified_bourgouin(
+        energy, params.probability_of_ice(tmin), wetbulb[0])
+    assert same_probs(probs, composed)
+    assert probs.ice_pellets == 0.0
+
+
+def test_modified_bourgouin_overloads():
+    snd = saturated_sounding([0, 1500, 3000], [-2, -8, -16])
+    energy = params.BourgouinEnergy(3.0, 0.0, 0.0)
+    warm_sfc = constants.ZEROCNK + 2.0
+
+    # Energies, ProbIce, and the surface wet-bulb: the scalar overload
+    for probs in (
+        params.modified_bourgouin(energy, 1.0, warm_sfc),
+        params.modified_bourgouin(
+            energy=energy, prob_ice=1.0, surface_wetbulb=warm_sfc),
+    ):
+        assert probs.rain == pytest.approx(0.60)
+
+    # Five profiles: the full-column overload. The column is all snow.
+    names = ("pressure", "height", "temperature", "dewpoint", "wetbulb")
+    for probs in (
+        params.modified_bourgouin(*snd),
+        params.modified_bourgouin(**dict(zip(names, snd))),
+        params.modified_bourgouin(*snd, 0.0, 0.0, 25000.0),
+    ):
+        assert (probs.rain, probs.snow, probs.freezing_rain,
+                probs.ice_pellets) == (0.0, 1.0, 0.0, 0.0)
+
+    with pytest.raises(TypeError):
+        params.modified_bourgouin(energy, 1.0)
+    with pytest.raises(TypeError):
+        params.modified_bourgouin(*snd[:3])
+    with pytest.raises(BufferError):
+        params.modified_bourgouin(*snd[:4], snd[4][:2])
+
+
+def test_precip_type_empty_arrays():
+    # Every precipitation-type entry point that takes profiles returns
+    # MISSING for empty arrays.
+    empty = np.array([], dtype='float32')
+
+    energy = params.bourgouin_energy(empty, empty, empty)
+    assert energy.melting_energy_total == constants.MISSING
+    assert energy.melting_energy_aloft == constants.MISSING
+    assert energy.refreezing_energy == constants.MISSING
+
+    lyr = params.precipitation_generation_layer(empty, empty, empty, empty)
+    assert lyr.bottom == constants.MISSING
+    assert lyr.top == constants.MISSING
+
+    assert_all_missing(
+        params.modified_bourgouin(empty, empty, empty, empty, empty))
+
+
+def load_uppercase_parquet(filename):
+    """
+    Pressure (Pa), height (m), temperature (K), dewpoint (K), and wet-bulb
+    temperature (K) from a 1 Hz sounding in the uppercase schema, which is
+    in SI units. Rows without a temperature or dewpoint are dropped, which
+    removes the mandatory 1000 hPa level when it is below ground.
+    """
+    snd_df = pd.read_parquet(filename)
+    snd_df = snd_df[snd_df["TEMPERATURE"].notna()]
+    snd_df = snd_df[snd_df["DEWPOINT"].notna()]
+
+    pres = snd_df["PRESSURE"].to_numpy().astype('float32')
+    hght = snd_df["GEOPOTENTIAL_HEIGHT"].to_numpy().astype('float32')
+    tmpk = snd_df["TEMPERATURE"].to_numpy().astype('float32')
+    dwpk = snd_df["DEWPOINT"].to_numpy().astype('float32')
+
+    # The preconditions of the precipitation-type functions
+    for arr in (pres, hght, tmpk, dwpk):
+        assert np.all(np.isfinite(arr))
+    assert np.all(np.diff(hght) > 0.0)
+    assert np.all(np.diff(pres) < 0.0)
+
+    # The wet-bulb temperature matters only up to the 250 hPa energy cap,
+    # so compute it there and leave the rest MISSING. With the Wobus
+    # lifter, that takes 0.27 ms for the 1812 levels of 2023-04-19 19Z up
+    # to the cap, against 0.46 ms for all 2856 (cm1: 20 ms against 25 ms).
+    wetbulb = np.full(tmpk.shape, constants.MISSING, dtype='float32')
+    used = pres >= np.float32(25000.0)
+    wetbulb[used] = thermo.wetbulb(
+        parcel.lifter_wobus(), pres[used], tmpk[used], dwpk[used])
+
+    return pres, hght, tmpk, dwpk, wetbulb
+
+
+def _layers_numpy(pres, hght, tmpk, dwpk):
+    """
+    An independent version of the generation-layer rules, with no merging.
+    Relative humidity is over ice below 0 C and over liquid otherwise, from
+    the Bolton (1980) vapor pressure over liquid and its Magnus-form
+    counterpart over ice. Layers are bounded by linearly interpolated 75 %
+    crossings.
+
+    Returns the layers from the surface up to the first dry layer deeper
+    than 1500 m, as (bottom, top, moist) tuples, and the generation layer:
+    the highest moist layer deeper than 1000 m among them, or None.
+    """
+    tmpc = tmpk.astype('float64') - 273.15
+    dwpc = dwpk.astype('float64') - 273.15
+    hght = hght.astype('float64')
+    vapr = 611.2 * np.exp(17.67 * dwpc / (dwpc + 243.5))
+    sat_liquid = 611.2 * np.exp(17.67 * tmpc / (tmpc + 243.5))
+    sat_ice = 611.2 * np.exp(21.8745584 * tmpc / (tmpc + 265.49))
+    relh = vapr / np.where(tmpc < 0.0, sat_ice, sat_liquid)
+    # No level is exactly at 75 %, so no level continues a layer
+    assert not np.any(relh == 0.75)
+
+    moist = relh > 0.75
+    k = np.nonzero(moist[1:] != moist[:-1])[0]
+    crossings = hght[k] + (hght[k + 1] - hght[k]) * \
+        (0.75 - relh[k]) / (relh[k + 1] - relh[k])
+    edges = np.concatenate(([hght[0]], crossings, [hght[-1]]))
+    sides = np.concatenate(([moist[0]], moist[k + 1]))
+
+    layers = []
+    generation = None
+    for bottom, top, is_moist in zip(edges[:-1], edges[1:], sides):
+        layers.append((bottom, top, is_moist))
+        if is_moist and top - bottom > 1000.0:
+            generation = (bottom, top)
+        if not is_moist and top - bottom > 1500.0:
+            break
+    return layers, generation
+
+
+def _check_1hz_missing(filename, dry_bottom, dry_top):
+    """
+    The numpy rules find no generation layer below a deep dry layer from
+    about dry_bottom to dry_top (m), so the full column is MISSING, though
+    the energies are finite. Returns the pressure profile.
+    """
+    pres, hght, tmpk, dwpk, wetbulb = load_uppercase_parquet(
+        os.path.join(data_dir, filename))
+
+    layers, generation = _layers_numpy(pres, hght, tmpk, dwpk)
+    assert generation is None
+    bottom, top, moist = layers[-1]
+    assert not moist
+    assert bottom == pytest.approx(dry_bottom, abs=1.0)
+    assert top == pytest.approx(dry_top, abs=1.0)
+    # Far from the 1000 m and 1500 m thresholds, so the float32 library
+    # and this float64 version agree
+    assert top - bottom > 1500.0 + 200.0
+    assert max(t - b for b, t, m in layers if m) < 1000.0 - 200.0
+
+    assert_all_missing(params.modified_bourgouin(
+        pres, hght, tmpk, dwpk, wetbulb))
+
+    energy = params.bourgouin_energy(pres, hght, wetbulb)
+    for value in (energy.melting_energy_total, energy.melting_energy_aloft,
+                  energy.refreezing_energy):
+        assert np.isfinite(value)
+        assert value >= 0.0
+    return pres
+
+
+def test_uppercase_parquet_loader():
+    # Each file has one row below ground, the 1000 hPa mandatory level with
+    # no temperature or dewpoint. The loader drops it.
+    for filename in ("2023-04-19_19_72357.pq", "2023-04-20_00_72357.pq"):
+        path = os.path.join(data_dir, filename)
+        raw = pd.read_parquet(path)
+        missing = raw["TEMPERATURE"].isna() | raw["DEWPOINT"].isna()
+        assert missing.sum() == 1
+        assert raw["PRESSURE"][missing].item() == 100000.0
+        assert (raw["GEOPOTENTIAL_HEIGHT"][missing].item() <
+                raw["STATION_HEIGHT"].iloc[0])
+
+        pres, hght, tmpk, dwpk, wetbulb = load_uppercase_parquet(path)
+        assert len(hght) == len(raw) - 1
+        assert hght[0] == raw["STATION_HEIGHT"].iloc[0]
+
+
+def test_modified_bourgouin_1hz_2023_04_19_19z():
+    # A 698 m moist layer at 1149-1847 m under a 7.7 km dry layer
+    _check_1hz_missing("2023-04-19_19_72357.pq", 1846.7, 9508.9)
+
+
+def test_modified_bourgouin_1hz_2023_04_20_00z():
+    # Smoke test: a 578 m moist layer at 937-1514 m under a 1751 m dry
+    # layer, which eliminates the deep moist layer above it. Every level is
+    # at or above 250 hPa.
+    pres = _check_1hz_missing("2023-04-20_00_72357.pq", 1514.2, 3265.2)
+    assert pres[-1] >= 25000.0

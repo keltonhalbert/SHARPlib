@@ -60,3 +60,5 @@ params
    .. autofunction:: nwsspc.sharp.calc.params.modified_bourgouin
 
    .. Precipitation type from a full sounding
+
+   :func:`~nwsspc.sharp.calc.params.modified_bourgouin` also computes the probabilities from the profiles of a full sounding. Both overloads are documented together above.

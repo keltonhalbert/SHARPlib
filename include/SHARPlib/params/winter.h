@@ -436,6 +436,99 @@ struct PrecipTypeProbabilities {
 // Precipitation type from a full sounding
 // ---------------------------------------------------------------------------
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Precipitation-type probabilities from a sounding (modified <!--
+ * --> Bourgouin method).
+ *
+ * Computes the probabilities of rain, snow, freezing rain, and ice pellets
+ * of Birk et al. (2021) from pressure, height, temperature, dewpoint, and
+ * wet-bulb temperature profiles. It runs these steps, and calling them
+ * yourself with the same options gives the same result:
+ *
+ * 1. sharp::precipitation_generation_layer with min_depth finds the
+ *    precipitation generation layer.
+ * 2. sharp::layer_min finds the minimum air temperature in that layer, and
+ *    sharp::probability_of_ice turns it into ProbIce.
+ * 3. sharp::bourgouin_energy with min_energy and pressure_min computes the
+ *    wet-bulb melting and refreezing energies of the whole column, not just
+ *    the generation layer.
+ * 4. The surface wet-bulb temperature is that of the lowest level. Above
+ *    0 C, the liquid probability is rain, otherwise freezing rain.
+ * 5. The sharp::modified_bourgouin overload that takes energies combines
+ *    them into the four probabilities, which are independent and do not
+ *    sum to 1.
+ *
+ * With the defaults (min_depth = 0, min_energy = 0, and pressure_min =
+ * sharp::BOURGOUIN_PRESSURE_MIN), the function follows the paper except
+ * in three ways:
+ *
+ * - The energies use only levels at pressures at or above 250 hPa. This
+ *   has no effect on realistic tropospheric profiles.
+ * - Relative humidity is over ice below 0 C and over liquid water
+ *   otherwise, where the paper uses relative humidity over ice at every
+ *   temperature. For example, T = 283.15 K with Td = 280 K is moist over
+ *   liquid (0.808) but dry over ice (0.733).
+ * - Levels at exactly 75 % relative humidity continue the current layer,
+ *   where the paper puts them in neither the moist nor the dry class.
+ *
+ * Positive min_depth and min_energy are opt-ins for noisy, high-resolution
+ * data and further deviations from the paper. min_depth applies only to
+ * the generation layer, and min_energy and pressure_min only to the
+ * energies. sharp::precipitation_generation_layer and
+ * sharp::bourgouin_energy describe their effects.
+ *
+ * Every probability is sharp::MISSING when there is no generation layer.
+ * The result does not say why. The profile may have no moist layer deeper
+ * than 1000 m, a deep dry layer under the cloud may eliminate it (virga),
+ * or the moisture data may be missing. In particular, a cloud 1 km deep or
+ * less, such as a drizzle cloud, gives sharp::MISSING. A caller who wants
+ * a result for such a cloud can call sharp::bourgouin_energy and then the
+ * sharp::modified_bourgouin overload that takes energies, with
+ * prob_ice = 0, which treats the cloud as having no ice.
+ *
+ * ME_total, and with it snow and freezing rain or rain, depends on how far
+ * up the data reach, up to pressure_min. The wet-bulb temperature at
+ * pressures below pressure_min does not affect the result, so a caller can
+ * compute it only up to pressure_min and fill the rest of the array with
+ * sharp::MISSING.
+ *
+ * Unless NO_QC is defined, the steps skip missing levels as their own
+ * documentation describes, and the surface wet-bulb temperature is that of
+ * the lowest level whose wet-bulb temperature is not sharp::MISSING or
+ * NaN. With NO_QC, the surface wet-bulb temperature is wetbulb[0], and
+ * keeping sharp::MISSING and NaN out of the profiles is the caller's job.
+ * With N < 2, every probability is sharp::MISSING, and the function
+ * returns before reading any array element.
+ *
+ * The profiles must start at the surface. Height must be strictly
+ * increasing, and pressure must be valid and strictly decreasing. This is
+ * not checked.
+ *
+ * References:
+ * Birk et al. 2021: https://doi.org/10.1175/WAF-D-20-0118.1
+ *
+ * \param   pressure        (Pa)
+ * \param   height          (meters)
+ * \param   temperature     (K)
+ * \param   dewpoint        (K)
+ * \param   wetbulb         (K)
+ * \param   N               (length of arrays)
+ * \param   min_depth       (meters; generation layer only; 0 disables
+ *                          merging)
+ * \param   min_energy      (J/kg; energies only; 0 disables merging)
+ * \param   pressure_min    (Pa; energies only; levels at lower pressures
+ *                          are ignored)
+ *
+ * \return  {rain, snow, freezing_rain, ice_pellets} (fractions)
+ */
+[[nodiscard]] PrecipTypeProbabilities modified_bourgouin(
+    const float pressure[], const float height[], const float temperature[],
+    const float dewpoint[], const float wetbulb[], const std::ptrdiff_t N,
+    const float min_depth = 0.0f, const float min_energy = 0.0f,
+    const float pressure_min = BOURGOUIN_PRESSURE_MIN);
+
 }  // namespace sharp
 
 #endif  // SHARP_PARAMS_WINTER_H

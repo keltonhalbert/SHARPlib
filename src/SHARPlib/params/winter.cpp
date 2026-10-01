@@ -230,4 +230,33 @@ PrecipTypeProbabilities modified_bourgouin(const BourgouinEnergy& energy,
 // Precipitation type from a full sounding
 // ---------------------------------------------------------------------------
 
+PrecipTypeProbabilities modified_bourgouin(
+    const float pressure[], const float height[], const float temperature[],
+    const float dewpoint[], const float wetbulb[], const std::ptrdiff_t N,
+    const float min_depth, const float min_energy, const float pressure_min) {
+    // One level has no layers. Return before reading any element.
+    if (N < 2) return PrecipTypeProbabilities{};
+
+    const HeightLayer generation_layer = precipitation_generation_layer(
+        pressure, height, temperature, dewpoint, N, min_depth);
+    // layer_min checks for a MISSING layer only in QC builds.
+    if (generation_layer.bottom == MISSING) return PrecipTypeProbabilities{};
+
+    const float prob_ice =
+        probability_of_ice(layer_min(generation_layer, height, temperature, N));
+    const BourgouinEnergy energy = bourgouin_energy(
+        pressure, height, wetbulb, N, min_energy, pressure_min);
+
+    // The surface is the lowest level with a wet-bulb temperature. If there
+    // is none, wetbulb[N - 1] is missing too, and every result is MISSING.
+    std::ptrdiff_t surface = 0;
+#ifndef NO_QC
+    while ((surface < N - 1) &&
+           ((wetbulb[surface] == MISSING) || std::isnan(wetbulb[surface]))) {
+        ++surface;
+    }
+#endif
+    return modified_bourgouin(energy, prob_ice, wetbulb[surface]);
+}
+
 }  // namespace sharp

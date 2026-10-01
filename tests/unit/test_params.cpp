@@ -886,3 +886,410 @@ TEST_CASE("Testing the modified_bourgouin reconstruction check") {
 // ---------------------------------------------------------------------------
 // Precipitation type from a full sounding
 // ---------------------------------------------------------------------------
+
+namespace {
+// A sounding for the full-column modified_bourgouin. Pressure falls 10 Pa
+// per meter from 1000 hPa, so every level below 7.5 km is at or above
+// 250 hPa.
+struct ColumnSounding {
+    std::vector<float> pressure;
+    std::vector<float> height;
+    std::vector<float> temperature;
+    std::vector<float> dewpoint;
+    std::vector<float> wetbulb;
+
+    // Adds a level at height z (m) with the temperature, dewpoint, and
+    // wet-bulb temperature in C.
+    void add(const float z, const float tmpc, const float dwpc,
+             const float wbc) {
+        pressure.push_back(100000.0f - 10.0f * z);
+        height.push_back(z);
+        temperature.push_back(sharp::ZEROCNK + tmpc);
+        dewpoint.push_back(sharp::ZEROCNK + dwpc);
+        wetbulb.push_back(sharp::ZEROCNK + wbc);
+    }
+
+    // Adds a saturated level, where all three temperatures are equal.
+    void add_saturated(const float z, const float tmpc) {
+        add(z, tmpc, tmpc, tmpc);
+    }
+
+    std::ptrdiff_t size() const {
+        return static_cast<std::ptrdiff_t>(height.size());
+    }
+
+    sharp::PrecipTypeProbabilities probs() const {
+        return sharp::modified_bourgouin(pressure.data(), height.data(),
+                                         temperature.data(), dewpoint.data(),
+                                         wetbulb.data(), size());
+    }
+
+    sharp::PrecipTypeProbabilities probs(const float min_depth,
+                                         const float min_energy,
+                                         const float pressure_min) const {
+        return sharp::modified_bourgouin(
+            pressure.data(), height.data(), temperature.data(), dewpoint.data(),
+            wetbulb.data(), size(), min_depth, min_energy, pressure_min);
+    }
+
+    // The steps of the full-column function, called one at a time.
+    sharp::PrecipTypeProbabilities composed(
+        const float min_depth = 0.0f, const float min_energy = 0.0f,
+        const float pressure_min = sharp::BOURGOUIN_PRESSURE_MIN) const {
+        const sharp::HeightLayer layer = sharp::precipitation_generation_layer(
+            pressure.data(), height.data(), temperature.data(), dewpoint.data(),
+            size(), min_depth);
+        if (layer.bottom == sharp::MISSING) {
+            return sharp::PrecipTypeProbabilities{};
+        }
+        const float prob_ice = sharp::probability_of_ice(
+            sharp::layer_min(layer, height.data(), temperature.data(), size()));
+        const sharp::BourgouinEnergy energy = sharp::bourgouin_energy(
+            pressure.data(), height.data(), wetbulb.data(), size(), min_energy,
+            pressure_min);
+        return sharp::modified_bourgouin(energy, prob_ice, wetbulb[0]);
+    }
+};
+
+// A ColumnSounding from a RelhSounding and a wet-bulb profile (K).
+ColumnSounding with_wetbulb(const RelhSounding& snd,
+                            const std::vector<float>& wetbulb) {
+    REQUIRE(wetbulb.size() == snd.height.size());
+    return {snd.pressure, snd.height, snd.temperature, snd.dewpoint, wetbulb};
+}
+
+void check_probs(const sharp::PrecipTypeProbabilities& probs,
+                 const sharp::PrecipTypeProbabilities& expected) {
+    CHECK(probs.rain == doctest::Approx(expected.rain));
+    CHECK(probs.snow == doctest::Approx(expected.snow));
+    CHECK(probs.freezing_rain == doctest::Approx(expected.freezing_rain));
+    CHECK(probs.ice_pellets == doctest::Approx(expected.ice_pellets));
+}
+
+void check_same_probs(const sharp::PrecipTypeProbabilities& probs,
+                      const sharp::PrecipTypeProbabilities& expected) {
+    CHECK(probs.rain == expected.rain);
+    CHECK(probs.snow == expected.snow);
+    CHECK(probs.freezing_rain == expected.freezing_rain);
+    CHECK(probs.ice_pellets == expected.ice_pellets);
+}
+
+bool same_probs(const sharp::PrecipTypeProbabilities& a,
+                const sharp::PrecipTypeProbabilities& b) {
+    return (a.rain == b.rain) && (a.snow == b.snow) &&
+           (a.freezing_rain == b.freezing_rain) &&
+           (a.ice_pellets == b.ice_pellets);
+}
+
+// ProbIce at -10 C, where the Eq. 2b polynomial gives 51 %.
+constexpr float PROB_ICE_M10 = 0.51f;
+
+// Saturated soundings, where the whole column is one generation layer and
+// ProbIce comes from its coldest level.
+ColumnSounding all_snow_sounding() {
+    // All below 0 C, with -16 C at the top: ProbIce 1 and no melting.
+    ColumnSounding snd;
+    snd.add_saturated(0.0f, -2.0f);
+    snd.add_saturated(1500.0f, -8.0f);
+    snd.add_saturated(3000.0f, -16.0f);
+    return snd;
+}
+
+ColumnSounding surface_melting_sounding() {
+    // Fig. 1b: melting below 300 m, then cold to -16 C.
+    ColumnSounding snd;
+    snd.add_saturated(0.0f, 2.0f);
+    snd.add_saturated(300.0f, 0.0f);
+    snd.add_saturated(1500.0f, -8.0f);
+    snd.add_saturated(3000.0f, -16.0f);
+    return snd;
+}
+
+ColumnSounding warm_nose_sounding() {
+    // Fig. 1c: refreezing below 1400 m, a 2 C warm nose at 1400-1800 m,
+    // then cold to -10 C at the top.
+    ColumnSounding snd;
+    snd.add_saturated(0.0f, -8.0f);
+    snd.add_saturated(1400.0f, 0.0f);
+    snd.add_saturated(1600.0f, 2.0f);
+    snd.add_saturated(1800.0f, 0.0f);
+    snd.add_saturated(3000.0f, -10.0f);
+    return snd;
+}
+
+ColumnSounding warm_above_generation_layer_sounding() {
+    // A saturated generation layer from the surface to about 2.2 km, down
+    // to -10 C. Above it, a dry layer is warmer than 0 C from about 2.4
+    // to 3.5 km and reaches -16 C at the top.
+    ColumnSounding snd;
+    snd.add_saturated(0.0f, -8.0f);
+    snd.add_saturated(1000.0f, -9.0f);
+    snd.add_saturated(2000.0f, -10.0f);
+    snd.add(2500.0f, 4.0f, -20.0f, 2.0f);
+    snd.add(3000.0f, 4.0f, -20.0f, 2.0f);
+    snd.add(3500.0f, 1.0f, -25.0f, 0.0f);
+    snd.add(5000.0f, -16.0f, -30.0f, -18.0f);
+    return snd;
+}
+}  // namespace
+
+TEST_CASE("Testing modified_bourgouin on idealized soundings") {
+    // The expected probabilities come from the overload that takes
+    // energies, given closed-form energies, the ProbIce of the coldest level
+    // of the generation layer, and the surface wet-bulb temperature.
+    {
+        INFO("all snow");
+        const auto snd = all_snow_sounding();
+        const auto probs = snd.probs();
+        check_probs(probs, sharp::modified_bourgouin({0.0f, 0.0f, 0.0f}, 1.0f,
+                                                     snd.wetbulb[0]));
+        CHECK(probs.snow == 1.0f);
+        CHECK(probs.rain == 0.0f);
+        CHECK(probs.freezing_rain == 0.0f);
+        CHECK(probs.ice_pellets == 0.0f);
+    }
+    {
+        INFO("surface melting (Fig. 1b): rain, with some snow");
+        const auto snd = surface_melting_sounding();
+        const float melting = energy_of_area(0.5f * 2.0f * 300.0f);
+        const auto probs = snd.probs();
+        check_probs(probs, sharp::modified_bourgouin({melting, 0.0f, 0.0f},
+                                                     1.0f, snd.wetbulb[0]));
+        // 1540 exp(-0.29 * 10.77) = 67.8 %
+        CHECK(probs.snow == doctest::Approx(0.678).epsilon(1e-3));
+        CHECK(probs.rain == 1.0f);
+        CHECK(probs.freezing_rain == 0.0f);
+        CHECK(probs.ice_pellets == 0.0f);
+    }
+    {
+        INFO("a warm nose over surface refreezing (Fig. 1c)");
+        const auto snd = warm_nose_sounding();
+        const float melting = energy_of_area(0.5f * 2.0f * 400.0f);
+        const float refreezing = energy_of_area(0.5f * 8.0f * 1400.0f);
+        const auto probs = snd.probs();
+        check_probs(probs,
+                    sharp::modified_bourgouin({melting, melting, refreezing},
+                                              PROB_ICE_M10, snd.wetbulb[0]));
+        // Eq. 8 is clamped to 100 %, so ice pellets are ProbIce.
+        CHECK(probs.ice_pellets == doctest::Approx(PROB_ICE_M10));
+        CHECK(probs.rain == 0.0f);
+    }
+}
+
+TEST_CASE("Testing modified_bourgouin with a warm layer above the cloud") {
+    // ProbIce comes from the generation layer only: its coldest level is
+    // -10 C, and the -16 C level aloft doesn't count. The melting energy
+    // comes from the whole column, including the warm layer above the
+    // generation layer.
+    const auto snd = warm_above_generation_layer_sounding();
+    const sharp::HeightLayer layer = sharp::precipitation_generation_layer(
+        snd.pressure.data(), snd.height.data(), snd.temperature.data(),
+        snd.dewpoint.data(), snd.size());
+    REQUIRE(layer.bottom == 0.0f);
+    REQUIRE(layer.top > 2000.0f);
+    REQUIRE(layer.top < 2500.0f);
+
+    // The wet-bulb crosses 0 C at 2416.67 m.
+    const float cross = 2000.0f + 500.0f * 10.0f / 12.0f;
+    const float refreezing = energy_of_area(0.5f * (8.0f + 9.0f) * 1000.0f +
+                                            0.5f * (9.0f + 10.0f) * 1000.0f +
+                                            0.5f * 10.0f * (cross - 2000.0f));
+    const float melting = energy_of_area(0.5f * 2.0f * (2500.0f - cross) +
+                                         2.0f * 500.0f + 0.5f * 2.0f * 500.0f);
+    const auto probs = snd.probs();
+    check_probs(probs, sharp::modified_bourgouin({melting, melting, refreezing},
+                                                 PROB_ICE_M10, snd.wetbulb[0]));
+
+    // Without the warm layer aloft, there would be no ice pellets, and snow
+    // would be ProbIce. With ProbIce from the whole column, ice pellets
+    // would be 1.
+    CHECK(probs.ice_pellets == doctest::Approx(PROB_ICE_M10));
+    CHECK(probs.freezing_rain == doctest::Approx(1.0f - PROB_ICE_M10));
+    CHECK(probs.snow < 1e-5f);
+}
+
+TEST_CASE("Testing modified_bourgouin without a generation layer") {
+    {
+        // A warm cloud 800 m deep under dry air. The energies are valid,
+        // but a cloud 1 km deep or less is not a generation layer.
+        INFO("a drizzle cloud");
+        ColumnSounding snd;
+        snd.add_saturated(0.0f, 5.0f);
+        snd.add_saturated(800.0f, 4.0f);
+        snd.add(1000.0f, 3.0f, -15.0f, -2.0f);
+        snd.add(3000.0f, -10.0f, -30.0f, -14.0f);
+        check_all_missing(snd.probs());
+
+        // The documented fallback: the energies with ProbIce 0.
+        const auto energy =
+            sharp::bourgouin_energy(snd.pressure.data(), snd.height.data(),
+                                    snd.wetbulb.data(), snd.size());
+        const auto probs =
+            sharp::modified_bourgouin(energy, 0.0f, snd.wetbulb[0]);
+        CHECK(probs.rain == 1.0f);
+        CHECK(probs.snow == 0.0f);
+        CHECK(probs.freezing_rain == 0.0f);
+        CHECK(probs.ice_pellets == 0.0f);
+    }
+    {
+        // A 1.4 km cloud above a 1.6 km dry layer at the surface, which
+        // eliminates it.
+        INFO("virga");
+        ColumnSounding snd;
+        snd.add(0.0f, -2.0f, -20.0f, -6.0f);
+        snd.add(1600.0f, -8.0f, -25.0f, -11.0f);
+        snd.add_saturated(1650.0f, -8.5f);
+        snd.add_saturated(3000.0f, -16.0f);
+        check_all_missing(snd.probs());
+    }
+}
+
+TEST_CASE("Testing modified_bourgouin with no or one level") {
+    // N < 2 reads no element: these null arrays would crash otherwise.
+    check_all_missing(sharp::modified_bourgouin(nullptr, nullptr, nullptr,
+                                                nullptr, nullptr, 0));
+    check_all_missing(sharp::modified_bourgouin(nullptr, nullptr, nullptr,
+                                                nullptr, nullptr, 1));
+}
+
+TEST_CASE("Testing modified_bourgouin matches its steps called by hand") {
+    for (const auto& snd :
+         {all_snow_sounding(), surface_melting_sounding(), warm_nose_sounding(),
+          warm_above_generation_layer_sounding()}) {
+        const auto probs = snd.probs();
+        check_same_probs(probs, snd.composed());
+        check_same_probs(probs, snd.probs(0.0f, 0.0f, 25000.0f));
+    }
+}
+
+TEST_CASE("Testing modified_bourgouin passes each option to its own step") {
+    {
+        // A 50 m dry sliver splits a cloud at -10 C into two 600 m moist
+        // layers, so there is no generation layer. min_depth = 100 m
+        // absorbs it. min_energy and pressure_min don't reach the
+        // generation layer.
+        INFO("min_depth");
+        const auto relh = relh_sounding(
+            {0.0f, 300.0f, 600.0f, 625.0f, 650.0f, 950.0f, 1250.0f, 1500.0f,
+             3500.0f},
+            {0.9f, 0.9f, 0.75f, 0.5f, 0.75f, 0.9f, 0.75f, 0.5f, 0.5f},
+            std::vector<float>(9, sharp::ZEROCNK - 10.0f));
+        const auto snd =
+            with_wetbulb(relh, std::vector<float>(9, sharp::ZEROCNK - 11.0f));
+        check_all_missing(snd.probs());
+        check_all_missing(snd.probs(0.0f, 100.0f, 25000.0f));
+        check_all_missing(snd.probs(0.0f, 0.0f, 100.0f));
+
+        const auto probs = snd.probs(100.0f, 0.0f, 25000.0f);
+        check_same_probs(probs, snd.composed(100.0f));
+        // No melting, so snow is ProbIce, about 51 % at -10 C.
+        CHECK(probs.snow == doctest::Approx(PROB_ICE_M10).epsilon(1e-4));
+    }
+    {
+        // Saturated, from the surface up: cold 100, warm 1.99, cold 80, and
+        // warm 20 J/kg, then -16 C at the top. min_energy = 2 J/kg merges
+        // the two cold layers. min_depth doesn't reach the energies.
+        INFO("min_energy");
+        const TwSounding tw = tw_triangles({-100.0f, 1.99f, -80.0f, 20.0f});
+        ColumnSounding snd;
+        for (std::ptrdiff_t k = 0; k < tw.N; ++k) {
+            snd.add_saturated(tw.hght[k], tw.wetbulb[k] - sharp::ZEROCNK);
+        }
+        snd.add_saturated(tw.hght[tw.N - 1] + 2000.0f, -16.0f);
+
+        const auto probs = snd.probs(0.0f, 2.0f, 25000.0f);
+        check_same_probs(probs, snd.composed(0.0f, 2.0f));
+        CHECK_FALSE(same_probs(probs, snd.probs()));
+        check_same_probs(snd.probs(2.0f, 0.0f, 25000.0f), snd.probs());
+
+        // RE 180 instead of 100: Eq. 7 gives 84.4 % instead of 100 %.
+        CHECK(probs.freezing_rain == doctest::Approx(0.844).epsilon(1e-3));
+        CHECK(snd.probs().freezing_rain == 1.0f);
+    }
+    {
+        // Saturated and cold, with a warm layer above 250 hPa that only
+        // pressure_min = 0 brings in.
+        INFO("pressure_min");
+        ColumnSounding snd;
+        snd.add_saturated(0.0f, -2.0f);
+        snd.add_saturated(3000.0f, -16.0f);
+        snd.add_saturated(7000.0f, -30.0f);
+        snd.add_saturated(8000.0f, 5.0f);
+        snd.add_saturated(9000.0f, -40.0f);
+        REQUIRE(snd.pressure[3] < sharp::BOURGOUIN_PRESSURE_MIN);
+
+        const auto probs = snd.probs(0.0f, 0.0f, 0.0f);
+        check_same_probs(probs, snd.composed(0.0f, 0.0f, 0.0f));
+        CHECK_FALSE(same_probs(probs, snd.probs()));
+        CHECK(snd.probs().snow == 1.0f);
+        CHECK(probs.ice_pellets == 1.0f);
+    }
+}
+
+#ifndef NO_QC
+TEST_CASE("Testing modified_bourgouin with a leading missing wet-bulb") {
+    // The surface wet-bulb is the lowest valid level's, 2 C. Liquid
+    // relative humidity 0.93 everywhere makes the column a generation
+    // layer, and its 280 K gives ProbIce 0, so everything is rain.
+    for (const float bad :
+         {sharp::MISSING, std::numeric_limits<float>::quiet_NaN()}) {
+        CAPTURE(bad);
+        ColumnSounding snd;
+        for (const float z : {0.0f, 500.0f, 1500.0f, 2500.0f}) {
+            snd.add(z, 280.0f - sharp::ZEROCNK, 279.0f - sharp::ZEROCNK, 2.0f);
+        }
+        snd.wetbulb[0] = bad;
+        REQUIRE(snd.wetbulb[1] == 275.15f);
+
+        const auto probs = snd.probs();
+        CHECK(probs.rain == 1.0f);
+        CHECK(probs.snow == 0.0f);
+        CHECK(probs.freezing_rain == 0.0f);
+        CHECK(probs.ice_pellets == 0.0f);
+
+        // Taking wetbulb[0] as the surface would give MISSING.
+        check_all_missing(snd.composed());
+
+        // The surface is the lowest valid level, not one above it: 2 C at
+        // 500 m gives rain, where -2 C at 1500 m would give freezing rain.
+        snd.wetbulb[2] = sharp::ZEROCNK - 2.0f;
+        snd.wetbulb[3] = sharp::ZEROCNK - 2.0f;
+        CHECK(snd.probs().rain == 1.0f);
+        CHECK(snd.probs().freezing_rain == 0.0f);
+
+        // With no valid wet-bulb at all, everything is MISSING.
+        snd.wetbulb.assign(snd.wetbulb.size(), bad);
+        check_all_missing(snd.probs());
+    }
+}
+
+TEST_CASE("Testing modified_bourgouin with NaN next to the generation layer") {
+    // Relative humidity over ice 0.6 and 0.7, then 0.9 from 1000 m up, with
+    // the 1000 m temperature NaN. The generation layer starts where the
+    // walk crosses 75 % between 500 and 1500 m, at 750 m, and its bottom
+    // temperature bridges the NaN: 258 K + 0.25 * 10 K = 260.5 K, or
+    // -12.65 C.
+    auto relh =
+        relh_sounding({0.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f},
+                      {0.6f, 0.7f, 0.9f, 0.9f, 0.9f, 0.9f},
+                      {258.0f, 258.0f, 258.0f, 268.0f, 268.0f, 268.0f});
+    relh.temperature[2] = std::numeric_limits<float>::quiet_NaN();
+    const auto snd = with_wetbulb(relh, std::vector<float>(6, 255.0f));
+
+    const sharp::HeightLayer layer = relh.generation_layer();
+    CHECK(layer.bottom == doctest::Approx(750.0f));
+    CHECK(layer.top == 2500.0f);
+    const float tmin = sharp::layer_min(layer, snd.height.data(),
+                                        snd.temperature.data(), snd.size());
+    CHECK(tmin == doctest::Approx(260.5f));
+    CHECK(sharp::probability_of_ice(tmin) ==
+          doctest::Approx(0.7287).epsilon(1e-4));
+
+    // No melting, so snow is ProbIce and freezing rain the rest.
+    const auto probs = snd.probs();
+    CHECK(probs.snow == doctest::Approx(0.7287).epsilon(1e-4));
+    CHECK(probs.freezing_rain == doctest::Approx(0.2713).epsilon(1e-3));
+    CHECK(probs.rain == 0.0f);
+    CHECK(probs.ice_pellets == 0.0f);
+}
+#endif

@@ -1156,6 +1156,113 @@ nwsspc.sharp.calc.params.PrecipTypeProbabilities
     // Precipitation type from a full sounding
     // -----------------------------------------------------------------------
 
+    m_params.def(
+        "modified_bourgouin",
+        [](const_prof_arr_t pressure, const_prof_arr_t height,
+           const_prof_arr_t temperature, const_prof_arr_t dewpoint,
+           const_prof_arr_t wetbulb, const float min_depth,
+           const float min_energy, const float pressure_min) {
+            check_equal_sizes(pressure, height, temperature, dewpoint, wetbulb);
+            return sharp::modified_bourgouin(
+                pressure.data(), height.data(), temperature.data(),
+                dewpoint.data(), wetbulb.data(), height.size(), min_depth,
+                min_energy, pressure_min);
+        },
+        nb::arg("pressure"), nb::arg("height"), nb::arg("temperature"),
+        nb::arg("dewpoint"), nb::arg("wetbulb"), nb::arg("min_depth") = 0.0f,
+        nb::arg("min_energy") = 0.0f,
+        nb::arg("pressure_min") = sharp::BOURGOUIN_PRESSURE_MIN,
+        R"pbdoc(
+Computes the probabilities of rain, snow, freezing rain, and ice pellets of
+Birk et al. (2021) from pressure, height, temperature, dewpoint, and
+wet-bulb temperature profiles. It runs these steps, and calling them
+yourself with the same options gives the same result:
+
+1. precipitation_generation_layer with min_depth finds the precipitation
+   generation layer.
+2. layer_min in nwsspc.sharp.calc.layer finds the minimum air temperature
+   in that layer, and probability_of_ice turns it into ProbIce.
+3. bourgouin_energy with min_energy and pressure_min computes the wet-bulb
+   melting and refreezing energies of the whole column, not just the
+   generation layer.
+4. The surface wet-bulb temperature is that of the lowest level. Above
+   0 C, the liquid probability is rain, otherwise freezing rain.
+5. The modified_bourgouin overload that takes energies combines them into
+   the four probabilities, which are independent and do not sum to 1.
+
+With the defaults (min_depth = 0, min_energy = 0, and pressure_min =
+25000 Pa), the function follows the paper except in three ways:
+
+* The energies use only levels at pressures at or above 250 hPa. This has
+  no effect on realistic tropospheric profiles.
+* Relative humidity is over ice below 0 C and over liquid water otherwise,
+  where the paper uses relative humidity over ice at every temperature.
+  For example, T = 283.15 K with Td = 280 K is moist over liquid (0.808)
+  but dry over ice (0.733).
+* Levels at exactly 75 % relative humidity continue the current layer,
+  where the paper puts them in neither the moist nor the dry class.
+
+Positive min_depth and min_energy are opt-ins for noisy, high-resolution
+data and further deviations from the paper. min_depth applies only to the
+generation layer, and min_energy and pressure_min only to the energies.
+precipitation_generation_layer and bourgouin_energy describe their
+effects.
+
+Every probability is MISSING when there is no generation layer. The result
+does not say why. The profile may have no moist layer deeper than 1000 m,
+a deep dry layer under the cloud may eliminate it (virga), or the moisture
+data may be missing. In particular, a cloud 1 km deep or less, such as a
+drizzle cloud, gives MISSING. A caller who wants a result for such a cloud
+can call bourgouin_energy and then the modified_bourgouin overload that
+takes energies, with prob_ice = 0, which treats the cloud as having no
+ice.
+
+ME_total, and with it snow and freezing rain or rain, depends on how far
+up the data reach, up to pressure_min. The wet-bulb temperature at
+pressures below pressure_min does not affect the result, so a caller can
+compute it only up to pressure_min and fill the rest of the array with
+MISSING.
+
+The steps skip MISSING and NaN levels as their own documentation
+describes, and the surface wet-bulb temperature is that of the lowest
+level whose wet-bulb temperature is not MISSING or NaN. With fewer than 2
+levels, including empty arrays, every probability is MISSING.
+
+The profiles must start at the surface. Height must be strictly
+increasing, and pressure must be valid and strictly decreasing. This is
+not checked.
+
+References
+----------
+Birk et al. 2021: https://doi.org/10.1175/WAF-D-20-0118.1
+
+Parameters
+----------
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of height values (meters)
+temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of temperature values (K)
+dewpoint : numpy.ndarray[dtype=float32]
+    1D NumPy array of dewpoint temperature values (K)
+wetbulb : numpy.ndarray[dtype=float32]
+    1D NumPy array of wet-bulb temperature values (K)
+min_depth : float, default = 0.0
+    Moist and dry runs shallower than this merge into the layers around
+    them when finding the generation layer (meters; 0 disables merging)
+min_energy : float, default = 0.0
+    The energy a layer needs to stand on its own in the energies (J/kg;
+    0 disables merging)
+pressure_min : float, default = 25000.0
+    Levels at lower pressures are ignored in the energies (Pa)
+
+Returns
+-------
+nwsspc.sharp.calc.params.PrecipTypeProbabilities
+    The rain, snow, freezing rain, and ice pellet probabilities (fractions)
+    )pbdoc");
+
     m_params.def("equilibrium_moisture_content",
                  &sharp::equilibrium_moisture_content, nb::arg("temperature"),
                  nb::arg("rel_humidity"),
