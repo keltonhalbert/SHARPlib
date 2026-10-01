@@ -21,6 +21,15 @@
 
 namespace sharp {
 
+#ifndef NO_QC
+namespace {
+// QC builds treat NaN data the same as MISSING data.
+[[nodiscard]] bool is_missing(const float val) {
+    return (val == MISSING) || std::isnan(val);
+}
+}  // namespace
+#endif
+
 float interp_height(const float height_val, const float height_arr[],
                     const float data_arr[], const std::ptrdiff_t N) {
 #ifndef NO_QC
@@ -37,18 +46,30 @@ float interp_height(const float height_val, const float height_arr[],
     std::ptrdiff_t idx_bot = idx_top - 1;
 
 #ifndef NO_QC
-    for (; idx_bot > 0; --idx_bot) {
-        if (data_arr[idx_bot] != MISSING) break;
-    }
+    // When both bracketing levels are valid, interpolate between them below.
+    // Otherwise, a query exactly on the valid level returns its stored value,
+    // and any other query bridges to the nearest valid levels.
+    const bool bot_missing = is_missing(data_arr[idx_bot]);
+    const bool top_missing = is_missing(data_arr[idx_top]);
+    if (bot_missing || top_missing) {
+        if (!bot_missing && (height_val == height_arr[idx_bot]))
+            return data_arr[idx_bot];
+        if (!top_missing && (height_val == height_arr[idx_top]))
+            return data_arr[idx_top];
 
-    for (; idx_top < N - 1; ++idx_top) {
-        if (data_arr[idx_top] != MISSING) break;
-    }
+        for (; idx_bot > 0; --idx_bot) {
+            if (!is_missing(data_arr[idx_bot])) break;
+        }
 
-    // in the case the data are still missing at this point,
-    // return a missing value
-    if ((data_arr[idx_bot] == MISSING) || (data_arr[idx_top] == MISSING))
-        return MISSING;
+        for (; idx_top < N - 1; ++idx_top) {
+            if (!is_missing(data_arr[idx_top])) break;
+        }
+
+        // in the case the data are still missing at this point,
+        // return a missing value
+        if (is_missing(data_arr[idx_bot]) || is_missing(data_arr[idx_top]))
+            return MISSING;
+    }
 #endif
 
     const float height_bot = height_arr[idx_bot];
@@ -82,18 +103,30 @@ float interp_pressure(const float pressure_val, const float pressure_arr[],
     std::ptrdiff_t idx_bot = idx_top - 1;
 
 #ifndef NO_QC
-    for (; idx_bot > 0; --idx_bot) {
-        if (data_arr[idx_bot] != MISSING) break;
-    }
+    // When both bracketing levels are valid, interpolate between them below.
+    // Otherwise, a query exactly on the valid level returns its stored value,
+    // and any other query bridges to the nearest valid levels.
+    const bool bot_missing = is_missing(data_arr[idx_bot]);
+    const bool top_missing = is_missing(data_arr[idx_top]);
+    if (bot_missing || top_missing) {
+        if (!bot_missing && (pressure_val == pressure_arr[idx_bot]))
+            return data_arr[idx_bot];
+        if (!top_missing && (pressure_val == pressure_arr[idx_top]))
+            return data_arr[idx_top];
 
-    for (; idx_top < N - 1; ++idx_top) {
-        if (data_arr[idx_top] != MISSING) break;
-    }
+        for (; idx_bot > 0; --idx_bot) {
+            if (!is_missing(data_arr[idx_bot])) break;
+        }
 
-    // in the case the data are still missing at this point,
-    // return a missing value
-    if ((data_arr[idx_bot] == MISSING) || (data_arr[idx_top] == MISSING))
-        return MISSING;
+        for (; idx_top < N - 1; ++idx_top) {
+            if (!is_missing(data_arr[idx_top])) break;
+        }
+
+        // in the case the data are still missing at this point,
+        // return a missing value
+        if (is_missing(data_arr[idx_bot]) || is_missing(data_arr[idx_top]))
+            return MISSING;
+    }
 #endif
 
     const float pressure_bot = pressure_arr[idx_bot];
@@ -116,11 +149,11 @@ float find_first_pressure(const float data_val, const float pressure_arr[],
                           const float data_arr[], const std::ptrdiff_t N) {
     std::ptrdiff_t k_start = 0;
 #ifndef NO_QC
-    if (data_val == MISSING) {
+    if (is_missing(data_val)) {
         return MISSING;
     }
     for (; k_start < N; ++k_start) {
-        if (data_arr[k_start] != MISSING) break;
+        if (!is_missing(data_arr[k_start])) break;
     }
 #endif
 
@@ -128,7 +161,7 @@ float find_first_pressure(const float data_val, const float pressure_arr[],
         float val0 = data_arr[k_start];
         float val1 = data_arr[k];
 #ifndef NO_QC
-        if (val1 == MISSING) continue;
+        if (is_missing(val1)) continue;
 #endif
         if (val0 == data_val) return pressure_arr[k_start];
         if (val1 == data_val) return pressure_arr[k];
@@ -145,6 +178,12 @@ float find_first_pressure(const float data_val, const float pressure_arr[],
         k_start = k;
     }
 
+#ifndef NO_QC
+    // The loop compares the first valid level with data_val only once a
+    // second valid level exists, so a lone valid level is checked here.
+    if ((k_start < N) && (data_arr[k_start] == data_val))
+        return pressure_arr[k_start];
+#endif
     return MISSING;
 }
 
@@ -152,11 +191,11 @@ float find_first_height(const float data_val, const float height_arr[],
                         const float data_arr[], const std::ptrdiff_t N) {
     std::ptrdiff_t k_start = 0;
 #ifndef NO_QC
-    if (data_val == MISSING) {
+    if (is_missing(data_val)) {
         return MISSING;
     }
     for (; k_start < N; ++k_start) {
-        if (data_arr[k_start] != MISSING) break;
+        if (!is_missing(data_arr[k_start])) break;
     }
 #endif
 
@@ -164,7 +203,7 @@ float find_first_height(const float data_val, const float height_arr[],
         float val0 = data_arr[k_start];
         float val1 = data_arr[k];
 #ifndef NO_QC
-        if (val1 == MISSING) continue;
+        if (is_missing(val1)) continue;
 #endif
         if (val0 == data_val) return height_arr[k_start];
         if (val1 == data_val) return height_arr[k];
@@ -183,6 +222,12 @@ float find_first_height(const float data_val, const float height_arr[],
         k_start = k;
     }
 
+#ifndef NO_QC
+    // The loop compares the first valid level with data_val only once a
+    // second valid level exists, so a lone valid level is checked here.
+    if ((k_start < N) && (data_arr[k_start] == data_val))
+        return height_arr[k_start];
+#endif
     return MISSING;
 }
 
