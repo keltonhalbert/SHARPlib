@@ -40,6 +40,14 @@ Precipitation Type
 Precipitation-type probabilities from the modified Bourgouin method
 (Birk et al. 2021, https://doi.org/10.1175/WAF-D-20-0118.1).
 
+The defaults follow the paper. For 1 Hz soundings and other noisy,
+high-resolution profiles, start with ``min_depth = 100`` m and
+``min_energy = 2`` J/kg. 2 J/kg is the melting-layer minimum of the original
+Bourgouin (2000) method. Both options are deviations from the paper.
+``sharp::bourgouin_energy`` and ``sharp::precipitation_generation_layer``
+describe when they help, the measurements behind these values, and what the
+options cost. Neither option changes the total melting energy.
+
 .. doxygenvariable:: sharp::BOURGOUIN_PRESSURE_MIN
 
 .. doxygenstruct:: sharp::BourgouinEnergy

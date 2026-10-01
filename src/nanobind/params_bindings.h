@@ -887,12 +887,15 @@ modified_bourgouin then gives rain 100 % and ice pellets about 20 %
 (19.6 %).
 
 min_energy sets the energy a layer needs to stand on its own. Weaker layers
-merge into their neighbors. The paper sets no minimum melting energy for
-the modified method, so the default of 0 is the paper as written and
-merges nothing. A positive value is an opt-in for noisy, high-resolution
-data, and a deviation from the paper. 2 J/kg, the melting-layer minimum of
-the original Bourgouin method, is a reasonable starting value. It changes
-more than the onset of ice pellets:
+merge into their neighbors. Two warm or two cold layers absorb the weak
+layers between them. Weak layers between a warm and a cold layer all go to
+whichever kind makes up more of their depth, and a tie goes to the lower
+layer. Weak layers at the bottom or top of the profile join the layer next
+to them. Only a layer's own energy counts, never what it absorbs. The
+paper sets no minimum melting energy for the modified method, so the
+default of 0 is the paper as written and merges nothing. A positive value
+is an opt-in for noisy, high-resolution data, and a deviation from the
+paper. It changes more than the onset of ice pellets:
 
 * A warm or cold layer with less than min_energy no longer splits the
   layers around it, so ME_aloft is either 0 or at least min_energy.
@@ -907,6 +910,29 @@ more than the onset of ice pellets:
   100, warm 1.99, cold 80, and warm 2.01 J/kg give ME_total = 4,
   ME_aloft = 2.01, and RE = 180 with min_energy = 2. The weak-melting
   taper of modified_bourgouin acts on ME_total.
+
+Consider min_energy for 1 Hz soundings and other high-resolution profiles
+whose wet-bulb temperature stays near 0 C over some depth, such as an
+isothermal melting layer or a surface layer close to 0 C. There, noise
+makes the profile cross 0 C many times. A warm sliver over a cold surface
+layer makes that layer a near-surface cold layer, ME_aloft and RE become
+positive, and the ice pellet probability jumps from 0 to about
+2.3 RE + 3 %. Start with 2 J/kg, the melting-layer minimum of the original
+Bourgouin method. On the three 1 Hz soundings in the SHARPlib test data,
+noise alone on a layer at exactly 0 C makes wet-bulb layers of which 99 %
+hold less than 1.2 J/kg, and the largest held 2.8 J/kg. With that noise
+added to a saturated 800 m layer at -0.15 C, a wet-bulb temperature of
+-0.28 C, over a cold surface, spurious ice pellets appeared in 25 % of
+trials with min_energy = 0 and in none with 0.5 J/kg or more. With the
+noise doubled, it took 2 J/kg. The cost is that warm layers weaker than
+min_energy no longer count, and noise can split a slightly stronger layer
+into pieces that each fall below it. A 3.1 J/kg melting layer was lost in
+7 % of trials at 2 J/kg and in 31 % at 3 J/kg.
+
+min_energy never changes ME_total, which counts every warm layer. On 1 Hz
+data, noise moved ME_total by up to about 1 J/kg in 95 % of trials. With
+ME_total below 5 J/kg, that alone moved rain or freezing rain by 0.1 or
+more in 9 to 32 % of trials, whatever the options.
 
 Only levels at pressures at or above pressure_min (by default 25000 Pa,
 250 hPa) are used, which keeps stratospheric temperatures out of the
@@ -930,6 +956,8 @@ strictly decreasing. This is not checked.
 References
 ----------
 Birk et al. 2021: https://doi.org/10.1175/WAF-D-20-0118.1
+
+Bourgouin 2000: https://doi.org/10.1175/1520-0434(2000)015%3C0583:AMTDPT%3E2.0.CO;2
 
 Parameters
 ----------
@@ -1009,6 +1037,21 @@ a dry layer's depth includes the shallow moist runs it absorbs. The
 default of 0 merges nothing, which is the paper as written. With
 min_depth above 0, a dry layer's depth is final once the moist run above
 it is min_depth deep, so the walk stops there.
+
+Consider min_depth for 1 Hz soundings and other high-resolution profiles
+where a moist layer is close to 1000 m deep, a dry layer is close to
+1500 m deep, or the relative humidity stays near 75 %. Noise there splits
+and joins layers, which can move the result between MISSING, a low cloud,
+and a higher, colder one. Start with 100 m. On the three 1 Hz soundings in
+the SHARPlib test data, noise alone on a layer at exactly 75 % makes
+humidity layers of which 90 % are under 110 m deep and 99 % under 200 m.
+With that noise added to profiles whose layers were 150 to 250 m from
+those depths, the generation layer changed in 19 to 29 % of trials with
+min_depth = 0, in 3 to 12 % with 50 m, and in at most 0.2 % with 100 m.
+Larger values merge real layers. One test sounding has a 324 m dry layer
+at the surface under a 684 m moist layer. With 300 m, noise often thinned
+the dry layer below 300 m, and the moist layer absorbed it and became a
+generation layer in 17 % of trials, against under 1 % with 200 m.
 
 A result of MISSING does not say why. The profile may have no moist layer
 deeper than 1000 m, a deep dry layer under the cloud may eliminate it
@@ -1205,8 +1248,9 @@ With the defaults (min_depth = 0, min_energy = 0, and pressure_min =
 Positive min_depth and min_energy are opt-ins for noisy, high-resolution
 data and further deviations from the paper. min_depth applies only to the
 generation layer, and min_energy and pressure_min only to the energies.
+For 1 Hz soundings, start with min_depth = 100 m and min_energy = 2 J/kg.
 precipitation_generation_layer and bourgouin_energy describe their
-effects.
+effects, the measurements behind these values, and what the options cost.
 
 Every probability is MISSING when there is no generation layer. The result
 does not say why. The profile may have no moist layer deeper than 1000 m,
