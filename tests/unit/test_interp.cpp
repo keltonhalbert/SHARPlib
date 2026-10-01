@@ -388,3 +388,47 @@ TEST_CASE("Testing find_first_pressure with NaN and MISSING data") {
           sharp::MISSING);  // was MISSING
 }
 #endif
+
+// An empty profile returns MISSING without reading the arrays, and a
+// one-level profile returns the stored value for a query exactly on its
+// level (SHARPlib-cld, SHARPlib-su1). Before, both read out of bounds:
+// height_arr[-1] or pressure_arr[-1] for N = 0, and data_arr[-1] for a
+// query on the level of a one-level profile.
+TEST_CASE("Testing interp on an empty profile") {
+    // nullptr arrays show that no element is read
+    CHECK(sharp::interp_height(0, nullptr, nullptr, 0) == sharp::MISSING);
+    CHECK(sharp::interp_pressure(100000, nullptr, nullptr, 0) ==
+          sharp::MISSING);
+    CHECK(sharp::interp_height(0, nullptr, nullptr, -1) == sharp::MISSING);
+    CHECK(sharp::interp_pressure(100000, nullptr, nullptr, -1) ==
+          sharp::MISSING);
+}
+
+TEST_CASE("Testing interp on a single-level profile") {
+    constexpr float hght1[1] = {100};
+    constexpr float pres1[1] = {85000};
+    constexpr float data1[1] = {280.5f};
+
+    // a query exactly on the level returns its stored value
+    CHECK(sharp::interp_height(100, hght1, data1, 1) == 280.5f);
+    CHECK(sharp::interp_pressure(85000, pres1, data1, 1) == 280.5f);
+
+    // any other query lies outside the profile
+    CHECK(sharp::interp_height(99, hght1, data1, 1) == sharp::MISSING);
+    CHECK(sharp::interp_height(101, hght1, data1, 1) == sharp::MISSING);
+    CHECK(sharp::interp_pressure(85001, pres1, data1, 1) == sharp::MISSING);
+    CHECK(sharp::interp_pressure(84999, pres1, data1, 1) == sharp::MISSING);
+}
+
+#ifndef NO_QC
+TEST_CASE("Testing interp on a single missing level") {
+    constexpr float hght1[1] = {100};
+    constexpr float pres1[1] = {85000};
+    constexpr float mis1[1] = {sharp::MISSING};
+    constexpr float nan1[1] = {nanval};
+    CHECK(sharp::interp_height(100, hght1, mis1, 1) == sharp::MISSING);
+    CHECK(sharp::interp_height(100, hght1, nan1, 1) == sharp::MISSING);
+    CHECK(sharp::interp_pressure(85000, pres1, mis1, 1) == sharp::MISSING);
+    CHECK(sharp::interp_pressure(85000, pres1, nan1, 1) == sharp::MISSING);
+}
+#endif

@@ -37,6 +37,8 @@ level's stored value, even when a neighbouring level is missing. For any
 other hght_val, the routine interpolates between the nearest valid levels
 below and above it, and returns MISSING when one side has none.
 
+Empty arrays return MISSING in every build.
+
 Parameters
 ----------
 hght_val : float 
@@ -71,6 +73,8 @@ missing. A pres_val exactly on a level with valid data returns that
 level's stored value, even when a neighbouring level is missing. For any
 other pres_val, the routine interpolates between the nearest valid levels
 below and above it, and returns MISSING when one side has none.
+
+Empty arrays return MISSING in every build.
 
 Parameters
 ----------

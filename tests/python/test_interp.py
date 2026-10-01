@@ -168,3 +168,23 @@ def test_find_first_nan_and_missing():
     assert (interp.find_first_pressure(5.0, pres[:1], data) == 100000.0)
     assert (interp.find_first_height(
         6.0, hght[:1], data) == constants.MISSING)
+
+
+def test_interp_empty_and_single_level():
+    # empty arrays return MISSING without being read (SHARPlib-cld)
+    empty = np.array([], dtype="float32")
+    assert (interp.interp_height(0.0, empty, empty) == constants.MISSING)
+    assert (interp.interp_pressure(
+        100000.0, empty, empty) == constants.MISSING)
+    assert (interp.find_first_height(5.0, empty, empty) == constants.MISSING)
+    assert (interp.find_first_pressure(5.0, empty, empty) == constants.MISSING)
+
+    # a one-level profile returns the stored value for a query exactly on
+    # its level, and MISSING for any other query (SHARPlib-su1)
+    hght = np.array([100.0], dtype="float32")
+    pres = np.array([85000.0], dtype="float32")
+    data = np.array([280.5], dtype="float32")
+    assert (interp.interp_height(100.0, hght, data) == 280.5)
+    assert (interp.interp_pressure(85000.0, pres, data) == 280.5)
+    assert (interp.interp_height(101.0, hght, data) == constants.MISSING)
+    assert (interp.interp_pressure(84999.0, pres, data) == constants.MISSING)
