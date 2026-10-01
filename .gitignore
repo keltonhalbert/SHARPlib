@@ -69,3 +69,6 @@ src/nanobind/_version.py
 *.db
 .beads-credential-key
 .beads/proxieddb/
+
+# Local copies of third-party reference papers (cite by DOI instead)
+papers/
