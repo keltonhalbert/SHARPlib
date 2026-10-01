@@ -476,6 +476,49 @@ def test_max_lapse_rate():
     assert (p_max_lyr.top == 63000.0)
 
 
+# A layer wholly outside the profile has no lapse rate (SHARPlib-103). Each
+# "was" comment is the output measured before that change.
+@pytest.mark.parametrize("sfc_hght", [0.0, 300.0])
+def test_lapse_rate_outside_profile(sfc_hght):
+    pres = np.array([100000.0, 95000.0, 90000.0], dtype="float32")
+    hght = np.array([0.0, 500.0, 1000.0], dtype="float32") + sfc_hght
+    tmpk = np.array([300.0, 297.0, 294.0], dtype="float32")
+
+    # was ValueError (0 m), 6.0 (300 m)
+    above = layer.PressureLayer(85000.0, 80000.0)
+    assert (thermo.lapse_rate(above, pres, hght, tmpk) == constants.MISSING)
+    # was ValueError
+    below = layer.PressureLayer(110000.0, 105000.0)
+    assert (thermo.lapse_rate(below, pres, hght, tmpk) == constants.MISSING)
+    # unchanged
+    above = layer.HeightLayer(1500.0, 2000.0)
+    assert (thermo.lapse_rate(above, hght, tmpk) == constants.MISSING)
+
+    # a layer partly above the profile is clipped to it, unchanged
+    part = layer.PressureLayer(95000.0, 80000.0)
+    assert (thermo.lapse_rate(part, pres, hght, tmpk) == pytest.approx(6.0))
+
+
+@pytest.mark.parametrize("sfc_hght", [0.0, 300.0])
+def test_lapse_rate_max_outside_profile(sfc_hght):
+    # The sounding ends at 750 hPa, inside the search layer. The lapse rate of
+    # the whole profile is 8.4 K/km, and the largest in the search layer is
+    # 6 K/km, from 800 to 750 hPa.
+    pres = np.array([100000.0, 90000.0, 80000.0, 77500.0, 75000.0],
+                    dtype="float32")
+    hght = np.array([0.0, 1000.0, 2000.0, 2250.0, 2500.0],
+                    dtype="float32") + sfc_hght
+    tmpk = np.array([310.0, 298.0, 292.0, 290.0, 289.0], dtype="float32")
+
+    # was ValueError (0 m); 8.4 over 74000-69000 Pa, a layer wholly above
+    # the profile (300 m)
+    max_lr, max_lyr = thermo.lapse_rate_max(
+        layer.PressureLayer(80000.0, 60000.0), 5000.0, pres, hght, tmpk)
+    assert (max_lr == pytest.approx(6.0))
+    assert (max_lyr.bottom == 80000.0)
+    assert (max_lyr.top == 75000.0)
+
+
 def test_buoyancy():
     buoy = thermo.buoyancy(constants.MISSING, 290.0)
     assert (buoy == constants.MISSING)

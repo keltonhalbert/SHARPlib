@@ -583,6 +583,10 @@ template <typename Lft>
  * This routine handles converting AGL to MSL by adding the surface height
  * value to the layer.
  *
+ * A layer that extends past the profile is clipped to it. A layer that lies
+ * wholly outside the profile, or touches it at only one level, has no lapse
+ * rate and returns sharp::MISSING.
+ *
  * \param   layer_agl               (meters AGL)
  * \param   height                  (meters MSL)
  * \param   temperature             (K)
@@ -602,6 +606,10 @@ template <typename Lft>
  * Computes the lapse rate over a given sharp::PressureLayer. This routine
  * handles converting the pressure layer into a height layer, and
  * then calles the sharp::HeightLayer implementation of this routine.
+ *
+ * A layer that extends past the profile is clipped to it. A layer that lies
+ * wholly outside the profile, or touches it at only one level, has no lapse
+ * rate and returns sharp::MISSING.
  *
  * \param   layer                   (Pa)
  * \param   pressure                (Pa)
@@ -624,6 +632,11 @@ template <typename Lft>
  * over the provided depth (e.g. 2 km) within that given layer. Returns the
  * maximum lapse rate, with the optional ability to return the layer that lapse
  * rate exists within.
+ *
+ * A layer of the given depth that lies wholly outside the profile has no
+ * lapse rate (see sharp::lapse_rate) and is skipped. If no layer in the
+ * search has a lapse rate, the result is sharp::MISSING and max_lyr is not
+ * written.
  *
  * \param   layer_agl       (meters AGL)
  * \param   depth           (meters)
@@ -649,6 +662,11 @@ template <typename Lft>
  * lapse rate over the provided depth (e.g. 100 hPa) within that given layer.
  * Returns the maximum lapse rate, with the optional ability to return the layer
  * that lapse rate exists within.
+ *
+ * A layer of the given depth that lies wholly outside the profile has no
+ * lapse rate (see sharp::lapse_rate) and is skipped. If no layer in the
+ * search has a lapse rate, the result is sharp::MISSING and max_lyr is not
+ * written.
  *
  * \param   layer           (Pa)
  * \param   depth           (Pa)

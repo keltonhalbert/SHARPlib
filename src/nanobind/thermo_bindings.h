@@ -1347,6 +1347,10 @@ Computes the lapse rate over a given HeightLayer (meters AGL).
 This routine handles converting the height AGL to MSL by adding
 the surface height value to the HeightLayer.
 
+A layer that extends past the profile is clipped to it. A layer that
+lies wholly outside the profile, or touches it at only one level, has
+no lapse rate and returns MISSING.
+
 Parameters
 ----------
 layer_agl : nwsspc.sharp.calc.layer.HeightLayer 
@@ -1374,6 +1378,10 @@ float
         nb::arg("temperature"),
         R"pbdoc(
 Computes the lapse rate over a given PressureLayer (Pa).
+
+A layer that extends past the profile is clipped to it. A layer that
+lies wholly outside the profile, or touches it at only one level, has
+no lapse rate and returns MISSING.
 
 Parameters
 ----------
@@ -1411,6 +1419,10 @@ Given a layer of the atmosphere (e.g. 2 - 6 km), find the maximum
 lapse rate over the provided depth (e.g. 2 km) within that given layer. 
 Returns the maximum lapse rate, as well as the layer it was found in. 
 
+A layer of the given depth that lies wholly outside the profile has
+no lapse rate (see lapse_rate) and is skipped. If no layer in the search
+has a lapse rate, the returned lapse rate is MISSING.
+
 Parameters
 ----------
 layer : nwsspc.sharp.calc.layer.HeightLayer 
@@ -1447,6 +1459,10 @@ tuple[float, nwsspc.sharp.calc.layer.HeightLayer]
 Given a layer of the atmosphere (e.g. 800 hPa - 500 hPa), find the maximum
 lapse rate over the provided depth (e.g. 100 hPa) within that given layer. 
 Returns the maximum lapse rate, as well as the layer it was found in. 
+
+A layer of the given depth that lies wholly outside the profile has
+no lapse rate (see lapse_rate) and is skipped. If no layer in the search
+has a lapse rate, the returned lapse rate is MISSING.
 
 Parameters
 ----------
