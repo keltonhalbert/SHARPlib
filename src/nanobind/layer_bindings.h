@@ -255,6 +255,13 @@ nwsspc.sharp.calc.layer.HeightLayer
 Returns the minimum value of the data array within the given {0}. The 
 function bounds checks the layer by calling get_layer_index. 
 
+QC builds, the default, skip levels whose data is MISSING or NaN. They
+interpolate the layer bottom and top across missing levels, as
+interp_height and interp_pressure do, and skip an endpoint that has no
+valid level on one side of it. A layer with no valid data returns
+MISSING. A layer that lies wholly outside the profile also returns
+MISSING, and level_of_min is the layer's endpoint nearest the profile.
+
 Parameters
 ----------
 layer : nwsspc.sharp.calc.layer.{0} 
@@ -278,6 +285,13 @@ tuple[float, float]
         R"pbdoc(
 Returns the maximum value of the data array within the given {0}. The 
 function bounds checks the layer by calling get_layer_index. 
+
+QC builds, the default, skip levels whose data is MISSING or NaN. They
+interpolate the layer bottom and top across missing levels, as
+interp_height and interp_pressure do, and skip an endpoint that has no
+valid level on one side of it. A layer with no valid data returns
+MISSING. A layer that lies wholly outside the profile also returns
+MISSING, and level_of_max is the layer's endpoint nearest the profile.
 
 Parameters
 ----------

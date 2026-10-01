@@ -191,6 +191,13 @@ def layer_min(layer: HeightLayer, height: Annotated[NDArray[numpy.float32], dict
     Returns the minimum value of the data array within the given HeightLayer. The 
     function bounds checks the layer by calling get_layer_index. 
 
+    QC builds, the default, skip levels whose data is MISSING or NaN. They
+    interpolate the layer bottom and top across missing levels, as
+    interp_height and interp_pressure do, and skip an endpoint that has no
+    valid level on one side of it. A layer with no valid data returns
+    MISSING. A layer that lies wholly outside the profile also returns
+    MISSING, and level_of_min is the layer's endpoint nearest the profile.
+
     Parameters
     ----------
     layer : nwsspc.sharp.calc.layer.HeightLayer 
@@ -210,6 +217,13 @@ def layer_min(layer: PressureLayer, pressure: Annotated[NDArray[numpy.float32], 
     """
     Returns the minimum value of the data array within the given PressureLayer. The 
     function bounds checks the layer by calling get_layer_index. 
+
+    QC builds, the default, skip levels whose data is MISSING or NaN. They
+    interpolate the layer bottom and top across missing levels, as
+    interp_height and interp_pressure do, and skip an endpoint that has no
+    valid level on one side of it. A layer with no valid data returns
+    MISSING. A layer that lies wholly outside the profile also returns
+    MISSING, and level_of_min is the layer's endpoint nearest the profile.
 
     Parameters
     ----------
@@ -231,6 +245,13 @@ def layer_max(layer: HeightLayer, height: Annotated[NDArray[numpy.float32], dict
     Returns the maximum value of the data array within the given HeightLayer. The 
     function bounds checks the layer by calling get_layer_index. 
 
+    QC builds, the default, skip levels whose data is MISSING or NaN. They
+    interpolate the layer bottom and top across missing levels, as
+    interp_height and interp_pressure do, and skip an endpoint that has no
+    valid level on one side of it. A layer with no valid data returns
+    MISSING. A layer that lies wholly outside the profile also returns
+    MISSING, and level_of_max is the layer's endpoint nearest the profile.
+
     Parameters
     ----------
     layer : nwsspc.sharp.calc.layer.HeightLayer 
@@ -250,6 +271,13 @@ def layer_max(layer: PressureLayer, pressure: Annotated[NDArray[numpy.float32], 
     """
     Returns the maximum value of the data array within the given PressureLayer. The 
     function bounds checks the layer by calling get_layer_index. 
+
+    QC builds, the default, skip levels whose data is MISSING or NaN. They
+    interpolate the layer bottom and top across missing levels, as
+    interp_height and interp_pressure do, and skip an endpoint that has no
+    valid level on one side of it. A layer with no valid data returns
+    MISSING. A layer that lies wholly outside the profile also returns
+    MISSING, and level_of_max is the layer's endpoint nearest the profile.
 
     Parameters
     ----------
