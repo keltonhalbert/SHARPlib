@@ -226,9 +226,14 @@ def test_effective_bulk_wind(hght_key):
         snd_data["pres"], snd_data[hght_key], snd_data["uwin"],
         snd_data["vwin"], eil, mupcl.eql_pressure)
     assert (bot == 0.0)
-    assert (top == pytest.approx(5866.089, abs=1e-3))
-    assert (expected[0] == pytest.approx(14.6, abs=1e-5))
-    assert (expected[1] == pytest.approx(13.32178, abs=1e-5))
+    # These pins follow the MU parcel's EL, which comes from the library's
+    # parcel lifter. Its exp/log/pow results differ in the last bits across
+    # platforms, so the EL does too (macOS CI: 0.025 m lower than Linux).
+    # The tolerances allow 0.5 m of EL drift. The comparisons below use the
+    # same EL on both sides, so they stay tight.
+    assert (top == pytest.approx(5866.089, abs=0.5))
+    assert (expected[0] == pytest.approx(14.6, abs=1e-2))
+    assert (expected[1] == pytest.approx(13.32178, abs=1e-2))
 
     ebwd = winds.vector_magnitude(ebwd_cmp.u, ebwd_cmp.v)
     assert (ebwd_cmp.u == pytest.approx(expected[0], abs=1e-4))
@@ -418,13 +423,18 @@ def test_bunkers_motion_effective_layer(station, eil_bottom, eil_top,
     eil = layer.PressureLayer(eil_bottom, eil_top)
     base = layer.pressure_layer_to_height(eil, pres, hght, True).bottom
     el = interp.interp_pressure(mupcl.eql_pressure, pres, hght) - hght[0]
-    assert (el == pytest.approx(11732.17, abs=1e-2))
+    # The EL comes from the library's parcel lifter, whose exp/log/pow
+    # results differ in the last bits across platforms (macOS CI: 0.025 m
+    # lower than Linux). The pins allow 0.5 m of EL drift, which moves the
+    # motion by under 2e-4 m/s. check_effective_bunkers compares the result
+    # with the classic method and the oracle on the same EL, so it stays tight.
+    assert (el == pytest.approx(11732.17, abs=0.5))
 
     motion = check_effective_bunkers(pres, hght, snd_data["uwin"],
                                      snd_data["vwin"], eil, mupcl,
                                      (base, 0.65 * el))
-    assert (motion.u == pytest.approx(expected[0]))
-    assert (motion.v == pytest.approx(expected[1]))
+    assert (motion.u == pytest.approx(expected[0], abs=1e-3))
+    assert (motion.v == pytest.approx(expected[1], abs=1e-3))
 
 
 # The mean wind layer needs 3 km between the inflow base and 0.65 * EL, or
@@ -455,8 +465,11 @@ def test_bunkers_motion_effective_minimum_depth(station, base, el, mw_layer,
                               float(pres[base // 500 + 2]))
     motion = check_effective_bunkers(pres, hght, uwin, vwin, eil, mupcl,
                                      mw_layer)
-    assert (motion.u == pytest.approx(expected[0]))
-    assert (motion.v == pytest.approx(expected[1]))
+    # The profile comes from numpy's float32 exp and sin, which differ by an
+    # ULP across platforms (macOS CI: v off by 6.5e-7), so the pins allow
+    # 1e-4 m/s.
+    assert (motion.u == pytest.approx(expected[0], abs=1e-4))
+    assert (motion.v == pytest.approx(expected[1], abs=1e-4))
 
 def test_stp_scp_ship_dcp_lhp():
     lifter = parcel.lifter_cm1()
