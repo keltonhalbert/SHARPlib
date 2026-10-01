@@ -17,6 +17,7 @@
 #include <SHARPlib/layer.h>
 #include <SHARPlib/params/convective.h>
 #include <SHARPlib/parcel.h>
+#include <SHARPlib/qc.h>
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
 
@@ -30,6 +31,17 @@ WindComponents storm_motion_bunkers(
     HeightLayer mean_wind_layer_agl, HeightLayer wind_shear_layer_agl,
     const bool leftMover, const bool pressureWeighted) {
     constexpr float deviation = 7.5;  // deviation from mean wind in m/s
+
+#ifndef NO_QC
+    // A MISSING layer has no motion. A MISSING shear layer would otherwise
+    // build half-MISSING sublayers below, which throw.
+    if (is_missing(mean_wind_layer_agl.bottom) ||
+        is_missing(mean_wind_layer_agl.top) ||
+        is_missing(wind_shear_layer_agl.bottom) ||
+        is_missing(wind_shear_layer_agl.top)) {
+        return {MISSING, MISSING};
+    }
+#endif
 
     PressureLayer mw_lyr = height_layer_to_pressure(mean_wind_layer_agl,
                                                     pressure, height, N, true);
@@ -136,6 +148,14 @@ WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const std::ptrdiff_t N) {
     const float pres_sfc = pressure[0];
+#ifndef NO_QC
+    // The cloud layer can start at the surface pressure, so without it there
+    // is no answer.
+    if (is_missing(pres_sfc)) {
+        constexpr WindComponents missing = {MISSING, MISSING};
+        return std::make_pair(missing, missing);
+    }
+#endif
 
     WindComponents cloud_layer_mean;
     if (pres_sfc < 85000.0f) {
@@ -435,6 +455,11 @@ float large_hail_parameter(const Parcel mu_pcl,
     HeightLayer lyr_3_6km = {3000.0, 6000.0};
     const float el_hght =
         interp_pressure(mu_pcl.eql_pressure, pressure, height, N);
+#ifndef NO_QC
+    // The parcel has an EL, but the data can't place it in height, for
+    // example above the profile top. Building the layer below would throw.
+    if (el_hght == MISSING) return MISSING;
+#endif
     HeightLayer el_lyr = {el_hght - 1500.0f, el_hght};
     PressureLayer el_lyr_pres =
         height_layer_to_pressure(el_lyr, pressure, height, N);
