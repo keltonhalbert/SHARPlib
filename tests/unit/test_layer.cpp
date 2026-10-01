@@ -197,6 +197,220 @@ TEST_CASE("Testing layer_min over height layer") {
     CHECK(sharp::layer_min(layer5, hght, data, 10) == -7.5);
 }
 
+// A layer_min or layer_max result: the value and the level reported with it.
+struct Extreme {
+    float value;
+    float level;
+};
+
+// Checks layer_min and layer_max over one layer.
+template <typename L>
+static void check_min_max(const L layer, const float coord[],
+                          const float data[], const std::ptrdiff_t N,
+                          const Extreme min, const Extreme max) {
+    INFO("layer ", layer.bottom, " to ", layer.top);
+    float min_lvl = 0.0f;
+    float max_lvl = 0.0f;
+    const float min_val = sharp::layer_min(layer, coord, data, N, &min_lvl);
+    const float max_val = sharp::layer_max(layer, coord, data, N, &max_lvl);
+    CHECK(min_val == doctest::Approx(min.value));
+    CHECK(min_lvl == min.level);
+    CHECK(max_val == doctest::Approx(max.value));
+    CHECK(max_lvl == max.level);
+}
+
+// QC builds skip MISSING and NaN data in layer_min and layer_max, and return
+// MISSING for a layer wholly outside the profile (SHARPlib-5yf.2). Each
+// "was" comment gives the min and max measured before P1, which is before
+// this change and the interp change of SHARPlib-5yf.1. Where the interp
+// change alone gave something else, that output follows in brackets.
+#ifndef NO_QC
+constexpr float MISSING = sharp::MISSING;
+
+TEST_CASE("Testing layer_min and layer_max with missing data at a boundary") {
+    constexpr std::ptrdiff_t N = 6;
+    constexpr float hght[N] = {0, 500, 1000, 1500, 2000, 2500};
+    constexpr float pres[N] = {100000, 95000, 90000, 85000, 80000, 75000};
+    constexpr float tmpk_nan[N] = {258, 258, nanval, 268, 268, 268};
+    constexpr float tmpk_mis[N] = {258, 258, MISSING, 268, 268, 268};
+
+    // NaN next to the bottom of the layer
+    // was (NaN, 750), (NaN, 750) [(260.5, 750), (268, 1500)]
+    check_min_max(sharp::HeightLayer(750, 2500), hght, tmpk_nan, N,
+                  {260.5f, 750}, {268, 1500});
+    // was (NaN, 92500), (NaN, 92500) [(260.398, 92500), (268, 85000)]
+    check_min_max(sharp::PressureLayer(92500, 75000), pres, tmpk_nan, N,
+                  {260.397675f, 92500}, {268, 85000});
+
+    // NaN next to the top of the layer
+    // was (258, 0), (268, 1250) [(258, 0), (265.5, 1250)]
+    check_min_max(sharp::HeightLayer(0, 1250), hght, tmpk_nan, N, {258, 0},
+                  {265.5f, 1250});
+    // was (258, 0), (258, 0) [(258, 0), (260.5, 750)]
+    check_min_max(sharp::HeightLayer(0, 750), hght, tmpk_nan, N, {258, 0},
+                  {260.5f, 750});
+    // was (258, 100000), (268, 87500) [(258, 100000), (265.394, 87500)]
+    check_min_max(sharp::PressureLayer(100000, 87500), pres, tmpk_nan, N,
+                  {258, 100000}, {265.393829f, 87500});
+
+    // MISSING next to the bottom and top of the layer
+    // was (MISSING, 1000), (268, 1500)
+    check_min_max(sharp::HeightLayer(750, 2500), hght, tmpk_mis, N,
+                  {260.5f, 750}, {268, 1500});
+    // was (MISSING, 1000), (265.5, 1250)
+    check_min_max(sharp::HeightLayer(0, 1250), hght, tmpk_mis, N, {258, 0},
+                  {265.5f, 1250});
+}
+
+TEST_CASE("Testing layer_min and layer_max skip MISSING and NaN levels") {
+    constexpr std::ptrdiff_t N = 5;
+    constexpr float hght[N] = {0, 100, 200, 300, 400};
+    constexpr float pres[N] = {100000, 90000, 80000, 70000, 60000};
+    constexpr float data_mis[N] = {3, 1, MISSING, 6, 4};
+    constexpr float data_nan[N] = {3, 1, nanval, 6, 4};
+
+    // was (MISSING, 200), (6, 300)
+    check_min_max(sharp::HeightLayer(0, 400), hght, data_mis, N, {1, 100},
+                  {6, 300});
+    // was (MISSING, 80000), (6, 70000)
+    check_min_max(sharp::PressureLayer(100000, 60000), pres, data_mis, N,
+                  {1, 90000}, {6, 70000});
+    // was (1, 100), (6, 300)
+    check_min_max(sharp::HeightLayer(0, 400), hght, data_nan, N, {1, 100},
+                  {6, 300});
+    // was (1, 90000), (6, 70000)
+    check_min_max(sharp::PressureLayer(100000, 60000), pres, data_nan, N,
+                  {1, 90000}, {6, 70000});
+
+    // an isolated NaN away from the layer bottom and top
+    constexpr float data_iso[N] = {1, 2, nanval, 4, 5};
+    // was (1, 0), (5, 400)
+    check_min_max(sharp::HeightLayer(0, 400), hght, data_iso, N, {1, 0},
+                  {5, 400});
+}
+
+TEST_CASE("Testing layer_min and layer_max with a MISSING endpoint") {
+    // The endpoint has no valid level on one side of it, so it interpolates
+    // to MISSING and the result comes from the valid levels.
+    constexpr std::ptrdiff_t N = 5;
+    constexpr float hght[N] = {0, 100, 200, 300, 400};
+    constexpr float pres[N] = {100000, 90000, 80000, 70000, 60000};
+    constexpr float bot_mis[N] = {MISSING, MISSING, 3, 1, 6};
+    constexpr float bot_nan[N] = {nanval, nanval, 3, 1, 6};
+    constexpr float top_mis[N] = {3, 1, 6, MISSING, MISSING};
+    constexpr float top_nan[N] = {3, 1, 6, nanval, nanval};
+
+    // bottom endpoint
+    // was (MISSING, 50), (6, 400)
+    check_min_max(sharp::HeightLayer(50, 400), hght, bot_mis, N, {1, 300},
+                  {6, 400});
+    // was (NaN, 50), (NaN, 50) [(MISSING, 50), (6, 400)]
+    check_min_max(sharp::HeightLayer(50, 400), hght, bot_nan, N, {1, 300},
+                  {6, 400});
+    // was (MISSING, 95000), (6, 60000)
+    check_min_max(sharp::PressureLayer(95000, 60000), pres, bot_mis, N,
+                  {1, 70000}, {6, 60000});
+    // was (NaN, 95000), (NaN, 95000) [(MISSING, 95000), (6, 60000)]
+    check_min_max(sharp::PressureLayer(95000, 60000), pres, bot_nan, N,
+                  {1, 70000}, {6, 60000});
+
+    // top endpoint
+    // was (MISSING, 300), (6, 200)
+    check_min_max(sharp::HeightLayer(0, 350), hght, top_mis, N, {1, 100},
+                  {6, 200});
+    // was (1, 100), (6, 200) [(MISSING, 350), (6, 200)]
+    check_min_max(sharp::HeightLayer(0, 350), hght, top_nan, N, {1, 100},
+                  {6, 200});
+    // was (MISSING, 70000), (6, 80000)
+    check_min_max(sharp::PressureLayer(100000, 65000), pres, top_mis, N,
+                  {1, 90000}, {6, 80000});
+    // was (1, 90000), (6, 80000) [(MISSING, 65000), (6, 80000)]
+    check_min_max(sharp::PressureLayer(100000, 65000), pres, top_nan, N,
+                  {1, 90000}, {6, 80000});
+}
+
+TEST_CASE("Testing layer_min and layer_max over a layer with no valid data") {
+    constexpr std::ptrdiff_t N = 5;
+    constexpr float hght[N] = {0, 100, 200, 300, 400};
+    constexpr float pres[N] = {100000, 90000, 80000, 70000, 60000};
+    constexpr float data_mis[N] = {3, 1, MISSING, MISSING, MISSING};
+    constexpr float data_nan[N] = {3, 1, nanval, nanval, nanval};
+    constexpr float all_mis[N] = {MISSING, MISSING, MISSING, MISSING, MISSING};
+
+    // was (MISSING, 150), (MISSING, 150)
+    check_min_max(sharp::HeightLayer(150, 400), hght, data_mis, N,
+                  {MISSING, 150}, {MISSING, 150});
+    // was (NaN, 150), (NaN, 150) [(MISSING, 150), (MISSING, 150)]
+    check_min_max(sharp::HeightLayer(150, 400), hght, data_nan, N,
+                  {MISSING, 150}, {MISSING, 150});
+    // was (MISSING, 85000), (MISSING, 85000)
+    check_min_max(sharp::PressureLayer(85000, 60000), pres, data_mis, N,
+                  {MISSING, 85000}, {MISSING, 85000});
+    // was (MISSING, 0), (MISSING, 0)
+    check_min_max(sharp::HeightLayer(0, 400), hght, all_mis, N, {MISSING, 0},
+                  {MISSING, 0});
+}
+
+TEST_CASE("Testing layer_min and layer_max over layers outside the profile") {
+    // Complete data. layer_min is unchanged, and layer_max used to return a
+    // value from outside the requested layer.
+    constexpr std::ptrdiff_t N = 3;
+    constexpr float hght[N] = {0, 500, 1000};
+    constexpr float tmpk_hght[N] = {258, 268, 278};
+    constexpr float pres[N] = {100000, 90000, 80000};
+    constexpr float tmpk_pres[N] = {278, 268, 258};
+
+    // was (MISSING, 1500), (278, 1000)
+    check_min_max(sharp::HeightLayer(1500, 2000), hght, tmpk_hght, N,
+                  {MISSING, 1500}, {MISSING, 1500});
+    // was (MISSING, -100), (258, 0)
+    check_min_max(sharp::HeightLayer(-500, -100), hght, tmpk_hght, N,
+                  {MISSING, -100}, {MISSING, -100});
+    // was (MISSING, 70000), (258, 80000)
+    check_min_max(sharp::PressureLayer(70000, 60000), pres, tmpk_pres, N,
+                  {MISSING, 70000}, {MISSING, 70000});
+    // was (MISSING, 105000), (278, 100000)
+    check_min_max(sharp::PressureLayer(110000, 105000), pres, tmpk_pres, N,
+                  {MISSING, 105000}, {MISSING, 105000});
+
+    // without a level pointer
+    CHECK(sharp::layer_max(sharp::HeightLayer(1500, 2000), hght, tmpk_hght,
+                           N) == MISSING);
+    CHECK(sharp::layer_max(sharp::PressureLayer(110000, 105000), pres,
+                           tmpk_pres, N) == MISSING);
+}
+#endif
+
+TEST_CASE("Testing layer_min and layer_max over layers at the profile edge") {
+    // Layers that touch the profile at one point or partly overlap it give
+    // the same results as before, in both builds.
+    constexpr std::ptrdiff_t N = 3;
+    constexpr float hght[N] = {0, 500, 1000};
+    constexpr float tmpk_hght[N] = {258, 268, 278};
+    constexpr float pres[N] = {100000, 90000, 80000};
+    constexpr float tmpk_pres[N] = {278, 268, 258};
+
+    // touching at one point
+    check_min_max(sharp::HeightLayer(1000, 2000), hght, tmpk_hght, N,
+                  {278, 1000}, {278, 1000});
+    check_min_max(sharp::HeightLayer(-500, 0), hght, tmpk_hght, N, {258, 0},
+                  {258, 0});
+    check_min_max(sharp::PressureLayer(80000, 70000), pres, tmpk_pres, N,
+                  {258, 80000}, {258, 80000});
+    check_min_max(sharp::PressureLayer(105000, 100000), pres, tmpk_pres, N,
+                  {278, 100000}, {278, 100000});
+
+    // partly above and partly below
+    check_min_max(sharp::HeightLayer(500, 1500), hght, tmpk_hght, N, {268, 500},
+                  {278, 1000});
+    check_min_max(sharp::HeightLayer(-500, 500), hght, tmpk_hght, N, {258, 0},
+                  {268, 500});
+    check_min_max(sharp::PressureLayer(90000, 70000), pres, tmpk_pres, N,
+                  {258, 80000}, {268, 90000});
+    check_min_max(sharp::PressureLayer(110000, 90000), pres, tmpk_pres, N,
+                  {268, 90000}, {278, 100000});
+}
+
 TEST_CASE("Testing layer_mean over a pressure layer") {
     constexpr std::ptrdiff_t N = 10;
     // pressure is always in Pa

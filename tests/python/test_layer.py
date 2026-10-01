@@ -237,3 +237,60 @@ def test_pressure_layer_mean():
     assert (layer.layer_mean(lyr1, pres, data) == 1.25)
     assert (layer.layer_mean(lyr2, pres, data) == pytest.approx(1.111111))
     assert (layer.layer_mean(lyr3, pres, data) == pytest.approx(1.111111))
+
+
+# QC builds skip MISSING and NaN data in layer_min and layer_max, and return
+# MISSING for a layer wholly outside the profile. Each "was" comment is the
+# output measured before these changes and the interp NaN change.
+def test_layer_min_max_missing_data():
+    hght = np.array([0.0, 500.0, 1000.0, 1500.0, 2000.0, 2500.0],
+                    dtype="float32")
+    tmpk = np.array([258.0, 258.0, np.nan, 268.0, 268.0, 268.0],
+                    dtype="float32")
+
+    # NaN next to the bottom and the top of the layer
+    lyr = layer.HeightLayer(750.0, 2500.0)
+    assert (layer.layer_min(lyr, hght, tmpk) == (260.5, 750.0))  # was NaN
+    lyr = layer.HeightLayer(0.0, 1250.0)
+    assert (layer.layer_min(lyr, hght, tmpk) == (258.0, 0.0))  # unchanged
+    # was (268, 1250)
+    assert (layer.layer_max(lyr, hght, tmpk) == (265.5, 1250.0))
+
+    # a MISSING interior level and a MISSING bottom endpoint are skipped
+    hght = np.array([0.0, 100.0, 200.0, 300.0, 400.0], dtype="float32")
+    data = np.array([3.0, 1.0, constants.MISSING, 6.0, 4.0], dtype="float32")
+    lyr = layer.HeightLayer(0.0, 400.0)
+    # was (MISSING, 200)
+    assert (layer.layer_min(lyr, hght, data) == (1.0, 100.0))
+    data = np.array([constants.MISSING, constants.MISSING, 3.0, 1.0, 6.0],
+                    dtype="float32")
+    lyr = layer.HeightLayer(50.0, 400.0)
+    # was (MISSING, 50)
+    assert (layer.layer_min(lyr, hght, data) == (1.0, 300.0))
+
+
+def test_layer_min_max_outside_profile():
+    hght = np.array([0.0, 500.0, 1000.0], dtype="float32")
+    tmpk = np.array([258.0, 268.0, 278.0], dtype="float32")
+    pres = np.array([100000.0, 90000.0, 80000.0], dtype="float32")
+    tmpk_pres = np.array([278.0, 268.0, 258.0], dtype="float32")
+
+    # layer_min is unchanged; layer_max returned a value from outside the layer
+    above = layer.HeightLayer(1500.0, 2000.0)
+    below = layer.HeightLayer(-500.0, -100.0)
+    assert (layer.layer_min(above, hght, tmpk) == (constants.MISSING, 1500.0))
+    assert (layer.layer_min(below, hght, tmpk) == (constants.MISSING, -100.0))
+    # was (278, 1000)
+    assert (layer.layer_max(above, hght, tmpk) == (constants.MISSING, 1500.0))
+    # was (258, 0)
+    assert (layer.layer_max(below, hght, tmpk) == (constants.MISSING, -100.0))
+
+    above = layer.PressureLayer(70000.0, 60000.0)
+    # was (258, 80000)
+    assert (layer.layer_max(above, pres, tmpk_pres) ==
+            (constants.MISSING, 70000.0))
+
+    # a layer touching the top of the profile is unchanged
+    touch = layer.HeightLayer(1000.0, 2000.0)
+    assert (layer.layer_min(touch, hght, tmpk) == (278.0, 1000.0))
+    assert (layer.layer_max(touch, hght, tmpk) == (278.0, 1000.0))

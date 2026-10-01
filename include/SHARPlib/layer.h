@@ -340,6 +340,9 @@ template <typename L, typename Cb, typename Ct>
  * dereferenced and filled with the pressure or height of the maximum/minum
  * value.
  *
+ * QC builds skip MISSING and NaN data and return MISSING for a layer
+ * wholly outside the profile. sharp::layer_min gives the details.
+ *
  * \param   layer           (sharp::PressureLayer or sharp::HeightLayer)
  * \param   coord_arr       (pressure or height)
  * \param   data_arr        (data array to find max on)
@@ -363,6 +366,24 @@ template <typename L, typename C>
 
     LayerIndex layer_idx = get_layer_index(layer, coord_arr, N);
 
+#ifndef NO_QC
+    // Clipping to the profile inverts a correctly ordered layer exactly when
+    // the layer lies wholly outside the profile. Clipping never moves the
+    // endpoint nearest the profile. For a layer above the profile, that is
+    // the bottom, and clipping moves the top onto the last level. For a
+    // layer below the profile, it is the top.
+    const bool outside = (layer.coord == LayerCoordinate::pressure)
+                             ? (layer.bottom < layer.top)
+                             : (layer.bottom > layer.top);
+    if (outside) {
+        if (lvl_min_or_max) {
+            const bool above = (layer.top == coord_arr[N - 1]);
+            *lvl_min_or_max = above ? layer.bottom : layer.top;
+        }
+        return MISSING;
+    }
+#endif
+
     float min_or_max = MISSING;
     float top_val = MISSING;
     if constexpr (layer.coord == LayerCoordinate::pressure) {
@@ -373,16 +394,27 @@ template <typename L, typename C>
         top_val = interp_height(layer.top, coord_arr, data_arr, N);
     }
 
+    // QC builds skip MISSING and NaN values. A MISSING min_or_max means no
+    // value yet, which happens when the bottom endpoint has no valid level
+    // to interpolate from.
+    const auto replaces = [&](const float val) {
+#ifndef NO_QC
+        if ((val == MISSING) || std::isnan(val)) return false;
+        if (min_or_max == MISSING) return true;
+#endif
+        return comp(val, min_or_max);
+    };
+
     float coord_lvl = layer.bottom;
     for (std::ptrdiff_t k = layer_idx.kbot; k < layer_idx.ktop + 1; ++k) {
         const float val = data_arr[k];
-        if (comp(val, min_or_max)) {
+        if (replaces(val)) {
             min_or_max = val;
             coord_lvl = coord_arr[k];
         }
     }
 
-    if (comp(top_val, min_or_max)) {
+    if (replaces(top_val)) {
         min_or_max = top_val;
         coord_lvl = layer.top;
     }
@@ -404,6 +436,14 @@ template <typename L, typename C>
  * If lvl_of_min is not a nullptr, then the pointer will be
  * dereferenced and filled with the coordinate of the minimum
  * value.
+ *
+ * QC builds, the default, skip levels whose data is MISSING or NaN. They
+ * interpolate the layer bottom and top across missing levels, as
+ * sharp::interp_height and sharp::interp_pressure do, and skip an endpoint
+ * that has no valid level on one side of it. A layer with no valid data
+ * returns MISSING. A layer that lies wholly outside the profile also
+ * returns MISSING, and lvl_of_min is set to the layer's endpoint nearest
+ * the profile. Builds with NO_QC skip these checks.
  *
  * \param   layer       (sharp::PressureLayer or sharp::HeightLayer)
  * \param   coord_arr   (coordinate units; Pa or meters)
@@ -435,6 +475,14 @@ constexpr float layer_min(L layer, const float coord_arr[],
  * If lvl_of_max is not a nullptr, then the pointer will be
  * dereferenced and filled with the coordinate of the maximum
  * value.
+ *
+ * QC builds, the default, skip levels whose data is MISSING or NaN. They
+ * interpolate the layer bottom and top across missing levels, as
+ * sharp::interp_height and sharp::interp_pressure do, and skip an endpoint
+ * that has no valid level on one side of it. A layer with no valid data
+ * returns MISSING. A layer that lies wholly outside the profile also
+ * returns MISSING, and lvl_of_max is set to the layer's endpoint nearest
+ * the profile. Builds with NO_QC skip these checks.
  *
  * \param   layer           (sharp::PressureLayer or sharp::HeightLayer)
  * \param   coord_arr       (coordinate units; Pa or meters)
