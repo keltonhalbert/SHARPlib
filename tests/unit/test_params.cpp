@@ -286,3 +286,139 @@ TEST_CASE("Testing effective_bulk_wind_difference against a known value") {
         CHECK(ebwd.v == doctest::Approx(4.5f));
     }
 }
+
+// ===========================================================================
+// The effective-inflow Bunkers mean wind layer (SHARPlib-efz)
+// ===========================================================================
+//
+// Bunkers et al. (2014) take the pressure-weighted mean wind from the
+// effective inflow base to 65% of the most-unstable EL height, both in
+// meters AGL, with at least 3 km between them. The routine ended the layer
+// at 0.65 * (EL - base) instead, and fell back to the 0-6 km method when
+// that top was under 3 km or below the base. The two agree when the inflow
+// base is the ground. Each was_ value is the output measured before the fix,
+// in QC and NO_QC builds alike, and the same at every station elevation.
+
+namespace {
+// 0 to 16 km AGL every 500 m, so each inflow base and EL below is a level.
+// Pressure falls off with an 8 km scale height, and the hodograph curves.
+constexpr std::ptrdiff_t BN = 33;
+
+struct BunkersSounding {
+    float pres[BN];
+    float hght[BN];
+    float uwin[BN];
+    float vwin[BN];
+
+    // heights in meters MSL for a station at this elevation
+    explicit BunkersSounding(const float elevation) {
+        for (std::ptrdiff_t k = 0; k < BN; ++k) {
+            const float z = 500.0f * k;  // m AGL
+            hght[k] = elevation + z;
+            pres[k] = 100000.0f * std::exp(-z / 8000.0f);
+            uwin[k] = 30.0f * (1.0f - std::exp(-z / 4000.0f));
+            vwin[k] = 10.0f * std::sin(z / 3000.0f);
+        }
+    }
+
+    // the pressure of the level z meters AGL
+    float pres_at(const float z) const {
+        return pres[static_cast<std::ptrdiff_t>(z / 500.0f)];
+    }
+
+    // the effective-inflow method for an inflow base and an MU EL in m AGL
+    sharp::WindComponents effective(const float base, const float el,
+                                    const bool left) const {
+        sharp::Parcel mupcl;
+        mupcl.eql_pressure = pres_at(el);
+        const sharp::PressureLayer eil = {pres_at(base),
+                                          pres_at(base + 1000.0f)};
+        return sharp::storm_motion_bunkers(pres, hght, uwin, vwin, BN, eil,
+                                           mupcl, left);
+    }
+
+    // the classic method with the 0-6 km AGL shear
+    sharp::WindComponents classic(const sharp::HeightLayer mean_wind_agl,
+                                  const bool left, const bool weighted) const {
+        return sharp::storm_motion_bunkers(pres, hght, uwin, vwin, BN,
+                                           mean_wind_agl, {0, 6000}, left,
+                                           weighted);
+    }
+};
+
+struct BunkersCase {
+    float base;    // effective inflow base, m AGL
+    float el;      // MU EL, m AGL
+    float mw_top;  // m AGL; 0 for the 0-6 km fallback
+    float u;       // the right mover
+    float v;
+    float was_u;
+    float was_v;
+};
+
+// The routine equals the classic method over {base, mw_top}, pressure
+// weighted, or the 0-6 km fallback, and gives the same motion at every
+// station elevation.
+void check_bunkers(const BunkersCase c) {
+    CAPTURE(c.base);
+    CAPTURE(c.el);
+    CAPTURE(c.was_u);
+    CAPTURE(c.was_v);
+    for (const float elevation : {0.0f, 1000.0f, 762.3f}) {
+        CAPTURE(elevation);
+        const BunkersSounding snd(elevation);
+        for (const bool left : {false, true}) {
+            CAPTURE(left);
+            const sharp::WindComponents motion =
+                snd.effective(c.base, c.el, left);
+            const sharp::WindComponents expected =
+                (c.mw_top > 0.0f) ? snd.classic({c.base, c.mw_top}, left, true)
+                                  : snd.classic({0, 6000}, left, false);
+            CHECK(motion.u == doctest::Approx(expected.u).epsilon(1e-6));
+            CHECK(motion.v == doctest::Approx(expected.v).epsilon(1e-6));
+            if (!left) {
+                CHECK(motion.u == doctest::Approx(c.u));
+                CHECK(motion.v == doctest::Approx(c.v));
+            }
+        }
+    }
+}
+}  // namespace
+
+TEST_CASE("Testing the effective-inflow storm_motion_bunkers mean wind layer") {
+    for (const BunkersCase c : {
+             // the inflow base is the ground: unchanged
+             BunkersCase{0, 10000, 6500, 14.8269749f, -1.06337833f, 14.8269749f,
+                         -1.06337833f},
+             // was the layer {1000, 7150}
+             BunkersCase{1000, 12000, 7800, 18.9706116f, 0.523952484f,
+                         18.5933094f, 0.581968784f},
+             // was the layer {2000, 5200}
+             BunkersCase{2000, 10000, 6500, 20.7405224f, 1.77062941f,
+                         19.6004467f, 1.65212774f},
+         }) {
+        check_bunkers(c);
+    }
+}
+
+TEST_CASE("Testing the effective-inflow storm_motion_bunkers 3 km fallback") {
+    for (const BunkersCase c : {
+             // 2550 m between the base and 0.65 * EL: falls back now. Was the
+             // layer {2000, 3250}, 1250 m deep.
+             BunkersCase{2000, 7000, 0, 15.8496647f, -0.509417534f, 17.0255566f,
+                         0.573388577f},
+             // 3100 m: the layer {6000, 9100} now. 0.65 * (EL - base) was
+             // 5200 m, below the base, so this fell back.
+             BunkersCase{6000, 14000, 9100, 27.9163494f, -0.846437931f,
+                         15.8496647f, -0.509417534f},
+             // 2500 m: falls back, as it did
+             BunkersCase{4000, 10000, 0, 15.8496647f, -0.509417534f,
+                         15.8496647f, -0.509417534f},
+             // the inflow base is the ground and 0.65 * EL is 2600 m: falls
+             // back, as it did
+             BunkersCase{0, 4000, 0, 15.8496647f, -0.509417534f, 15.8496647f,
+                         -0.509417534f},
+         }) {
+        check_bunkers(c);
+    }
+}

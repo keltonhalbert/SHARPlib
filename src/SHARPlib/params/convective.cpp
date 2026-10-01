@@ -87,6 +87,7 @@ WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const std::ptrdiff_t N, PressureLayer eff_infl_lyr,
     const Parcel& mupcl, const bool leftMover) {
+    // m AGL, as the classic overload takes its layers (isAGL = true)
     HeightLayer shr_layer = {0, 6000.0};
     HeightLayer dflt_mw_lyr = {0.0, 6000.0};
 
@@ -101,9 +102,11 @@ WindComponents storm_motion_bunkers(
                                     dflt_mw_lyr, shr_layer, leftMover, false);
     }
 
+    // m AGL: toAGL = true subtracts height[0]
     HeightLayer eil_hght =
         pressure_layer_to_height(eff_infl_lyr, pressure, height, N, true);
 
+    // m MSL, the frame of height[]
     float eql_ht = interp_pressure(eql_pres, pressure, height, N);
 #ifndef NO_QC
     if ((eil_hght.bottom == MISSING) || (eql_ht == MISSING)) {
@@ -111,16 +114,20 @@ WindComponents storm_motion_bunkers(
                                     dflt_mw_lyr, shr_layer, leftMover, false);
     }
 #endif
-    // get AGL
+    // m AGL, after the check: MISSING - height[0] would pass for a height
     eql_ht -= height[0];
-    const float htop = 0.65 * (eql_ht - eil_hght.bottom);
 
-    if ((htop < 3000.0f) || (eil_hght.bottom > htop)) {
+    // Bunkers et al. (2014): the mean wind runs from the effective inflow
+    // base to 65% of the MU EL height, with at least 3 km between them.
+    const float mw_top = 0.65 * eql_ht;  // m AGL
+    const float mw_depth = mw_top - eil_hght.bottom;
+    if (mw_depth < 3000.0f) {
         return storm_motion_bunkers(pressure, height, u_wind, v_wind, N,
                                     dflt_mw_lyr, shr_layer, leftMover, false);
     }
 
-    HeightLayer mw_layer = {eil_hght.bottom, htop};
+    // m AGL, like shr_layer
+    HeightLayer mw_layer = {eil_hght.bottom, mw_top};
     return storm_motion_bunkers(pressure, height, u_wind, v_wind, N, mw_layer,
                                 shr_layer, leftMover, true);
 }

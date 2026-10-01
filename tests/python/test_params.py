@@ -303,6 +303,161 @@ def test_bunkers_motion_effective_fallback():
     assert (motion.u == pytest.approx(14.0566034))
     assert (motion.v == pytest.approx(-7.5))
 
+
+def bunkers_from_definition(pres, hght, uwin, vwin, eil, eql_pres, left):
+    """Effective-inflow Bunkers storm motion from its definition, in numpy.
+
+    Bunkers et al. (2014): the mean wind is pressure weighted, from the
+    effective inflow base to 65% of the most-unstable EL height, both in
+    meters AGL, with at least 3 km between them; otherwise it's the 0-6 km
+    mean wind, not weighted. The storm moves 7.5 m/s to the right (or left)
+    of the mean wind, perpendicular to the shear between the 0-0.5 km and
+    5.5-6 km mean winds (Bunkers et al. 2000).
+
+    hght is in meters MSL. Layers are built in meters AGL and moved to MSL
+    before interpolating. As in SHARPlib, height and wind are linear in
+    log10(pressure), pressure is linear in height, and a mean is a trapezoid
+    integral over pressure through the levels. Returns the mean wind layer
+    (m AGL), or None for the 0-6 km fallback, and the motion (u, v).
+    """
+    p = pres.astype("float64")
+    z_msl = hght.astype("float64")
+    sfc = z_msl[0]
+    logp_up = np.log10(p)[::-1]
+
+    def at_pres(pp, arr):
+        return np.interp(np.log10(pp), logp_up, arr.astype("float64")[::-1])
+
+    def pres_at_agl(z_agl):
+        return np.interp(sfc + z_agl, z_msl, p)
+
+    def mean_wind(bot_agl, top_agl, weighted):
+        pbot, ptop = pres_at_agl(bot_agl), pres_at_agl(top_agl)
+        inside = (p < pbot) & (p > ptop)
+        pp = np.concatenate(([pbot], p[inside], [ptop]))
+        w = pp if weighted else np.ones_like(pp)
+        mean = []
+        for arr in (uwin, vwin):
+            a = np.concatenate(
+                ([at_pres(pbot, arr)], arr[inside], [at_pres(ptop, arr)]))
+            mean.append(np.trapezoid(a * w, pp) / np.trapezoid(w, pp))
+        return mean
+
+    base = at_pres(eil.bottom, z_msl) - sfc
+    top = 0.65 * (at_pres(eql_pres, z_msl) - sfc)
+    if top - base < 3000.0:
+        mw_layer, mean = None, mean_wind(0.0, 6000.0, False)
+    else:
+        mw_layer, mean = (base, top), mean_wind(base, top, True)
+    lo = mean_wind(0.0, 500.0, False)
+    hi = mean_wind(5500.0, 6000.0, False)
+    shr_u, shr_v = hi[0] - lo[0], hi[1] - lo[1]
+    k = (-7.5 if left else 7.5) / np.hypot(shr_u, shr_v)
+    return mw_layer, (mean[0] + k * shr_v, mean[1] - k * shr_u)
+
+
+def check_effective_bunkers(pres, hght, uwin, vwin, eil, mupcl, mw_layer):
+    """The effective-inflow motion equals the classic method over mw_layer
+    (m AGL), pressure weighted, with the 0-6 km shear, or the 0-6 km method
+    if mw_layer is None, and matches bunkers_from_definition. Returns the
+    right mover."""
+    for left in (False, True):
+        motion = params.storm_motion_bunkers(
+            pres, hght, uwin, vwin, eil, mupcl, left)
+        if mw_layer is None:
+            classic = params.storm_motion_bunkers(
+                pres, hght, uwin, vwin, layer.HeightLayer(0.0, 6000.0),
+                layer.HeightLayer(0.0, 6000.0), left, False)
+        else:
+            classic = params.storm_motion_bunkers(
+                pres, hght, uwin, vwin, layer.HeightLayer(*mw_layer),
+                layer.HeightLayer(0.0, 6000.0), left, True)
+        assert (motion.u == pytest.approx(classic.u))
+        assert (motion.v == pytest.approx(classic.v))
+
+        oracle_layer, oracle = bunkers_from_definition(
+            pres, hght, uwin, vwin, eil, mupcl.eql_pressure, left)
+        if mw_layer is None:
+            assert (oracle_layer is None)
+        else:
+            assert (oracle_layer == pytest.approx(mw_layer, abs=1e-2))
+        assert (motion.u == pytest.approx(oracle[0], abs=1e-4))
+        assert (motion.v == pytest.approx(oracle[1], abs=1e-4))
+    return params.storm_motion_bunkers(pres, hght, uwin, vwin, eil, mupcl)
+
+
+# The effective-inflow mean wind runs from the inflow base to 65% of the MU EL
+# height, both m AGL (SHARPlib-efz). ddc at four station elevations: AGL
+# heights (0 m), the file's MSL heights (790 m), and the AGL heights raised
+# 1000 m and 762.3 m. 92043 Pa is the surface, the natural inflow base.
+# Before the fix the layer ended at 0.65 * (EL - base) m AGL, and the right
+# mover was (9.701575, 5.622300), (12.220241, 6.417223) and
+# (13.739734, 6.757159) for these layers, at every elevation to within 1e-6.
+@pytest.mark.parametrize("station", [0.0, "file", 1000.0, 762.3])
+@pytest.mark.parametrize("eil_bottom, eil_top, expected", [
+    (92043.0, 83432.0, (9.701575, 5.622300)),
+    (85000.0, 75000.0, (12.387376, 6.366230)),
+    (80000.0, 70000.0, (13.978964, 6.661992)),
+])
+def test_bunkers_motion_effective_layer(station, eil_bottom, eil_top,
+                                        expected):
+    pres = snd_data["pres"]
+    if station == "file":
+        hght = snd_data["hght_msl"]
+    else:
+        hght = snd_data["hght"] + np.float32(station)
+    lifter = parcel.lifter_cm1()
+    lifter.ma_type = thermo.adiabat.pseudo_liq
+    mupcl = parcel.Parcel()
+    params.effective_inflow_layer(
+        lifter, pres, hght, snd_data["tmpk"], snd_data["dwpk"],
+        snd_data["vtmp"], mupcl=mupcl)
+    assert (pres[0] == 92043.0)
+
+    # m AGL, from the library's conversions
+    eil = layer.PressureLayer(eil_bottom, eil_top)
+    base = layer.pressure_layer_to_height(eil, pres, hght, True).bottom
+    el = interp.interp_pressure(mupcl.eql_pressure, pres, hght) - hght[0]
+    assert (el == pytest.approx(11732.17, abs=1e-2))
+
+    motion = check_effective_bunkers(pres, hght, snd_data["uwin"],
+                                     snd_data["vwin"], eil, mupcl,
+                                     (base, 0.65 * el))
+    assert (motion.u == pytest.approx(expected[0]))
+    assert (motion.v == pytest.approx(expected[1]))
+
+
+# The mean wind layer needs 3 km between the inflow base and 0.65 * EL, or
+# the motion is the 0-6 km method's (SHARPlib-efz). The sounding runs 0 to
+# 16 km AGL every 500 m, so each inflow base and EL is a level, at three
+# station elevations. Before the fix, with a top of 0.65 * (EL - base), the
+# right mover was (17.025555, 0.573388) for the first case, from the 1250 m
+# deep layer {2000, 3250}, and the 0-6 km (15.849664, -0.509418) for the
+# second, whose top of 5200 m was below the base. The same at every
+# elevation.
+@pytest.mark.parametrize("station", [0.0, 1000.0, 762.3])
+@pytest.mark.parametrize("base, el, mw_layer, expected", [
+    (2000, 7000, None, (15.849664, -0.509418)),
+    (6000, 14000, (6000.0, 9100.0), (27.916351, -0.846436)),
+])
+def test_bunkers_motion_effective_minimum_depth(station, base, el, mw_layer,
+                                                expected):
+    z = np.arange(33, dtype="float32") * np.float32(500.0)
+    pres = np.float32(100000.0) * np.exp(-z / np.float32(8000.0))
+    hght = z + np.float32(station)
+    uwin = np.float32(30.0) * (np.float32(1.0) -
+                               np.exp(-z / np.float32(4000.0)))
+    vwin = np.float32(10.0) * np.sin(z / np.float32(3000.0))
+
+    mupcl = parcel.Parcel()
+    mupcl.eql_pressure = float(pres[el // 500])
+    eil = layer.PressureLayer(float(pres[base // 500]),
+                              float(pres[base // 500 + 2]))
+    motion = check_effective_bunkers(pres, hght, uwin, vwin, eil, mupcl,
+                                     mw_layer)
+    assert (motion.u == pytest.approx(expected[0]))
+    assert (motion.v == pytest.approx(expected[1]))
+
 def test_stp_scp_ship_dcp_lhp():
     lifter = parcel.lifter_cm1()
     lifter.ma_type = thermo.adiabat.pseudo_liq

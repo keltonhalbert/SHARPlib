@@ -233,17 +233,25 @@ def storm_motion_bunkers(pressure: Annotated[NDArray[numpy.float32], dict(shape=
 @overload
 def storm_motion_bunkers(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], u_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], v_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], eff_infl_lyr: nwsspc.sharp.calc.layer.PressureLayer, mupcl: nwsspc.sharp.calc.parcel.Parcel, leftMover: bool = False) -> nwsspc.sharp.calc.winds.WindComponents:
     """
-    Estimates supercell storm motion using the Bunkers et al. 2014 
-    method described in the following paper:
-    http://dx.doi.org/10.15191/nwajom.2014.0211
+    Estimates supercell storm motion using the effective-inflow mean wind of
+    Bunkers et al. (2014).
 
-    This method is parcel based, using a mean-wind vector defined as the 
-    pressure-weighted mean wind between the Effective Inflow Layer surface 
-    (see effective_inflow_layer routine) and 65% of the depth between that 
-    surface and the most unstable parcel's Equilibrium Level. This method 
-    produces the same storm motion estimate for surface based supercells, 
-    and captures the motion of elevated supercells better than the 
-    Bunkers 2000 method. 
+    The mean wind is pressure weighted, with the height of the effective
+    inflow base (see effective_inflow_layer) as its base and 65% of the
+    height of the most-unstable parcel's Equilibrium Level as its top, both
+    in meters AGL. The storm moves 7.5 m/s from that mean wind, perpendicular
+    to the 0-6 km AGL shear between the 0-0.5 km and 5.5-6 km mean winds, as
+    in the Bunkers 2000 method. Bunkers et al. found this does as well as the
+    Bunkers 2000 method overall, and better for elevated supercells.
+
+    The mean wind layer must be at least 3 km deep. If 65% of the EL height
+    is less than 3 km above the inflow base, this falls back to the Bunkers
+    2000 method with 0-6 km AGL layers, as it does when the effective inflow
+    layer or the parcel's EL pressure is MISSING.
+
+    The inflow base and the EL are converted to meters AGL internally, so
+    height may be AGL or MSL, and the result doesn't depend on the station
+    elevation.
 
     The input parameters of eff_infl_lyr and mupcl (effective inflow layer 
     pressure bounds and the most unstable parcel, respectively) are required
@@ -259,7 +267,10 @@ def storm_motion_bunkers(pressure: Annotated[NDArray[numpy.float32], dict(shape=
 
     References
     ----------
-    Bunkers et al. 2014: http://dx.doi.org/10.15191/nwajom.2014.0211
+    Bunkers, M. J., D. A. Barber, R. L. Thompson, R. Edwards, and J. Garner,
+    2014: Choosing a universal mean wind for supercell motion prediction.
+    J. Operational Meteor., 2 (11), 115-129,
+    https://doi.org/10.15191/nwajom.2014.0211
 
     Parameters 
     ----------
