@@ -628,6 +628,10 @@ template <typename L>
  * Computes the mass-weighted mean value of given arrays of data
  * and corresponding pressure coordinates over the given sharp::PressureLayer.
  *
+ * A layer that extends past the profile is clipped to it. A layer that lies
+ * wholly outside the profile, or touches it at only one level, has no mean
+ * and returns sharp::MISSING.
+ *
  * \param   layer       (sharp::PressureLayer)
  * \param   pressure    (vertical pressure array; Pa)
  * \param   data_arr    (The data for which to compute a mean)
@@ -648,6 +652,10 @@ template <typename L>
  * and corresponding height coordinates over the given sharp::HeightLayer.
  * This is really just a fancy wrapper around the implementation that uses
  * sharp::PressureLayer.
+ *
+ * A layer that extends past the profile is clipped to it. A layer that lies
+ * wholly outside the profile, or touches it at only one level, has no mean
+ * and returns sharp::MISSING.
  *
  * \param   layer       (sharp::HeightLayer)
  * \param   height      (vertical height array; meters)

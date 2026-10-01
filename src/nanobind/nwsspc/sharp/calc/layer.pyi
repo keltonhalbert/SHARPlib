@@ -299,6 +299,10 @@ def layer_mean(layer: PressureLayer, pressure: Annotated[NDArray[numpy.float32],
     Computes the pressure-weighted mean value of a field over 
     a given PressureLayer. 
 
+    A layer that extends past the profile is clipped to it. A layer that
+    lies wholly outside the profile, or touches it at only one level, has
+    no mean and returns MISSING.
+
     Parameters
     ----------
     layer : nwsspc.sharp.calc.layer.PressureLayer 
@@ -318,6 +322,10 @@ def layer_mean(layer: HeightLayer, height: Annotated[NDArray[numpy.float32], dic
     """
     Computes the pressure-weighted mean value of a field over 
     a given HeightLayer. 
+
+    A layer that extends past the profile is clipped to it. A layer that
+    lies wholly outside the profile, or touches it at only one level, has
+    no mean and returns MISSING.
 
     Parameters
     ----------
