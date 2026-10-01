@@ -68,6 +68,7 @@ breathe_projects_source = {
             "include/SHARPlib/interp.h",
             "include/SHARPlib/layer.h",
             "include/SHARPlib/parcel.h",
+            "include/SHARPlib/qc.h",
             "include/SHARPlib/thermo.h",
             "include/SHARPlib/winds.h",
             "include/SHARPlib/params/convective.h",

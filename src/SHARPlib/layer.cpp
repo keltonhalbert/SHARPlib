@@ -16,6 +16,7 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
+#include <SHARPlib/qc.h>
 #include <fmt/core.h>
 
 #include <cmath>
@@ -110,7 +111,7 @@ PressureLayer height_layer_to_pressure(HeightLayer layer,
 #ifndef NO_QC
     // An AGL layer is measured from height[0], so without it there's no
     // answer.
-    if (isAGL && ((height[0] == MISSING) || std::isnan(height[0]))) {
+    if (isAGL && is_missing(height[0])) {
         return {MISSING, MISSING};
     }
 #endif
@@ -143,7 +144,7 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
 #ifndef NO_QC
     // An AGL layer is measured from height[0], so without it there's no
     // answer.
-    if (toAGL && ((height[0] == MISSING) || std::isnan(height[0]))) {
+    if (toAGL && is_missing(height[0])) {
         return {MISSING, MISSING};
     }
 #endif
