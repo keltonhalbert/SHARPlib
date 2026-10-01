@@ -37,14 +37,17 @@ if (${DO_BENCH})
 	add_executable(bench_sharp_algorithms EXCLUDE_FROM_ALL bench_algorithms.cpp)
 	add_executable(bench_sharp_interp EXCLUDE_FROM_ALL bench_interp.cpp)
 	add_executable(bench_sharp_parcel EXCLUDE_FROM_ALL bench_parcel.cpp)
+	add_executable(bench_sharp_params EXCLUDE_FROM_ALL bench_params.cpp)
 
 	target_link_libraries(bench_sharp_algorithms SHARPlib benchmark::benchmark)
 	target_link_libraries(bench_sharp_interp SHARPlib benchmark::benchmark)
 	target_link_libraries(bench_sharp_parcel SHARPlib benchmark::benchmark)
+	target_link_libraries(bench_sharp_params SHARPlib benchmark::benchmark)
 
 	add_dependencies(SHARPlib_bench bench_sharp_algorithms)
 	add_dependencies(SHARPlib_bench bench_sharp_interp)
 	add_dependencies(SHARPlib_bench bench_sharp_parcel)
+	add_dependencies(SHARPlib_bench bench_sharp_params)
 
 endif()
 
