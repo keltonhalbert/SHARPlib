@@ -167,11 +167,11 @@ template <typename _Fp>
  * Conduct a bottom-up search for the first occurrence of a given value,
  * and interpolate in order to get the pressure level it occurs at.
  *
- * QC builds, the default, skip levels whose data is MISSING or NaN, so the
- * search still finds a crossing between the valid levels on either side
- * of them. An exact match returns that level's pressure, even when it is
- * the only valid level in the profile. A MISSING or NaN data_val returns
- * MISSING. Builds with NO_QC skip these checks.
+ * An exact match returns that level's pressure. QC builds, the default,
+ * skip levels whose data is MISSING or NaN, so the search still finds a
+ * crossing between the valid levels on either side of them, and an exact
+ * match on the only valid level returns it. A MISSING or NaN data_val
+ * returns MISSING. Builds with NO_QC skip these checks.
  *
  * \param   data_val        The value being searched for
  * \param   pressure_arr    The pressure array to get the level from (Pa)

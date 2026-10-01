@@ -277,13 +277,6 @@ TEST_CASE("Testing find_first with NaN and MISSING data") {
         CHECK(sharp::find_first_height(6, hght, v5_bad, 2) == sharp::MISSING);
         CHECK(sharp::find_first_pressure(6, pres, v5_bad, 2) == sharp::MISSING);
     }
-
-    // single-level profile: an exact match returns its coordinate
-    constexpr float v5[1] = {5};
-    CHECK(sharp::find_first_height(5, hght, v5, 1) == 0);
-    CHECK(sharp::find_first_height(6, hght, v5, 1) == sharp::MISSING);
-    CHECK(sharp::find_first_pressure(5, pres, v5, 1) == 100000);
-    CHECK(sharp::find_first_pressure(6, pres, v5, 1) == sharp::MISSING);
 }
 #endif
 
@@ -325,4 +318,14 @@ TEST_CASE("Testing interp on a single-level profile") {
         CHECK(sharp::interp_pressure(85000, pres1, data, 1) == sharp::MISSING);
     }
 #endif
+}
+
+TEST_CASE("Testing find_first on a single-level profile") {
+    constexpr float hght1[1] = {100};
+    constexpr float pres1[1] = {85000};
+    constexpr float v5[1] = {5};
+    CHECK(sharp::find_first_height(5, hght1, v5, 1) == 100);
+    CHECK(sharp::find_first_height(6, hght1, v5, 1) == sharp::MISSING);
+    CHECK(sharp::find_first_pressure(5, pres1, v5, 1) == 85000);
+    CHECK(sharp::find_first_pressure(6, pres1, v5, 1) == sharp::MISSING);
 }
