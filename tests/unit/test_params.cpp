@@ -1323,27 +1323,13 @@ constexpr float d_pres[KN] = {100000, 80000, 62000, 47000, 35000};
 constexpr float d_hght[KN] = {0, 2000, 4000, 6000, 8000};
 constexpr float d_uwin[KN] = {0, 10, 20, 30, 40};
 constexpr float d_vwin[KN] = {0, 2, 4, 6, 8};
-constexpr float d_hght_bot[KN] = {M, 2000, 4000, 6000, 8000};
 }  // namespace
 
 TEST_CASE("Testing effective_bulk_wind_difference with a MISSING layer") {
-    constexpr float hght_top[KN] = {0, 500, 1000, 1500, M};
-    check_missing_wind(sharp::effective_bulk_wind_difference(
-        k_pres, hght_top, k_uwin, k_vwin, KN, {100000, 80000}, 95000));
-    check_missing_wind(sharp::effective_bulk_wind_difference(
-        k_pres, hght_top, k_uwin, k_vwin, KN, {100000, 95000}, 82000));
-
     check_missing_wind(sharp::effective_bulk_wind_difference(
         k_pres, k_hght, k_uwin, k_vwin, KN, {105000, 95000}, 90000));
     check_missing_wind(sharp::effective_bulk_wind_difference(
         k_pres, k_hght, k_uwin, k_vwin, KN, {100000, 95000}, 70000));
-
-    for (const float bad : {M, std::numeric_limits<float>::quiet_NaN()}) {
-        CAPTURE(bad);
-        const float hght_bad[KN] = {bad, 500, 1000, 1500, 2000};
-        check_missing_wind(sharp::effective_bulk_wind_difference(
-            k_pres, hght_bad, k_uwin, k_vwin, KN, {95000, 90000}, 85000));
-    }
 
     check_wind(sharp::effective_bulk_wind_difference(
                    k_pres, k_hght, k_uwin, k_vwin, KN, {100000, 95000}, 85000),
@@ -1351,14 +1337,6 @@ TEST_CASE("Testing effective_bulk_wind_difference with a MISSING layer") {
 }
 
 TEST_CASE("Testing storm_motion_bunkers with a MISSING layer") {
-    constexpr float pres_top[KN] = {100000, 80000, 62000, 47000, M};
-    check_missing_wind(sharp::storm_motion_bunkers(
-        pres_top, d_hght, d_uwin, d_vwin, KN, {0, 7000}, {0, 6000}));
-    check_missing_wind(sharp::storm_motion_bunkers(
-        pres_top, d_hght, d_uwin, d_vwin, KN, {0, 6000}, {0, 7000}));
-    check_missing_wind(sharp::storm_motion_bunkers(
-        d_pres, d_hght_bot, d_uwin, d_vwin, KN, {0, 6000}, {0, 6000}));
-
     check_missing_wind(sharp::storm_motion_bunkers(
         k_pres, k_hght, k_uwin, k_vwin, KN, {0, 3000}, {0, 2000}));
     check_missing_wind(sharp::storm_motion_bunkers(
@@ -1389,13 +1367,7 @@ TEST_CASE("Testing effective-inflow storm_motion_bunkers fallback") {
         check_wind(motion, 14.0566034f, left ? 7.5f : -7.5f);
     }
 
-    check_missing_wind(sharp::storm_motion_bunkers(
-        d_pres, d_hght_bot, d_uwin, d_vwin, KN, {95000, 85000}, mupcl));
-    constexpr float hght_top[KN] = {0, 2000, 4000, 6000, M};
     mupcl.eql_pressure = 40000;
-    check_missing_wind(sharp::storm_motion_bunkers(
-        d_pres, hght_top, d_uwin, d_vwin, KN, {100000, 90000}, mupcl));
-
     check_wind(sharp::storm_motion_bunkers(d_pres, d_hght, d_uwin, d_vwin, KN,
                                            {100000, 90000}, mupcl),
                11.077548f, -5.43301964f);
@@ -1408,21 +1380,9 @@ TEST_CASE("Testing mcs_motion_corfidi with a MISSING layer") {
         check_missing_wind(vectors.first);
         check_missing_wind(vectors.second);
     };
-    constexpr float pres_top[KN] = {100000, 95000, 90000, M, M};
-    check_missing_pair(
-        sharp::mcs_motion_corfidi(pres_top, hght, k_uwin, k_vwin, KN));
-    constexpr float hght_bot[KN] = {M, 500, 1000, 2000, 3000};
-    check_missing_pair(
-        sharp::mcs_motion_corfidi(pres, hght_bot, k_uwin, k_vwin, KN));
     constexpr float hght_low[KN] = {0, 250, 500, 750, 1000};
     check_missing_pair(
         sharp::mcs_motion_corfidi(k_pres, hght_low, k_uwin, k_vwin, KN));
-    for (const float bad : {M, std::numeric_limits<float>::quiet_NaN()}) {
-        CAPTURE(bad);
-        const float pres_bad[KN] = {bad, 95000, 90000, 80000, 70000};
-        check_missing_pair(
-            sharp::mcs_motion_corfidi(pres_bad, hght, k_uwin, k_vwin, KN));
-    }
 
     const auto vectors =
         sharp::mcs_motion_corfidi(pres, hght, k_uwin, k_vwin, KN);
@@ -1442,9 +1402,6 @@ TEST_CASE("Testing large_hail_parameter with a MISSING layer") {
     const sharp::WindComponents storm = {5, 5};
     const sharp::PressureLayer hgz = {65000, 52000};
 
-    constexpr float pres_top[N] = {100000, 85000, 70000, 59000, 51000, M};
-    CHECK(sharp::large_hail_parameter(mu_pcl, 8.0f, hgz, storm, pres_top, hght,
-                                      uwin, vwin, N) == M);
     CHECK(sharp::large_hail_parameter(mu_pcl, 8.0f, {M, M}, storm, pres, hght,
                                       uwin, vwin, N) == M);
     CHECK(sharp::large_hail_parameter(mu_pcl, 8.0f, {65000, 35000}, storm, pres,

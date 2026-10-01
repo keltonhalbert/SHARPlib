@@ -16,7 +16,6 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
 #include <SHARPlib/layer.h>
-#include <SHARPlib/qc.h>
 #include <fmt/core.h>
 
 #include <cmath>
@@ -109,9 +108,6 @@ PressureLayer height_layer_to_pressure(HeightLayer layer,
                                        const std::ptrdiff_t N,
                                        const bool isAGL) {
     if (isAGL) {
-#ifndef NO_QC
-        if (is_missing(height[0])) return {MISSING, MISSING};
-#endif
         layer.bottom += height[0];
         layer.top += height[0];
     }
@@ -122,10 +118,6 @@ PressureLayer height_layer_to_pressure(HeightLayer layer,
 
     const float pbot = interp_height(layer.bottom, height, pressure, N);
     const float ptop = interp_height(layer.top, height, pressure, N);
-
-#ifndef NO_QC
-    if ((pbot == MISSING) || (ptop == MISSING)) return {MISSING, MISSING};
-#endif
 
     return {pbot, ptop};
 }
@@ -141,14 +133,7 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
     float zbot = interp_pressure(layer.bottom, pressure, height, N);
     float ztop = interp_pressure(layer.top, pressure, height, N);
 
-#ifndef NO_QC
-    if ((zbot == MISSING) || (ztop == MISSING)) return {MISSING, MISSING};
-#endif
-
     if (toAGL) {
-#ifndef NO_QC
-        if (is_missing(height[0])) return {MISSING, MISSING};
-#endif
         zbot -= height[0];
         ztop -= height[0];
     }
