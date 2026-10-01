@@ -268,8 +268,8 @@ QC builds, the default, skip levels whose data is MISSING or NaN. They
 interpolate the layer bottom and top across missing levels, as
 interp_height and interp_pressure do, and skip an endpoint that has no
 valid level on one side of it. A layer with no valid data returns
-MISSING. A layer that lies wholly outside the profile also returns
-MISSING, and level_of_min is the layer's endpoint nearest the profile.
+MISSING, as does a layer wholly outside the profile, for which
+level_of_min is the layer's endpoint nearest the profile.
 
 Parameters
 ----------
@@ -295,12 +295,8 @@ tuple[float, float]
 Returns the maximum value of the data array within the given {0}. The 
 function bounds checks the layer by calling get_layer_index. 
 
-QC builds, the default, skip levels whose data is MISSING or NaN. They
-interpolate the layer bottom and top across missing levels, as
-interp_height and interp_pressure do, and skip an endpoint that has no
-valid level on one side of it. A layer with no valid data returns
-MISSING. A layer that lies wholly outside the profile also returns
-MISSING, and level_of_max is the layer's endpoint nearest the profile.
+QC builds skip MISSING and NaN data and return MISSING for a layer
+wholly outside the profile. layer_min gives the details.
 
 Parameters
 ----------
@@ -326,12 +322,11 @@ tuple[float, float]
 Computes the pressure-weighted mean value of a field over 
 a given PressureLayer. 
 
-A layer that extends past the profile is clipped to it. A layer that
-lies wholly outside the profile, or touches it at only one level, has
-no mean and returns MISSING. The pressure array is expected to be
-complete. A MISSING level in it isn't supported, and in QC builds it
-can make the result MISSING or wrong, even for a layer that doesn't
-reach that level.
+A layer that extends past the profile is clipped to it. A layer wholly
+outside the profile, or touching it at only one level, returns MISSING.
+The pressure array must be complete: a MISSING level in it isn't
+supported, and in QC builds it can make the result MISSING or wrong,
+even for a layer that doesn't reach that level.
 
 Parameters
 ----------
@@ -352,13 +347,8 @@ float
 Computes the pressure-weighted mean value of a field over 
 a given HeightLayer. 
 
-A layer that extends past the profile is clipped to it. A layer that
-lies wholly outside the profile, or touches it at only one level, has
-no mean and returns MISSING. The height and pressure arrays are
-expected to be complete. A MISSING level in them isn't supported, and
-in QC builds it can make the result MISSING or wrong, even for a layer
-that doesn't reach that level. MISSING levels in both arrays can also
-raise ValueError.
+Behaves as the PressureLayer overload, and the height array must be
+complete too. MISSING levels in both arrays can also raise ValueError.
 
 Parameters
 ----------

@@ -9,6 +9,7 @@
 
 #include <cmath>
 #include <limits>
+#include <optional>
 #include <vector>
 
 #include "doctest.h"
@@ -1298,18 +1299,6 @@ TEST_CASE("Testing modified_bourgouin with NaN next to the generation layer") {
 }
 #endif
 
-// ===========================================================================
-// Convective wind parameters whose layers convert to MISSING (SHARPlib-mut)
-// ===========================================================================
-//
-// A layer conversion returns {MISSING, MISSING} when the layer extends past
-// the profile, when an endpoint's data on its open side are MISSING, or when
-// an AGL conversion has no valid height[0]. These routines used that layer
-// in arithmetic: they threw std::range_error or returned garbage. QC builds
-// now return MISSING (the effective-inflow Bunkers overload falls back to the
-// non-parcel method). Each "was" comment is the output measured before this
-// change. NO_QC builds don't change.
-
 #ifndef NO_QC
 namespace {
 constexpr float M = sharp::MISSING;
@@ -1325,38 +1314,30 @@ void check_wind(const sharp::WindComponents wind, const float u,
     CHECK(wind.v == doctest::Approx(v));
 }
 
-// 0 to 2 km
 constexpr std::ptrdiff_t KN = 5;
 constexpr float k_pres[KN] = {100000, 95000, 90000, 85000, 80000};
 constexpr float k_hght[KN] = {0, 500, 1000, 1500, 2000};
 constexpr float k_uwin[KN] = {0, 5, 10, 15, 20};
 constexpr float k_vwin[KN] = {0, 2, 4, 6, 8};
-// 0 to 8 km
 constexpr float d_pres[KN] = {100000, 80000, 62000, 47000, 35000};
 constexpr float d_hght[KN] = {0, 2000, 4000, 6000, 8000};
 constexpr float d_uwin[KN] = {0, 10, 20, 30, 40};
 constexpr float d_vwin[KN] = {0, 2, 4, 6, 8};
+constexpr float d_hght_bot[KN] = {M, 2000, 4000, 6000, 8000};
 }  // namespace
 
 TEST_CASE("Testing effective_bulk_wind_difference with a MISSING layer") {
     constexpr float hght_top[KN] = {0, 500, 1000, 1500, M};
-    // The inflow layer top has no valid height above it: was std::range_error
     check_missing_wind(sharp::effective_bulk_wind_difference(
         k_pres, hght_top, k_uwin, k_vwin, KN, {100000, 80000}, 95000));
-    // The EL has no valid height above it: was std::range_error
     check_missing_wind(sharp::effective_bulk_wind_difference(
         k_pres, hght_top, k_uwin, k_vwin, KN, {100000, 95000}, 82000));
 
-    // complete data, the inflow layer below the profile: was std::range_error
     check_missing_wind(sharp::effective_bulk_wind_difference(
         k_pres, k_hght, k_uwin, k_vwin, KN, {105000, 95000}, 90000));
-    // complete data, the EL above the profile: was std::range_error
     check_missing_wind(sharp::effective_bulk_wind_difference(
         k_pres, k_hght, k_uwin, k_vwin, KN, {100000, 95000}, 70000));
 
-    // height[0] MISSING or NaN leaves no ground to measure the AGL layer
-    // from (SHARPlib-27b). MISSING was (0.238117903, 0.0952471644). NaN was
-    // already MISSING.
     for (const float bad : {M, std::numeric_limits<float>::quiet_NaN()}) {
         CAPTURE(bad);
         const float hght_bad[KN] = {bad, 500, 1000, 1500, 2000};
@@ -1364,52 +1345,36 @@ TEST_CASE("Testing effective_bulk_wind_difference with a MISSING layer") {
             k_pres, hght_bad, k_uwin, k_vwin, KN, {95000, 90000}, 85000));
     }
 
-    // inside the profile, unchanged
     check_wind(sharp::effective_bulk_wind_difference(
                    k_pres, k_hght, k_uwin, k_vwin, KN, {100000, 95000}, 85000),
                7.5f, 3.0f);
 }
 
 TEST_CASE("Testing storm_motion_bunkers with a MISSING layer") {
-    // the mean wind layer's top has no valid pressure above it: was
-    // std::range_error
     constexpr float pres_top[KN] = {100000, 80000, 62000, 47000, M};
     check_missing_wind(sharp::storm_motion_bunkers(
         pres_top, d_hght, d_uwin, d_vwin, KN, {0, 7000}, {0, 6000}));
-    // the upper end of the shear layer: was (8.75354576, 8.11486626)
     check_missing_wind(sharp::storm_motion_bunkers(
         pres_top, d_hght, d_uwin, d_vwin, KN, {0, 6000}, {0, 7000}));
-    // height[0] MISSING: was std::range_error
-    constexpr float hght_bot[KN] = {M, 2000, 4000, 6000, 8000};
     check_missing_wind(sharp::storm_motion_bunkers(
-        d_pres, hght_bot, d_uwin, d_vwin, KN, {0, 6000}, {0, 6000}));
+        d_pres, d_hght_bot, d_uwin, d_vwin, KN, {0, 6000}, {0, 6000}));
 
-    // complete data, layers past a profile that ends at 2 km
-    // mean wind layer: was (-9996.21484, -10005.9639)
     check_missing_wind(sharp::storm_motion_bunkers(
         k_pres, k_hght, k_uwin, k_vwin, KN, {0, 3000}, {0, 2000}));
-    // shear layer: was (4.69709682, 9.30369854)
     check_missing_wind(sharp::storm_motion_bunkers(
         k_pres, k_hght, k_uwin, k_vwin, KN, {0, 2000}, {0, 3000}));
 
-    // a MISSING layer argument (SHARPlib-yni)
-    // shear layer: was std::range_error
     check_missing_wind(sharp::storm_motion_bunkers(
         d_pres, d_hght, d_uwin, d_vwin, KN, {0, 6000}, sharp::HeightLayer()));
-    // mean wind layer: was already MISSING
     check_missing_wind(sharp::storm_motion_bunkers(
         d_pres, d_hght, d_uwin, d_vwin, KN, sharp::HeightLayer(), {0, 6000}));
 
-    // inside the profile, unchanged
     check_wind(sharp::storm_motion_bunkers(k_pres, k_hght, k_uwin, k_vwin, KN,
                                            {0, 2000}, {0, 2000}),
                12.78543f, -2.96357536f);
 }
 
 TEST_CASE("Testing effective-inflow storm_motion_bunkers fallback") {
-    // An inflow layer below the profile converts to MISSING, so the routine
-    // takes its existing fallback, the non-parcel method with 0-6 km layers.
-    // Both were std::range_error.
     constexpr float vwin[KN] = {0, 0, 0, 0, 0};
     sharp::Parcel mupcl;
     mupcl.eql_pressure = 80000;
@@ -1424,17 +1389,13 @@ TEST_CASE("Testing effective-inflow storm_motion_bunkers fallback") {
         check_wind(motion, 14.0566034f, left ? 7.5f : -7.5f);
     }
 
-    // height[0] MISSING: the fallback is MISSING too. Was std::range_error.
-    constexpr float hght_bot[KN] = {M, 2000, 4000, 6000, 8000};
     check_missing_wind(sharp::storm_motion_bunkers(
-        d_pres, hght_bot, d_uwin, d_vwin, KN, {95000, 85000}, mupcl));
-    // An EL with no valid height above it: was (NaN, NaN)
+        d_pres, d_hght_bot, d_uwin, d_vwin, KN, {95000, 85000}, mupcl));
     constexpr float hght_top[KN] = {0, 2000, 4000, 6000, M};
     mupcl.eql_pressure = 40000;
     check_missing_wind(sharp::storm_motion_bunkers(
         d_pres, hght_top, d_uwin, d_vwin, KN, {100000, 90000}, mupcl));
 
-    // inside the profile, unchanged
     check_wind(sharp::storm_motion_bunkers(d_pres, d_hght, d_uwin, d_vwin, KN,
                                            {100000, 90000}, mupcl),
                11.077548f, -5.43301964f);
@@ -1447,29 +1408,22 @@ TEST_CASE("Testing mcs_motion_corfidi with a MISSING layer") {
         check_missing_wind(vectors.first);
         check_missing_wind(vectors.second);
     };
-    // 1.5 km has no valid pressure above it: was std::range_error
     constexpr float pres_top[KN] = {100000, 95000, 90000, M, M};
     check_missing_pair(
         sharp::mcs_motion_corfidi(pres_top, hght, k_uwin, k_vwin, KN));
-    // height[0] MISSING: was std::range_error
     constexpr float hght_bot[KN] = {M, 500, 1000, 2000, 3000};
     check_missing_pair(
         sharp::mcs_motion_corfidi(pres, hght_bot, k_uwin, k_vwin, KN));
-    // complete data, a profile that ends at 1 km: was (10016.5, 10006) and
-    // (10034, 10013)
     constexpr float hght_low[KN] = {0, 250, 500, 750, 1000};
     check_missing_pair(
         sharp::mcs_motion_corfidi(k_pres, hght_low, k_uwin, k_vwin, KN));
-    // pressure[0] MISSING: was std::range_error (SHARPlib-yni)
-    constexpr float pres_sfc[KN] = {M, 95000, 90000, 80000, 70000};
-    check_missing_pair(
-        sharp::mcs_motion_corfidi(pres_sfc, hght, k_uwin, k_vwin, KN));
-    // pressure[0] NaN: was already MISSING
-    const float pres_nan[KN] = {std::nanf(""), 95000, 90000, 80000, 70000};
-    check_missing_pair(
-        sharp::mcs_motion_corfidi(pres_nan, hght, k_uwin, k_vwin, KN));
+    for (const float bad : {M, std::numeric_limits<float>::quiet_NaN()}) {
+        CAPTURE(bad);
+        const float pres_bad[KN] = {bad, 95000, 90000, 80000, 70000};
+        check_missing_pair(
+            sharp::mcs_motion_corfidi(pres_bad, hght, k_uwin, k_vwin, KN));
+    }
 
-    // inside the profile, unchanged
     const auto vectors =
         sharp::mcs_motion_corfidi(pres, hght, k_uwin, k_vwin, KN);
     check_wind(vectors.first, 9.16666603f, 3.66666651f);
@@ -1488,49 +1442,31 @@ TEST_CASE("Testing large_hail_parameter with a MISSING layer") {
     const sharp::WindComponents storm = {5, 5};
     const sharp::PressureLayer hgz = {65000, 52000};
 
-    // 6 km has no valid pressure above it: was std::range_error
     constexpr float pres_top[N] = {100000, 85000, 70000, 59000, 51000, M};
     CHECK(sharp::large_hail_parameter(mu_pcl, 8.0f, hgz, storm, pres_top, hght,
                                       uwin, vwin, N) == M);
-    // complete data
-    // a MISSING hail growth zone: was 117.714905
     CHECK(sharp::large_hail_parameter(mu_pcl, 8.0f, {M, M}, storm, pres, hght,
                                       uwin, vwin, N) == M);
-    // a hail growth zone above the profile: was 117.714905
     CHECK(sharp::large_hail_parameter(mu_pcl, 8.0f, {65000, 35000}, storm, pres,
                                       hght, uwin, vwin, N) == M);
-    // a profile that ends below 6 km: was 0
     CHECK(sharp::large_hail_parameter(mu_pcl, 8.0f, hgz, storm, pres, hght,
                                       uwin, vwin, N - 1) == M);
-    // an EL less than 1500 m above the ground: was 0
     sharp::Parcel low_el = mu_pcl;
     low_el.eql_pressure = 90000;
     CHECK(sharp::large_hail_parameter(low_el, 8.0f, hgz, storm, pres, hght,
                                       uwin, vwin, N) == M);
-    // an EL above the profile top: was std::range_error (SHARPlib-yni)
     sharp::Parcel high_el = mu_pcl;
     high_el.eql_pressure = 30000;
     CHECK(sharp::large_hail_parameter(high_el, 8.0f, hgz, storm, pres, hght,
                                       uwin, vwin, N) == M);
 
-    // inside the profile, unchanged
     CHECK(sharp::large_hail_parameter(mu_pcl, 8.0f, hgz, storm, pres, hght,
                                       uwin, vwin,
                                       N) == doctest::Approx(70.2362289f));
 }
 #endif
 
-// ===========================================================================
-// The effective bulk wind difference and station height (SHARPlib-27b)
-// ===========================================================================
-//
-// effective_bulk_wind_difference built its layer in meters MSL and passed it
-// to wind_shear, which takes meters AGL and adds height[0] again. The shear
-// came from a layer height[0] meters too high. Each was_ value is the output
-// measured before the fix, in QC and NO_QC builds alike.
-
 namespace {
-// 1000 to 500 hPa, 1 km apart, as heights AGL
 constexpr std::ptrdiff_t EN = 6;
 constexpr float e_pres[EN] = {100000, 90000, 80000, 70000, 60000, 50000};
 constexpr float e_uwin[EN] = {0, 10, 12, 13, 13, 13};
@@ -1543,74 +1479,33 @@ sharp::WindComponents ebwd_shifted(const float shift, const float vwin[],
     return sharp::effective_bulk_wind_difference(e_pres, hght, e_uwin, vwin, EN,
                                                  eil, eql_pres);
 }
+
+constexpr float shifts[] = {0.0f, 1000.0f, 1234.5f, 762.3f};
 }  // namespace
 
 TEST_CASE("Testing effective_bulk_wind_difference ignores station height") {
-    // The inflow layer base is the ground and the EL is 4000 m AGL, so the
-    // layer is 0 to 2000 m AGL, where u goes from 0 to 12.
     constexpr float vwin[EN] = {0, 0, 0, 0, 0, 0};
-    struct Case {
-        float shift;
-        float was_u;
-    };
-    for (const Case c :
-         {Case{0.0f, 12.0f}, Case{1000.0f, 3.0f}, Case{1234.5f, 2.53100014f},
-          Case{762.3f, 5.13929987f}}) {
-        CAPTURE(c.shift);
-        CAPTURE(c.was_u);
+    for (const float shift : shifts) {
+        CAPTURE(shift);
         const sharp::WindComponents ebwd =
-            ebwd_shifted(c.shift, vwin, {100000, 90000}, 60000);
+            ebwd_shifted(shift, vwin, {100000, 90000}, 60000);
         CHECK(ebwd.u == doctest::Approx(12.0f));
         CHECK(ebwd.v == doctest::Approx(0.0f));
     }
 }
 
 TEST_CASE("Testing effective_bulk_wind_difference against a known value") {
-    // From the definition, with heights AGL:
-    //   inflow base, 900 hPa:  1000 m
-    //   EL, 600 hPa:           4000 m
-    //   half the depth:        0.5 * (4000 - 1000) = 1500 m
-    //   layer:                 1000 to 2500 m
-    //   winds at 1000 m:       u = 10, v = -2 (a level)
-    //   winds at 2500 m:       halfway from 2000 to 3000 m, so
-    //                          u = (12 + 13) / 2 = 12.5, v = (1 + 4) / 2 = 2.5
-    //   EBWD:                  (12.5 - 10, 2.5 - (-2)) = (2.5, 4.5)
-    // The station height moves every level by the same amount, so it can't
-    // change the answer.
     constexpr float vwin[EN] = {0, -2, 1, 4, 6, 7};
-    struct Case {
-        float shift;
-        float was_u;
-        float was_v;
-    };
-    for (const Case c : {Case{0.0f, 2.5f, 4.5f}, Case{1000.0f, 1.0f, 4.0f},
-                         Case{1234.5f, 0.765500069f, 3.76549983f},
-                         Case{762.3f, 1.47539997f, 4.23769951f}}) {
-        CAPTURE(c.shift);
-        CAPTURE(c.was_u);
-        CAPTURE(c.was_v);
+    for (const float shift : shifts) {
+        CAPTURE(shift);
         const sharp::WindComponents ebwd =
-            ebwd_shifted(c.shift, vwin, {90000, 80000}, 60000);
+            ebwd_shifted(shift, vwin, {90000, 80000}, 60000);
         CHECK(ebwd.u == doctest::Approx(2.5f));
         CHECK(ebwd.v == doctest::Approx(4.5f));
     }
 }
 
-// ===========================================================================
-// The effective-inflow Bunkers mean wind layer (SHARPlib-efz)
-// ===========================================================================
-//
-// Bunkers et al. (2014) take the pressure-weighted mean wind from the
-// effective inflow base to 65% of the most-unstable EL height, both in
-// meters AGL, with at least 3 km between them. The routine ended the layer
-// at 0.65 * (EL - base) instead, and fell back to the 0-6 km method when
-// that top was under 3 km or below the base. The two agree when the inflow
-// base is the ground. Each was_ value is the output measured before the fix,
-// in QC and NO_QC builds alike, and the same at every station elevation.
-
 namespace {
-// 0 to 16 km AGL every 500 m, so each inflow base and EL below is a level.
-// Pressure falls off with an 8 km scale height, and the hodograph curves.
 constexpr std::ptrdiff_t BN = 33;
 
 struct BunkersSounding {
@@ -1619,10 +1514,9 @@ struct BunkersSounding {
     float uwin[BN];
     float vwin[BN];
 
-    // heights in meters MSL for a station at this elevation
     explicit BunkersSounding(const float elevation) {
         for (std::ptrdiff_t k = 0; k < BN; ++k) {
-            const float z = 500.0f * k;  // m AGL
+            const float z = 500.0f * k;
             hght[k] = elevation + z;
             pres[k] = 100000.0f * std::exp(-z / 8000.0f);
             uwin[k] = 30.0f * (1.0f - std::exp(-z / 4000.0f));
@@ -1630,23 +1524,20 @@ struct BunkersSounding {
         }
     }
 
-    // the pressure of the level z meters AGL
-    float pres_at(const float z) const {
-        return pres[static_cast<std::ptrdiff_t>(z / 500.0f)];
+    float pres_at(const float z_agl) const {
+        return pres[static_cast<std::ptrdiff_t>(z_agl / 500.0f)];
     }
 
-    // the effective-inflow method for an inflow base and an MU EL in m AGL
-    sharp::WindComponents effective(const float base, const float el,
+    sharp::WindComponents effective(const float base_agl, const float el_agl,
                                     const bool left) const {
         sharp::Parcel mupcl;
-        mupcl.eql_pressure = pres_at(el);
-        const sharp::PressureLayer eil = {pres_at(base),
-                                          pres_at(base + 1000.0f)};
+        mupcl.eql_pressure = pres_at(el_agl);
+        const sharp::PressureLayer eil = {pres_at(base_agl),
+                                          pres_at(base_agl + 1000.0f)};
         return sharp::storm_motion_bunkers(pres, hght, uwin, vwin, BN, eil,
                                            mupcl, left);
     }
 
-    // the classic method with the 0-6 km AGL shear
     sharp::WindComponents classic(const sharp::HeightLayer mean_wind_agl,
                                   const bool left, const bool weighted) const {
         return sharp::storm_motion_bunkers(pres, hght, uwin, vwin, BN,
@@ -1656,33 +1547,27 @@ struct BunkersSounding {
 };
 
 struct BunkersCase {
-    float base;    // effective inflow base, m AGL
-    float el;      // MU EL, m AGL
-    float mw_top;  // m AGL; 0 for the 0-6 km fallback
-    float u;       // the right mover
+    float base_agl;
+    float el_agl;
+    std::optional<float> mw_top_agl;
+    float u;
     float v;
-    float was_u;
-    float was_v;
 };
 
-// The routine equals the classic method over {base, mw_top}, pressure
-// weighted, or the 0-6 km fallback, and gives the same motion at every
-// station elevation.
 void check_bunkers(const BunkersCase c) {
-    CAPTURE(c.base);
-    CAPTURE(c.el);
-    CAPTURE(c.was_u);
-    CAPTURE(c.was_v);
+    CAPTURE(c.base_agl);
+    CAPTURE(c.el_agl);
     for (const float elevation : {0.0f, 1000.0f, 762.3f}) {
         CAPTURE(elevation);
         const BunkersSounding snd(elevation);
         for (const bool left : {false, true}) {
             CAPTURE(left);
             const sharp::WindComponents motion =
-                snd.effective(c.base, c.el, left);
+                snd.effective(c.base_agl, c.el_agl, left);
             const sharp::WindComponents expected =
-                (c.mw_top > 0.0f) ? snd.classic({c.base, c.mw_top}, left, true)
-                                  : snd.classic({0, 6000}, left, false);
+                c.mw_top_agl
+                    ? snd.classic({c.base_agl, *c.mw_top_agl}, left, true)
+                    : snd.classic({0, 6000}, left, false);
             CHECK(motion.u == doctest::Approx(expected.u).epsilon(1e-6));
             CHECK(motion.v == doctest::Approx(expected.v).epsilon(1e-6));
             if (!left) {
@@ -1696,15 +1581,9 @@ void check_bunkers(const BunkersCase c) {
 
 TEST_CASE("Testing the effective-inflow storm_motion_bunkers mean wind layer") {
     for (const BunkersCase c : {
-             // the inflow base is the ground: unchanged
-             BunkersCase{0, 10000, 6500, 14.8269749f, -1.06337833f, 14.8269749f,
-                         -1.06337833f},
-             // was the layer {1000, 7150}
-             BunkersCase{1000, 12000, 7800, 18.9706116f, 0.523952484f,
-                         18.5933094f, 0.581968784f},
-             // was the layer {2000, 5200}
-             BunkersCase{2000, 10000, 6500, 20.7405224f, 1.77062941f,
-                         19.6004467f, 1.65212774f},
+             BunkersCase{0, 10000, 6500, 14.8269749f, -1.06337833f},
+             BunkersCase{1000, 12000, 7800, 18.9706116f, 0.523952484f},
+             BunkersCase{2000, 10000, 6500, 20.7405224f, 1.77062941f},
          }) {
         check_bunkers(c);
     }
@@ -1712,21 +1591,10 @@ TEST_CASE("Testing the effective-inflow storm_motion_bunkers mean wind layer") {
 
 TEST_CASE("Testing the effective-inflow storm_motion_bunkers 3 km fallback") {
     for (const BunkersCase c : {
-             // 2550 m between the base and 0.65 * EL: falls back now. Was the
-             // layer {2000, 3250}, 1250 m deep.
-             BunkersCase{2000, 7000, 0, 15.8496647f, -0.509417534f, 17.0255566f,
-                         0.573388577f},
-             // 3100 m: the layer {6000, 9100} now. 0.65 * (EL - base) was
-             // 5200 m, below the base, so this fell back.
-             BunkersCase{6000, 14000, 9100, 27.9163494f, -0.846437931f,
-                         15.8496647f, -0.509417534f},
-             // 2500 m: falls back, as it did
-             BunkersCase{4000, 10000, 0, 15.8496647f, -0.509417534f,
-                         15.8496647f, -0.509417534f},
-             // the inflow base is the ground and 0.65 * EL is 2600 m: falls
-             // back, as it did
-             BunkersCase{0, 4000, 0, 15.8496647f, -0.509417534f, 15.8496647f,
-                         -0.509417534f},
+             BunkersCase{2000, 7000, std::nullopt, 15.8496647f, -0.509417534f},
+             BunkersCase{6000, 14000, 9100, 27.9163494f, -0.846437931f},
+             BunkersCase{4000, 10000, std::nullopt, 15.8496647f, -0.509417534f},
+             BunkersCase{0, 4000, std::nullopt, 15.8496647f, -0.509417534f},
          }) {
         check_bunkers(c);
     }

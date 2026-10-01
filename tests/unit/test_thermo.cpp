@@ -160,54 +160,37 @@ TEST_CASE("Testing Wetbulb Temperature") {
     printf("TD: %f\tTW: %f\tTA: %f\n", dwpk, wblbk, tmpk);
 }
 
-// lapse_rate over layers that leave the profile (SHARPlib-103). A layer wholly
-// outside the profile has no lapse rate and returns MISSING in every build.
-// Each "was" comment is the output measured before this change, in both QC
-// and NO_QC builds. The pressure overload clipped one end of such a layer and
-// not the other, which inverted it, and the conversion to height then threw
-// std::range_error or gave the lapse rate of a different layer.
 constexpr std::ptrdiff_t LR_N = 3;
 constexpr float lr_pres[LR_N] = {100000, 95000, 90000};
 constexpr float lr_tmpk[LR_N] = {300, 297, 294};
-// the same profile with the surface at 0 m and at 300 m
 constexpr float lr_hght_0[LR_N] = {0, 500, 1000};
 constexpr float lr_hght_300[LR_N] = {300, 800, 1300};
 
 TEST_CASE("Testing lapse_rate over layers outside the profile") {
     for (const float* hght : {lr_hght_0, lr_hght_300}) {
         CAPTURE(hght[0]);
-        // wholly above: was std::range_error (0 m), 6 K/km (300 m)
         CHECK(sharp::lapse_rate(sharp::PressureLayer(85000, 80000), lr_pres,
                                 hght, lr_tmpk, LR_N) == sharp::MISSING);
-        // wholly below: was std::range_error
         CHECK(sharp::lapse_rate(sharp::PressureLayer(110000, 105000), lr_pres,
                                 hght, lr_tmpk, LR_N) == sharp::MISSING);
-        // height layers, unchanged
         CHECK(sharp::lapse_rate(sharp::HeightLayer(1500, 2000), hght, lr_tmpk,
                                 LR_N) == sharp::MISSING);
         CHECK(sharp::lapse_rate(sharp::HeightLayer(-500, -100), hght, lr_tmpk,
                                 LR_N) == sharp::MISSING);
     }
 
-    // one level at 0 m, as found by the SHARPlib-cld sanitizer sweep
     constexpr float pres[1] = {100000};
     constexpr float hght[1] = {0};
     constexpr float tmpk[1] = {300};
-    // was std::range_error
     CHECK(sharp::lapse_rate(sharp::PressureLayer(85000, 80000), pres, hght,
                             tmpk, 1) == sharp::MISSING);
-    // was std::range_error
     CHECK(sharp::lapse_rate(sharp::PressureLayer(110000, 105000), pres, hght,
                             tmpk, 1) == sharp::MISSING);
 }
 
 TEST_CASE("Testing lapse_rate over layers at the profile edge") {
-    // Layers that touch the profile at one point have no depth and return
-    // MISSING. Layers that partly overlap it are clipped to it. Both are
-    // unchanged.
     for (const float* hght : {lr_hght_0, lr_hght_300}) {
         CAPTURE(hght[0]);
-        // touching at one point
         CHECK(sharp::lapse_rate(sharp::PressureLayer(90000, 80000), lr_pres,
                                 hght, lr_tmpk, LR_N) == sharp::MISSING);
         CHECK(sharp::lapse_rate(sharp::PressureLayer(105000, 100000), lr_pres,
@@ -217,7 +200,6 @@ TEST_CASE("Testing lapse_rate over layers at the profile edge") {
         CHECK(sharp::lapse_rate(sharp::HeightLayer(-500, 0), hght, lr_tmpk,
                                 LR_N) == sharp::MISSING);
 
-        // partly above and partly below
         CHECK(sharp::lapse_rate(sharp::PressureLayer(95000, 80000), lr_pres,
                                 hght, lr_tmpk, LR_N) == doctest::Approx(6.0f));
         CHECK(sharp::lapse_rate(sharp::PressureLayer(105000, 95000), lr_pres,
@@ -229,207 +211,120 @@ TEST_CASE("Testing lapse_rate over layers at the profile edge") {
     }
 }
 
+template <typename T>
+static void check_lr_max(const sharp::PressureLayer search, const float depth,
+                         const float pres[], const float hght[],
+                         const float tmpk[], const std::ptrdiff_t N, const T lr,
+                         const float bottom, const float top) {
+    INFO("search ", search.bottom, " to ", search.top, ", depth ", depth);
+    sharp::PressureLayer max_lyr = {0, 0};
+    CHECK(sharp::lapse_rate_max(search, depth, pres, hght, tmpk, N, &max_lyr) ==
+          lr);
+    CHECK(max_lyr.bottom == bottom);
+    CHECK(max_lyr.top == top);
+}
+
+template <typename T>
+static void check_lr_max(const sharp::HeightLayer search, const float depth,
+                         const float hght[], const float tmpk[],
+                         const std::ptrdiff_t N, const T lr, const float bottom,
+                         const float top) {
+    INFO("search ", search.bottom, " to ", search.top, ", depth ", depth);
+    sharp::HeightLayer max_lyr = {0, 0};
+    CHECK(sharp::lapse_rate_max(search, depth, hght, tmpk, N, &max_lyr) == lr);
+    CHECK(max_lyr.bottom == bottom);
+    CHECK(max_lyr.top == top);
+}
+
+constexpr std::ptrdiff_t LRM_N = 5;
+constexpr float top_pres[LRM_N] = {100000, 90000, 80000, 77500, 75000};
+constexpr float top_hght_0[LRM_N] = {0, 1000, 2000, 2250, 2500};
+constexpr float top_hght_300[LRM_N] = {300, 1300, 2300, 2550, 2800};
+constexpr float top_tmpk[LRM_N] = {310, 298, 292, 290, 289};
+constexpr float top_tmpk_steep[LRM_N] = {310, 298, 292, 290, 286};
+constexpr float bot_pres[LRM_N] = {85000, 80000, 70000, 60000, 50000};
+constexpr float bot_hght[LRM_N] = {1500, 2000, 3100, 4300, 5700};
+constexpr float bot_tmpk[LRM_N] = {295, 292, 284, 276, 266};
+constexpr float bot_tmpk_steep[LRM_N] = {295, 291, 284, 276, 266};
+
 TEST_CASE("Testing lapse_rate_max over a layer that leaves the profile") {
-    // The sounding ends at 750 hPa, inside the 800-600 hPa search layer. The
-    // lowest kilometre is superadiabatic, so the lapse rate of the whole
-    // profile, 8.4 K/km, is larger than any in the search layer. The largest
-    // there is 6 K/km, from 800 to 750 hPa.
-    constexpr std::ptrdiff_t N = 5;
-    constexpr float pres[N] = {100000, 90000, 80000, 77500, 75000};
-    constexpr float tmpk[N] = {310, 298, 292, 290, 289};
-    constexpr float hght_0[N] = {0, 1000, 2000, 2250, 2500};
-    constexpr float hght_300[N] = {300, 1300, 2300, 2550, 2800};
-
-    for (const float* hght : {hght_0, hght_300}) {
+    for (const float* hght : {top_hght_0, top_hght_300}) {
         CAPTURE(hght[0]);
-        // was std::range_error (0 m); 8.4 K/km over 74000-69000 Pa, a layer
-        // wholly above the profile (300 m)
-        sharp::PressureLayer max_plyr = {0, 0};
-        CHECK(sharp::lapse_rate_max(sharp::PressureLayer(80000, 60000), 5000,
-                                    pres, hght, tmpk, N,
-                                    &max_plyr) == doctest::Approx(6.0f));
-        CHECK(max_plyr.bottom == 80000);
-        CHECK(max_plyr.top == 75000);
+        check_lr_max(sharp::PressureLayer(80000, 60000), 5000, top_pres, hght,
+                     top_tmpk, LRM_N, doctest::Approx(6.0f), 80000, 75000);
 
-        // the height search was already right, unchanged
         sharp::HeightLayer max_hlyr = {0, 0};
         CHECK(sharp::lapse_rate_max(sharp::HeightLayer(2000, 6000), 500, hght,
-                                    tmpk, N,
+                                    top_tmpk, LRM_N,
                                     &max_hlyr) == doctest::Approx(6.0f));
     }
 
-    // A sounding whose surface, at 850 hPa, is above the 1000 hPa bottom of
-    // the search layer. The largest lapse rate, 7.27 K/km, is from 800 to
-    // 700 hPa.
-    constexpr std::ptrdiff_t N_HI = 5;
-    constexpr float pres_hi[N_HI] = {85000, 80000, 70000, 60000, 50000};
-    constexpr float hght_hi[N_HI] = {1500, 2000, 3100, 4300, 5700};
-    constexpr float tmpk_hi[N_HI] = {295, 292, 284, 276, 266};
-    // was std::range_error
-    sharp::PressureLayer max_plyr = {0, 0};
-    CHECK(sharp::lapse_rate_max(sharp::PressureLayer(100000, 50000), 10000,
-                                pres_hi, hght_hi, tmpk_hi, N_HI,
-                                &max_plyr) == doctest::Approx(80.0f / 11.0f));
-    CHECK(max_plyr.bottom == 80000);
-    CHECK(max_plyr.top == 70000);
-    // a search layer wholly below the surface; was std::range_error
+    check_lr_max(sharp::PressureLayer(100000, 50000), 10000, bot_pres, bot_hght,
+                 bot_tmpk, LRM_N, doctest::Approx(80.0f / 11.0f), 80000, 70000);
     CHECK(sharp::lapse_rate_max(sharp::PressureLayer(100000, 90000), 5000,
-                                pres_hi, hght_hi, tmpk_hi,
-                                N_HI) == sharp::MISSING);
+                                bot_pres, bot_hght, bot_tmpk,
+                                LRM_N) == sharp::MISSING);
 }
 
-// lapse_rate_max over search layers that reach past the profile
-// (SHARPlib-b72). The search skips every layer of the given depth that is not
-// wholly inside the profile. lapse_rate would clip such a layer to one
-// shallower than depth, and a shallower layer can have a larger lapse rate.
-// A layer that touches the first or last level counts as inside. Each "was"
-// comment is the output measured before this change, the same in QC and
-// NO_QC builds. When no layer fits, max_lyr gets MISSING for its bottom and
-// top.
 TEST_CASE("Testing lapse_rate_max at the bottom of the profile") {
-    // The surface is at 850 hPa and 1500 m, above the bottom of each search.
-    // The lowest 500 m is the steepest, at 8 K/km.
-    constexpr std::ptrdiff_t N = 5;
-    constexpr float pres[N] = {85000, 80000, 70000, 60000, 50000};
-    constexpr float hght[N] = {1500, 2000, 3100, 4300, 5700};
-    constexpr float tmpk[N] = {295, 291, 284, 276, 266};
+    check_lr_max(sharp::PressureLayer(100000, 50000), 10000, bot_pres, bot_hght,
+                 bot_tmpk_steep, LRM_N, doctest::Approx(7.15671f), 85000,
+                 75000);
+    check_lr_max(sharp::PressureLayer(85000, 50000), 10000, bot_pres, bot_hght,
+                 bot_tmpk_steep, LRM_N, doctest::Approx(7.15671f), 85000,
+                 75000);
+    check_lr_max(sharp::PressureLayer(100000, 70000, -2000), 10000, bot_pres,
+                 bot_hght, bot_tmpk_steep, LRM_N, doctest::Approx(6.99398f),
+                 84000, 74000);
+    check_lr_max(sharp::PressureLayer(100000, 40000), 40000, bot_pres, bot_hght,
+                 bot_tmpk_steep, LRM_N, sharp::MISSING, sharp::MISSING,
+                 sharp::MISSING);
 
-    // was 8.00005 K/km over 93000-83000 Pa, clipped to 85000-83000 Pa
-    sharp::PressureLayer max_plyr = {0, 0};
-    CHECK(sharp::lapse_rate_max(sharp::PressureLayer(100000, 50000), 10000,
-                                pres, hght, tmpk, N,
-                                &max_plyr) == doctest::Approx(7.15671f));
-    CHECK(max_plyr.bottom == 85000);
-    CHECK(max_plyr.top == 75000);
-    // the same search starting at the surface, unchanged
-    max_plyr = {0, 0};
-    CHECK(sharp::lapse_rate_max(sharp::PressureLayer(85000, 50000), 10000, pres,
-                                hght, tmpk, N,
-                                &max_plyr) == doctest::Approx(7.15671f));
-    CHECK(max_plyr.bottom == 85000);
-    CHECK(max_plyr.top == 75000);
-    // The steps of 2000 Pa miss the surface: 86000 Pa is below it, so the
-    // first layer searched starts at 84000 Pa. was 8 K/km over 90000-80000 Pa
-    max_plyr = {0, 0};
-    CHECK(sharp::lapse_rate_max(sharp::PressureLayer(100000, 70000, -2000),
-                                10000, pres, hght, tmpk, N,
-                                &max_plyr) == doctest::Approx(6.99398f));
-    CHECK(max_plyr.bottom == 84000);
-    CHECK(max_plyr.top == 74000);
-    // deeper than the profile, so no layer fits; was 6.90476 K/km over
-    // 90000-50000 Pa
-    max_plyr = {0, 0};
-    CHECK(sharp::lapse_rate_max(sharp::PressureLayer(100000, 40000), 40000,
-                                pres, hght, tmpk, N,
-                                &max_plyr) == sharp::MISSING);
-    CHECK(max_plyr.bottom == sharp::MISSING);
-    CHECK(max_plyr.top == sharp::MISSING);
-
-    // The same searches in height, AGL, with the surface at 1500 m.
-    // was 8.00003 K/km over -800-200 m, clipped to 0-200 m
-    sharp::HeightLayer max_hlyr = {0, 0};
-    CHECK(sharp::lapse_rate_max(sharp::HeightLayer(-1500, 4000), 1000, hght,
-                                tmpk, N,
-                                &max_hlyr) == doctest::Approx(7.18182f));
-    CHECK(max_hlyr.bottom == 0);
-    CHECK(max_hlyr.top == 1000);
-    // the same search starting at the surface, unchanged
-    max_hlyr = {0, 0};
-    CHECK(sharp::lapse_rate_max(sharp::HeightLayer(0, 4200), 1000, hght, tmpk,
-                                N, &max_hlyr) == doctest::Approx(7.18182f));
-    CHECK(max_hlyr.bottom == 0);
-    CHECK(max_hlyr.top == 1000);
-    // The steps of 100 m miss the surface: -50 m is below it, so the first
-    // layer searched starts at 50 m. was 8.00008 K/km over -850-150 m
-    max_hlyr = {0, 0};
-    CHECK(sharp::lapse_rate_max(sharp::HeightLayer(-1450, 2000), 1000, hght,
-                                tmpk, N, &max_hlyr) == doctest::Approx(7.1f));
-    CHECK(max_hlyr.bottom == 50);
-    CHECK(max_hlyr.top == 1050);
+    check_lr_max(sharp::HeightLayer(-1500, 4000), 1000, bot_hght,
+                 bot_tmpk_steep, LRM_N, doctest::Approx(7.18182f), 0, 1000);
+    check_lr_max(sharp::HeightLayer(0, 4200), 1000, bot_hght, bot_tmpk_steep,
+                 LRM_N, doctest::Approx(7.18182f), 0, 1000);
+    check_lr_max(sharp::HeightLayer(-1450, 2000), 1000, bot_hght,
+                 bot_tmpk_steep, LRM_N, doctest::Approx(7.1f), 50, 1050);
 }
 
 TEST_CASE("Testing lapse_rate_max at the top of the profile") {
-    // The sounding ends at 750 hPa and 2500 m AGL, inside each search. The
-    // top 250 m is the steepest, at 16 K/km.
-    constexpr std::ptrdiff_t N = 5;
-    constexpr float pres[N] = {100000, 90000, 80000, 77500, 75000};
-    constexpr float tmpk[N] = {310, 298, 292, 290, 286};
-    constexpr float hght_0[N] = {0, 1000, 2000, 2250, 2500};
-    constexpr float hght_300[N] = {300, 1300, 2300, 2550, 2800};
-
-    for (const float* hght : {hght_0, hght_300}) {
+    for (const float* hght : {top_hght_0, top_hght_300}) {
         CAPTURE(hght[0]);
-        // was 16.0001 K/km over 76000-71000 Pa, clipped to 76000-75000 Pa
-        sharp::PressureLayer max_plyr = {0, 0};
-        CHECK(sharp::lapse_rate_max(sharp::PressureLayer(80000, 60000), 5000,
-                                    pres, hght, tmpk, N,
-                                    &max_plyr) == doctest::Approx(12.0f));
-        CHECK(max_plyr.bottom == 80000);
-        CHECK(max_plyr.top == 75000);
-        // no layer fits; was 16.0001 K/km over 76000-66000 Pa
-        max_plyr = {0, 0};
-        CHECK(sharp::lapse_rate_max(sharp::PressureLayer(80000, 60000), 10000,
-                                    pres, hght, tmpk, N,
-                                    &max_plyr) == sharp::MISSING);
-        CHECK(max_plyr.bottom == sharp::MISSING);
-        CHECK(max_plyr.top == sharp::MISSING);
+        check_lr_max(sharp::PressureLayer(80000, 60000), 5000, top_pres, hght,
+                     top_tmpk_steep, LRM_N, doctest::Approx(12.0f), 80000,
+                     75000);
+        check_lr_max(sharp::PressureLayer(80000, 60000), 10000, top_pres, hght,
+                     top_tmpk_steep, LRM_N, sharp::MISSING, sharp::MISSING,
+                     sharp::MISSING);
 
-        // was 16.0001 K/km over 2300-2800 m, clipped to 2300-2500 m
-        sharp::HeightLayer max_hlyr = {0, 0};
-        CHECK(sharp::lapse_rate_max(sharp::HeightLayer(2000, 6000), 500, hght,
-                                    tmpk, N,
-                                    &max_hlyr) == doctest::Approx(12.0f));
-        CHECK(max_hlyr.bottom == 2000);
-        CHECK(max_hlyr.top == 2500);
-        // no layer fits; was 16.0001 K/km over 2300-3300 m
-        max_hlyr = {0, 0};
-        CHECK(sharp::lapse_rate_max(sharp::HeightLayer(2000, 6000), 1000, hght,
-                                    tmpk, N, &max_hlyr) == sharp::MISSING);
-        CHECK(max_hlyr.bottom == sharp::MISSING);
-        CHECK(max_hlyr.top == sharp::MISSING);
-        // deeper than the profile; was 16.0001 K/km over 2300-5300 m
+        check_lr_max(sharp::HeightLayer(2000, 6000), 500, hght, top_tmpk_steep,
+                     LRM_N, doctest::Approx(12.0f), 2000, 2500);
+        check_lr_max(sharp::HeightLayer(2000, 6000), 1000, hght, top_tmpk_steep,
+                     LRM_N, sharp::MISSING, sharp::MISSING, sharp::MISSING);
         CHECK(sharp::lapse_rate_max(sharp::HeightLayer(0, 6000), 3000, hght,
-                                    tmpk, N) == sharp::MISSING);
+                                    top_tmpk_steep, LRM_N) == sharp::MISSING);
     }
 }
 
-// lapse_rate_max steps through the search layer by its delta (SHARPlib-l1f).
-// A delta of zero or with the wrong sign never ended the search, so the call
-// never returned. A NaN delta ended it after the first layer. Each search now
-// returns MISSING, and so do the bottom and top of max_lyr. The "was"
-// comments hold for QC and NO_QC builds.
 TEST_CASE("Testing lapse_rate_max with a delta that doesn't step upward") {
-    constexpr std::ptrdiff_t N = 3;
-    constexpr float pres[N] = {100000, 95000, 90000};
-    constexpr float hght[N] = {0, 500, 1000};
-    constexpr float tmpk[N] = {300, 297, 294};
     constexpr float nanval = std::numeric_limits<float>::quiet_NaN();
 
-    // was no return (0 and -100 m); 6 K/km over 0-500 m, the first layer
-    // only (NaN)
     for (const float delta : {0.0f, -100.0f, nanval}) {
         CAPTURE(delta);
         const sharp::HeightLayer search(0, 1000, delta);
-        sharp::HeightLayer max_lyr = {0, 0};
-        CHECK(sharp::lapse_rate_max(search, 500, hght, tmpk, N, &max_lyr) ==
-              sharp::MISSING);
-        CHECK(max_lyr.bottom == sharp::MISSING);
-        CHECK(max_lyr.top == sharp::MISSING);
-        CHECK(sharp::lapse_rate_max(search, 500, hght, tmpk, N) ==
+        check_lr_max(search, 500, lr_hght_0, lr_tmpk, LR_N, sharp::MISSING,
+                     sharp::MISSING, sharp::MISSING);
+        CHECK(sharp::lapse_rate_max(search, 500, lr_hght_0, lr_tmpk, LR_N) ==
               sharp::MISSING);
     }
 
-    // was no return (0 and 1000 Pa); 6 K/km over 100000-95000 Pa, the first
-    // layer only (NaN)
     for (const float delta : {0.0f, 1000.0f, nanval}) {
         CAPTURE(delta);
         const sharp::PressureLayer search(100000, 90000, delta);
-        sharp::PressureLayer max_lyr = {0, 0};
-        CHECK(sharp::lapse_rate_max(search, 5000, pres, hght, tmpk, N,
-                                    &max_lyr) == sharp::MISSING);
-        CHECK(max_lyr.bottom == sharp::MISSING);
-        CHECK(max_lyr.top == sharp::MISSING);
-        CHECK(sharp::lapse_rate_max(search, 5000, pres, hght, tmpk, N) ==
-              sharp::MISSING);
+        check_lr_max(search, 5000, lr_pres, lr_hght_0, lr_tmpk, LR_N,
+                     sharp::MISSING, sharp::MISSING, sharp::MISSING);
+        CHECK(sharp::lapse_rate_max(search, 5000, lr_pres, lr_hght_0, lr_tmpk,
+                                    LR_N) == sharp::MISSING);
     }
 }

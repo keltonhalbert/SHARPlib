@@ -38,13 +38,8 @@ def interp_pressure(pres_val: float, pres_arr: Annotated[NDArray[numpy.float32],
     All pressure interpolation happens in log10 space.
     The coordinate array (pres_arr) is assumed to be sorted (descending).
 
-    QC builds, the default, treat a level whose data is MISSING or NaN as
-    missing. A pres_val exactly on a level with valid data returns that
-    level's stored value, even when a neighbouring level is missing. For any
-    other pres_val, the routine interpolates between the nearest valid levels
-    below and above it, and returns MISSING when one side has none.
-
-    Empty arrays return MISSING in every build.
+    MISSING and NaN data (QC builds) and empty arrays (every build) are
+    handled as in interp_height.
 
     Parameters
     ----------
@@ -91,10 +86,7 @@ def find_first_height(data_val: float, height: Annotated[NDArray[numpy.float32],
     Conducts a bottom-up search for the first occurrence of a given value,
     and interpolates in order to get the height level it occurs at.
 
-    QC builds, the default, skip levels whose data is MISSING or NaN, so the
-    search still finds a crossing between the valid levels on either side of
-    them. An exact match returns that level's height, even when it is the only
-    valid level in the profile. A MISSING or NaN data_val returns MISSING.
+    QC builds handle MISSING and NaN data as find_first_pressure does.
 
     Parameters
     ----------

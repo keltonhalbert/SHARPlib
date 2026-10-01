@@ -377,11 +377,6 @@ template <typename L, typename C>
     LayerIndex layer_idx = get_layer_index(layer, coord_arr, N);
 
 #ifndef NO_QC
-    // Clipping to the profile inverts a correctly ordered layer exactly when
-    // the layer lies wholly outside the profile. Clipping never moves the
-    // endpoint nearest the profile. For a layer above the profile, that is
-    // the bottom, and clipping moves the top onto the last level. For a
-    // layer below the profile, it is the top.
     const bool outside = (layer.coord == LayerCoordinate::pressure)
                              ? (layer.bottom < layer.top)
                              : (layer.bottom > layer.top);
@@ -404,9 +399,6 @@ template <typename L, typename C>
         top_val = interp_height(layer.top, coord_arr, data_arr, N);
     }
 
-    // QC builds skip MISSING and NaN values. A MISSING min_or_max means no
-    // value yet, which happens when the bottom endpoint has no valid level
-    // to interpolate from.
     const auto replaces = [&](const float val) {
 #ifndef NO_QC
         if (is_missing(val)) return false;
@@ -451,9 +443,9 @@ template <typename L, typename C>
  * interpolate the layer bottom and top across missing levels, as
  * sharp::interp_height and sharp::interp_pressure do, and skip an endpoint
  * that has no valid level on one side of it. A layer with no valid data
- * returns MISSING. A layer that lies wholly outside the profile also
- * returns MISSING, and lvl_of_min is set to the layer's endpoint nearest
- * the profile. Builds with NO_QC skip these checks.
+ * returns MISSING, as does a layer wholly outside the profile, for which
+ * lvl_of_min is set to the layer's endpoint nearest the profile. Builds
+ * with NO_QC skip these checks.
  *
  * \param   layer       (sharp::PressureLayer or sharp::HeightLayer)
  * \param   coord_arr   (coordinate units; Pa or meters)
@@ -486,13 +478,8 @@ constexpr float layer_min(L layer, const float coord_arr[],
  * dereferenced and filled with the coordinate of the maximum
  * value.
  *
- * QC builds, the default, skip levels whose data is MISSING or NaN. They
- * interpolate the layer bottom and top across missing levels, as
- * sharp::interp_height and sharp::interp_pressure do, and skip an endpoint
- * that has no valid level on one side of it. A layer with no valid data
- * returns MISSING. A layer that lies wholly outside the profile also
- * returns MISSING, and lvl_of_max is set to the layer's endpoint nearest
- * the profile. Builds with NO_QC skip these checks.
+ * QC builds skip MISSING and NaN data and return MISSING for a layer
+ * wholly outside the profile. sharp::layer_min gives the details.
  *
  * \param   layer           (sharp::PressureLayer or sharp::HeightLayer)
  * \param   coord_arr       (coordinate units; Pa or meters)
@@ -638,11 +625,11 @@ template <typename L>
  * Computes the mass-weighted mean value of given arrays of data
  * and corresponding pressure coordinates over the given sharp::PressureLayer.
  *
- * A layer that extends past the profile is clipped to it. A layer that lies
- * wholly outside the profile, or touches it at only one level, has no mean
- * and returns sharp::MISSING. The pressure array is expected to be complete.
- * A MISSING level in it isn't supported, and in QC builds it can make the
- * result MISSING or wrong, even for a layer that doesn't reach that level.
+ * A layer that extends past the profile is clipped to it. A layer wholly
+ * outside the profile, or touching it at only one level, returns
+ * sharp::MISSING. The pressure array must be complete: a MISSING level in
+ * it isn't supported, and in QC builds it can make the result MISSING or
+ * wrong, even for a layer that doesn't reach that level.
  *
  * \param   layer       (sharp::PressureLayer)
  * \param   pressure    (vertical pressure array; Pa)
@@ -665,12 +652,9 @@ template <typename L>
  * This is really just a fancy wrapper around the implementation that uses
  * sharp::PressureLayer.
  *
- * A layer that extends past the profile is clipped to it. A layer that lies
- * wholly outside the profile, or touches it at only one level, has no mean
- * and returns sharp::MISSING. The height and pressure arrays are expected to
- * be complete. A MISSING level in them isn't supported, and in QC builds it
- * can make the result MISSING or wrong, even for a layer that doesn't reach
- * that level. MISSING levels in both arrays can also raise std::range_error.
+ * Behaves as the sharp::PressureLayer overload, and the height array must
+ * be complete too. MISSING levels in both arrays can also raise
+ * std::range_error.
  *
  * \param   layer       (sharp::HeightLayer)
  * \param   height      (vertical height array; meters)

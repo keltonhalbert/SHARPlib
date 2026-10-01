@@ -607,9 +607,7 @@ template <typename Lft>
  * handles converting the pressure layer into a height layer, and
  * then calles the sharp::HeightLayer implementation of this routine.
  *
- * A layer that extends past the profile is clipped to it. A layer that lies
- * wholly outside the profile, or touches it at only one level, has no lapse
- * rate and returns sharp::MISSING.
+ * Clipping and MISSING results are as for the sharp::HeightLayer overload.
  *
  * \param   layer                   (Pa)
  * \param   pressure                (Pa)
@@ -634,16 +632,15 @@ template <typename Lft>
  * rate exists within.
  *
  * The search skips every layer of the given depth that extends past the
- * surface or the top of the profile. sharp::lapse_rate would clip such a
- * layer to one shallower than depth, and a shallower layer can have a larger
- * lapse rate. A layer that touches the surface or the top level counts as
- * inside the profile. The layers start at the bottom of layer_agl and step
- * up by its delta, so when layer_agl starts below the surface, the first
- * layer searched starts at the first step at or above the surface, not at
- * the surface itself. If no layer in the search has a lapse rate, the result
- * is sharp::MISSING, and so are the bottom and top of max_lyr. The delta of
- * layer_agl must be greater than 0 m. Any other delta, NaN included, gives
- * the same MISSING result.
+ * surface or the top of the profile, rather than clipping it to a shallower
+ * layer as sharp::lapse_rate would. A layer that touches the surface or the
+ * top level counts as inside the profile. The layers start at the bottom of
+ * layer_agl and step up by its delta, so when layer_agl starts below the
+ * surface, the first layer searched starts at the first step at or above
+ * the surface, not at the surface itself. The delta of layer_agl must be
+ * greater than 0 m. With any other delta, NaN included, or when no layer in
+ * the search has a lapse rate, the result is sharp::MISSING, and so are the
+ * bottom and top of max_lyr.
  *
  * \param   layer_agl       (meters AGL)
  * \param   depth           (meters)
@@ -670,17 +667,8 @@ template <typename Lft>
  * Returns the maximum lapse rate, with the optional ability to return the layer
  * that lapse rate exists within.
  *
- * The search skips every layer of the given depth that extends past the
- * surface or the top of the profile. sharp::lapse_rate would clip such a
- * layer to one shallower than depth, and a shallower layer can have a larger
- * lapse rate. A layer that touches the surface or the top level counts as
- * inside the profile. The layers start at the bottom of layer and step up
- * by its delta, so when layer starts below the surface, the first layer
- * searched starts at the first step at or above the surface, not at the
- * surface itself. If no layer in the search has a lapse rate, the result is
- * sharp::MISSING, and so are the bottom and top of max_lyr. The delta of
- * layer must be less than 0 Pa. Any other delta, NaN included, gives the
- * same MISSING result.
+ * As the sharp::HeightLayer overload, but the delta of layer must be less
+ * than 0 Pa.
  *
  * \param   layer           (Pa)
  * \param   depth           (Pa)

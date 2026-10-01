@@ -108,14 +108,10 @@ PressureLayer height_layer_to_pressure(HeightLayer layer,
                                        const float height[],
                                        const std::ptrdiff_t N,
                                        const bool isAGL) {
-#ifndef NO_QC
-    // An AGL layer is measured from height[0], so without it there's no
-    // answer.
-    if (isAGL && is_missing(height[0])) {
-        return {MISSING, MISSING};
-    }
-#endif
     if (isAGL) {
+#ifndef NO_QC
+        if (is_missing(height[0])) return {MISSING, MISSING};
+#endif
         layer.bottom += height[0];
         layer.top += height[0];
     }
@@ -128,9 +124,6 @@ PressureLayer height_layer_to_pressure(HeightLayer layer,
     const float ptop = interp_height(layer.top, height, pressure, N);
 
 #ifndef NO_QC
-    // An endpoint with no valid pressure level on its open side interpolates
-    // to MISSING. A layer with one MISSING end can't be built, so return the
-    // same sentinel as a layer outside the profile.
     if ((pbot == MISSING) || (ptop == MISSING)) return {MISSING, MISSING};
 #endif
 
@@ -141,13 +134,6 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
                                      const float pressure[],
                                      const float height[],
                                      const std::ptrdiff_t N, const bool toAGL) {
-#ifndef NO_QC
-    // An AGL layer is measured from height[0], so without it there's no
-    // answer.
-    if (toAGL && is_missing(height[0])) {
-        return {MISSING, MISSING};
-    }
-#endif
     if ((layer.bottom > pressure[0]) || (layer.top < pressure[N - 1])) {
         return {MISSING, MISSING};
     }
@@ -156,12 +142,13 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
     float ztop = interp_pressure(layer.top, pressure, height, N);
 
 #ifndef NO_QC
-    // As in height_layer_to_pressure, and before the AGL shift turns MISSING
-    // into a plausible height.
     if ((zbot == MISSING) || (ztop == MISSING)) return {MISSING, MISSING};
 #endif
 
     if (toAGL) {
+#ifndef NO_QC
+        if (is_missing(height[0])) return {MISSING, MISSING};
+#endif
         zbot -= height[0];
         ztop -= height[0];
     }
@@ -210,10 +197,8 @@ float layer_mean(HeightLayer layer, const float height[],
         layer.top = height[N - 1];
     }
 
-    // Clipping inverts a layer that lies wholly outside the profile, as in
-    // sharp::layer_minmax. That layer has no mean, and the conversion to
-    // pressure below can't take it. Complete data reaches this case, so
-    // unlike the MISSING checks it applies in NO_QC builds too.
+    // Clipping inverts a layer wholly outside the profile. Complete data
+    // reaches this, so NO_QC builds keep the check.
     if (layer.bottom > layer.top) return MISSING;
 
     PressureLayer pres_layer =

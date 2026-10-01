@@ -192,11 +192,11 @@ This does not use any of the updated methods described by Bunkers et al. 2014,
 which uses Effective Inflow Layer metrics to get better estimates of storm 
 motion, especially when considering elevated convection. 
 
-In QC builds, returns MISSING components if the mean wind layer, or either
-500 m deep end of the wind shear layer, can't be converted to pressure (see
+In QC builds, returns MISSING components if either layer is MISSING, or if
+the mean wind layer or either 500 m deep end of the wind shear layer can't
+be converted to pressure (see
 nwsspc.sharp.calc.layer.height_layer_to_pressure), for example because it
-extends past the profile. It also returns MISSING components if either layer
-is MISSING.
+extends past the profile.
 
 References 
 ----------
@@ -256,10 +256,14 @@ to the 0-6 km AGL shear between the 0-0.5 km and 5.5-6 km mean winds, as
 in the Bunkers 2000 method. Bunkers et al. found this does as well as the
 Bunkers 2000 method overall, and better for elevated supercells.
 
-The mean wind layer must be at least 3 km deep. If 65% of the EL height
-is less than 3 km above the inflow base, this falls back to the Bunkers
-2000 method with 0-6 km AGL layers, as it does when the effective inflow
-layer or the parcel's EL pressure is MISSING.
+This falls back to the Bunkers 2000 method with 0-6 km AGL layers when:
+
+- the effective inflow layer or the parcel's EL pressure is MISSING;
+- in QC builds, the effective inflow layer or the EL can't be converted
+  to height (see nwsspc.sharp.calc.layer.pressure_layer_to_height), for
+  example because it lies outside the profile; or
+- the mean wind layer would be less than 3 km deep, that is, 65% of the
+  EL height AGL is less than 3 km above the inflow base.
 
 The inflow base and the EL are converted to meters AGL internally, so
 height may be AGL or MSL, and the result doesn't depend on the station
@@ -270,12 +274,6 @@ pressure bounds and the most unstable parcel, respectively) are required
 to be precomputed and passed to this routine. These are expensive 
 operations that are presumed to be computed at some other point 
 in the analysis pipeline. 
-
-In QC builds, if the effective inflow layer or the equilibrium level
-can't be converted to height (see
-nwsspc.sharp.calc.layer.pressure_layer_to_height), for example because it
-lies outside the profile, this falls back to the Bunkers 2000 method with
-0-6 km AGL layers, as it does for a MISSING effective inflow layer.
 
 References
 ----------
@@ -1479,6 +1477,11 @@ Phi is the fire moisture to potential temperature increment ratio.
 
 Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
 If a parcel is passed, the values will be set with the PFT fire parcel.
+
+In QC builds, returns MISSING if the height of the fire parcel's LFC above
+the surface is unknown, for example because height[0] is MISSING, or if the
+potential temperature is MISSING at the LFC or at the level where the
+formula evaluates air density.
 
 References 
 ----------

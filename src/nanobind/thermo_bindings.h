@@ -1379,9 +1379,7 @@ float
         R"pbdoc(
 Computes the lapse rate over a given PressureLayer (Pa).
 
-A layer that extends past the profile is clipped to it. A layer that
-lies wholly outside the profile, or touches it at only one level, has
-no lapse rate and returns MISSING.
+Clipping and MISSING results are as for the HeightLayer overload.
 
 Parameters
 ----------
@@ -1420,16 +1418,15 @@ lapse rate over the provided depth (e.g. 2 km) within that given layer.
 Returns the maximum lapse rate, as well as the layer it was found in. 
 
 The search skips every layer of the given depth that extends past the
-surface or the top of the profile. lapse_rate would clip such a layer to
-one shallower than depth, and a shallower layer can have a larger lapse
-rate. A layer that touches the surface or the top level counts as inside
-the profile. The layers start at the bottom of the search layer and step
-up by its delta, so when the search layer starts below the surface, the
-first layer searched starts at the first step at or above the surface,
-not at the surface itself. If no layer in the search has a lapse rate,
-the returned lapse rate is MISSING, and so are the bottom and top of the
-returned layer. The delta of the search layer must be greater than 0 m.
-Any other delta, NaN included, gives the same MISSING result.
+surface or the top of the profile, rather than clipping it to a shallower
+layer as lapse_rate would. A layer that touches the surface or the top
+level counts as inside the profile. The layers start at the bottom of the
+search layer and step up by its delta, so when the search layer starts
+below the surface, the first layer searched starts at the first step at
+or above the surface, not at the surface itself. The delta of the search
+layer must be greater than 0 m. With any other delta, NaN included, or
+when no layer in the search has a lapse rate, the returned lapse rate is
+MISSING, and so are the bottom and top of the returned layer.
 
 Parameters
 ----------
@@ -1468,17 +1465,8 @@ Given a layer of the atmosphere (e.g. 800 hPa - 500 hPa), find the maximum
 lapse rate over the provided depth (e.g. 100 hPa) within that given layer. 
 Returns the maximum lapse rate, as well as the layer it was found in. 
 
-The search skips every layer of the given depth that extends past the
-surface or the top of the profile. lapse_rate would clip such a layer to
-one shallower than depth, and a shallower layer can have a larger lapse
-rate. A layer that touches the surface or the top level counts as inside
-the profile. The layers start at the bottom of the search layer and step
-up by its delta, so when the search layer starts below the surface, the
-first layer searched starts at the first step at or above the surface,
-not at the surface itself. If no layer in the search has a lapse rate,
-the returned lapse rate is MISSING, and so are the bottom and top of the
-returned layer. The delta of the search layer must be less than 0 Pa.
-Any other delta, NaN included, gives the same MISSING result.
+As the HeightLayer overload, but the delta of the search layer must be
+less than 0 Pa.
 
 Parameters
 ----------
