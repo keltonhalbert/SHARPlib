@@ -952,6 +952,86 @@ numpy.ndarray[dtype=float32]
     1D NumPy array of relative humidity values (fraction, unitless)
     )pbdoc");
 
+    m_therm.def("relative_humidity_ice", &sharp::relative_humidity_ice,
+                nb::arg("pressure"), nb::arg("temperature"),
+                nb::arg("dewpoint"),
+                R"pbdoc(
+Compute the relative humidity of water vapor with respect to ice.
+
+This is the vapor pressure at the dewpoint divided by the saturation vapor
+pressure over ice at the air temperature. At 0 C (273.15 K) it equals
+relative_humidity. Below 0 C it is larger, and air saturated with respect to
+liquid water gives a value greater than 1. The ice saturation vapor pressure
+is used at every temperature, including above 0 C.
+
+NOTE: The pressure variable is only used as a sanity check when computing
+vapor pressure at extremely low pressures and temperatures. If you do not
+want or need this behavior, you can pass the THETA_REF_PRESSURE constant
+in place of an air pressure.
+
+Parameters
+----------
+pressure : float
+    the ambient air pressure (Pa)
+temperature : float
+    the ambient air temperature (K)
+dewpoint : float
+    the ambient dewpoint temperature (K)
+
+Returns
+-------
+float
+    Relative Humidity with respect to ice (fraction, unitless)
+    )pbdoc");
+
+    m_therm.def(
+        "relative_humidity_ice",
+        [](const_prof_arr_t pres_arr, const_prof_arr_t tmpk_arr,
+           const_prof_arr_t dwpk_arr) {
+            check_equal_sizes(pres_arr, tmpk_arr, dwpk_arr);
+            const std::size_t NZ = pres_arr.size();
+            auto pres = pres_arr.view();
+            auto tmpk = tmpk_arr.view();
+            auto dwpk = dwpk_arr.view();
+
+            return make_output_array(NZ, [&](float* out) {
+                for (std::size_t k = 0; k < NZ; ++k) {
+                    out[k] = sharp::relative_humidity_ice(pres(k), tmpk(k),
+                                                          dwpk(k));
+                }
+            });
+        },
+        nb::arg("pressure"), nb::arg("temperature"), nb::arg("dewpoint"),
+        R"pbdoc(
+Compute the relative humidity of water vapor with respect to ice.
+
+This is the vapor pressure at the dewpoint divided by the saturation vapor
+pressure over ice at the air temperature. At 0 C (273.15 K) it equals
+relative_humidity. Below 0 C it is larger, and air saturated with respect to
+liquid water gives a value greater than 1. The ice saturation vapor pressure
+is used at every temperature, including above 0 C.
+
+NOTE: The pressure variable is only used as a sanity check when computing
+vapor pressure at extremely low pressures and temperatures. If you do not
+want or need this behavior, you can pass in an array of THETA_REF_PRESSURE
+in place of air pressure.
+
+Parameters
+----------
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of ambient air pressure (Pa)
+temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of ambient air temperature (K)
+dewpoint : numpy.ndarray[dtype=float32]
+    1D NumPy array of ambient dewpoint temperature (K)
+
+Returns
+-------
+numpy.ndarray[dtype=float32]
+    1D NumPy array of relative humidity values with respect to ice
+    (fraction, unitless)
+    )pbdoc");
+
     m_therm.def("virtual_temperature", &sharp::virtual_temperature,
                 nb::arg("temperature"), nb::arg("rv"), nb::arg("rl") = 0.0f,
                 nb::arg("ri") = 0.0f,

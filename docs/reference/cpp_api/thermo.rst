@@ -27,6 +27,7 @@ Moist Variables
 .. doxygenfunction:: sharp::vapor_pressure_ice
 .. doxygenfunction:: sharp::specific_humidity 
 .. doxygenfunction:: sharp::relative_humidity
+.. doxygenfunction:: sharp::relative_humidity_ice
 .. doxygenfunction:: sharp::temperature_at_mixratio
 .. doxygenfunction:: sharp::virtual_temperature
 .. doxygenfunction:: sharp::buoyancy(const float, const float)

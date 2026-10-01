@@ -85,6 +85,46 @@ TEST_CASE("Testing vapor_pressure") {
           doctest::Approx(expected_es).epsilon(percent_tol));
 }
 
+TEST_CASE("Testing relative_humidity_ice") {
+#ifndef NO_QC
+    // MISSING in any argument gives MISSING, as in relative_humidity
+    CHECK(sharp::relative_humidity(sharp::MISSING, 250.0f, 245.0f) ==
+          sharp::MISSING);
+    CHECK(sharp::relative_humidity_ice(sharp::MISSING, 250.0f, 245.0f) ==
+          sharp::MISSING);
+    CHECK(sharp::relative_humidity(50000.0f, sharp::MISSING, 245.0f) ==
+          sharp::MISSING);
+    CHECK(sharp::relative_humidity_ice(50000.0f, sharp::MISSING, 245.0f) ==
+          sharp::MISSING);
+    CHECK(sharp::relative_humidity(50000.0f, 250.0f, sharp::MISSING) ==
+          sharp::MISSING);
+    CHECK(sharp::relative_humidity_ice(50000.0f, 250.0f, sharp::MISSING) ==
+          sharp::MISSING);
+#endif
+
+    // Expected values computed in float64 with numpy from Bolton (1980)
+    // eq. 10 over liquid, 611.2 exp(17.67 t / (t + 243.5)), and
+    // 611.2 exp(21.8745584 t / (t + 265.49)) over ice (t in C, Pa),
+    // each floored at half the air pressure.
+    // Saturated with respect to liquid at -10 C: supersaturated over ice.
+    CHECK(sharp::relative_humidity_ice(80000.0f, 263.15f, 263.15f) ==
+          doctest::Approx(1.1045472f));
+    CHECK(sharp::relative_humidity_ice(50000.0f, 250.0f, 245.0f) ==
+          doctest::Approx(0.8023845f));
+    CHECK(sharp::relative_humidity_ice(70000.0f, 268.15f, 260.15f) ==
+          doctest::Approx(0.5617494f));
+    // At 300 Pa the ice saturation vapor pressure (195.5 Pa) is floored to
+    // 150 Pa, which gives 0.6366 instead of 0.4885.
+    CHECK(sharp::relative_humidity_ice(300.0f, 260.0f, 250.0f) ==
+          doctest::Approx(0.6365938f));
+
+    // Equal to relative humidity over liquid at exactly 0 C
+    for (const float dwpk : {sharp::ZEROCNK, 268.15f, 255.0f}) {
+        CHECK(sharp::relative_humidity_ice(100000.0f, sharp::ZEROCNK, dwpk) ==
+              sharp::relative_humidity(100000.0f, sharp::ZEROCNK, dwpk));
+    }
+}
+
 TEST_CASE("Testing wobf") {
 #ifndef NO_QC
     CHECK(sharp::wobf(sharp::MISSING) == sharp::MISSING);

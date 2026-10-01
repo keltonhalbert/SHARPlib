@@ -29,6 +29,7 @@ thermo
    .. autofunction:: nwsspc.sharp.calc.thermo.vapor_pressure_ice
    .. autofunction:: nwsspc.sharp.calc.thermo.specific_humidity
    .. autofunction:: nwsspc.sharp.calc.thermo.relative_humidity
+   .. autofunction:: nwsspc.sharp.calc.thermo.relative_humidity_ice
    .. autofunction:: nwsspc.sharp.calc.thermo.temperature_at_mixratio
    .. autofunction:: nwsspc.sharp.calc.thermo.virtual_temperature
    .. autofunction:: nwsspc.sharp.calc.thermo.buoyancy

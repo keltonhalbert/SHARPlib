@@ -289,6 +289,34 @@ enum class adiabat : int {
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
  *
+ * \brief Compute the relative humidity of water vapor with respect to ice
+ *
+ * Compute the relative humidity with respect to ice given an input
+ * pressure (Pa), temperature (K), and dewpoint temperature (K). This is the
+ * vapor pressure at the dewpoint (sharp::vapor_pressure) divided by the
+ * saturation vapor pressure over ice at the temperature
+ * (sharp::vapor_pressure_ice). At 0 C (273.15 K) it equals
+ * sharp::relative_humidity. Below 0 C it is larger, and air saturated with
+ * respect to liquid water gives a value greater than 1. The ice saturation
+ * vapor pressure is used at every temperature, including above 0 C.
+ *
+ * NOTE: The pressure value is only used to ensure sane values of vapor
+ * pressure at extremely cold temperatures/low pressures. If you do not want
+ * or need this behavior, you can pass in something like
+ * sharp::THETA_REF_PRESSURE instead.
+ *
+ * \param   pressure    (Pa)
+ * \param   temperature (K)
+ * \param   dewpoint    (K)
+ *
+ * \return  Relative Humidity with respect to ice (fraction, unitless)
+ */
+[[nodiscard]] float relative_humidity_ice(float pressure, float temperature,
+                                          float dewpoint);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
  * \brief Compute the full virtual temperature.
  *
  * Returns the virtual temperature in Kelvin given the dry-bulb

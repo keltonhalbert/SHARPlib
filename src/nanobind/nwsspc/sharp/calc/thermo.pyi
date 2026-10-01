@@ -581,6 +581,69 @@ def relative_humidity(pressure: Annotated[NDArray[numpy.float32], dict(shape=(No
     """
 
 @overload
+def relative_humidity_ice(pressure: float, temperature: float, dewpoint: float) -> float:
+    """
+    Compute the relative humidity of water vapor with respect to ice.
+
+    This is the vapor pressure at the dewpoint divided by the saturation vapor
+    pressure over ice at the air temperature. At 0 C (273.15 K) it equals
+    relative_humidity. Below 0 C it is larger, and air saturated with respect to
+    liquid water gives a value greater than 1. The ice saturation vapor pressure
+    is used at every temperature, including above 0 C.
+
+    NOTE: The pressure variable is only used as a sanity check when computing
+    vapor pressure at extremely low pressures and temperatures. If you do not
+    want or need this behavior, you can pass the THETA_REF_PRESSURE constant
+    in place of an air pressure.
+
+    Parameters
+    ----------
+    pressure : float
+        the ambient air pressure (Pa)
+    temperature : float
+        the ambient air temperature (K)
+    dewpoint : float
+        the ambient dewpoint temperature (K)
+
+    Returns
+    -------
+    float
+        Relative Humidity with respect to ice (fraction, unitless)
+    """
+
+@overload
+def relative_humidity_ice(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
+    """
+    Compute the relative humidity of water vapor with respect to ice.
+
+    This is the vapor pressure at the dewpoint divided by the saturation vapor
+    pressure over ice at the air temperature. At 0 C (273.15 K) it equals
+    relative_humidity. Below 0 C it is larger, and air saturated with respect to
+    liquid water gives a value greater than 1. The ice saturation vapor pressure
+    is used at every temperature, including above 0 C.
+
+    NOTE: The pressure variable is only used as a sanity check when computing
+    vapor pressure at extremely low pressures and temperatures. If you do not
+    want or need this behavior, you can pass in an array of THETA_REF_PRESSURE
+    in place of air pressure.
+
+    Parameters
+    ----------
+    pressure : numpy.ndarray[dtype=float32]
+        1D NumPy array of ambient air pressure (Pa)
+    temperature : numpy.ndarray[dtype=float32]
+        1D NumPy array of ambient air temperature (K)
+    dewpoint : numpy.ndarray[dtype=float32]
+        1D NumPy array of ambient dewpoint temperature (K)
+
+    Returns
+    -------
+    numpy.ndarray[dtype=float32]
+        1D NumPy array of relative humidity values with respect to ice
+        (fraction, unitless)
+    """
+
+@overload
 def virtual_temperature(temperature: float, rv: float, rl: float = 0.0, ri: float = 0.0) -> float:
     """
     Returns the virtual temperature in Kelvin given the dry-bulb 

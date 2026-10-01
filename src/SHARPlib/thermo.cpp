@@ -171,6 +171,21 @@ float relative_humidity(float pressure, float temperature, float dewpoint) {
     return vapor_pres / saturation_vapor_pres;
 }
 
+float relative_humidity_ice(float pressure, float temperature, float dewpoint) {
+#ifndef NO_QC
+    if ((pressure == MISSING) || (temperature == MISSING) ||
+        (dewpoint == MISSING)) {
+        return MISSING;
+    }
+#endif
+
+    const float vapor_pres = vapor_pressure(pressure, dewpoint);
+    const float saturation_vapor_pres =
+        vapor_pressure_ice(pressure, temperature);
+
+    return vapor_pres / saturation_vapor_pres;
+}
+
 float virtual_temperature(float temperature, float rv, float rl, float ri) {
 #ifndef NO_QC
     if ((rv == MISSING) || (rl == MISSING) || (ri == MISSING) ||

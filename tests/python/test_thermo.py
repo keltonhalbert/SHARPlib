@@ -208,6 +208,52 @@ def test_relh():
     assert (relh.mean() == pytest.approx(0.1219267))
 
 
+def test_relh_ice():
+    # MISSING in any argument gives MISSING, as in relative_humidity
+    for args in ((constants.MISSING, 250.0, 245.0),
+                 (50000.0, constants.MISSING, 245.0),
+                 (50000.0, 250.0, constants.MISSING)):
+        assert (thermo.relative_humidity(*args) == constants.MISSING)
+        assert (thermo.relative_humidity_ice(*args) == constants.MISSING)
+
+    # Expected values computed in float64 with numpy from Bolton (1980)
+    # eq. 10 over liquid and 611.2 exp(21.8745584 t / (t + 265.49)) over
+    # ice, each floored at half the air pressure. The first level is
+    # saturated with respect to liquid at -10 C; the last is floored.
+    pres = np.array([80000.0, 50000.0, 70000.0, 300.0], dtype="float32")
+    tmpk = np.array([263.15, 250.0, 268.15, 260.0], dtype="float32")
+    dwpk = np.array([263.15, 245.0, 260.15, 250.0], dtype="float32")
+    expected = [1.1045472, 0.8023845, 0.5617494, 0.6365938]
+
+    relh_ice = thermo.relative_humidity_ice(pres, tmpk, dwpk)
+    assert (relh_ice == pytest.approx(expected, rel=1e-5))
+    for k in range(len(expected)):
+        assert (thermo.relative_humidity_ice(
+            pres[k], tmpk[k], dwpk[k]) == relh_ice[k])
+
+    # A MISSING array element gives MISSING at that level only
+    pres = np.array([constants.MISSING, 50000.0, 50000.0, 50000.0],
+                    dtype="float32")
+    tmpk = np.array([250.0, constants.MISSING, 250.0, 250.0], dtype="float32")
+    dwpk = np.array([245.0, 245.0, constants.MISSING, 245.0], dtype="float32")
+    relh_ice = thermo.relative_humidity_ice(pres, tmpk, dwpk)
+    relh = thermo.relative_humidity(pres, tmpk, dwpk)
+    np.testing.assert_array_equal(relh_ice[:3], constants.MISSING)
+    np.testing.assert_array_equal(relh[:3], constants.MISSING)
+    assert (relh_ice[3] == pytest.approx(0.8023845, rel=1e-5))
+
+    with pytest.raises(BufferError):
+        thermo.relative_humidity_ice(pres, tmpk, dwpk[:3])
+
+    # Equal to relative humidity over liquid at exactly 0 C
+    pres = np.full(3, 100000.0, dtype="float32")
+    tmpk = np.full(3, 273.15, dtype="float32")
+    dwpk = np.array([273.15, 268.15, 255.0], dtype="float32")
+    np.testing.assert_array_equal(
+        thermo.relative_humidity_ice(pres, tmpk, dwpk),
+        thermo.relative_humidity(pres, tmpk, dwpk))
+
+
 def test_virtemp():
     vtmpk = thermo.virtual_temperature(constants.MISSING, 0.0)
     assert (vtmpk == constants.MISSING)
