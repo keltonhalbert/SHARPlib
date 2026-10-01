@@ -491,17 +491,15 @@ float lapse_rate(PressureLayer layer, const float pressure[],
 float lapse_rate_max(HeightLayer layer_agl, const float depth,
                      const float height[], const float temperature[],
                      const std::ptrdiff_t N, HeightLayer* max_lyr) {
+    if (max_lyr) {
+        max_lyr->bottom = MISSING;
+        max_lyr->top = MISSING;
+    }
     // The search steps up by delta. With a delta of zero or less it never
     // reaches the top of the layer, and the call never returns. A NaN delta
     // ends it after one layer. The check is for termination, not missing
     // data, so NO_QC builds keep it too.
-    if (!(layer_agl.delta > 0.0f)) {
-        if (max_lyr) {
-            max_lyr->bottom = MISSING;
-            max_lyr->top = MISSING;
-        }
-        return MISSING;
-    }
+    if (!(layer_agl.delta > 0.0f)) return MISSING;
     float max_lr = MISSING;
     for (float z = layer_agl.bottom; z <= (layer_agl.top - depth);
          z += layer_agl.delta) {
@@ -523,10 +521,6 @@ float lapse_rate_max(HeightLayer layer_agl, const float depth,
             }
         }
     }
-    if (max_lyr && (max_lr == MISSING)) {
-        max_lyr->bottom = MISSING;
-        max_lyr->top = MISSING;
-    }
     return max_lr;
 }
 
@@ -534,15 +528,13 @@ float lapse_rate_max(PressureLayer layer, const float depth,
                      const float pressure[], const float height[],
                      const float temperature[], const std::ptrdiff_t N,
                      PressureLayer* max_lyr) {
+    if (max_lyr) {
+        max_lyr->bottom = MISSING;
+        max_lyr->top = MISSING;
+    }
     // The search steps toward lower pressure, so delta must be below zero,
     // as in the sharp::HeightLayer overload.
-    if (!(layer.delta < 0.0f)) {
-        if (max_lyr) {
-            max_lyr->bottom = MISSING;
-            max_lyr->top = MISSING;
-        }
-        return MISSING;
-    }
+    if (!(layer.delta < 0.0f)) return MISSING;
     float max_lr = MISSING;
     for (float p = layer.bottom; p >= (layer.top + depth); p += layer.delta) {
         PressureLayer lyr = {p, p - depth};
@@ -558,10 +550,6 @@ float lapse_rate_max(PressureLayer layer, const float depth,
                 max_lyr->top = lyr.top;
             }
         }
-    }
-    if (max_lyr && (max_lr == MISSING)) {
-        max_lyr->bottom = MISSING;
-        max_lyr->top = MISSING;
     }
     return max_lr;
 }

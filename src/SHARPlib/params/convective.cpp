@@ -33,11 +33,9 @@ WindComponents storm_motion_bunkers(
     constexpr float deviation = 7.5;  // deviation from mean wind in m/s
 
 #ifndef NO_QC
-    // A MISSING layer has no motion. A MISSING shear layer would otherwise
-    // build half-MISSING sublayers below, which throw.
-    if (is_missing(mean_wind_layer_agl.bottom) ||
-        is_missing(mean_wind_layer_agl.top) ||
-        is_missing(wind_shear_layer_agl.bottom) ||
+    // A MISSING shear layer would otherwise build half-MISSING sublayers
+    // below, which throw.
+    if (is_missing(wind_shear_layer_agl.bottom) ||
         is_missing(wind_shear_layer_agl.top)) {
         return {MISSING, MISSING};
     }
@@ -45,10 +43,6 @@ WindComponents storm_motion_bunkers(
 
     PressureLayer mw_lyr = height_layer_to_pressure(mean_wind_layer_agl,
                                                     pressure, height, N, true);
-
-    WindComponents layer_mean_wind = {MISSING, MISSING};
-    layer_mean_wind =
-        mean_wind(mw_lyr, pressure, u_wind, v_wind, N, pressureWeighted);
 
     // The shear is computed by finding the 500m deep
     // mean winds at the top and bottom of the wind_shear_layer
@@ -73,6 +67,8 @@ WindComponents storm_motion_bunkers(
     }
 #endif
 
+    WindComponents layer_mean_wind =
+        mean_wind(mw_lyr, pressure, u_wind, v_wind, N, pressureWeighted);
     WindComponents winds_lo =
         mean_wind(p_layer_lo, pressure, u_wind, v_wind, N, false);
     WindComponents winds_hi =
@@ -148,10 +144,13 @@ WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const std::ptrdiff_t N) {
     const float pres_sfc = pressure[0];
+    HeightLayer low_layer = {0, 1500.0};  // agl
+    PressureLayer low_layer_pres =
+        height_layer_to_pressure(low_layer, pressure, height, N, true);
 #ifndef NO_QC
     // The cloud layer can start at the surface pressure, so without it there
     // is no answer.
-    if (is_missing(pres_sfc)) {
+    if (is_missing(pres_sfc) || (low_layer_pres.bottom == MISSING)) {
         constexpr WindComponents missing = {MISSING, MISSING};
         return std::make_pair(missing, missing);
     }
@@ -165,16 +164,6 @@ WindComponents storm_motion_bunkers(
         cloud_layer_mean =
             mean_wind({85000.0, 30000.0}, pressure, u_wind, v_wind, N, false);
     }
-
-    HeightLayer low_layer = {0, 1500.0};  // agl
-    PressureLayer low_layer_pres =
-        height_layer_to_pressure(low_layer, pressure, height, N, true);
-#ifndef NO_QC
-    if (low_layer_pres.bottom == MISSING) {
-        constexpr WindComponents missing = {MISSING, MISSING};
-        return std::make_pair(missing, missing);
-    }
-#endif
 
     WindComponents low_level_mean =
         mean_wind(low_layer_pres, pressure, u_wind, v_wind, N, false);

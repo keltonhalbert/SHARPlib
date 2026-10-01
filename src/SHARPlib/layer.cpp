@@ -108,14 +108,12 @@ PressureLayer height_layer_to_pressure(HeightLayer layer,
                                        const float height[],
                                        const std::ptrdiff_t N,
                                        const bool isAGL) {
-#ifndef NO_QC
-    // An AGL layer is measured from height[0], so without it there's no
-    // answer.
-    if (isAGL && is_missing(height[0])) {
-        return {MISSING, MISSING};
-    }
-#endif
     if (isAGL) {
+#ifndef NO_QC
+        // An AGL layer is measured from height[0], so without it there's no
+        // answer.
+        if (is_missing(height[0])) return {MISSING, MISSING};
+#endif
         layer.bottom += height[0];
         layer.top += height[0];
     }
@@ -141,13 +139,6 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
                                      const float pressure[],
                                      const float height[],
                                      const std::ptrdiff_t N, const bool toAGL) {
-#ifndef NO_QC
-    // An AGL layer is measured from height[0], so without it there's no
-    // answer.
-    if (toAGL && is_missing(height[0])) {
-        return {MISSING, MISSING};
-    }
-#endif
     if ((layer.bottom > pressure[0]) || (layer.top < pressure[N - 1])) {
         return {MISSING, MISSING};
     }
@@ -162,6 +153,11 @@ HeightLayer pressure_layer_to_height(PressureLayer layer,
 #endif
 
     if (toAGL) {
+#ifndef NO_QC
+        // An AGL layer is measured from height[0], so without it there's no
+        // answer.
+        if (is_missing(height[0])) return {MISSING, MISSING};
+#endif
         zbot -= height[0];
         ztop -= height[0];
     }
