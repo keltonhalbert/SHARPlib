@@ -15,6 +15,8 @@ def interp_height(hght_val: float, hght_arr: Annotated[NDArray[numpy.float32], d
     other hght_val, the routine interpolates between the nearest valid levels
     below and above it, and returns MISSING when one side has none.
 
+    Empty arrays return MISSING in every build.
+
     Parameters
     ----------
     hght_val : float 
@@ -41,6 +43,8 @@ def interp_pressure(pres_val: float, pres_arr: Annotated[NDArray[numpy.float32],
     level's stored value, even when a neighbouring level is missing. For any
     other pres_val, the routine interpolates between the nearest valid levels
     below and above it, and returns MISSING when one side has none.
+
+    Empty arrays return MISSING in every build.
 
     Parameters
     ----------

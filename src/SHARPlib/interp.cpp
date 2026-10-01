@@ -32,6 +32,7 @@ namespace {
 
 float interp_height(const float height_val, const float height_arr[],
                     const float data_arr[], const std::ptrdiff_t N) {
+    if (N < 1) return MISSING;
 #ifndef NO_QC
     if (height_val == MISSING) return MISSING;
     if (std::isnan(height_val)) return MISSING;
@@ -40,6 +41,15 @@ float interp_height(const float height_val, const float height_arr[],
     // or below the surface, we can't reasonably extrapolate
     if ((height_val > height_arr[N - 1]) || (height_val < height_arr[0]))
         return MISSING;
+
+    // One level brackets nothing. The range check above leaves only a query
+    // exactly on it, which returns the stored value.
+    if (N == 1) {
+#ifndef NO_QC
+        if (is_missing(data_arr[0])) return MISSING;
+#endif
+        return data_arr[0];
+    }
 
     static constexpr auto comp = std::less<float>();
     std::ptrdiff_t idx_top = upper_bound(height_arr, N, height_val, comp);
@@ -87,6 +97,7 @@ float interp_height(const float height_val, const float height_arr[],
 
 float interp_pressure(const float pressure_val, const float pressure_arr[],
                       const float data_arr[], const std::ptrdiff_t N) {
+    if (N < 1) return MISSING;
 #ifndef NO_QC
     if (pressure_val == MISSING) return MISSING;
     if (std::isnan(pressure_val)) return MISSING;
@@ -96,6 +107,15 @@ float interp_pressure(const float pressure_val, const float pressure_arr[],
     if ((pressure_val < pressure_arr[N - 1]) ||
         (pressure_val > pressure_arr[0])) {
         return MISSING;
+    }
+
+    // One level brackets nothing. The range check above leaves only a query
+    // exactly on it, which returns the stored value.
+    if (N == 1) {
+#ifndef NO_QC
+        if (is_missing(data_arr[0])) return MISSING;
+#endif
+        return data_arr[0];
     }
 
     static constexpr auto comp = std::greater<float>();

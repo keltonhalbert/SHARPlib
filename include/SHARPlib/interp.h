@@ -115,7 +115,8 @@ template <typename _Fp>
  * level's stored value, even when a neighbouring level is missing. For
  * any other height_val, the routine interpolates between the nearest valid
  * levels below and above it, and returns MISSING when one side has none.
- * Builds with NO_QC skip these checks.
+ * Builds with NO_QC skip these checks. Every build returns MISSING for an
+ * empty profile (N < 1) without reading the arrays.
  *
  * \param   height_val  The height value to interpolate data to
  * \param   height_arr  The array of height values in the profile
@@ -148,7 +149,8 @@ template <typename _Fp>
  * level's stored value, even when a neighbouring level is missing. For
  * any other pressure_val, the routine interpolates between the nearest
  * valid levels below and above it, and returns MISSING when one side has
- * none. Builds with NO_QC skip these checks.
+ * none. Builds with NO_QC skip these checks. Every build returns MISSING
+ * for an empty profile (N < 1) without reading the arrays.
  *
  * \param   pressure_val    The pressure value to interpolate data to
  * \param   pressure_arr    The array of pressure values in the profile
