@@ -181,211 +181,109 @@ TEST_CASE("Testing find_first_pressure_with_missing") {
 #endif
 
 // QC builds handle NaN data like MISSING, and a query that lands exactly on a
-// valid level returns that level's stored value (SHARPlib-5yf.1). Each "was"
-// comment is the output measured on the code before that change.
+// valid level returns that level's stored value (SHARPlib-5yf.1).
 #ifndef NO_QC
-TEST_CASE("Testing interp_height with NaN and MISSING data") {
-    constexpr float hght2[2] = {0, 100};
-    constexpr float hght3[3] = {0, 100, 200};
+constexpr float hght[4] = {0, 100, 200, 300};
+constexpr float pres[4] = {100000, 90000, 80000, 70000};
+constexpr float nan_mid[3] = {1, nanval, 9};
 
+TEST_CASE("Testing interp with NaN and MISSING data") {
     // a NaN neighbour is bridged to the next valid level
-    constexpr float nan_mid[3] = {1, nanval, 9};
-    CHECK(sharp::interp_height(150, hght3, nan_mid, 3) == 7);  // was 9
-    CHECK(sharp::interp_height(50, hght3, nan_mid, 3) == 3);   // was NaN
+    CHECK(sharp::interp_height(150, hght, nan_mid, 3) == 7);
+    CHECK(sharp::interp_height(50, hght, nan_mid, 3) == 3);
+    CHECK(sharp::interp_pressure(85000, pres, nan_mid, 3) ==
+          doctest::Approx(6.82651615));
+    CHECK(sharp::interp_pressure(95000, pres, nan_mid, 3) ==
+          doctest::Approx(2.83893538));
 
     // no valid level on one side gives MISSING
     constexpr float nan_top[2] = {1, nanval};
     constexpr float nan_below[3] = {nanval, nanval, 9};
     constexpr float nan_above[3] = {1, nanval, nanval};
-    CHECK(sharp::interp_height(50, hght2, nan_top, 2) ==
-          sharp::MISSING);  // was NaN
-    CHECK(sharp::interp_height(50, hght3, nan_below, 3) ==
-          sharp::MISSING);  // was NaN
-    CHECK(sharp::interp_height(150, hght3, nan_above, 3) ==
-          sharp::MISSING);  // was NaN
+    CHECK(sharp::interp_height(50, hght, nan_top, 2) == sharp::MISSING);
+    CHECK(sharp::interp_height(50, hght, nan_below, 3) == sharp::MISSING);
+    CHECK(sharp::interp_height(150, hght, nan_above, 3) == sharp::MISSING);
+    CHECK(sharp::interp_pressure(95000, pres, nan_top, 2) == sharp::MISSING);
+    CHECK(sharp::interp_pressure(95000, pres, nan_below, 3) == sharp::MISSING);
+    CHECK(sharp::interp_pressure(85000, pres, nan_above, 3) == sharp::MISSING);
 
-    // exact level at the top of the profile, missing level below
-    constexpr float nan_280[2] = {nanval, 280};
-    constexpr float mis_280[2] = {sharp::MISSING, 280};
-    CHECK(sharp::interp_height(100, hght2, nan_280, 2) == 280);  // was 280
-    CHECK(sharp::interp_height(100, hght2, mis_280, 2) == 280);  // was MISSING
-
-    // exact level at the bottom of the profile, missing level above
-    constexpr float b280_nan[2] = {280, nanval};
-    constexpr float b280_mis[2] = {280, sharp::MISSING};
-    CHECK(sharp::interp_height(0, hght2, b280_nan, 2) == 280);  // was NaN
-    CHECK(sharp::interp_height(0, hght2, b280_mis, 2) == 280);  // was MISSING
-
-    // exact interior level, missing level above (dewpoint, K)
     constexpr float hght_td[3] = {2950, 3000, 3050};
+    for (const float bad : {nanval, sharp::MISSING}) {
+        CAPTURE(bad);
+        // exact level at the top of the profile, missing level below
+        const float top[2] = {bad, 280};
+        CHECK(sharp::interp_height(100, hght, top, 2) == 280);
+        CHECK(sharp::interp_pressure(90000, pres, top, 2) == 280);
+
+        // exact level at the bottom of the profile, missing level above
+        const float bottom[2] = {280, bad};
+        CHECK(sharp::interp_height(0, hght, bottom, 2) == 280);
+        CHECK(sharp::interp_pressure(100000, pres, bottom, 2) == 280);
+
+        // exact interior level, missing level above (dewpoint, K)
+        const float td[3] = {270.0f, 269.5f, bad};
+        CHECK(sharp::interp_height(3000, hght_td, td, 3) == 269.5f);
+        CHECK(sharp::interp_pressure(90000, pres, td, 3) == 269.5f);
+    }
     constexpr float td_mis[3] = {270.0f, 269.5f, sharp::MISSING};
-    constexpr float td_nan[3] = {270.0f, 269.5f, nanval};
-    CHECK(sharp::interp_height(3000, hght_td, td_mis, 3) ==
-          269.5f);  // was MISSING
-    CHECK(sharp::interp_height(3000, hght_td, td_nan, 3) == 269.5f);  // was NaN
     CHECK(sharp::interp_height(2999.9f, hght_td, td_mis, 3) ==
-          doctest::Approx(269.501));  // was 269.501
-}
-
-TEST_CASE("Testing interp_pressure with NaN and MISSING data") {
-    constexpr float pres2[2] = {100000, 90000};
-    constexpr float pres3[3] = {100000, 90000, 80000};
-
-    // a NaN neighbour is bridged to the next valid level
-    constexpr float nan_mid[3] = {1, nanval, 9};
-    CHECK(sharp::interp_pressure(85000, pres3, nan_mid, 3) ==
-          doctest::Approx(6.82651615));  // was 9
-    CHECK(sharp::interp_pressure(95000, pres3, nan_mid, 3) ==
-          doctest::Approx(2.83893538));  // was NaN
-
-    // no valid level on one side gives MISSING
-    constexpr float nan_top[2] = {1, nanval};
-    constexpr float nan_below[3] = {nanval, nanval, 9};
-    constexpr float nan_above[3] = {1, nanval, nanval};
-    CHECK(sharp::interp_pressure(95000, pres2, nan_top, 2) ==
-          sharp::MISSING);  // was NaN
-    CHECK(sharp::interp_pressure(95000, pres3, nan_below, 3) ==
-          sharp::MISSING);  // was NaN
-    CHECK(sharp::interp_pressure(85000, pres3, nan_above, 3) ==
-          sharp::MISSING);  // was NaN
-
-    // exact level at the top of the profile, missing level below
-    constexpr float nan_280[2] = {nanval, 280};
-    constexpr float mis_280[2] = {sharp::MISSING, 280};
-    CHECK(sharp::interp_pressure(90000, pres2, nan_280, 2) == 280);  // was 280
-    CHECK(sharp::interp_pressure(90000, pres2, mis_280, 2) ==
-          280);  // was MISSING
-
-    // exact level at the bottom of the profile, missing level above
-    constexpr float b280_nan[2] = {280, nanval};
-    constexpr float b280_mis[2] = {280, sharp::MISSING};
-    CHECK(sharp::interp_pressure(100000, pres2, b280_nan, 2) ==
-          280);  // was NaN
-    CHECK(sharp::interp_pressure(100000, pres2, b280_mis, 2) ==
-          280);  // was MISSING
-
-    // exact interior level, missing level above
-    constexpr float td_mis[3] = {270.0f, 269.5f, sharp::MISSING};
-    constexpr float td_nan[3] = {270.0f, 269.5f, nanval};
-    CHECK(sharp::interp_pressure(90000, pres3, td_mis, 3) ==
-          269.5f);  // was MISSING
-    CHECK(sharp::interp_pressure(90000, pres3, td_nan, 3) ==
-          269.5f);  // was NaN
+          doctest::Approx(269.501));
 }
 
 TEST_CASE("Testing interp at exact levels with a complete bracket") {
     // Both bracketing levels are valid, so the exact-level shortcut is
     // skipped and the interpolation path runs as before. Expected values are
     // the exact outputs measured before the change.
-    constexpr float hght3[3] = {0, 100, 200};
-    constexpr float pres3[3] = {100000, 90000, 80000};
     constexpr float data3[3] = {-1.5f, 2.25f, 7.75f};
-    CHECK(sharp::interp_height(0, hght3, data3, 3) == -1.5f);
-    CHECK(sharp::interp_height(100, hght3, data3, 3) == 2.25f);
-    CHECK(sharp::interp_height(200, hght3, data3, 3) == 7.75f);
-    CHECK(sharp::interp_pressure(100000, pres3, data3, 3) == -1.5f);
-    CHECK(sharp::interp_pressure(90000, pres3, data3, 3) == 2.25f);
-    CHECK(sharp::interp_pressure(80000, pres3, data3, 3) == 7.75f);
+    CHECK(sharp::interp_height(0, hght, data3, 3) == -1.5f);
+    CHECK(sharp::interp_height(100, hght, data3, 3) == 2.25f);
+    CHECK(sharp::interp_height(200, hght, data3, 3) == 7.75f);
+    CHECK(sharp::interp_pressure(100000, pres, data3, 3) == -1.5f);
+    CHECK(sharp::interp_pressure(90000, pres, data3, 3) == 2.25f);
+    CHECK(sharp::interp_pressure(80000, pres, data3, 3) == 7.75f);
 
-    constexpr float hght4[4] = {0, 100, 200, 300};
-    constexpr float pres4[4] = {100000, 90000, 80000, 70000};
     constexpr float data4[4] = {sharp::MISSING, 2.25f, 7.75f, nanval};
-    CHECK(sharp::interp_height(100, hght4, data4, 4) == 2.25f);
-    CHECK(sharp::interp_height(150, hght4, data4, 4) == 5.0f);
-    CHECK(sharp::interp_pressure(90000, pres4, data4, 4) == 2.25f);
-    CHECK(sharp::interp_pressure(85000, pres4, data4, 4) == 4.91907024f);
+    CHECK(sharp::interp_height(100, hght, data4, 4) == 2.25f);
+    CHECK(sharp::interp_height(150, hght, data4, 4) == 5.0f);
+    CHECK(sharp::interp_pressure(90000, pres, data4, 4) == 2.25f);
+    CHECK(sharp::interp_pressure(85000, pres, data4, 4) == 4.91907024f);
 }
 
-TEST_CASE("Testing find_first_height with NaN and MISSING data") {
-    constexpr float hght1[1] = {0};
-    constexpr float hght2[2] = {0, 100};
-    constexpr float hght3[3] = {0, 100, 200};
-
+TEST_CASE("Testing find_first with NaN and MISSING data") {
     // a NaN query value gives MISSING
     constexpr float data3[3] = {1, 5, 9};
-    CHECK(sharp::find_first_height(nanval, hght3, data3, 3) ==
-          sharp::MISSING);  // was MISSING
+    CHECK(sharp::find_first_height(nanval, hght, data3, 3) == sharp::MISSING);
+    CHECK(sharp::find_first_pressure(nanval, pres, data3, 3) == sharp::MISSING);
 
     // a crossing across a NaN level is found
-    constexpr float nan_mid[3] = {1, nanval, 9};
-    CHECK(sharp::find_first_height(5, hght3, nan_mid, 3) ==
-          100);  // was MISSING
+    CHECK(sharp::find_first_height(5, hght, nan_mid, 3) == 100);
+    CHECK(sharp::find_first_pressure(5, pres, nan_mid, 3) ==
+          doctest::Approx(89442.7));
 
-    // exact match on the only valid level
-    constexpr float v5_nan[2] = {5, nanval};
-    constexpr float nan_v5[2] = {nanval, 5};
-    constexpr float nan_v5_nan[3] = {nanval, 5, nanval};
-    constexpr float v5_mis[2] = {5, sharp::MISSING};
-    constexpr float mis_v5[2] = {sharp::MISSING, 5};
-    constexpr float mis_v5_mis[3] = {sharp::MISSING, 5, sharp::MISSING};
-    CHECK(sharp::find_first_height(5, hght2, v5_nan, 2) == 0);        // was 0
-    CHECK(sharp::find_first_height(5, hght2, nan_v5, 2) == 100);      // was 100
-    CHECK(sharp::find_first_height(5, hght3, nan_v5_nan, 3) == 100);  // was 100
-    CHECK(sharp::find_first_height(5, hght2, v5_mis, 2) == 0);    // was MISSING
-    CHECK(sharp::find_first_height(5, hght2, mis_v5, 2) == 100);  // was MISSING
-    CHECK(sharp::find_first_height(5, hght3, mis_v5_mis, 3) ==
-          100);  // was MISSING
+    for (const float bad : {nanval, sharp::MISSING}) {
+        CAPTURE(bad);
+        // exact match on the only valid level
+        const float v5_bad[2] = {5, bad};
+        const float bad_v5[2] = {bad, 5};
+        const float bad_v5_bad[3] = {bad, 5, bad};
+        CHECK(sharp::find_first_height(5, hght, v5_bad, 2) == 0);
+        CHECK(sharp::find_first_height(5, hght, bad_v5, 2) == 100);
+        CHECK(sharp::find_first_height(5, hght, bad_v5_bad, 3) == 100);
+        CHECK(sharp::find_first_pressure(5, pres, v5_bad, 2) == 100000);
+        CHECK(sharp::find_first_pressure(5, pres, bad_v5, 2) == 90000);
+        CHECK(sharp::find_first_pressure(5, pres, bad_v5_bad, 3) == 90000);
 
-    // a lone valid level that does not match gives MISSING
-    CHECK(sharp::find_first_height(6, hght2, v5_nan, 2) ==
-          sharp::MISSING);  // was MISSING
-    CHECK(sharp::find_first_height(6, hght2, v5_mis, 2) ==
-          sharp::MISSING);  // was MISSING
+        // a lone valid level that does not match gives MISSING
+        CHECK(sharp::find_first_height(6, hght, v5_bad, 2) == sharp::MISSING);
+        CHECK(sharp::find_first_pressure(6, pres, v5_bad, 2) == sharp::MISSING);
+    }
 
     // single-level profile: an exact match returns its coordinate
     constexpr float v5[1] = {5};
-    CHECK(sharp::find_first_height(5, hght1, v5, 1) == 0);  // was MISSING
-    CHECK(sharp::find_first_height(6, hght1, v5, 1) ==
-          sharp::MISSING);  // was MISSING
-}
-
-TEST_CASE("Testing find_first_pressure with NaN and MISSING data") {
-    constexpr float pres1[1] = {100000};
-    constexpr float pres2[2] = {100000, 90000};
-    constexpr float pres3[3] = {100000, 90000, 80000};
-
-    // a NaN query value gives MISSING
-    constexpr float data3[3] = {1, 5, 9};
-    CHECK(sharp::find_first_pressure(nanval, pres3, data3, 3) ==
-          sharp::MISSING);  // was MISSING
-
-    // a crossing across a NaN level is found
-    constexpr float nan_mid[3] = {1, nanval, 9};
-    CHECK(sharp::find_first_pressure(5, pres3, nan_mid, 3) ==
-          doctest::Approx(89442.7));  // was MISSING
-
-    // exact match on the only valid level
-    constexpr float v5_nan[2] = {5, nanval};
-    constexpr float nan_v5[2] = {nanval, 5};
-    constexpr float nan_v5_nan[3] = {nanval, 5, nanval};
-    constexpr float v5_mis[2] = {5, sharp::MISSING};
-    constexpr float mis_v5[2] = {sharp::MISSING, 5};
-    constexpr float mis_v5_mis[3] = {sharp::MISSING, 5, sharp::MISSING};
-    CHECK(sharp::find_first_pressure(5, pres2, v5_nan, 2) ==
-          100000);  // was 100000
-    CHECK(sharp::find_first_pressure(5, pres2, nan_v5, 2) ==
-          90000);  // was 90000
-    CHECK(sharp::find_first_pressure(5, pres3, nan_v5_nan, 3) ==
-          90000);  // was 90000
-    CHECK(sharp::find_first_pressure(5, pres2, v5_mis, 2) ==
-          100000);  // was MISSING
-    CHECK(sharp::find_first_pressure(5, pres2, mis_v5, 2) ==
-          90000);  // was MISSING
-    CHECK(sharp::find_first_pressure(5, pres3, mis_v5_mis, 3) ==
-          90000);  // was MISSING
-
-    // a lone valid level that does not match gives MISSING
-    CHECK(sharp::find_first_pressure(6, pres2, v5_nan, 2) ==
-          sharp::MISSING);  // was MISSING
-    CHECK(sharp::find_first_pressure(6, pres2, v5_mis, 2) ==
-          sharp::MISSING);  // was MISSING
-
-    // single-level profile: an exact match returns its coordinate
-    constexpr float v5[1] = {5};
-    CHECK(sharp::find_first_pressure(5, pres1, v5, 1) ==
-          100000);  // was MISSING
-    CHECK(sharp::find_first_pressure(6, pres1, v5, 1) ==
-          sharp::MISSING);  // was MISSING
+    CHECK(sharp::find_first_height(5, hght, v5, 1) == 0);
+    CHECK(sharp::find_first_height(6, hght, v5, 1) == sharp::MISSING);
+    CHECK(sharp::find_first_pressure(5, pres, v5, 1) == 100000);
+    CHECK(sharp::find_first_pressure(6, pres, v5, 1) == sharp::MISSING);
 }
 #endif
 
@@ -418,17 +316,13 @@ TEST_CASE("Testing interp on a single-level profile") {
     CHECK(sharp::interp_height(101, hght1, data1, 1) == sharp::MISSING);
     CHECK(sharp::interp_pressure(85001, pres1, data1, 1) == sharp::MISSING);
     CHECK(sharp::interp_pressure(84999, pres1, data1, 1) == sharp::MISSING);
-}
 
 #ifndef NO_QC
-TEST_CASE("Testing interp on a single missing level") {
-    constexpr float hght1[1] = {100};
-    constexpr float pres1[1] = {85000};
-    constexpr float mis1[1] = {sharp::MISSING};
-    constexpr float nan1[1] = {nanval};
-    CHECK(sharp::interp_height(100, hght1, mis1, 1) == sharp::MISSING);
-    CHECK(sharp::interp_height(100, hght1, nan1, 1) == sharp::MISSING);
-    CHECK(sharp::interp_pressure(85000, pres1, mis1, 1) == sharp::MISSING);
-    CHECK(sharp::interp_pressure(85000, pres1, nan1, 1) == sharp::MISSING);
-}
+    for (const float bad : {sharp::MISSING, nanval}) {
+        CAPTURE(bad);
+        const float data[1] = {bad};
+        CHECK(sharp::interp_height(100, hght1, data, 1) == sharp::MISSING);
+        CHECK(sharp::interp_pressure(85000, pres1, data, 1) == sharp::MISSING);
+    }
 #endif
+}
