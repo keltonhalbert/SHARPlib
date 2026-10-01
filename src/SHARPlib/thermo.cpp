@@ -510,6 +510,14 @@ float lapse_rate_max(HeightLayer layer_agl, const float depth,
     for (float z = layer_agl.bottom; z <= (layer_agl.top - depth);
          z += layer_agl.delta) {
         HeightLayer lyr = {z, z + depth};
+        // Search only layers wholly inside the profile. lapse_rate clips a
+        // layer that extends past either end to a layer shallower than
+        // depth, and a shallower layer can have a larger lapse rate. These
+        // are the comparisons lapse_rate clips with, after its conversion
+        // to MSL.
+        const float bottom_msl = lyr.bottom + height[0];
+        const float top_msl = lyr.top + height[0];
+        if ((bottom_msl < height[0]) || (top_msl > height[N - 1])) continue;
         float lr = lapse_rate(lyr, height, temperature, N);
         if (lr > max_lr) {
             max_lr = lr;
@@ -518,6 +526,10 @@ float lapse_rate_max(HeightLayer layer_agl, const float depth,
                 max_lyr->top = lyr.top;
             }
         }
+    }
+    if (max_lyr && (max_lr == MISSING)) {
+        max_lyr->bottom = MISSING;
+        max_lyr->top = MISSING;
     }
     return max_lr;
 }
@@ -529,6 +541,10 @@ float lapse_rate_max(PressureLayer layer, const float depth,
     float max_lr = MISSING;
     for (float p = layer.bottom; p >= (layer.top + depth); p += layer.delta) {
         PressureLayer lyr = {p, p - depth};
+        // Search only layers wholly inside the profile, as in the
+        // sharp::HeightLayer overload. These are the comparisons lapse_rate
+        // clips with.
+        if ((lyr.bottom > pressure[0]) || (lyr.top < pressure[N - 1])) continue;
         float lr = lapse_rate(lyr, pressure, height, temperature, N);
         if (lr > max_lr) {
             max_lr = lr;
@@ -537,6 +553,10 @@ float lapse_rate_max(PressureLayer layer, const float depth,
                 max_lyr->top = lyr.top;
             }
         }
+    }
+    if (max_lyr && (max_lr == MISSING)) {
+        max_lyr->bottom = MISSING;
+        max_lyr->top = MISSING;
     }
     return max_lr;
 }

@@ -633,10 +633,15 @@ template <typename Lft>
  * maximum lapse rate, with the optional ability to return the layer that lapse
  * rate exists within.
  *
- * A layer of the given depth that lies wholly outside the profile has no
- * lapse rate (see sharp::lapse_rate) and is skipped. If no layer in the
- * search has a lapse rate, the result is sharp::MISSING and max_lyr is not
- * written.
+ * The search skips every layer of the given depth that extends past the
+ * surface or the top of the profile. sharp::lapse_rate would clip such a
+ * layer to one shallower than depth, and a shallower layer can have a larger
+ * lapse rate. A layer that touches the surface or the top level counts as
+ * inside the profile. The layers start at the bottom of layer_agl and step
+ * up by its delta, so when layer_agl starts below the surface, the first
+ * layer searched starts at the first step at or above the surface, not at
+ * the surface itself. If no layer in the search has a lapse rate, the result
+ * is sharp::MISSING, and so are the bottom and top of max_lyr.
  *
  * \param   layer_agl       (meters AGL)
  * \param   depth           (meters)
@@ -663,10 +668,15 @@ template <typename Lft>
  * Returns the maximum lapse rate, with the optional ability to return the layer
  * that lapse rate exists within.
  *
- * A layer of the given depth that lies wholly outside the profile has no
- * lapse rate (see sharp::lapse_rate) and is skipped. If no layer in the
- * search has a lapse rate, the result is sharp::MISSING and max_lyr is not
- * written.
+ * The search skips every layer of the given depth that extends past the
+ * surface or the top of the profile. sharp::lapse_rate would clip such a
+ * layer to one shallower than depth, and a shallower layer can have a larger
+ * lapse rate. A layer that touches the surface or the top level counts as
+ * inside the profile. The layers start at the bottom of layer and step up
+ * by its delta, so when layer starts below the surface, the first layer
+ * searched starts at the first step at or above the surface, not at the
+ * surface itself. If no layer in the search has a lapse rate, the result is
+ * sharp::MISSING, and so are the bottom and top of max_lyr.
  *
  * \param   layer           (Pa)
  * \param   depth           (Pa)
