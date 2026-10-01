@@ -1357,7 +1357,8 @@ def lapse_rate_max(layer: nwsspc.sharp.calc.layer.HeightLayer, depth: float, hei
     first layer searched starts at the first step at or above the surface,
     not at the surface itself. If no layer in the search has a lapse rate,
     the returned lapse rate is MISSING, and so are the bottom and top of the
-    returned layer.
+    returned layer. The delta of the search layer must be greater than 0 m.
+    Any other delta, NaN included, gives the same MISSING result.
 
     Parameters
     ----------
@@ -1392,7 +1393,8 @@ def lapse_rate_max(layer: nwsspc.sharp.calc.layer.PressureLayer, depth: float, p
     first layer searched starts at the first step at or above the surface,
     not at the surface itself. If no layer in the search has a lapse rate,
     the returned lapse rate is MISSING, and so are the bottom and top of the
-    returned layer.
+    returned layer. The delta of the search layer must be less than 0 Pa.
+    Any other delta, NaN included, gives the same MISSING result.
 
     Parameters
     ----------
