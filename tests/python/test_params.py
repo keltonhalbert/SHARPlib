@@ -441,3 +441,109 @@ def test_pft():
         snd_data["theta"]
     )
     assert (pft == pytest.approx(158187356160.0, abs=1e6))
+
+
+# ===========================================================================
+# Precipitation type: the modified Bourgouin method (Birk et al. 2021)
+# ===========================================================================
+
+def test_bourgouin_energy_struct():
+    energy = params.BourgouinEnergy()
+    assert energy.melting_energy_total == constants.MISSING
+    assert energy.melting_energy_aloft == constants.MISSING
+    assert energy.refreezing_energy == constants.MISSING
+
+    energy = params.BourgouinEnergy(
+        melting_energy_total=4.0,
+        melting_energy_aloft=2.0,
+        refreezing_energy=180.0
+    )
+    assert energy.melting_energy_total == 4.0
+    assert energy.melting_energy_aloft == 2.0
+    assert energy.refreezing_energy == 180.0
+
+    energy.refreezing_energy = 100.0
+    assert energy.refreezing_energy == 100.0
+
+
+def test_precip_type_probabilities_struct():
+    probs = params.PrecipTypeProbabilities()
+    assert probs.rain == constants.MISSING
+    assert probs.snow == constants.MISSING
+    assert probs.freezing_rain == constants.MISSING
+    assert probs.ice_pellets == constants.MISSING
+
+    probs.rain = 0.5
+    assert probs.rain == 0.5
+
+
+# ---------------------------------------------------------------------------
+# Wet-bulb melting and refreezing energies from a sounding
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Precipitation generation layer from a sounding
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Probability of ice, and precipitation-type probabilities from energies
+# ---------------------------------------------------------------------------
+
+def test_probability_of_ice():
+    zerocnk = np.float32(constants.ZEROCNK)
+    assert params.probability_of_ice(zerocnk - np.float32(15.0)) == 1.0
+    assert params.probability_of_ice(zerocnk - np.float32(7.0)) == 0.0
+    # float32 evaluation: the polynomial's terms cancel, so allow 1e-5
+    assert params.probability_of_ice(
+        zerocnk - np.float32(11.0)) == pytest.approx(0.583474, rel=1e-5)
+    assert params.probability_of_ice(
+        260.5) == pytest.approx(0.7286607, rel=1e-5)
+
+    assert params.probability_of_ice(constants.MISSING) == constants.MISSING
+    assert params.probability_of_ice(np.nan) == constants.MISSING
+
+
+def test_modified_bourgouin_from_energies():
+    cold_sfc = constants.ZEROCNK - 2.0
+    warm_sfc = constants.ZEROCNK + 2.0
+
+    # Eq. 7 is clamped before the weak-melting taper
+    probs = params.modified_bourgouin(
+        params.BourgouinEnergy(3.0, 0.0, 0.0), 1.0, warm_sfc)
+    assert probs.rain == pytest.approx(0.60)
+    assert probs.freezing_rain == 0.0
+    assert probs.snow == 1.0
+    assert probs.ice_pellets == 0.0
+
+    # Freezing rain uses the total melting energy
+    probs = params.modified_bourgouin(
+        params.BourgouinEnergy(4.0, 2.01, 180.0), 1.0, cold_sfc)
+    assert probs.freezing_rain == pytest.approx(0.6464)
+    assert probs.rain == 0.0
+
+    # Ice pellets jump to the Eq. 8 value as ME_aloft leaves 0
+    energy = params.BourgouinEnergy(10.0, 0.0, 10.0)
+    probs = params.modified_bourgouin(energy, 1.0, cold_sfc)
+    assert probs.ice_pellets == 0.0
+    energy.melting_energy_aloft = np.finfo(np.float32).tiny
+    probs = params.modified_bourgouin(energy, 1.0, cold_sfc)
+    assert probs.ice_pellets == pytest.approx(0.26)
+
+    # MISSING or NaN in any input gives MISSING
+    for probs in (
+        params.modified_bourgouin(
+            params.BourgouinEnergy(), 1.0, cold_sfc),
+        params.modified_bourgouin(
+            params.BourgouinEnergy(4.0, 2.01, 180.0), np.nan, cold_sfc),
+        params.modified_bourgouin(
+            params.BourgouinEnergy(4.0, 2.01, 180.0), 1.0, constants.MISSING),
+    ):
+        assert probs.rain == constants.MISSING
+        assert probs.snow == constants.MISSING
+        assert probs.freezing_rain == constants.MISSING
+        assert probs.ice_pellets == constants.MISSING
+
+
+# ---------------------------------------------------------------------------
+# Precipitation type from a full sounding
+# ---------------------------------------------------------------------------

@@ -51,6 +51,13 @@ if (NO_QC)
 endif()
 add_test(NAME sharp_algs COMMAND test_sharp_algs)
 
+add_executable(test_sharp_params EXCLUDE_FROM_ALL test_params.cpp)
+target_link_libraries(test_sharp_params SHARPlib) 
+if (NO_QC)
+    target_compile_definitions(test_sharp_params PRIVATE NO_QC)
+endif()
+add_test(NAME sharp_params COMMAND test_sharp_params)
+
 ## This aggregates all of the executable names into a single 
 ## target for building and testing
-add_dependencies(SHARPlib_tests test_sharp_thermo test_sharp_interp test_sharp_layer test_sharp_winds test_sharp_parcel test_sharp_algs)
+add_dependencies(SHARPlib_tests test_sharp_thermo test_sharp_interp test_sharp_layer test_sharp_winds test_sharp_parcel test_sharp_algs test_sharp_params)

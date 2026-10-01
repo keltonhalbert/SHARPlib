@@ -778,6 +778,180 @@ float
     The Snow Squall Parameter
     )pbdoc");
 
+    // =======================================================================
+    // Precipitation type: the modified Bourgouin method (Birk et al. 2021)
+    // =======================================================================
+
+    nb::class_<sharp::BourgouinEnergy>(m_params, "BourgouinEnergy", R"pbdoc(
+Wet-bulb melting and refreezing energies of the modified Bourgouin method.
+
+Energies are areas between the wet-bulb temperature profile and 0 C
+(Birk et al. 2021, Eq. 1 with the wet-bulb temperature), reported as
+positive values in J/kg. The near-surface cold layer is the lowest layer
+colder than 0 C that has a warmer-than-0 C layer above it.
+
+Every field defaults to MISSING.
+
+References
+----------
+Birk et al. 2021: https://doi.org/10.1175/WAF-D-20-0118.1
+)pbdoc")
+        .def(nb::init<>())
+        .def(nb::init<float, float, float>(), nb::arg("melting_energy_total"),
+             nb::arg("melting_energy_aloft"), nb::arg("refreezing_energy"))
+        .def_rw("melting_energy_total",
+                &sharp::BourgouinEnergy::melting_energy_total,
+                "Total wet-bulb melting energy of the column (J/kg). Used for "
+                "snow and for freezing rain or rain.")
+        .def_rw("melting_energy_aloft",
+                &sharp::BourgouinEnergy::melting_energy_aloft,
+                "Wet-bulb melting energy above the near-surface cold layer "
+                "(J/kg). Used for ice pellets. 0 when there is no "
+                "near-surface cold layer.")
+        .def_rw("refreezing_energy", &sharp::BourgouinEnergy::refreezing_energy,
+                "Wet-bulb refreezing energy of the near-surface cold layer "
+                "(J/kg, positive). 0 when there is no near-surface cold "
+                "layer.");
+
+    nb::class_<sharp::PrecipTypeProbabilities>(m_params,
+                                               "PrecipTypeProbabilities",
+                                               R"pbdoc(
+Probabilities of the four basic precipitation types.
+
+Each field is a fraction in [0, 1]. The probabilities are independent and
+do not sum to 1. Two types with high probabilities describe a mix of the
+two, not a contradiction.
+
+Every field defaults to MISSING.
+)pbdoc")
+        .def(nb::init<>())
+        .def_rw("rain", &sharp::PrecipTypeProbabilities::rain,
+                "Probability of rain (fraction)")
+        .def_rw("snow", &sharp::PrecipTypeProbabilities::snow,
+                "Probability of snow (fraction)")
+        .def_rw("freezing_rain", &sharp::PrecipTypeProbabilities::freezing_rain,
+                "Probability of freezing rain (fraction)")
+        .def_rw("ice_pellets", &sharp::PrecipTypeProbabilities::ice_pellets,
+                "Probability of ice pellets (fraction)");
+
+    // -----------------------------------------------------------------------
+    // Wet-bulb melting and refreezing energies from a sounding
+    // -----------------------------------------------------------------------
+
+    // -----------------------------------------------------------------------
+    // Precipitation generation layer from a sounding
+    // -----------------------------------------------------------------------
+
+    // -----------------------------------------------------------------------
+    // Probability of ice, and precipitation-type probabilities from energies
+    // -----------------------------------------------------------------------
+
+    m_params.def("probability_of_ice", &sharp::probability_of_ice,
+                 nb::arg("temperature"),
+                 R"pbdoc(
+Computes the probability of heterogeneous ice nucleation (ProbIce) from
+the minimum air temperature T in the precipitation generation layer. It
+uses the piecewise relation of Baumgardt et al. (2017), as reproduced by
+Birk et al. (2021, Eq. 2 and Fig. 2):
+
+* 1 for T at or below -15 C
+* 0 for T at or above -7 C
+* otherwise (-0.065 T^4 - 3.1544 T^3 - 56.414 T^2 - 449.6 T - 1308) / 100,
+  with T in C
+
+The polynomial does not meet the constant pieces. It gives 98.3 % at
+-15 C and 0.81 % at -7 C, so ProbIce jumps by about 0.017 at -15 C and
+about 0.008 at -7 C, as in the paper.
+
+MISSING or NaN input returns MISSING.
+
+Warnings
+--------
+The input is in Kelvin, and Celsius input gives wrong results. A value at
+or below 0 returns MISSING, and a positive value reads as a Kelvin
+temperature far below -15 C and returns 1.
+
+References
+----------
+Birk et al. 2021: https://doi.org/10.1175/WAF-D-20-0118.1
+
+Baumgardt et al. 2017: https://ams.confex.com/ams/97Annual/webprogram/Paper313165.html
+
+Parameters
+----------
+temperature : float
+    Minimum air temperature in the precipitation generation layer (K)
+
+Returns
+-------
+float
+    Probability of ice (fraction)
+    )pbdoc");
+
+    m_params.def("modified_bourgouin",
+                 static_cast<sharp::PrecipTypeProbabilities (*)(
+                     const sharp::BourgouinEnergy&, float, float)>(
+                     &sharp::modified_bourgouin),
+                 nb::arg("energy"), nb::arg("prob_ice"),
+                 nb::arg("surface_wetbulb"),
+                 R"pbdoc(
+Computes the probabilities of rain, snow, freezing rain, and ice pellets
+from wet-bulb energies and the probability of ice, with the modified
+Bourgouin method. It follows the steps in the Appendix of Birk et al.
+(2021). The function works in percent and returns fractions. ProbIce is
+prob_ice in percent. Every clamp is to [0, 100] %.
+
+* Snow (Eq. 9): 1540 exp(-0.29 ME_total), clamped, then multiplied by
+  ProbIce / 100 and clamped.
+* Ice pellets (Eq. 8): when both ME_aloft and RE are above 0,
+  2.3 RE - 42 ln(ME_aloft + 1) + 3, clamped; otherwise 0. Then multiplied
+  by ProbIce / 100 and clamped.
+* Freezing rain or rain (Eq. 7): -2.1 RE + 0.2 ME_total + 458, clamped
+  first. When ME_total is below 5 J/kg, that clamped value is then
+  multiplied by 0.2 ME_total. The result is
+  (100 - ProbIce) + (ProbIce / 100) times that value, clamped.
+
+ME_total, ME_aloft, and RE are the melting_energy_total,
+melting_energy_aloft, and refreezing_energy fields of energy. Freezing
+rain and rain use the total melting energy, and ice pellets use the
+melting energy above the near-surface cold layer.
+
+The four probabilities are independent and do not sum to 1. Freezing rain
+and rain share one value. The function reports it as rain when
+surface_wetbulb is above 0 C (273.15 K) and as freezing rain otherwise,
+including at exactly 0 C, and sets the other to 0. A warm surface does not
+suppress ice pellets.
+
+As in the paper, the ice pellet probability jumps from 0 to its Eq. 8
+value as ME_aloft rises from 0. Just above 0, Eq. 8 gives 2.3 RE + 3 %
+before the clamp and the ProbIce scaling.
+
+If any input is MISSING or NaN, all four probabilities are MISSING.
+
+References
+----------
+Birk et al. 2021: https://doi.org/10.1175/WAF-D-20-0118.1
+
+Parameters
+----------
+energy : nwsspc.sharp.calc.params.BourgouinEnergy
+    Wet-bulb melting and refreezing energies (J/kg)
+prob_ice : float
+    Probability of ice in the precipitation generation layer (fraction;
+    see probability_of_ice)
+surface_wetbulb : float
+    Surface wet-bulb temperature (K)
+
+Returns
+-------
+nwsspc.sharp.calc.params.PrecipTypeProbabilities
+    The rain, snow, freezing rain, and ice pellet probabilities (fractions)
+    )pbdoc");
+
+    // -----------------------------------------------------------------------
+    // Precipitation type from a full sounding
+    // -----------------------------------------------------------------------
+
     m_params.def("equilibrium_moisture_content",
                  &sharp::equilibrium_moisture_content, nb::arg("temperature"),
                  nb::arg("rel_humidity"),

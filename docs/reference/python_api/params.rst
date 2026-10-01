@@ -35,3 +35,24 @@ params
 
    .. autofunction:: nwsspc.sharp.calc.params.dendritic_layer
    .. autofunction:: nwsspc.sharp.calc.params.snow_squall_parameter
+
+   Precipitation Type
+   ~~~~~~~~~~~~~~~~~~
+   Precipitation-type probabilities from the modified Bourgouin method (Birk et al. 2021, https://doi.org/10.1175/WAF-D-20-0118.1).
+
+   .. autoclass:: nwsspc.sharp.calc.params.BourgouinEnergy
+      :members: melting_energy_total, melting_energy_aloft, refreezing_energy
+
+   .. autoclass:: nwsspc.sharp.calc.params.PrecipTypeProbabilities
+      :members: rain, snow, freezing_rain, ice_pellets
+
+   .. Wet-bulb melting and refreezing energies from a sounding
+
+   .. Precipitation generation layer from a sounding
+
+   .. Probability of ice, and precipitation-type probabilities from energies
+
+   .. autofunction:: nwsspc.sharp.calc.params.probability_of_ice
+   .. autofunction:: nwsspc.sharp.calc.params.modified_bourgouin
+
+   .. Precipitation type from a full sounding

@@ -34,3 +34,28 @@ Winter
 .. doxygenfunction:: sharp::dendritic_layer
 .. doxygenfunction:: sharp::snow_squall_parameter
 
+Precipitation Type
+~~~~~~~~~~~~~~~~~~
+
+Precipitation-type probabilities from the modified Bourgouin method
+(Birk et al. 2021, https://doi.org/10.1175/WAF-D-20-0118.1).
+
+.. doxygenvariable:: sharp::BOURGOUIN_PRESSURE_MIN
+
+.. doxygenstruct:: sharp::BourgouinEnergy
+   :members:
+
+.. doxygenstruct:: sharp::PrecipTypeProbabilities
+   :members:
+
+.. Wet-bulb melting and refreezing energies from a sounding
+
+.. Precipitation generation layer from a sounding
+
+.. Probability of ice, and precipitation-type probabilities from energies
+
+.. doxygenfunction:: sharp::probability_of_ice
+.. doxygenfunction:: sharp::modified_bourgouin(const BourgouinEnergy&, const float, const float)
+
+.. Precipitation type from a full sounding
+
