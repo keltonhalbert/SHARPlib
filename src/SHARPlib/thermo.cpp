@@ -476,6 +476,12 @@ float lapse_rate(PressureLayer layer, const float pressure[],
         layer.top = pressure[N - 1];
     }
 
+    // Clipping inverts a layer that lies wholly outside the profile, as in
+    // sharp::layer_minmax. That layer has no lapse rate, and the conversion
+    // to height below can't take it. Complete data reaches this case, so
+    // unlike the MISSING checks it applies in NO_QC builds too.
+    if (layer.bottom < layer.top) return MISSING;
+
     HeightLayer h_layer =
         pressure_layer_to_height(layer, pressure, height, N, true);
 
