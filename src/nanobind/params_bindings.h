@@ -838,6 +838,119 @@ Every field defaults to MISSING.
     // Wet-bulb melting and refreezing energies from a sounding
     // -----------------------------------------------------------------------
 
+    m_params.def(
+        "bourgouin_energy",
+        [](const_prof_arr_t pressure, const_prof_arr_t height,
+           const_prof_arr_t wetbulb, const float min_energy,
+           const float pressure_min) {
+            check_equal_sizes(pressure, height, wetbulb);
+            return sharp::bourgouin_energy(pressure.data(), height.data(),
+                                           wetbulb.data(), pressure.size(),
+                                           min_energy, pressure_min);
+        },
+        nb::arg("pressure"), nb::arg("height"), nb::arg("wetbulb"),
+        nb::arg("min_energy") = 0.0f,
+        nb::arg("pressure_min") = sharp::BOURGOUIN_PRESSURE_MIN,
+        R"pbdoc(
+Computes the wet-bulb melting and refreezing energies of the modified
+Bourgouin method from a sounding.
+
+The energies are the areas of Birk et al. (2021, Eq. 1) with the wet-bulb
+temperature Tw: g (Tw - T0) / T0 integrated over height, with
+T0 = 273.15 K. Layers are bounded by linearly interpolated 0 C crossings,
+and the areas are trapezoids split exactly at those crossings. The
+function reports every energy as a positive value in J/kg.
+
+* melting_energy_total (ME_total): all energy above 0 C in the column.
+* refreezing_energy (RE): the energy of the near-surface cold layer, the
+  lowest layer below 0 C that has a layer above 0 C over it. 0 if there
+  is no such layer.
+* melting_energy_aloft (ME_aloft): all energy above 0 C over the top of
+  the near-surface cold layer. 0 if there is no such layer.
+
+modified_bourgouin uses ME_total for snow and for freezing rain or rain,
+and ME_aloft for ice pellets. With the default min_energy = 0, ME_total
+equals ME_aloft whenever the lowest layer is cold. When the only warm layer
+is at the surface (Fig. 1b), ME_total holds all of the melting energy and
+ME_aloft is 0.
+
+With several warm layers, RE comes from the near-surface cold layer only,
+and ME_aloft adds up every warm layer above it. Other cold layers never
+enter the equations. Example, from the surface up: cold 100, warm 30,
+cold 80, and warm 20 J/kg give RE = 100, ME_aloft = 50, and ME_total = 50.
+
+A warm layer at the surface, below the near-surface cold layer (Fig. 1d),
+adds to ME_total only. As in the paper, it does not suppress ice pellets.
+Example, from the surface up: warm 150, cold 51, and warm 10 J/kg give
+ME_total = 160, ME_aloft = 10, and RE = 51. With ProbIce = 1,
+modified_bourgouin then gives rain 100 % and ice pellets about 20 %
+(19.6 %).
+
+min_energy sets the energy a layer needs to stand on its own. Weaker layers
+merge into their neighbors. The paper sets no minimum melting energy for
+the modified method, so the default of 0 is the paper as written and
+merges nothing. A positive value is an opt-in for noisy, high-resolution
+data, and a deviation from the paper. 2 J/kg, the melting-layer minimum of
+the original Bourgouin method, is a reasonable starting value. It changes
+more than the onset of ice pellets:
+
+* A warm or cold layer with less than min_energy no longer splits the
+  layers around it, so ME_aloft is either 0 or at least min_energy.
+* A weak warm layer between two cold layers merges them into one
+  near-surface cold layer, and RE includes both. Example: cold 100, warm
+  1.99, cold 80, and warm 20 J/kg give RE = 180 with min_energy = 2, but
+  RE = 100 with min_energy = 0. RE jumps as the weak layer crosses the
+  threshold.
+* ME_total still counts every warm layer, including the merged ones, but
+  ME_aloft leaves out a warm layer merged into the near-surface cold layer.
+  So ME_total and ME_aloft can differ over a cold surface. Example: cold
+  100, warm 1.99, cold 80, and warm 2.01 J/kg give ME_total = 4,
+  ME_aloft = 2.01, and RE = 180 with min_energy = 2. The weak-melting
+  taper of modified_bourgouin acts on ME_total.
+
+Only levels at pressures at or above pressure_min (by default 25000 Pa,
+250 hPa) are used, which keeps stratospheric temperatures out of the
+melting energy. The column ends at the highest such level, with nothing
+interpolated to pressure_min itself. A pressure_min of 0 uses every level.
+ME_total depends on how far up the data reach, up to that limit.
+
+The function never reads a wet-bulb temperature at a pressure below
+pressure_min. A caller can compute the wet-bulb temperature only up to
+pressure_min and fill the rest of the array with MISSING.
+
+The function skips levels whose height or wet-bulb temperature is MISSING
+or NaN, and joins the valid levels on either side with a straight line. With
+fewer than 2 valid levels at pressures at or above pressure_min, including
+empty arrays, every energy is MISSING, never 0, since zero energy would
+read as certain snow.
+
+Height must be strictly increasing, and pressure must be valid and
+strictly decreasing. This is not checked.
+
+References
+----------
+Birk et al. 2021: https://doi.org/10.1175/WAF-D-20-0118.1
+
+Parameters
+----------
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of height values (m)
+wetbulb : numpy.ndarray[dtype=float32]
+    1D NumPy array of wet-bulb temperature values (K)
+min_energy : float, default = 0.0
+    The energy a layer needs to stand on its own (J/kg; 0 disables merging)
+pressure_min : float, default = 25000.0
+    Levels at lower pressures are ignored (Pa)
+
+Returns
+-------
+nwsspc.sharp.calc.params.BourgouinEnergy
+    The total melting energy, the melting energy aloft, and the refreezing
+    energy (J/kg)
+    )pbdoc");
+
     // -----------------------------------------------------------------------
     // Precipitation generation layer from a sounding
     // -----------------------------------------------------------------------

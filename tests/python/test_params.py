@@ -481,6 +481,116 @@ def test_precip_type_probabilities_struct():
 # Wet-bulb melting and refreezing energies from a sounding
 # ---------------------------------------------------------------------------
 
+def _melting_area(hght, dtw):
+    """
+    Closed-form area of max(dtw, 0) under a piecewise-linear profile (K m):
+    a trapezoid for each segment that doesn't cross 0, and the warm
+    triangle of each segment that does.
+    """
+    dz = np.diff(hght)
+    d0, d1 = dtw[:-1], dtw[1:]
+    w0, w1 = np.maximum(d0, 0.0), np.maximum(d1, 0.0)
+    crossing = d0 * d1 < 0.0
+    span = np.where(crossing, np.abs(d0) + np.abs(d1), 1.0)
+    triangle = 0.5 * dz * (w0**2 + w1**2) / span
+    trapezoid = 0.5 * (w0 + w1) * dz
+    return np.sum(np.where(crossing, triangle, trapezoid))
+
+
+def test_bourgouin_energy_cap_profile():
+    # Every level is at or above 250 hPa, and the top segment is warm, so
+    # losing the top level would show up in the melting energy.
+    pres = np.array([100000, 94500, 87000, 79500, 70000, 57500, 43000,
+                     32000, 26500], dtype="float32")
+    hght = np.array([0, 500, 1200, 2000, 3000, 4500, 6500, 8500, 10000],
+                    dtype="float32")
+    zerocnk = np.float32(constants.ZEROCNK)
+    tmpk = zerocnk + np.array([-1.5, -0.5, 1.0, 2.0, -1.0, 0.5, -2.0, 0.25,
+                               3.0], dtype="float32")
+    # The departures the library sees, in double precision
+    dtw = tmpk.astype("float64") - np.float64(zerocnk)
+    z = hght.astype("float64")
+    g_t0 = constants.GRAVITY / constants.ZEROCNK
+
+    # The surface is cold, so the melting aloft is all of it. The
+    # near-surface cold layer ends inside the second segment.
+    melting = g_t0 * _melting_area(z, dtw)
+    refreezing = g_t0 * _melting_area(z[:3], -dtw[:3])
+
+    energy = params.bourgouin_energy(pres, hght, tmpk)
+    assert energy.melting_energy_total == pytest.approx(melting, rel=1e-5)
+    assert energy.melting_energy_aloft == pytest.approx(melting, rel=1e-5)
+    assert energy.refreezing_energy == pytest.approx(refreezing, rel=1e-5)
+
+    # The defaults are min_energy = 0 and pressure_min = 250 hPa, and with
+    # every level at or above 250 hPa, removing the cap changes nothing.
+    for other in (
+        params.bourgouin_energy(pres, hght, tmpk, min_energy=0.0,
+                                pressure_min=25000.0),
+        params.bourgouin_energy(pres, hght, tmpk, pressure_min=0.0),
+    ):
+        assert other.melting_energy_total == energy.melting_energy_total
+        assert other.melting_energy_aloft == energy.melting_energy_aloft
+        assert other.refreezing_energy == energy.refreezing_energy
+
+    # A cap at 400 hPa drops the top two levels. The wet-bulb above the cap
+    # is never read, so it can be MISSING.
+    melting = g_t0 * _melting_area(z[:7], dtw[:7])
+    tmpk[7:] = constants.MISSING
+    energy = params.bourgouin_energy(pres, hght, tmpk, pressure_min=40000.0)
+    assert energy.melting_energy_total == pytest.approx(melting, rel=1e-5)
+    assert energy.melting_energy_aloft == pytest.approx(melting, rel=1e-5)
+    assert energy.refreezing_energy == pytest.approx(refreezing, rel=1e-5)
+
+
+def test_bourgouin_energy_min_energy():
+    # From the surface up: cold 100, warm 1.99, cold 80, and warm 20 J/kg,
+    # each a triangle peaking 4 K from 0 C.
+    energies = [-100.0, 1.99, -80.0, 20.0]
+    peak = 4.0
+    g_t0 = constants.GRAVITY / constants.ZEROCNK
+    hght, dtw = [0.0], [0.0]
+    for e in energies:
+        depth = 2.0 * abs(e) / (g_t0 * peak)
+        hght += [hght[-1] + depth / 2.0, hght[-1] + depth]
+        dtw += [np.copysign(peak, e), 0.0]
+    hght = np.array(hght, dtype="float32")
+    pres = np.float32(100000.0) - np.float32(7.0) * hght
+    tmpk = np.float32(constants.ZEROCNK) + np.array(dtw, dtype="float32")
+
+    # With min_energy = 2 J/kg, the weak warm layer merges the two cold
+    # layers into one near-surface cold layer.
+    energy = params.bourgouin_energy(pres, hght, tmpk, min_energy=2.0)
+    assert energy.melting_energy_total == pytest.approx(21.99, rel=1e-5)
+    assert energy.melting_energy_aloft == pytest.approx(20.0, rel=1e-5)
+    assert energy.refreezing_energy == pytest.approx(180.0, rel=1e-5)
+
+    energy = params.bourgouin_energy(pres, hght, tmpk)
+    assert energy.melting_energy_total == pytest.approx(21.99, rel=1e-5)
+    assert energy.melting_energy_aloft == pytest.approx(21.99, rel=1e-5)
+    assert energy.refreezing_energy == pytest.approx(100.0, rel=1e-5)
+
+
+def test_bourgouin_energy_missing():
+    empty = np.array([], dtype="float32")
+    energy = params.bourgouin_energy(empty, empty, empty)
+    assert energy.melting_energy_total == constants.MISSING
+    assert energy.melting_energy_aloft == constants.MISSING
+    assert energy.refreezing_energy == constants.MISSING
+
+    # One level below the cap is not enough
+    pres = np.array([30000, 20000], dtype="float32")
+    hght = np.array([0, 1000], dtype="float32")
+    tmpk = np.array([280, 280], dtype="float32")
+    energy = params.bourgouin_energy(pres, hght, tmpk)
+    assert energy.melting_energy_total == constants.MISSING
+    assert energy.melting_energy_aloft == constants.MISSING
+    assert energy.refreezing_energy == constants.MISSING
+
+    with pytest.raises(BufferError):
+        params.bourgouin_energy(pres, hght, tmpk[:1])
+
+
 # ---------------------------------------------------------------------------
 # Precipitation generation layer from a sounding
 # ---------------------------------------------------------------------------

@@ -48,6 +48,8 @@ params
 
    .. Wet-bulb melting and refreezing energies from a sounding
 
+   .. autofunction:: nwsspc.sharp.calc.params.bourgouin_energy
+
    .. Precipitation generation layer from a sounding
 
    .. autofunction:: nwsspc.sharp.calc.params.precipitation_generation_layer

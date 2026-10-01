@@ -30,6 +30,392 @@ TEST_CASE("Testing precipitation-type result types default to MISSING") {
 // Wet-bulb melting and refreezing energies from a sounding
 // ---------------------------------------------------------------------------
 
+namespace {
+// Eq. 1: the energy (J/kg) of an area between Tw and 0 C (K m).
+constexpr float energy_of_area(const float area) {
+    return sharp::GRAVITY / sharp::ZEROCNK * area;
+}
+
+// A test sounding of up to 32 levels. Pressure falls 7 Pa per meter from
+// 1000 hPa, so every level below 10.7 km is at or above 250 hPa.
+struct TwSounding {
+    static constexpr std::ptrdiff_t capacity = 32;
+    float pres[capacity];
+    float hght[capacity];
+    float wetbulb[capacity];
+    std::ptrdiff_t N = 0;
+
+    // Adds a level at height z (m) with the wet-bulb dtw (K) from 0 C.
+    void add(const float z, const float dtw) {
+        REQUIRE(N < capacity);
+        pres[N] = 100000.0f - 7.0f * z;
+        hght[N] = z;
+        wetbulb[N] = sharp::ZEROCNK + dtw;
+        ++N;
+    }
+
+    sharp::BourgouinEnergy energy(const float min_energy = 0.0f) const {
+        return sharp::bourgouin_energy(pres, hght, wetbulb, N, min_energy);
+    }
+};
+
+// Builds a sounding from the energy of each layer between 0 C crossings,
+// from the surface up (J/kg; negative for refreezing). Each layer is a
+// triangle that peaks 4 K from 0 C and is as deep as its energy needs, so
+// every crossing falls on a level. With surface_peak, the lowest layer
+// peaks at the surface instead of starting at 0 C.
+TwSounding tw_triangles(const std::initializer_list<float> energies,
+                        const bool surface_peak = false) {
+    constexpr float peak = 4.0f;
+    TwSounding snd;
+    float z = 0.0f;
+    bool first = true;
+    for (const float energy : energies) {
+        const float dtw = std::copysign(peak, energy);
+        // area = peak * depth / 2 for a full or a half triangle
+        const float depth = 2.0f * std::fabs(energy) / energy_of_area(peak);
+        if (first && surface_peak) {
+            snd.add(z, dtw);
+        } else {
+            if (first) snd.add(z, 0.0f);
+            snd.add(z + depth / 2.0f, dtw);
+        }
+        z += depth;
+        snd.add(z, 0.0f);
+        first = false;
+    }
+    return snd;
+}
+
+void check_energies(const sharp::BourgouinEnergy& energy,
+                    const float melting_total, const float melting_aloft,
+                    const float refreezing) {
+    CHECK(energy.melting_energy_total == doctest::Approx(melting_total));
+    CHECK(energy.melting_energy_aloft == doctest::Approx(melting_aloft));
+    CHECK(energy.refreezing_energy == doctest::Approx(refreezing));
+}
+
+void check_energies_missing(const sharp::BourgouinEnergy& energy) {
+    CHECK(energy.melting_energy_total == sharp::MISSING);
+    CHECK(energy.melting_energy_aloft == sharp::MISSING);
+    CHECK(energy.refreezing_energy == sharp::MISSING);
+}
+}  // namespace
+
+TEST_CASE("Testing bourgouin_energy on the paper's Fig. 1 profiles") {
+    // Linear Tw between levels, with every 0 C crossing on a level, so each
+    // layer is a triangle or a trapezoid. Heights are those of Fig. 1.
+    {
+        INFO("(a) all below 0 C: no energy");
+        TwSounding snd;
+        snd.add(0.0f, -1.0f);
+        snd.add(1000.0f, -3.0f);
+        snd.add(3000.0f, -10.0f);
+        check_energies(snd.energy(), 0.0f, 0.0f, 0.0f);
+    }
+    {
+        INFO("(b) surface melting below 300 m: ME_total only");
+        TwSounding snd;
+        snd.add(0.0f, 2.0f);
+        snd.add(300.0f, 0.0f);
+        snd.add(3000.0f, -10.0f);
+        check_energies(snd.energy(), energy_of_area(0.5f * 2.0f * 300.0f), 0.0f,
+                       0.0f);
+    }
+    {
+        INFO("(c) melting at 1000-2500 m over surface refreezing");
+        TwSounding snd;
+        snd.add(0.0f, -3.0f);
+        snd.add(1000.0f, 0.0f);
+        snd.add(1750.0f, 4.0f);
+        snd.add(2500.0f, 0.0f);
+        snd.add(4000.0f, -10.0f);
+        const float melting = energy_of_area(0.5f * 4.0f * 1500.0f);
+        check_energies(snd.energy(), melting, melting,
+                       energy_of_area(0.5f * 3.0f * 1000.0f));
+    }
+    {
+        INFO("(d) as (c), with surface melting below 180 m");
+        TwSounding snd;
+        snd.add(0.0f, 1.0f);
+        snd.add(180.0f, 0.0f);
+        snd.add(490.0f, -2.0f);
+        snd.add(800.0f, 0.0f);
+        snd.add(1300.0f, 3.0f);
+        snd.add(1800.0f, 0.0f);
+        snd.add(3000.0f, -8.0f);
+        const float surface = 0.5f * 1.0f * 180.0f;
+        const float aloft = 0.5f * 3.0f * 1000.0f;
+        check_energies(snd.energy(), energy_of_area(surface + aloft),
+                       energy_of_area(aloft),
+                       energy_of_area(0.5f * 2.0f * 620.0f));
+    }
+}
+
+TEST_CASE("Testing bourgouin_energy with a crossing between levels") {
+    // A crossing between levels splits the segment at the interpolated
+    // height: -2 K at 0 m to 6 K at 1000 m crosses at 250 m.
+    TwSounding snd;
+    snd.add(0.0f, -2.0f);
+    snd.add(1000.0f, 6.0f);
+    snd.add(2000.0f, 2.0f);
+    const float melting = 0.5f * 6.0f * 750.0f + 0.5f * (6.0f + 2.0f) * 1000.0f;
+    check_energies(snd.energy(), energy_of_area(melting),
+                   energy_of_area(melting),
+                   energy_of_area(0.5f * 2.0f * 250.0f));
+}
+
+TEST_CASE("Testing bourgouin_energy with several warm layers (A2)") {
+    // RE comes from the near-surface cold layer only, and ME_aloft adds up
+    // every warm layer above it. The cold 80 J/kg layer never counts.
+    check_energies(tw_triangles({-100.0f, 30.0f, -80.0f, 20.0f}).energy(),
+                   50.0f, 50.0f, 100.0f);
+
+    // A warm surface layer below them adds to ME_total only (Fig. 1d).
+    check_energies(
+        tw_triangles({40.0f, -100.0f, 30.0f, -80.0f, 20.0f}, true).energy(),
+        90.0f, 50.0f, 100.0f);
+
+    // With no warm layer above it, a cold layer is not a near-surface cold
+    // layer, so RE is 0 however cold the column gets aloft.
+    check_energies(tw_triangles({40.0f, -100.0f}, true).energy(), 40.0f, 0.0f,
+                   0.0f);
+}
+
+TEST_CASE("Testing bourgouin_energy under a warm surface layer (A3)") {
+    // The documented example: warm 150 at the surface, then cold 51 and
+    // warm 10 J/kg.
+    const TwSounding snd = tw_triangles({150.0f, -51.0f, 10.0f}, true);
+    const sharp::BourgouinEnergy energy = snd.energy();
+    check_energies(energy, 160.0f, 10.0f, 51.0f);
+
+    // As in the paper, the warm surface does not suppress ice pellets:
+    // rain 100 %, and 2.3 * 51 - 42 ln(11) + 3 = 19.5884 % ice pellets.
+    REQUIRE(snd.wetbulb[0] > sharp::ZEROCNK);
+    const auto probs = sharp::modified_bourgouin(energy, 1.0f, snd.wetbulb[0]);
+    CHECK(probs.rain == 1.0f);
+    CHECK(probs.freezing_rain == 0.0f);
+    CHECK(probs.ice_pellets == doctest::Approx(0.195884).epsilon(1e-4));
+}
+
+TEST_CASE("Testing bourgouin_energy with a 0 C isothermal layer") {
+    {
+        INFO("an isothermal 0 C column has zero energy, not MISSING");
+        TwSounding snd;
+        snd.add(0.0f, 0.0f);
+        snd.add(1000.0f, 0.0f);
+        snd.add(2000.0f, 0.0f);
+        check_energies(snd.energy(), 0.0f, 0.0f, 0.0f);
+    }
+    {
+        INFO("0 C from 500 to 1500 m between cold and warm");
+        TwSounding snd;
+        snd.add(0.0f, -2.0f);
+        snd.add(500.0f, 0.0f);
+        snd.add(1500.0f, 0.0f);
+        snd.add(2000.0f, 2.0f);
+        const float triangle = energy_of_area(0.5f * 2.0f * 500.0f);
+        check_energies(snd.energy(), triangle, triangle, triangle);
+    }
+    {
+        // A 0 C stretch inside a cold layer does not split it, so RE
+        // counts the cold air on both sides of it. Splitting it would give
+        // RE from the lowest triangle only.
+        INFO("cold, 0 C from 500 to 1500 m, cold, then warm");
+        TwSounding snd;
+        snd.add(0.0f, -2.0f);
+        snd.add(500.0f, 0.0f);
+        snd.add(1500.0f, 0.0f);
+        snd.add(2000.0f, -2.0f);
+        snd.add(2500.0f, 0.0f);
+        snd.add(3000.0f, 2.0f);
+        const float triangle = energy_of_area(0.5f * 2.0f * 500.0f);
+        check_energies(snd.energy(), triangle, triangle, 3.0f * triangle);
+    }
+}
+
+TEST_CASE("Testing the bourgouin_energy pressure cap") {
+    // Cold below 500 m and warm through the top level. In each case the
+    // top kept segment is warm, so a lost top level shows up in ME_total.
+    // Melting area through level 1: 250 K m; through level 2: 1250 K m;
+    // through level 3: 3250 K m.
+    constexpr std::ptrdiff_t N = 4;
+    constexpr float hght[N] = {0.0f, 1000.0f, 2000.0f, 3000.0f};
+    constexpr float K = sharp::ZEROCNK;
+    constexpr float tw[N] = {K - 1.0f, K + 1.0f, K + 1.0f, K + 3.0f};
+    const float refreezing = energy_of_area(250.0f);
+    {
+        INFO("every level at or above 250 hPa: the top level is kept");
+        constexpr float pres[N] = {100000.0f, 90000.0f, 80000.0f, 30000.0f};
+        const auto energy = sharp::bourgouin_energy(pres, hght, tw, N);
+        check_energies(energy, energy_of_area(3250.0f), energy_of_area(3250.0f),
+                       refreezing);
+    }
+    {
+        INFO("a top level exactly at the cap is kept");
+        constexpr float pres[N] = {100000.0f, 90000.0f, 80000.0f, 25000.0f};
+        const auto energy = sharp::bourgouin_energy(pres, hght, tw, N);
+        check_energies(energy, energy_of_area(3250.0f), energy_of_area(3250.0f),
+                       refreezing);
+    }
+    constexpr float pres[N] = {100000.0f, 90000.0f, 80000.0f, 20000.0f};
+    {
+        INFO("the cap between levels drops the top level");
+        const auto energy = sharp::bourgouin_energy(pres, hght, tw, N);
+        check_energies(energy, energy_of_area(1250.0f), energy_of_area(1250.0f),
+                       refreezing);
+    }
+    {
+        INFO("pressure_min = 0 keeps every level");
+        const auto energy =
+            sharp::bourgouin_energy(pres, hght, tw, N, 0.0f, 0.0f);
+        check_energies(energy, energy_of_area(3250.0f), energy_of_area(3250.0f),
+                       refreezing);
+    }
+    {
+        INFO("pressure_min is configurable, and a level at it is kept");
+        auto energy =
+            sharp::bourgouin_energy(pres, hght, tw, N, 0.0f, 80000.0f);
+        check_energies(energy, energy_of_area(1250.0f), energy_of_area(1250.0f),
+                       refreezing);
+        energy = sharp::bourgouin_energy(pres, hght, tw, N, 0.0f, 85000.0f);
+        check_energies(energy, energy_of_area(250.0f), energy_of_area(250.0f),
+                       refreezing);
+    }
+}
+
+TEST_CASE("Testing bourgouin_energy ignores a warm layer above the cap") {
+    // Below the cap: cold to 500 m, then warm to the top kept level at
+    // 2000 m (melting area 1250 K m). Above it: cold, then warm again.
+    constexpr std::ptrdiff_t N = 5;
+    constexpr float pres[N] = {100000.0f, 90000.0f, 80000.0f, 20000.0f,
+                               15000.0f};
+    constexpr float hght[N] = {0.0f, 1000.0f, 2000.0f, 3000.0f, 4000.0f};
+    constexpr float K = sharp::ZEROCNK;
+    constexpr float tw[N] = {K - 1.0f, K + 1.0f, K + 1.0f, K - 4.0f, K + 6.0f};
+    check_energies(sharp::bourgouin_energy(pres, hght, tw, N),
+                   energy_of_area(1250.0f), energy_of_area(1250.0f),
+                   energy_of_area(250.0f));
+
+    // Without the cap, the segments above add warm 100 K m (2000-2200 m)
+    // and 1800 K m (3400-4000 m), with cold air between them.
+    const float melting = energy_of_area(1250.0f + 100.0f + 1800.0f);
+    check_energies(sharp::bourgouin_energy(pres, hght, tw, N, 0.0f, 0.0f),
+                   melting, melting, energy_of_area(250.0f));
+}
+
+TEST_CASE("Testing bourgouin_energy never reads wet-bulb above the cap") {
+    // The documented caller tip: fill the wet-bulb above the cap with
+    // MISSING. A warm value there would add melting energy if it were read,
+    // in every build, and MISSING would wreck the energies in NO_QC builds.
+    constexpr std::ptrdiff_t N = 4;
+    constexpr float pres[N] = {100000.0f, 90000.0f, 80000.0f, 20000.0f};
+    constexpr float hght[N] = {0.0f, 1000.0f, 2000.0f, 3000.0f};
+    constexpr float K = sharp::ZEROCNK;
+    for (const float above_cap : {sharp::MISSING, K + 50.0f}) {
+        CAPTURE(above_cap);
+        const float tw[N] = {K - 1.0f, K + 1.0f, K + 1.0f, above_cap};
+        check_energies(sharp::bourgouin_energy(pres, hght, tw, N),
+                       energy_of_area(1250.0f), energy_of_area(1250.0f),
+                       energy_of_area(250.0f));
+    }
+}
+
+TEST_CASE("Testing bourgouin_energy with fewer than 2 levels under the cap") {
+    // N < 2 returns before reading any element: these null arrays would
+    // crash otherwise.
+    check_energies_missing(
+        sharp::bourgouin_energy(nullptr, nullptr, nullptr, 0));
+    check_energies_missing(
+        sharp::bourgouin_energy(nullptr, nullptr, nullptr, 1));
+
+    // Valid, warm levels above the cap don't count toward the 2.
+    constexpr float hght[3] = {0.0f, 1000.0f, 2000.0f};
+    constexpr float K = sharp::ZEROCNK;
+    constexpr float tw[3] = {K + 5.0f, K + 5.0f, K + 5.0f};
+    {
+        INFO("one level below the cap");
+        constexpr float pres[3] = {30000.0f, 20000.0f, 15000.0f};
+        check_energies_missing(sharp::bourgouin_energy(pres, hght, tw, 3));
+    }
+    {
+        INFO("no level below the cap");
+        constexpr float pres[3] = {24000.0f, 20000.0f, 15000.0f};
+        check_energies_missing(sharp::bourgouin_energy(pres, hght, tw, 3));
+    }
+    {
+        INFO("two levels below the cap");
+        constexpr float pres[3] = {30000.0f, 25000.0f, 15000.0f};
+        const float melting = energy_of_area(5000.0f);
+        check_energies(sharp::bourgouin_energy(pres, hght, tw, 3), melting,
+                       0.0f, 0.0f);
+    }
+}
+
+#ifndef NO_QC
+TEST_CASE("Testing bourgouin_energy with MISSING and NaN levels") {
+    constexpr float MISSING = sharp::MISSING;
+    constexpr float nanval = std::numeric_limits<float>::quiet_NaN();
+    constexpr float K = sharp::ZEROCNK;
+    constexpr float pres[4] = {100000.0f, 90000.0f, 80000.0f, 70000.0f};
+    {
+        // Each profile reduces to -2 K at 0 m and 2 K at 1000 m.
+        INFO("missing levels are bridged");
+        constexpr float hght[4] = {0.0f, 250.0f, 750.0f, 1000.0f};
+        const float triangle = energy_of_area(0.5f * 2.0f * 500.0f);
+        constexpr float tw[4] = {K - 2.0f, MISSING, nanval, K + 2.0f};
+        check_energies(sharp::bourgouin_energy(pres, hght, tw, 4), triangle,
+                       triangle, triangle);
+        constexpr float hght_2[4] = {0.0f, MISSING, nanval, 1000.0f};
+        constexpr float tw_2[4] = {K - 2.0f, K + 9.0f, K + 9.0f, K + 2.0f};
+        check_energies(sharp::bourgouin_energy(pres, hght_2, tw_2, 4), triangle,
+                       triangle, triangle);
+    }
+    {
+        INFO("one valid level gives MISSING, not zeros");
+        constexpr float hght[4] = {0.0f, 250.0f, 750.0f, 1000.0f};
+        constexpr float tw[4] = {MISSING, K + 2.0f, nanval, MISSING};
+        check_energies_missing(sharp::bourgouin_energy(pres, hght, tw, 4));
+        constexpr float hght_2[4] = {nanval, 250.0f, MISSING, MISSING};
+        constexpr float tw_2[4] = {K + 2.0f, K + 2.0f, K + 2.0f, K + 2.0f};
+        check_energies_missing(sharp::bourgouin_energy(pres, hght_2, tw_2, 4));
+    }
+    {
+        INFO("no valid level gives MISSING");
+        constexpr float hght[4] = {0.0f, 250.0f, 750.0f, 1000.0f};
+        constexpr float tw[4] = {MISSING, nanval, nanval, MISSING};
+        check_energies_missing(sharp::bourgouin_energy(pres, hght, tw, 4));
+    }
+}
+#endif
+
+TEST_CASE("Testing bourgouin_energy with min_energy") {
+    {
+        INFO("a weak warm layer aloft gives ME_aloft 0");
+        const TwSounding snd = tw_triangles({-100.0f, 1.99f, -80.0f});
+        check_energies(snd.energy(2.0f), 1.99f, 0.0f, 0.0f);
+        check_energies(snd.energy(), 1.99f, 1.99f, 100.0f);
+
+        // The same at the top of the profile.
+        const TwSounding top = tw_triangles({-100.0f, 1.99f});
+        check_energies(top.energy(2.0f), 1.99f, 0.0f, 0.0f);
+        check_energies(top.energy(), 1.99f, 1.99f, 100.0f);
+    }
+    {
+        INFO("a weak warm layer merges two cold layers into one");
+        const TwSounding snd = tw_triangles({-100.0f, 1.99f, -80.0f, 20.0f});
+        check_energies(snd.energy(2.0f), 21.99f, 20.0f, 180.0f);
+        check_energies(snd.energy(), 21.99f, 21.99f, 100.0f);
+    }
+    {
+        // ME_total counts the merged warm layer, and ME_aloft does not.
+        INFO("ME_total and ME_aloft differ over a cold surface");
+        const TwSounding snd = tw_triangles({-100.0f, 1.99f, -80.0f, 2.01f});
+        check_energies(snd.energy(2.0f), 4.0f, 2.01f, 180.0f);
+        check_energies(snd.energy(), 4.0f, 4.0f, 100.0f);
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Precipitation generation layer from a sounding
 // ---------------------------------------------------------------------------

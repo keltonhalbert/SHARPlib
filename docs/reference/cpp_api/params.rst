@@ -50,6 +50,8 @@ Precipitation-type probabilities from the modified Bourgouin method
 
 .. Wet-bulb melting and refreezing energies from a sounding
 
+.. doxygenfunction:: sharp::bourgouin_energy
+
 .. Precipitation generation layer from a sounding
 
 .. doxygenfunction:: sharp::precipitation_generation_layer

@@ -47,6 +47,62 @@ float snow_squall_parameter(const float wetbulb_2m, const float mean_relh_0_2km,
 // Wet-bulb melting and refreezing energies from a sounding
 // ---------------------------------------------------------------------------
 
+BourgouinEnergy bourgouin_energy(const float pressure[], const float height[],
+                                 const float wetbulb[], const std::ptrdiff_t N,
+                                 const float min_energy,
+                                 const float pressure_min) {
+    // Before the cap below reads pressure[N - 1].
+    if (N < 2) return BourgouinEnergy{};
+
+    // Levels [0, cut) are at pressures at or above pressure_min.
+    // sharp::upper_bound never returns N, so without the guard it would
+    // drop a top level at or above pressure_min.
+    const std::ptrdiff_t cut =
+        (pressure[N - 1] >= pressure_min)
+            ? N
+            : upper_bound(pressure, N, pressure_min, std::greater<float>());
+
+    // Areas between Tw and T0 (K m). The lowest cold layer becomes the
+    // near-surface cold layer once a warm layer turns up above it.
+    float melting_total = 0.0f;
+    float melting_above_cold = 0.0f;
+    float refreezing_lowest_cold = 0.0f;
+    bool found_cold = false;
+    bool warm_above_cold = false;
+    // The walker reports a lone valid level as one layer with no depth, so
+    // the column has depth only with at least 2 valid levels.
+    bool has_depth = false;
+    for_each_threshold_layer(
+        height, [wetbulb](const std::ptrdiff_t k) { return wetbulb[k]; }, cut,
+        ZEROCNK, 0.0f, min_energy * ZEROCNK / GRAVITY,
+        [&](const HeightLayer& layer, const bool above, const float pos_area,
+            const float neg_area) {
+            has_depth |= (layer.top > layer.bottom);
+            melting_total += pos_area;
+            if (found_cold) {
+                melting_above_cold += pos_area;
+                warm_above_cold |= above;
+            } else if (!above) {
+                found_cold = true;
+                refreezing_lowest_cold = -neg_area;
+            }
+            return true;
+        });
+
+    // Zero energies would read as certain snow.
+    if (!has_depth) return BourgouinEnergy{};
+
+    // Eq. 1: energy is g / T0 times the area.
+    constexpr float ENERGY_PER_AREA = GRAVITY / ZEROCNK;
+    BourgouinEnergy energy;
+    energy.melting_energy_total = ENERGY_PER_AREA * melting_total;
+    energy.melting_energy_aloft =
+        (warm_above_cold) ? ENERGY_PER_AREA * melting_above_cold : 0.0f;
+    energy.refreezing_energy =
+        (warm_above_cold) ? ENERGY_PER_AREA * refreezing_lowest_cold : 0.0f;
+    return energy;
+}
+
 // ---------------------------------------------------------------------------
 // Precipitation generation layer from a sounding
 // ---------------------------------------------------------------------------
