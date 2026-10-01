@@ -29,3 +29,8 @@ Layer Calculations
 .. doxygenfunction:: sharp::layer_mean(PressureLayer, const float[], const float[], const std::ptrdiff_t)
 .. doxygenfunction:: sharp::layer_mean(HeightLayer, const float[], const float[], const float[], const std::ptrdiff_t, const bool)
 .. doxygenfunction:: sharp::integrate_layer_trapz
+
+Threshold Layers
+----------------
+
+.. doxygenfunction:: sharp::for_each_threshold_layer

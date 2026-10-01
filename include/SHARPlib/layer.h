@@ -615,6 +615,284 @@ template <typename L>
                                const std::ptrdiff_t N,
                                const bool isAGL = false);
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Walks a height profile once and reports each layer above or <!--
+ * -->below a threshold.
+ *
+ * Walks the profile from the bottom up and calls on_layer once per layer,
+ * in order of increasing height. Each call gets the layer bounds, the side
+ * of the threshold (above = true where the data exceed it), and two areas
+ * between the data and the threshold, in data units times meters:
+ *
+ * - pos_area: the integral of max(value - threshold, 0) dz over the layer
+ * - neg_area: the integral of min(value - threshold, 0) dz (never positive)
+ *
+ * Layer boundaries are linearly interpolated threshold crossings. Areas
+ * are trapezoids, split exactly at the crossings.
+ *
+ * Levels exactly at the threshold never start a new layer. They continue
+ * the current one and add their depth to it, and a crossing is placed
+ * where the data leave the threshold toward the other side. Levels at the
+ * threshold below the first level off it take that level's side. If every
+ * valid level is at the threshold, or there is only one valid level, the
+ * walker reports one layer spanning the valid levels, with above = false
+ * and zero areas. With no valid levels it reports nothing.
+ *
+ * min_depth and min_area merge noise into the surrounding layers. A run is
+ * a raw stretch of data between crossings, or between a crossing and the
+ * end of the profile. It is significant if its depth is at least min_depth
+ * and the absolute value of its area is at least min_area. Only the run's
+ * own depth and area count, never what merges into it. The merge rule:
+ *
+ * 1. Consecutive insignificant runs form a zone.
+ * 2. A zone between significant runs on the same side is absorbed, and the
+ *    layer continues through it.
+ * 3. A zone between significant runs on opposite sides goes entirely to
+ *    the side whose runs make up more of the zone's depth. A tie goes to
+ *    the lower layer. Swapping above and below gives the mirror result,
+ *    but reversing the profile vertically does not.
+ * 4. A zone at the bottom or top of the profile joins the adjacent
+ *    significant layer. If no run is significant, the whole column is one
+ *    layer, on the side with more total run depth. A tie goes to the side
+ *    of the lowest run.
+ * 5. Merging moves boundaries only. A merged layer's pos_area and neg_area
+ *    are the sums over all of its runs.
+ * 6. With min_depth = min_area = 0, every run is significant, and the
+ *    layers are exactly the raw threshold crossings.
+ *
+ * The walk is a single forward pass with constant state that reads each
+ * level once. The walker itself never allocates or throws, though data_at
+ * and on_layer may. A layer's top depends on the zone above it, so a
+ * layer is reported once the next significant run is confirmed, which
+ * happens as soon as that run's own depth and area reach the thresholds.
+ * With both thresholds at 0, that is the first level past the layer's top
+ * crossing. A layer at the top of the profile is reported at the end of
+ * the walk.
+ *
+ * Unless NO_QC is defined, levels whose height or value is sharp::MISSING
+ * or NaN are skipped, and the walk joins their valid neighbors with a
+ * straight line.
+ *
+ * Heights must be strictly increasing. This is not checked.
+ *
+ * \tparam  Accessor    callable as float(std::ptrdiff_t k)
+ * \tparam  Callback    callable as bool(const sharp::HeightLayer& layer,
+ *                      bool above, float pos_area, float neg_area)
+ *
+ * \param   height      (meters)
+ * \param   data_at     (returns the data value at level k)
+ * \param   N           (length of the profile)
+ * \param   threshold   (data units)
+ * \param   min_depth   (meters; 0 disables)
+ * \param   min_area    (data units times meters; 0 disables)
+ * \param   on_layer    (called once per layer; returning false stops the
+ *                      walk)
+ *
+ * \return  The number of layers reported, including the one whose
+ *          callback stopped the walk
+ */
+template <typename Accessor, typename Callback>
+std::ptrdiff_t for_each_threshold_layer(const float height[], Accessor data_at,
+                                        const std::ptrdiff_t N,
+                                        const float threshold,
+                                        const float min_depth,
+                                        const float min_area,
+                                        Callback on_layer) {
+    // Reads the next valid level as its height z and its departure d from
+    // the threshold. Each level is read once, and the data only where the
+    // height is valid.
+    std::ptrdiff_t k = 0;
+    auto next_level = [&](float& z, float& d) -> bool {
+        for (; k < N; ++k) {
+            const float z_k = height[k];
+#ifndef NO_QC
+            if ((z_k == MISSING) || std::isnan(z_k)) continue;
+#endif
+            const float val_k = data_at(k);
+#ifndef NO_QC
+            if ((val_k == MISSING) || std::isnan(val_k)) continue;
+#endif
+            ++k;
+            z = z_k;
+            d = val_k - threshold;
+            return true;
+        }
+        return false;
+    };
+
+    std::ptrdiff_t reported = 0;
+    auto report = [&](const float bottom, const float top, const bool above,
+                      const float pos_area, const float neg_area) -> bool {
+        HeightLayer layer;
+        layer.bottom = bottom;
+        layer.top = top;
+        ++reported;
+        return on_layer(layer, above, pos_area, neg_area);
+    };
+
+    float z_prev = 0.0f;
+    float d_prev = 0.0f;
+    if (!next_level(z_prev, d_prev)) return 0;
+    const float z_first = z_prev;
+
+    // The first run takes the side of the first level off the threshold,
+    // and the levels at the threshold below it join that run. A lone valid
+    // level, or a column entirely at the threshold, has no side.
+    float z = 0.0f;
+    float d = 0.0f;
+    for (;;) {
+        if (!next_level(z, d)) {
+            report(z_first, z_prev, false, 0.0f, 0.0f);
+            return reported;
+        }
+        if ((d_prev != 0.0f) || (d != 0.0f)) break;
+        z_prev = z;
+    }
+
+    // The run in progress, and whether its own depth and area have reached
+    // the thresholds yet.
+    bool above = (d_prev != 0.0f) ? (d_prev > 0.0f) : (d > 0.0f);
+    const bool first_above = above;
+    float run_bot = z_first;
+    float run_area = 0.0f;
+    bool run_sig = false;
+
+    // The open layer: the latest significant layer, whose top waits on the
+    // zone above it. It exists once any run is significant.
+    bool has_open = false;
+    bool open_above = false;
+    float open_bot = 0.0f;
+    float open_pos = 0.0f;
+    float open_neg = 0.0f;
+
+    // The zone: finished insignificant runs above the open layer, or above
+    // the column bottom before any run is significant.
+    float zone_bot = z_first;
+    float zone_depth_above = 0.0f;
+    float zone_depth_below = 0.0f;
+    float zone_pos = 0.0f;
+    float zone_neg = 0.0f;
+
+    auto significant = [&](const float depth, const float area) -> bool {
+        return (depth >= min_depth) && (std::fabs(area) >= min_area);
+    };
+
+    // The run in progress just became significant. Give the zone below it
+    // to a layer, and report the open layer if this run starts a new one.
+    // Returns false if the callback stopped the walk.
+    auto confirm_run = [&]() -> bool {
+        run_sig = true;
+        bool keep_going = true;
+        if (!has_open) {
+            // A zone at the bottom of the profile joins the first
+            // significant layer.
+            has_open = true;
+            open_above = above;
+            open_bot = z_first;
+            open_pos = zone_pos;
+            open_neg = zone_neg;
+        } else if (open_above == above) {
+            // A zone between significant runs on the same side is absorbed.
+            open_pos += zone_pos;
+            open_neg += zone_neg;
+        } else {
+            // A zone between opposite sides goes to the side with more of
+            // its depth, and a tie goes to the lower layer. With an empty
+            // zone, both branches put the boundary at run_bot == zone_bot.
+            const float depth_open =
+                (open_above) ? zone_depth_above : zone_depth_below;
+            const float depth_run =
+                (open_above) ? zone_depth_below : zone_depth_above;
+            if (depth_open >= depth_run) {
+                keep_going = report(open_bot, run_bot, open_above,
+                                    open_pos + zone_pos, open_neg + zone_neg);
+                open_bot = run_bot;
+                open_pos = 0.0f;
+                open_neg = 0.0f;
+            } else {
+                keep_going =
+                    report(open_bot, zone_bot, open_above, open_pos, open_neg);
+                open_bot = zone_bot;
+                open_pos = zone_pos;
+                open_neg = zone_neg;
+            }
+            open_above = above;
+        }
+        zone_depth_above = 0.0f;
+        zone_depth_below = 0.0f;
+        zone_pos = 0.0f;
+        zone_neg = 0.0f;
+        return keep_going;
+    };
+
+    // Ends the run in progress at top, crediting it to the open layer if it
+    // is significant and to the zone if not. Returns false if the callback
+    // stopped the walk.
+    auto finish_run = [&](const float top) -> bool {
+        const float depth = top - run_bot;
+        if (!run_sig && significant(depth, run_area)) {
+            if (!confirm_run()) return false;
+        }
+        if (run_sig) {
+            if (above) {
+                open_pos += run_area;
+            } else {
+                open_neg += run_area;
+            }
+            zone_bot = top;
+        } else if (above) {
+            zone_depth_above += depth;
+            zone_pos += run_area;
+        } else {
+            zone_depth_below += depth;
+            zone_neg += run_area;
+        }
+        run_sig = false;
+        return true;
+    };
+
+    // _integ_trapz accumulates weights through a reference. Unused here.
+    float weights = 0.0f;
+    do {
+        if ((above) ? (d < 0.0f) : (d > 0.0f)) {
+            // A crossing between the two levels ends the run there.
+            const float z_cross = lerp(z_prev, z, d_prev / (d_prev - d));
+            run_area += _integ_trapz(0.0f, d_prev, z_cross, z_prev, weights);
+            if (!finish_run(z_cross)) return reported;
+            above = !above;
+            run_bot = z_cross;
+            run_area = _integ_trapz(d, 0.0f, z, z_cross, weights);
+        } else {
+            run_area += _integ_trapz(d, d_prev, z, z_prev, weights);
+        }
+        z_prev = z;
+        d_prev = d;
+
+        // Confirm the run as soon as it is significant, so the layer below
+        // it is reported without waiting for this run to end.
+        if (!run_sig && significant(z_prev - run_bot, run_area)) {
+            if (!confirm_run()) return reported;
+        }
+    } while (next_level(z, d));
+
+    if (!finish_run(z_prev)) return reported;
+    if (has_open) {
+        // A zone at the top of the profile joins the last significant layer.
+        report(open_bot, z_prev, open_above, open_pos + zone_pos,
+               open_neg + zone_neg);
+    } else {
+        // No run is significant: one layer on the side with more depth, and
+        // a tie goes to the side of the lowest run.
+        const bool column_above = (zone_depth_above == zone_depth_below)
+                                      ? first_above
+                                      : (zone_depth_above > zone_depth_below);
+        report(z_first, z_prev, column_above, zone_pos, zone_neg);
+    }
+    return reported;
+}
+
 /// @cond DOXYGEN_IGNORE
 
 extern template float layer_min<PressureLayer>(PressureLayer layer,

@@ -2,7 +2,9 @@
 #include <SHARPlib/layer.h>
 
 #include <cmath>
+#include <cstdlib>
 #include <limits>
+#include <new>
 #include <stdexcept>
 
 #include "doctest.h"
@@ -212,4 +214,584 @@ TEST_CASE("Testing layer_mean over a pressure layer") {
     CHECK(sharp::layer_mean(layer1, pres, data, N) == 1.25);
     CHECK(sharp::layer_mean(layer2, pres, data, N) == doctest::Approx(1.1111));
     CHECK(sharp::layer_mean(layer3, pres, data, N) == doctest::Approx(1.1111));
+}
+
+// Counts heap allocations, so the threshold-layer tests can show that the
+// walker never allocates.
+static std::size_t heap_allocations = 0;
+
+void* operator new(std::size_t size) {
+    ++heap_allocations;
+    if (void* ptr = std::malloc(size ? size : 1)) return ptr;
+    throw std::bad_alloc();
+}
+void operator delete(void* ptr) noexcept { std::free(ptr); }
+void operator delete(void* ptr, std::size_t) noexcept { std::free(ptr); }
+
+// What one sharp::for_each_threshold_layer walk reported. Fixed-size
+// storage, so recording it doesn't allocate either.
+struct ThresholdWalk {
+    struct Layer {
+        float bottom;
+        float top;
+        bool above;
+        float pos_area;
+        float neg_area;
+    };
+    static constexpr std::ptrdiff_t capacity = 32;
+    Layer layers[capacity];
+    std::ptrdiff_t num_layers = 0;
+    std::ptrdiff_t reads[capacity];  // levels passed to the accessor, in order
+    std::ptrdiff_t num_reads = 0;
+    std::ptrdiff_t returned = 0;
+};
+
+// Walks data[] against the threshold and records every layer and level
+// read. With stop_after > 0, the callback stops the walk at that layer.
+static ThresholdWalk walk_threshold(const float height[], const float data[],
+                                    const std::ptrdiff_t N,
+                                    const float threshold,
+                                    const float min_depth = 0.0f,
+                                    const float min_area = 0.0f,
+                                    const std::ptrdiff_t stop_after = 0) {
+    ThresholdWalk walk;
+    auto data_at = [&](const std::ptrdiff_t k) {
+        if (walk.num_reads < walk.capacity) walk.reads[walk.num_reads] = k;
+        ++walk.num_reads;
+        return data[k];
+    };
+    auto on_layer = [&](const sharp::HeightLayer& layer, const bool above,
+                        const float pos_area, const float neg_area) {
+        if (walk.num_layers < walk.capacity) {
+            walk.layers[walk.num_layers] = {layer.bottom, layer.top, above,
+                                            pos_area, neg_area};
+        }
+        ++walk.num_layers;
+        return walk.num_layers != stop_after;
+    };
+    const std::size_t heap_before = heap_allocations;
+    walk.returned = sharp::for_each_threshold_layer(
+        height, data_at, N, threshold, min_depth, min_area, on_layer);
+    CHECK(heap_allocations == heap_before);
+    CHECK(walk.returned == walk.num_layers);
+    REQUIRE(walk.num_layers <= walk.capacity);
+    return walk;
+}
+
+// Checks layer i of a walk against its expected bounds, side, and areas.
+static void check_layer(const ThresholdWalk& walk, const std::ptrdiff_t i,
+                        const float bottom, const float top, const bool above,
+                        const float pos_area, const float neg_area) {
+    INFO("layer ", i);
+    REQUIRE(i < walk.num_layers);
+    const ThresholdWalk::Layer& layer = walk.layers[i];
+    CHECK(layer.bottom == doctest::Approx(bottom));
+    CHECK(layer.top == doctest::Approx(top));
+    CHECK(layer.above == above);
+    CHECK(layer.pos_area == doctest::Approx(pos_area));
+    CHECK(layer.neg_area == doctest::Approx(neg_area));
+}
+
+// Checks that walking -data against 0 gives the same layers as data, with
+// the sides and areas swapped.
+static void check_mirror(const float height[], const float data[],
+                         const std::ptrdiff_t N, const float min_depth,
+                         const float min_area) {
+    float mirrored[ThresholdWalk::capacity];
+    REQUIRE(N <= ThresholdWalk::capacity);
+    for (std::ptrdiff_t k = 0; k < N; ++k) mirrored[k] = -data[k];
+    const ThresholdWalk walk =
+        walk_threshold(height, data, N, 0.0f, min_depth, min_area);
+    const ThresholdWalk flip =
+        walk_threshold(height, mirrored, N, 0.0f, min_depth, min_area);
+    REQUIRE(flip.num_layers == walk.num_layers);
+    for (std::ptrdiff_t i = 0; i < walk.num_layers; ++i) {
+        INFO("layer ", i);
+        CHECK(flip.layers[i].bottom == walk.layers[i].bottom);
+        CHECK(flip.layers[i].top == walk.layers[i].top);
+        CHECK(flip.layers[i].above == !walk.layers[i].above);
+        CHECK(flip.layers[i].pos_area == -walk.layers[i].neg_area);
+        CHECK(flip.layers[i].neg_area == -walk.layers[i].pos_area);
+    }
+}
+
+TEST_CASE("Testing for_each_threshold_layer crossings and areas") {
+    constexpr std::ptrdiff_t N = 4;
+    constexpr float hght[N] = {0.0f, 1000.0f, 2000.0f, 3000.0f};
+
+    // Crossings at 500 m and 2000 + 1000/3 m. Each area is a sum of
+    // trapezoids split at the crossings.
+    constexpr float data[N] = {2.0f, -2.0f, -2.0f, 4.0f};
+    const float z_cross = 2000.0f + 1000.0f / 3.0f;
+    const float neg_area = -500.0f - 2000.0f - 1000.0f / 3.0f;
+    const float pos_area = 2.0f * (3000.0f - z_cross);
+
+    const ThresholdWalk walk = walk_threshold(hght, data, N, 0.0f);
+    CHECK(walk.num_layers == 3);
+    check_layer(walk, 0, 0.0f, 500.0f, true, 500.0f, 0.0f);
+    check_layer(walk, 1, 500.0f, z_cross, false, 0.0f, neg_area);
+    check_layer(walk, 2, z_cross, 3000.0f, true, pos_area, 0.0f);
+
+    // The same profile as relative humidity against 0.75: the same
+    // crossings, and areas scaled by 0.1.
+    constexpr float relh[N] = {0.95f, 0.55f, 0.55f, 1.15f};
+    const ThresholdWalk rh_walk = walk_threshold(hght, relh, N, 0.75f);
+    CHECK(rh_walk.num_layers == 3);
+    check_layer(rh_walk, 0, 0.0f, 500.0f, true, 50.0f, 0.0f);
+    check_layer(rh_walk, 1, 500.0f, z_cross, false, 0.0f, 0.1f * neg_area);
+    check_layer(rh_walk, 2, z_cross, 3000.0f, true, 0.1f * pos_area, 0.0f);
+}
+
+TEST_CASE("Testing for_each_threshold_layer levels at the threshold") {
+    constexpr std::ptrdiff_t N = 4;
+    constexpr float hght[N] = {0.0f, 100.0f, 200.0f, 300.0f};
+
+    // The first run takes the side of the first level off the threshold.
+    {
+        INFO("first level at the threshold");
+        constexpr float data[N] = {0.0f, 1.0f, -1.0f, -1.0f};
+        const ThresholdWalk walk = walk_threshold(hght, data, N, 0.0f);
+        CHECK(walk.num_layers == 2);
+        check_layer(walk, 0, 0.0f, 150.0f, true, 75.0f, 0.0f);
+        check_layer(walk, 1, 150.0f, 300.0f, false, 0.0f, -125.0f);
+    }
+    {
+        INFO("first two levels at the threshold");
+        constexpr float data[N] = {0.0f, 0.0f, -2.0f, 2.0f};
+        const ThresholdWalk walk = walk_threshold(hght, data, N, 0.0f);
+        CHECK(walk.num_layers == 2);
+        check_layer(walk, 0, 0.0f, 250.0f, false, 0.0f, -150.0f);
+        check_layer(walk, 1, 250.0f, 300.0f, true, 50.0f, 0.0f);
+    }
+    {
+        INFO("one level at the threshold between opposite sides");
+        constexpr float data[N] = {1.0f, 0.0f, -1.0f, -1.0f};
+        const ThresholdWalk walk = walk_threshold(hght, data, N, 0.0f);
+        CHECK(walk.num_layers == 2);
+        check_layer(walk, 0, 0.0f, 100.0f, true, 50.0f, 0.0f);
+        check_layer(walk, 1, 100.0f, 300.0f, false, 0.0f, -150.0f);
+    }
+    {
+        INFO("every level at the threshold");
+        constexpr float relh[3] = {0.75f, 0.75f, 0.75f};
+        const ThresholdWalk walk = walk_threshold(hght, relh, 3, 0.75f);
+        CHECK(walk.num_layers == 1);
+        check_layer(walk, 0, 0.0f, 200.0f, false, 0.0f, 0.0f);
+
+        const ThresholdWalk noisy =
+            walk_threshold(hght, relh, 3, 0.75f, 5000.0f, 1.0f);
+        CHECK(noisy.num_layers == 1);
+        check_layer(noisy, 0, 0.0f, 200.0f, false, 0.0f, 0.0f);
+    }
+}
+
+TEST_CASE("Testing for_each_threshold_layer plateaus at the threshold") {
+    constexpr std::ptrdiff_t N = 4;
+    constexpr float hght[N] = {0.0f, 100.0f, 2000.0f, 2100.0f};
+
+    // Between runs on the same side, a plateau continues the run: one
+    // 2100 m moist layer, and one cold layer for a 0 C plateau.
+    {
+        INFO("moist, 75%, 75%, moist");
+        constexpr float relh[N] = {0.8f, 0.75f, 0.75f, 0.8f};
+        const ThresholdWalk walk = walk_threshold(hght, relh, N, 0.75f);
+        CHECK(walk.num_layers == 1);
+        check_layer(walk, 0, 0.0f, 2100.0f, true, 5.0f, 0.0f);
+    }
+    {
+        INFO("cold, 0 C, 0 C, cold");
+        constexpr float tmpk[N] = {272.15f, 273.15f, 273.15f, 272.15f};
+        const ThresholdWalk walk = walk_threshold(hght, tmpk, N, 273.15f);
+        CHECK(walk.num_layers == 1);
+        check_layer(walk, 0, 0.0f, 2100.0f, false, 0.0f, -100.0f);
+    }
+
+    // Between opposite sides, the plateau stays with the run it continues,
+    // and the crossing is where the data leave the threshold.
+    {
+        INFO("above, plateau, below");
+        constexpr float data[N] = {1.0f, 0.0f, 0.0f, -1.0f};
+        const ThresholdWalk walk = walk_threshold(hght, data, N, 0.0f);
+        CHECK(walk.num_layers == 2);
+        check_layer(walk, 0, 0.0f, 2000.0f, true, 50.0f, 0.0f);
+        check_layer(walk, 1, 2000.0f, 2100.0f, false, 0.0f, -50.0f);
+    }
+    {
+        INFO("below, plateau, above");
+        constexpr float data[N] = {-1.0f, 0.0f, 0.0f, 1.0f};
+        const ThresholdWalk walk = walk_threshold(hght, data, N, 0.0f);
+        CHECK(walk.num_layers == 2);
+        check_layer(walk, 0, 0.0f, 2000.0f, false, 0.0f, -50.0f);
+        check_layer(walk, 1, 2000.0f, 2100.0f, true, 50.0f, 0.0f);
+    }
+
+    // The plateau's depth counts toward its run: 100 m above plus a 1900 m
+    // plateau makes a 2000 m run, deep enough to absorb the 500 m below
+    // run. Without the plateau, the deeper below run would win the column.
+    {
+        INFO("plateau depth counts toward min_depth");
+        constexpr float hght_2[N] = {0.0f, 100.0f, 2000.0f, 2500.0f};
+        constexpr float data[N] = {1.0f, 0.0f, 0.0f, -1.0f};
+        const ThresholdWalk walk =
+            walk_threshold(hght_2, data, N, 0.0f, 1000.0f, 0.0f);
+        CHECK(walk.num_layers == 1);
+        check_layer(walk, 0, 0.0f, 2500.0f, true, 50.0f, -250.0f);
+    }
+}
+
+TEST_CASE("Testing for_each_threshold_layer with 0, 1, and 2 levels") {
+    constexpr float hght[2] = {500.0f, 600.0f};
+    {
+        INFO("N = 0");
+        constexpr float data[2] = {1.0f, -1.0f};
+        const ThresholdWalk walk = walk_threshold(hght, data, 0, 0.0f);
+        CHECK(walk.num_layers == 0);
+        CHECK(walk.num_reads == 0);
+    }
+    // A lone level has no depth and no side, whatever its value.
+    for (const float value : {3.0f, -3.0f, 0.0f}) {
+        INFO("N = 1, value ", value);
+        const float data[1] = {value};
+        const ThresholdWalk walk = walk_threshold(hght, data, 1, 0.0f);
+        CHECK(walk.num_layers == 1);
+        check_layer(walk, 0, 500.0f, 500.0f, false, 0.0f, 0.0f);
+    }
+    {
+        INFO("N = 2, one crossing");
+        constexpr float data[2] = {1.0f, -1.0f};
+        const ThresholdWalk walk = walk_threshold(hght, data, 2, 0.0f);
+        CHECK(walk.num_layers == 2);
+        check_layer(walk, 0, 500.0f, 550.0f, true, 25.0f, 0.0f);
+        check_layer(walk, 1, 550.0f, 600.0f, false, 0.0f, -25.0f);
+    }
+    {
+        INFO("N = 2, no crossing");
+        constexpr float data[2] = {1.0f, 3.0f};
+        const ThresholdWalk walk = walk_threshold(hght, data, 2, 0.0f);
+        CHECK(walk.num_layers == 1);
+        check_layer(walk, 0, 500.0f, 600.0f, true, 200.0f, 0.0f);
+    }
+    {
+        INFO("N = 2, first level at the threshold");
+        constexpr float data[2] = {0.0f, -2.0f};
+        const ThresholdWalk walk = walk_threshold(hght, data, 2, 0.0f);
+        CHECK(walk.num_layers == 1);
+        check_layer(walk, 0, 500.0f, 600.0f, false, 0.0f, -100.0f);
+    }
+    {
+        INFO("N = 2, both levels at the threshold");
+        constexpr float data[2] = {0.0f, 0.0f};
+        const ThresholdWalk walk = walk_threshold(hght, data, 2, 0.0f);
+        CHECK(walk.num_layers == 1);
+        check_layer(walk, 0, 500.0f, 600.0f, false, 0.0f, 0.0f);
+    }
+}
+
+#ifndef NO_QC
+TEST_CASE("Testing for_each_threshold_layer bridges MISSING and NaN") {
+    constexpr float MISSING = sharp::MISSING;
+
+    // Each profile reduces to 2 at 0 m and -2 at 1000 m.
+    {
+        INFO("missing and NaN values");
+        constexpr float hght[5] = {0.0f, 250.0f, 500.0f, 750.0f, 1000.0f};
+        constexpr float data[5] = {2.0f, MISSING, nanval, MISSING, -2.0f};
+        const ThresholdWalk walk = walk_threshold(hght, data, 5, 0.0f);
+        CHECK(walk.num_layers == 2);
+        check_layer(walk, 0, 0.0f, 500.0f, true, 500.0f, 0.0f);
+        check_layer(walk, 1, 500.0f, 1000.0f, false, 0.0f, -500.0f);
+    }
+    {
+        INFO("missing and NaN heights");
+        constexpr float hght[4] = {0.0f, MISSING, nanval, 1000.0f};
+        constexpr float data[4] = {2.0f, 5.0f, 5.0f, -2.0f};
+        const ThresholdWalk walk = walk_threshold(hght, data, 4, 0.0f);
+        CHECK(walk.num_layers == 2);
+        check_layer(walk, 0, 0.0f, 500.0f, true, 500.0f, 0.0f);
+        check_layer(walk, 1, 500.0f, 1000.0f, false, 0.0f, -500.0f);
+    }
+    {
+        INFO("missing levels at the bottom and top");
+        constexpr float hght[5] = {nanval, -500.0f, 0.0f, 1000.0f, MISSING};
+        constexpr float data[5] = {5.0f, MISSING, 2.0f, -2.0f, 5.0f};
+        const ThresholdWalk walk = walk_threshold(hght, data, 5, 0.0f);
+        CHECK(walk.num_layers == 2);
+        check_layer(walk, 0, 0.0f, 500.0f, true, 500.0f, 0.0f);
+        check_layer(walk, 1, 500.0f, 1000.0f, false, 0.0f, -500.0f);
+
+        constexpr float data_2[5] = {5.0f, nanval, 2.0f, -2.0f, nanval};
+        const ThresholdWalk walk_2 = walk_threshold(hght, data_2, 5, 0.0f);
+        CHECK(walk_2.num_layers == 2);
+        check_layer(walk_2, 0, 0.0f, 500.0f, true, 500.0f, 0.0f);
+        check_layer(walk_2, 1, 500.0f, 1000.0f, false, 0.0f, -500.0f);
+    }
+    {
+        INFO("no valid level");
+        constexpr float hght[3] = {0.0f, 100.0f, MISSING};
+        constexpr float data[3] = {MISSING, nanval, 1.0f};
+        const ThresholdWalk walk = walk_threshold(hght, data, 3, 0.0f);
+        CHECK(walk.num_layers == 0);
+    }
+    {
+        INFO("one valid level");
+        constexpr float hght[3] = {0.0f, 100.0f, 200.0f};
+        constexpr float data[3] = {MISSING, 5.0f, nanval};
+        const ThresholdWalk walk = walk_threshold(hght, data, 3, 0.0f);
+        CHECK(walk.num_layers == 1);
+        check_layer(walk, 0, 100.0f, 100.0f, false, 0.0f, 0.0f);
+    }
+}
+#endif
+
+TEST_CASE("Testing for_each_threshold_layer reads each level once") {
+    constexpr std::ptrdiff_t N = 8;
+    constexpr float hght[N] = {0.0f,   100.0f, 200.0f, 300.0f,
+                               400.0f, 500.0f, 600.0f, 700.0f};
+    constexpr float data[N] = {1.0f, -1.0f, -2.0f, 1.0f,
+                               0.0f, 0.0f,  -1.0f, 2.0f};
+    for (const float min_depth : {0.0f, 150.0f, 1000.0f}) {
+        INFO("min_depth ", min_depth);
+        const ThresholdWalk walk =
+            walk_threshold(hght, data, N, 0.0f, min_depth, 0.0f);
+        REQUIRE(walk.num_reads == N);
+        for (std::ptrdiff_t k = 0; k < N; ++k) CHECK(walk.reads[k] == k);
+    }
+}
+
+TEST_CASE("Testing for_each_threshold_layer early stop") {
+    // Crossings at 50, 150, 250, and 350 m.
+    constexpr std::ptrdiff_t N = 5;
+    constexpr float hght[N] = {0.0f, 100.0f, 200.0f, 300.0f, 400.0f};
+    constexpr float data[N] = {1.0f, -1.0f, 1.0f, -1.0f, 1.0f};
+
+    const ThresholdWalk full = walk_threshold(hght, data, N, 0.0f);
+    CHECK(full.num_layers == 5);
+
+    // With no noise thresholds, a layer is reported at the first level past
+    // its top crossing, and the walk reads nothing after a stop.
+    const ThresholdWalk first =
+        walk_threshold(hght, data, N, 0.0f, 0.0f, 0.0f, 1);
+    CHECK(first.returned == 1);
+    check_layer(first, 0, 0.0f, 50.0f, true, 25.0f, 0.0f);
+    CHECK(first.num_reads == 2);
+
+    const ThresholdWalk third =
+        walk_threshold(hght, data, N, 0.0f, 0.0f, 0.0f, 3);
+    CHECK(third.returned == 3);
+    check_layer(third, 2, 150.0f, 250.0f, true, 50.0f, 0.0f);
+    CHECK(third.num_reads == 4);
+
+    // With min_depth = 100, the 50 m runs at the ends join their neighbors.
+    // The first layer is reported once the 150-250 m run reaches 100 m,
+    // at its top crossing, which is found at the 300 m level.
+    const ThresholdWalk deep = walk_threshold(hght, data, N, 0.0f, 100.0f);
+    CHECK(deep.num_layers == 3);
+    check_layer(deep, 0, 0.0f, 150.0f, false, 25.0f, -50.0f);
+    check_layer(deep, 1, 150.0f, 250.0f, true, 50.0f, 0.0f);
+    check_layer(deep, 2, 250.0f, 400.0f, false, 25.0f, -50.0f);
+
+    const ThresholdWalk deep_first =
+        walk_threshold(hght, data, N, 0.0f, 100.0f, 0.0f, 1);
+    CHECK(deep_first.returned == 1);
+    check_layer(deep_first, 0, 0.0f, 150.0f, false, 25.0f, -50.0f);
+    CHECK(deep_first.num_reads == 4);
+}
+
+// The merge-rule profiles use values of +/-1 on either side of each
+// crossing, 50 m from it, so every crossing lands on a round height.
+TEST_CASE("Testing for_each_threshold_layer merge rule") {
+    {
+        // Runs: above 0-1000, then a zone of below 1000-1100, above
+        // 1100-1200, and below 1200-1300, then above 1300-2300. The zone is
+        // mostly below, but it lies between two above runs.
+        INFO("same-side zone is absorbed");
+        constexpr std::ptrdiff_t N = 7;
+        constexpr float hght[N] = {0.0f,    950.0f,  1050.0f, 1150.0f,
+                                   1250.0f, 1350.0f, 2300.0f};
+        constexpr float data[N] = {1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f};
+        const ThresholdWalk walk =
+            walk_threshold(hght, data, N, 0.0f, 500.0f, 0.0f);
+        CHECK(walk.num_layers == 1);
+        check_layer(walk, 0, 0.0f, 2300.0f, true, 2000.0f, -100.0f);
+        check_mirror(hght, data, N, 500.0f, 0.0f);
+
+        // With both thresholds at 0, the layers are the raw crossings.
+        const ThresholdWalk raw = walk_threshold(hght, data, N, 0.0f);
+        CHECK(raw.num_layers == 5);
+        check_layer(raw, 0, 0.0f, 1000.0f, true, 975.0f, 0.0f);
+        check_layer(raw, 1, 1000.0f, 1100.0f, false, 0.0f, -50.0f);
+        check_layer(raw, 2, 1100.0f, 1200.0f, true, 50.0f, 0.0f);
+        check_layer(raw, 3, 1200.0f, 1300.0f, false, 0.0f, -50.0f);
+        check_layer(raw, 4, 1300.0f, 2300.0f, true, 975.0f, 0.0f);
+    }
+    {
+        // Runs: above 0-1000, below 1000-1100, above 1100-1400, below
+        // 1400-2400. The zone is 300 m above, 100 m below, so it joins the
+        // lower layer.
+        INFO("zone majority to the lower layer");
+        constexpr std::ptrdiff_t N = 7;
+        constexpr float hght[N] = {0.0f,    950.0f,  1050.0f, 1150.0f,
+                                   1350.0f, 1450.0f, 2400.0f};
+        constexpr float data[N] = {1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f};
+        const ThresholdWalk walk =
+            walk_threshold(hght, data, N, 0.0f, 500.0f, 0.0f);
+        CHECK(walk.num_layers == 2);
+        check_layer(walk, 0, 0.0f, 1400.0f, true, 1225.0f, -50.0f);
+        check_layer(walk, 1, 1400.0f, 2400.0f, false, 0.0f, -975.0f);
+        check_mirror(hght, data, N, 500.0f, 0.0f);
+    }
+    {
+        // Runs: above 0-1000, below 1000-1300, above 1300-1400, below
+        // 1400-2400. The zone is 100 m above, 300 m below, so it joins the
+        // upper layer.
+        INFO("zone majority to the upper layer");
+        constexpr std::ptrdiff_t N = 7;
+        constexpr float hght[N] = {0.0f,    950.0f,  1050.0f, 1250.0f,
+                                   1350.0f, 1450.0f, 2400.0f};
+        constexpr float data[N] = {1.0f, 1.0f,  -1.0f, -1.0f,
+                                   1.0f, -1.0f, -1.0f};
+        const ThresholdWalk walk =
+            walk_threshold(hght, data, N, 0.0f, 500.0f, 0.0f);
+        CHECK(walk.num_layers == 2);
+        check_layer(walk, 0, 0.0f, 1000.0f, true, 975.0f, 0.0f);
+        check_layer(walk, 1, 1000.0f, 2400.0f, false, 50.0f, -1225.0f);
+        check_mirror(hght, data, N, 500.0f, 0.0f);
+    }
+    {
+        // Runs: above 0-1000, below 1000-1200, above 1200-1400, below
+        // 1400-2400. A 200 m / 200 m tie goes to the lower layer, and
+        // still does with the signs swapped.
+        INFO("zone tie to the lower layer");
+        constexpr std::ptrdiff_t N = 8;
+        constexpr float hght[N] = {0.0f,    950.0f,  1050.0f, 1150.0f,
+                                   1250.0f, 1350.0f, 1450.0f, 2400.0f};
+        constexpr float data[N] = {1.0f, 1.0f, -1.0f, -1.0f,
+                                   1.0f, 1.0f, -1.0f, -1.0f};
+        const ThresholdWalk walk =
+            walk_threshold(hght, data, N, 0.0f, 500.0f, 0.0f);
+        CHECK(walk.num_layers == 2);
+        check_layer(walk, 0, 0.0f, 1400.0f, true, 1125.0f, -150.0f);
+        check_layer(walk, 1, 1400.0f, 2400.0f, false, 0.0f, -975.0f);
+        check_mirror(hght, data, N, 500.0f, 0.0f);
+    }
+    {
+        // Runs: below 0-300, above 300-1300, below 1300-1700. The zones at
+        // the bottom and top join the one significant run, even though
+        // they are on the other side.
+        INFO("zones at the bottom and top");
+        constexpr std::ptrdiff_t N = 6;
+        constexpr float hght[N] = {0.0f,    250.0f,  350.0f,
+                                   1250.0f, 1350.0f, 1700.0f};
+        constexpr float data[N] = {-1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f};
+        const ThresholdWalk walk =
+            walk_threshold(hght, data, N, 0.0f, 500.0f, 0.0f);
+        CHECK(walk.num_layers == 1);
+        check_layer(walk, 0, 0.0f, 1700.0f, true, 950.0f, -650.0f);
+        check_mirror(hght, data, N, 500.0f, 0.0f);
+    }
+    {
+        // Runs: below 0-300, above 300-400, below 400-700, above 700-1700.
+        // The three runs under 700 m are 300, 100, and 300 m deep, with
+        // |area| 275, 50, and 250. Merged into one below stretch they would
+        // pass min_depth = 500 or min_area = 400, but only a run's own size
+        // counts, so all three join the one significant run above them.
+        INFO("a run's size ignores what it absorbed");
+        constexpr std::ptrdiff_t N = 7;
+        constexpr float hght[N] = {0.0f,   250.0f, 350.0f, 450.0f,
+                                   650.0f, 750.0f, 1700.0f};
+        constexpr float data[N] = {-1.0f, -1.0f, 1.0f, -1.0f,
+                                   -1.0f, 1.0f,  1.0f};
+        const ThresholdWalk by_depth =
+            walk_threshold(hght, data, N, 0.0f, 500.0f, 0.0f);
+        CHECK(by_depth.num_layers == 1);
+        check_layer(by_depth, 0, 0.0f, 1700.0f, true, 1025.0f, -525.0f);
+
+        const ThresholdWalk by_area =
+            walk_threshold(hght, data, N, 0.0f, 0.0f, 400.0f);
+        CHECK(by_area.num_layers == 1);
+        check_layer(by_area, 0, 0.0f, 1700.0f, true, 1025.0f, -525.0f);
+    }
+}
+
+TEST_CASE("Testing for_each_threshold_layer with no significant run") {
+    // Moist 0-1000 m and dry 1000-2000 m: an exact 1000 m / 1000 m tie.
+    // The column takes the side of its lowest run.
+    constexpr std::ptrdiff_t N = 4;
+    constexpr float hght[N] = {0.0f, 500.0f, 1500.0f, 2000.0f};
+    {
+        INFO("moist below dry");
+        constexpr float relh[N] = {0.85f, 0.85f, 0.65f, 0.65f};
+        const ThresholdWalk walk =
+            walk_threshold(hght, relh, N, 0.75f, 1500.0f, 0.0f);
+        CHECK(walk.num_layers == 1);
+        check_layer(walk, 0, 0.0f, 2000.0f, true, 75.0f, -75.0f);
+
+        // min_depth is inclusive: at 1000 m both runs are significant.
+        const ThresholdWalk at_depth =
+            walk_threshold(hght, relh, N, 0.75f, 1000.0f, 0.0f);
+        CHECK(at_depth.num_layers == 2);
+        check_layer(at_depth, 0, 0.0f, 1000.0f, true, 75.0f, 0.0f);
+        check_layer(at_depth, 1, 1000.0f, 2000.0f, false, 0.0f, -75.0f);
+    }
+    {
+        INFO("dry below moist");
+        constexpr float relh[N] = {0.65f, 0.65f, 0.85f, 0.85f};
+        const ThresholdWalk walk =
+            walk_threshold(hght, relh, N, 0.75f, 1500.0f, 0.0f);
+        CHECK(walk.num_layers == 1);
+        check_layer(walk, 0, 0.0f, 2000.0f, false, 75.0f, -75.0f);
+    }
+    {
+        // Moist 0-1000 m, dry 1000-2500 m: the majority side wins.
+        INFO("dry majority");
+        constexpr float hght_2[N] = {0.0f, 500.0f, 1500.0f, 2500.0f};
+        constexpr float relh[N] = {0.85f, 0.85f, 0.65f, 0.65f};
+        const ThresholdWalk walk =
+            walk_threshold(hght_2, relh, N, 0.75f, 2000.0f, 0.0f);
+        CHECK(walk.num_layers == 1);
+        check_layer(walk, 0, 0.0f, 2500.0f, false, 75.0f, -125.0f);
+    }
+}
+
+TEST_CASE("Testing for_each_threshold_layer depth and area thresholds") {
+    {
+        // Above 0-1000, a deep but weak below run 1000-2000 (area -95),
+        // above 2000-3000. It passes min_depth but not min_area.
+        INFO("deep, weak run");
+        constexpr std::ptrdiff_t N = 8;
+        constexpr float hght[N] = {0.0f,    900.0f,  950.0f,  1050.0f,
+                                   1950.0f, 2050.0f, 2100.0f, 3000.0f};
+        constexpr float data[N] = {1.0f,  1.0f, 0.1f, -0.1f,
+                                   -0.1f, 0.1f, 1.0f, 1.0f};
+        const ThresholdWalk both =
+            walk_threshold(hght, data, N, 0.0f, 500.0f, 200.0f);
+        CHECK(both.num_layers == 1);
+        check_layer(both, 0, 0.0f, 3000.0f, true, 1860.0f, -95.0f);
+
+        const ThresholdWalk depth_only =
+            walk_threshold(hght, data, N, 0.0f, 500.0f, 0.0f);
+        CHECK(depth_only.num_layers == 3);
+        check_layer(depth_only, 0, 0.0f, 1000.0f, true, 930.0f, 0.0f);
+        check_layer(depth_only, 1, 1000.0f, 2000.0f, false, 0.0f, -95.0f);
+        check_layer(depth_only, 2, 2000.0f, 3000.0f, true, 930.0f, 0.0f);
+    }
+    {
+        // Above 0-1000, a shallow but strong below run 1000-1100 (area
+        // -500), above 1100-2100. It passes min_area but not min_depth.
+        INFO("shallow, strong run");
+        constexpr std::ptrdiff_t N = 5;
+        constexpr float hght[N] = {0.0f, 950.0f, 1050.0f, 1150.0f, 2100.0f};
+        constexpr float data[N] = {10.0f, 10.0f, -10.0f, 10.0f, 10.0f};
+        const ThresholdWalk both =
+            walk_threshold(hght, data, N, 0.0f, 500.0f, 200.0f);
+        CHECK(both.num_layers == 1);
+        check_layer(both, 0, 0.0f, 2100.0f, true, 19500.0f, -500.0f);
+
+        const ThresholdWalk area_only =
+            walk_threshold(hght, data, N, 0.0f, 0.0f, 200.0f);
+        CHECK(area_only.num_layers == 3);
+        check_layer(area_only, 0, 0.0f, 1000.0f, true, 9750.0f, 0.0f);
+        check_layer(area_only, 1, 1000.0f, 1100.0f, false, 0.0f, -500.0f);
+        check_layer(area_only, 2, 1100.0f, 2100.0f, true, 9750.0f, 0.0f);
+    }
 }
