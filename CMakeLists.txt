@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.15)
 project(SHARPLIB LANGUAGES CXX)
 
+## C++17 is the library standard. cxx_std_17 below is only a minimum, so
+## without this every target compiles at the compiler's default (C++20 on
+## GCC 16+), where fmt's compile-time format checks reject the bindings'
+## runtime doc templates.
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(GitVersion)
