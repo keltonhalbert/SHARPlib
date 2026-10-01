@@ -782,6 +782,10 @@ float
     // Precipitation type: the modified Bourgouin method (Birk et al. 2021)
     // =======================================================================
 
+    // The default pressure_min (Pa) of bourgouin_energy and the full-column
+    // modified_bourgouin.
+    m_params.attr("BOURGOUIN_PRESSURE_MIN") = sharp::BOURGOUIN_PRESSURE_MIN;
+
     nb::class_<sharp::BourgouinEnergy>(m_params, "BourgouinEnergy", R"pbdoc(
 Wet-bulb melting and refreezing energies of the modified Bourgouin method.
 

@@ -774,6 +774,8 @@ def snow_squall_parameter(wetbulb_2m: float, mean_relh_0_2km: float, delta_theta
         The Snow Squall Parameter
     """
 
+BOURGOUIN_PRESSURE_MIN: float = 25000.0
+
 class BourgouinEnergy:
     """
     Wet-bulb melting and refreezing energies of the modified Bourgouin method.

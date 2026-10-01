@@ -42,6 +42,8 @@ params
 
    The defaults follow the paper. For 1 Hz soundings and other noisy, high-resolution profiles, start with ``min_depth=100.0`` (m) and ``min_energy=2.0`` (J/kg). 2 J/kg is the melting-layer minimum of the original Bourgouin (2000) method. Both options are deviations from the paper. :func:`~nwsspc.sharp.calc.params.bourgouin_energy` and :func:`~nwsspc.sharp.calc.params.precipitation_generation_layer` describe when they help, the measurements behind these values, and what the options cost. Neither option changes the total melting energy.
 
+   The melting and refreezing energies ignore levels above ``pressure_min``. Its default, 25000 Pa (250 hPa), is available as ``params.BOURGOUIN_PRESSURE_MIN``.
+
    .. autoclass:: nwsspc.sharp.calc.params.BourgouinEnergy
       :members: melting_energy_total, melting_energy_aloft, refreezing_energy
 

@@ -497,6 +497,25 @@ def _melting_area(hght, dtw):
     return np.sum(np.where(crossing, triangle, trapezoid))
 
 
+def test_bourgouin_pressure_min_constant():
+    # The named default of pressure_min (Pa)
+    assert params.BOURGOUIN_PRESSURE_MIN == 25000.0
+
+    # The top level is above 250 hPa and the top segment is warm, so the
+    # default cap drops all the melting, the same as passing the constant.
+    pres = np.array([100000, 50000, 30000, 20000], dtype="float32")
+    hght = np.array([0, 5500, 9000, 11500], dtype="float32")
+    tw = (constants.ZEROCNK +
+          np.array([-2.0, -1.0, -1.0, 5.0])).astype("float32")
+    default = params.bourgouin_energy(pres, hght, tw)
+    named = params.bourgouin_energy(
+        pres, hght, tw, pressure_min=params.BOURGOUIN_PRESSURE_MIN)
+    uncapped = params.bourgouin_energy(pres, hght, tw, pressure_min=0.0)
+    assert default.melting_energy_total == 0.0
+    assert named.melting_energy_total == default.melting_energy_total
+    assert uncapped.melting_energy_total > 0.0
+
+
 def test_bourgouin_energy_cap_profile():
     # Every level is at or above 250 hPa, and the top segment is warm, so
     # losing the top level would show up in the melting energy.
