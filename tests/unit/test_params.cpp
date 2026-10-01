@@ -66,6 +66,16 @@ TEST_CASE("Testing effective_bulk_wind_difference with a MISSING layer") {
     check_missing_wind(sharp::effective_bulk_wind_difference(
         k_pres, k_hght, k_uwin, k_vwin, KN, {100000, 95000}, 70000));
 
+    // height[0] MISSING or NaN leaves no ground to measure the AGL layer
+    // from (SHARPlib-27b). MISSING was (0.238117903, 0.0952471644). NaN was
+    // already MISSING.
+    for (const float bad : {M, std::numeric_limits<float>::quiet_NaN()}) {
+        CAPTURE(bad);
+        const float hght_bad[KN] = {bad, 500, 1000, 1500, 2000};
+        check_missing_wind(sharp::effective_bulk_wind_difference(
+            k_pres, hght_bad, k_uwin, k_vwin, KN, {95000, 90000}, 85000));
+    }
+
     // inside the profile, unchanged
     check_wind(sharp::effective_bulk_wind_difference(
                    k_pres, k_hght, k_uwin, k_vwin, KN, {100000, 95000}, 85000),
@@ -200,3 +210,79 @@ TEST_CASE("Testing large_hail_parameter with a MISSING layer") {
                                       N) == doctest::Approx(70.2362289f));
 }
 #endif
+
+// ===========================================================================
+// The effective bulk wind difference and station height (SHARPlib-27b)
+// ===========================================================================
+//
+// effective_bulk_wind_difference built its layer in meters MSL and passed it
+// to wind_shear, which takes meters AGL and adds height[0] again. The shear
+// came from a layer height[0] meters too high. Each was_ value is the output
+// measured before the fix, in QC and NO_QC builds alike.
+
+namespace {
+// 1000 to 500 hPa, 1 km apart, as heights AGL
+constexpr std::ptrdiff_t EN = 6;
+constexpr float e_pres[EN] = {100000, 90000, 80000, 70000, 60000, 50000};
+constexpr float e_uwin[EN] = {0, 10, 12, 13, 13, 13};
+
+sharp::WindComponents ebwd_shifted(const float shift, const float vwin[],
+                                   const sharp::PressureLayer eil,
+                                   const float eql_pres) {
+    float hght[EN];
+    for (std::ptrdiff_t k = 0; k < EN; ++k) hght[k] = 1000.0f * k + shift;
+    return sharp::effective_bulk_wind_difference(e_pres, hght, e_uwin, vwin, EN,
+                                                 eil, eql_pres);
+}
+}  // namespace
+
+TEST_CASE("Testing effective_bulk_wind_difference ignores station height") {
+    // The inflow layer base is the ground and the EL is 4000 m AGL, so the
+    // layer is 0 to 2000 m AGL, where u goes from 0 to 12.
+    constexpr float vwin[EN] = {0, 0, 0, 0, 0, 0};
+    struct Case {
+        float shift;
+        float was_u;
+    };
+    for (const Case c :
+         {Case{0.0f, 12.0f}, Case{1000.0f, 3.0f}, Case{1234.5f, 2.53100014f},
+          Case{762.3f, 5.13929987f}}) {
+        CAPTURE(c.shift);
+        CAPTURE(c.was_u);
+        const sharp::WindComponents ebwd =
+            ebwd_shifted(c.shift, vwin, {100000, 90000}, 60000);
+        CHECK(ebwd.u == doctest::Approx(12.0f));
+        CHECK(ebwd.v == doctest::Approx(0.0f));
+    }
+}
+
+TEST_CASE("Testing effective_bulk_wind_difference against a known value") {
+    // From the definition, with heights AGL:
+    //   inflow base, 900 hPa:  1000 m
+    //   EL, 600 hPa:           4000 m
+    //   half the depth:        0.5 * (4000 - 1000) = 1500 m
+    //   layer:                 1000 to 2500 m
+    //   winds at 1000 m:       u = 10, v = -2 (a level)
+    //   winds at 2500 m:       halfway from 2000 to 3000 m, so
+    //                          u = (12 + 13) / 2 = 12.5, v = (1 + 4) / 2 = 2.5
+    //   EBWD:                  (12.5 - 10, 2.5 - (-2)) = (2.5, 4.5)
+    // The station height moves every level by the same amount, so it can't
+    // change the answer.
+    constexpr float vwin[EN] = {0, -2, 1, 4, 6, 7};
+    struct Case {
+        float shift;
+        float was_u;
+        float was_v;
+    };
+    for (const Case c : {Case{0.0f, 2.5f, 4.5f}, Case{1000.0f, 1.0f, 4.0f},
+                         Case{1234.5f, 0.765500069f, 3.76549983f},
+                         Case{762.3f, 1.47539997f, 4.23769951f}}) {
+        CAPTURE(c.shift);
+        CAPTURE(c.was_u);
+        CAPTURE(c.was_v);
+        const sharp::WindComponents ebwd =
+            ebwd_shifted(c.shift, vwin, {90000, 80000}, 60000);
+        CHECK(ebwd.u == doctest::Approx(2.5f));
+        CHECK(ebwd.v == doctest::Approx(4.5f));
+    }
+}

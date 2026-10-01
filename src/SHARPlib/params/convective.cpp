@@ -169,14 +169,17 @@ WindComponents effective_bulk_wind_difference(
         (effective_inflow_lyr.bottom == MISSING))
         return {MISSING, MISSING};
 
-    sharp::HeightLayer eil_hght =
-        pressure_layer_to_height(effective_inflow_lyr, pressure, height, N);
+    // wind_shear takes a HeightLayer in meters AGL, so build the layer in AGL.
+    sharp::HeightLayer eil_hght = pressure_layer_to_height(
+        effective_inflow_lyr, pressure, height, N, true);
     float eql_hght =
         interp_pressure(equilibrium_level_pressure, pressure, height, N);
 #ifndef NO_QC
     if ((eil_hght.bottom == MISSING) || (eql_hght == MISSING))
         return {MISSING, MISSING};
 #endif
+    // get AGL, after the check: MISSING - height[0] would pass for a height
+    eql_hght -= height[0];
 
     float depth = 0.5f * (eql_hght - eil_hght.bottom);
     sharp::HeightLayer ebwd_lyr = {eil_hght.bottom, eil_hght.bottom + depth};
