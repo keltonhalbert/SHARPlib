@@ -24,9 +24,8 @@ namespace sharp {
  * \brief Whether a value is missing: sharp::MISSING or NaN
  *
  * NaN should never reach the library, but where it does, the quality-control
- * paths (builds without NO_QC) treat it the same as sharp::MISSING. Routines
- * that skip or bridge missing data use this check, so that every one of them
- * recognizes missing data the same way.
+ * paths (builds without NO_QC) treat it the same as sharp::MISSING. Every
+ * routine that skips or bridges missing data uses this check.
  *
  * \param   value   The value to check
  *

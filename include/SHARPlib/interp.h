@@ -144,13 +144,8 @@ template <typename _Fp>
  * Duplicate pressure values or increasing pressure values may produce
  * unexpected results.
  *
- * QC builds, the default, treat a level whose data is MISSING or NaN as
- * missing. A pressure_val exactly on a level with valid data returns that
- * level's stored value, even when a neighbouring level is missing. For
- * any other pressure_val, the routine interpolates between the nearest
- * valid levels below and above it, and returns MISSING when one side has
- * none. Builds with NO_QC skip these checks. Every build returns MISSING
- * for an empty profile (N < 1) without reading the arrays.
+ * MISSING and NaN data (QC builds) and an empty profile (every build) are
+ * handled as in sharp::interp_height.
  *
  * \param   pressure_val    The pressure value to interpolate data to
  * \param   pressure_arr    The array of pressure values in the profile
@@ -197,11 +192,7 @@ template <typename _Fp>
  * Conduct a bottom-up search for the first occurrence of a given value,
  * and interpolate in order to get the pressure level it occurs at.
  *
- * QC builds, the default, skip levels whose data is MISSING or NaN, so the
- * search still finds a crossing between the valid levels on either side
- * of them. An exact match returns that level's height, even when it is
- * the only valid level in the profile. A MISSING or NaN data_val returns
- * MISSING. Builds with NO_QC skip these checks.
+ * QC builds handle MISSING and NaN data as sharp::find_first_pressure does.
  *
  * \param   data_val    The value being searched for
  * \param   height_arr  The height array to get the level from (meters)
