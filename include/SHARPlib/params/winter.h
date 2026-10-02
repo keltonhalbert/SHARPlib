@@ -1358,6 +1358,68 @@ struct SpectralBinDSD {
 // Precipitation type from a full sounding
 // ---------------------------------------------------------------------------
 
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Precipitation type from the spectral bin classifier, from a <!--
+ * --> sounding.
+ *
+ * Finds the cloud top with sharp::spectral_bin_cloud_top and then runs the
+ * sharp::spectral_bin_classifier overload that takes a cloud top. It does
+ * nothing else, so calling the two yourself gives the same result. That
+ * overload documents the pre-classifier, the microphysics, the departures
+ * from Reeves et al. (2016), the quirks of the reference that it keeps, the
+ * result, and liquid_fraction_profile.
+ *
+ * The cloud top depends only on the temperature, dewpoint, and relative
+ * humidity. Unless NO_QC is defined, a level whose wet-bulb temperature is
+ * sharp::MISSING or NaN can therefore be the cloud top, and the column then
+ * starts at the highest valid level below it. With no cloud, the result is
+ * missing, as in the Python reference.
+ *
+ * sharp::spectral_bin_cloud_top reads the temperature, dewpoint, and
+ * relative humidity of every level, so unlike the overload that takes a
+ * cloud top, this function reads them above the cloud top too. It reads the
+ * wet-bulb temperature only at and below the cloud top. To compute the
+ * wet-bulb temperature only up to the cloud top, call
+ * sharp::spectral_bin_cloud_top first and then the other overload.
+ *
+ * The result is missing for N < 2, and with N < 1 the function reads no
+ * array element. The profiles must start at the surface (2 m) level, which
+ * the reference requires before its cloud-top search, and height must be
+ * strictly increasing. This is not checked.
+ *
+ * References:
+ * Reeves et al. 2016: https://doi.org/10.1175/JAMC-D-16-0044.1
+ *
+ * Python reference (sbc_alg_2023Aug31.py, run_sbc.py): D. Tripp, 2023
+ *
+ * C++ MRMS code (sbcmodel_core.cc, topCalc.cc): A. Rosenow and D. Tripp
+ *
+ * \param   pressure                    (Pa)
+ * \param   height                      (m)
+ * \param   temperature                 (K)
+ * \param   dewpoint                    (K)
+ * \param   relh                        Relative humidity over liquid water
+ *                                      (fraction)
+ * \param   wetbulb                     Wet-bulb temperature (K)
+ * \param   N                           (length of arrays)
+ * \param   dsd                         Drop-size distribution, with
+ *                                      diameters in mm (see
+ *                                      sharp::spectral_bin_dsd)
+ * \param   ice_nucleation_temperature  Tice (K)
+ * \param   liquid_fraction_profile     Optional output, N x nbins liquid
+ *                                      fractions, or nullptr (fraction)
+ *
+ * \return  {precip_type, liquid_fraction, supercooled_liquid_height}
+ */
+[[nodiscard]] SpectralBinResult spectral_bin_classifier(
+    const float pressure[], const float height[], const float temperature[],
+    const float dewpoint[], const float relh[], const float wetbulb[],
+    const std::ptrdiff_t N, const SpectralBinDSD& dsd,
+    const float ice_nucleation_temperature = SBC_ICE_NUCLEATION_TEMPERATURE,
+    float liquid_fraction_profile[] = nullptr);
+
 }  // namespace sharp
 
 #endif  // SHARP_PARAMS_WINTER_H

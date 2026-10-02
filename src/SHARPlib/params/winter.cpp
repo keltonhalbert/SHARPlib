@@ -669,6 +669,18 @@ inline bool sbc_liquid_ar(const SBCClass ptype) {
     return false;
 }
 
+// The class of a bin with supercooled liquid, alone or with ice pellets:
+// drizzle below 0.6 mm (diameter in mm), rain otherwise
+inline SBCClass sbc_freezing_class(const float diameter,
+                                   const bool ice_pellets) {
+    if (diameter < 0.6f) {
+        return ice_pellets ? SBCClass::freezing_drizzle_ice_pellets
+                           : SBCClass::freezing_drizzle;
+    }
+    return ice_pellets ? SBCClass::freezing_rain_ice_pellets
+                       : SBCClass::freezing_rain;
+}
+
 // Every field of every bin at one level, named as in the reference.
 struct SBCLevelState {
     std::array<float, SBC_MAX_BINS> water_fraction;      // fw
@@ -1138,8 +1150,6 @@ inline void sbc_subfreezing(SBCColumnState& state, const SBCLevelState& prev,
                             const SpectralBinDSD& dsd) {
     // tnuc_alt: Tice below a level where every bin is liquid (K)
     constexpr float TICE_ALT = 263.15f;
-    // Liquid bins of a smaller diameter are drizzle (mm).
-    constexpr float DRIZZLE_DIAMETER = 0.6f;
     // conduct_ice (J m^-1 s^-1 K^-1)
     constexpr float ICE_CONDUCTIVITY = 2.26f;
     // lh_melt (J kg^-1)
@@ -1184,16 +1194,11 @@ inline void sbc_subfreezing(SBCColumnState& state, const SBCLevelState& prev,
             next.volume_snow[j] = prev.volume_snow[j];
             next.diam_melt_snow[j] = prev.diam_melt_snow[j];
             const SBCClass ptype = prev.psd_ptype[j];
-            const bool drizzle = (D[j] < DRIZZLE_DIAMETER);
             const bool rain = (ptype == SBCClass::rain);
             const bool mixed = (ptype == SBCClass::rain_snow) ||
                                (ptype == SBCClass::rain_ice_pellets);
             next.psd_ptype[j] =
-                rain    ? (drizzle ? SBCClass::freezing_drizzle
-                                   : SBCClass::freezing_rain)
-                : mixed ? (drizzle ? SBCClass::freezing_drizzle_ice_pellets
-                                   : SBCClass::freezing_rain_ice_pellets)
-                        : ptype;
+                (rain || mixed) ? sbc_freezing_class(D[j], mixed) : ptype;
             supercooled |= (rain || mixed);
         }
     }
@@ -1282,15 +1287,12 @@ inline void sbc_subfreezing(SBCColumnState& state, const SBCLevelState& prev,
             const float ri =
                 m0[j] * (1.0f - fw) * v * N[j] / SBC_CLASS_ICE_DENSITY;
             const float total = ri + rw;
-            const bool drizzle = (D[j] < DRIZZLE_DIAMETER);
             const SBCClass ptype =
                 ((ri == 0.0f) || (ri / total < SBC_CLASS_FRACTION))
-                    ? (drizzle ? SBCClass::freezing_drizzle
-                               : SBCClass::freezing_rain)
+                    ? sbc_freezing_class(D[j], false)
                 : ((rw == 0.0f) || (rw / total < SBC_CLASS_FRACTION))
                     ? SBCClass::ice_pellets
-                    : (drizzle ? SBCClass::freezing_drizzle_ice_pellets
-                               : SBCClass::freezing_rain_ice_pellets);
+                    : sbc_freezing_class(D[j], true);
             next.psd_ptype[j] = ptype;
             supercooled |= (ptype != SBCClass::ice_pellets);
         }
@@ -1307,13 +1309,6 @@ inline void sbc_subfreezing(SBCColumnState& state, const SBCLevelState& prev,
 namespace {
 // Foote and du Toit (1969) scale their fall speed by exp(z / this) (m).
 constexpr float SBC_FOOTE_DU_TOIT_SCALE_HEIGHT = 20000.0f;
-
-// The class of a supercooled drop from a liquid cloud top: drizzle below
-// 0.6 mm, rain otherwise
-inline SBCClass sbc_liquid_top_class(const float diameter) {
-    return (diameter < 0.6f) ? SBCClass::freezing_drizzle
-                             : SBCClass::freezing_rain;
-}
 
 // Branches D and E: the drops of a liquid cloud top fall unchanged, at the
 // Foote and du Toit fall speed. Each branch sets its own classes.
@@ -1354,7 +1349,7 @@ inline void sbc_liquid_cloud_top(SBCColumnState& state, SBCLevelState& next,
         // A liquid density of 1 g cm^-3
         next.volume_liq[j] = m0[j];
         next.diam_melt_snow[j] = diameter[j];
-        next.psd_ptype[j] = sbc_liquid_top_class(diameter[j]);
+        next.psd_ptype[j] = sbc_freezing_class(diameter[j], false);
     }
     state.slw_hgt = column.height_agl(level.k);
 }
@@ -1368,7 +1363,7 @@ inline void sbc_supercooled_above_crossing(
     sbc_liquid_top_drops(state.top, next, level, column, dsd);
     const float* diameter = dsd.diameter().data();
     for (std::ptrdiff_t j = 0; j < dsd.nbins(); ++j) {
-        next.psd_ptype[j] = sbc_liquid_top_class(diameter[j]);
+        next.psd_ptype[j] = sbc_freezing_class(diameter[j], false);
     }
     state.slw_hgt = column.height_agl(level.k);
 }
@@ -1387,5 +1382,18 @@ inline void sbc_warm_above_crossing(
 // ---------------------------------------------------------------------------
 // Precipitation type from a full sounding
 // ---------------------------------------------------------------------------
+
+SpectralBinResult spectral_bin_classifier(
+    const float pressure[], const float height[], const float temperature[],
+    const float dewpoint[], const float relh[], const float wetbulb[],
+    const std::ptrdiff_t N, const SpectralBinDSD& dsd,
+    const float ice_nucleation_temperature, float liquid_fraction_profile[]) {
+    const float cloud_top =
+        spectral_bin_cloud_top(pressure, height, temperature, dewpoint, relh, N);
+    return spectral_bin_classifier(pressure, height, temperature, dewpoint,
+                                   relh, wetbulb, N, cloud_top, dsd,
+                                   ice_nucleation_temperature,
+                                   liquid_fraction_profile);
+}
 
 }  // namespace sharp

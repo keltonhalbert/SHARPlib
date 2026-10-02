@@ -3453,3 +3453,196 @@ TEST_CASE("Testing spectral_bin_classifier core: warm cloud top") {
 // ---------------------------------------------------------------------------
 // Precipitation type from a full sounding
 // ---------------------------------------------------------------------------
+
+namespace {
+// data/sbc_reference case 13
+const SBCGolden SBC_WARM_TOP_REFREEZE{
+    {
+        {100000.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f, 73200.0f, 68700.0f},
+        {0.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f},
+        {278.15f, 276.15f, 271.15f, 270.15f, 274.15f, 275.15f, 274.65f},
+        {278.15f, 276.15f, 271.15f, 270.15f, 274.15f, 275.15f, 274.65f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {278.15f, 276.15f, 271.15f, 270.15f, 274.15f, 275.15f, 274.65f},
+    },
+    3000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    2,
+    sharp::PrecipType::rain,
+    1.0,
+    1500.0f,
+    {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+     1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+     1.0f, 1.0f, 1.0f, 1.0f},
+};
+
+float sbc_cloud_top(const SBCProfile& snd) {
+    return sharp::spectral_bin_cloud_top(
+        snd.pressure.data(), snd.height.data(), snd.temperature.data(),
+        snd.dewpoint.data(), snd.relh.data(),
+        static_cast<std::ptrdiff_t>(snd.height.size()));
+}
+
+void check_same(const sharp::SpectralBinResult& result,
+                const sharp::SpectralBinResult& expected) {
+    CHECK(result.precip_type == expected.precip_type);
+    CHECK(result.liquid_fraction == expected.liquid_fraction);
+    CHECK(result.supercooled_liquid_height ==
+          expected.supercooled_liquid_height);
+}
+
+// Asking for the profile must not change the result, and composing
+// spectral_bin_cloud_top with the composed overload by hand must give the
+// same result and profile.
+SBCRun run_full_column(
+    const SBCProfile& snd,
+    const sharp::SpectralBinDSD& dsd = sharp::spectral_bin_dsd_default(),
+    const float tice = sharp::SBC_ICE_NUCLEATION_TEMPERATURE) {
+    const auto N = static_cast<std::ptrdiff_t>(snd.height.size());
+    SBCRun run;
+    run.profile.assign(
+        snd.height.size() * static_cast<std::size_t>(dsd.nbins()), 0.0f);
+    run.result = sharp::spectral_bin_classifier(
+        snd.pressure.data(), snd.height.data(), snd.temperature.data(),
+        snd.dewpoint.data(), snd.relh.data(), snd.wetbulb.data(), N, dsd, tice,
+        run.profile.data());
+    check_same(sharp::spectral_bin_classifier(
+                   snd.pressure.data(), snd.height.data(),
+                   snd.temperature.data(), snd.dewpoint.data(),
+                   snd.relh.data(), snd.wetbulb.data(), N, dsd, tice),
+               run.result);
+    const SBCRun composed = run_sbc(snd, sbc_cloud_top(snd), dsd, tice);
+    check_same(composed.result, run.result);
+    CHECK(composed.profile == run.profile);
+    return run;
+}
+
+// The column's own cloud top is the reference's, so the full column passes
+// the golden-data comparison rules that check_golden applies to the
+// composed overload.
+void check_full_column(const SBCGolden& golden) {
+    CHECK(sbc_cloud_top(golden.snd) == golden.cloud_top);
+    run_full_column(golden.snd,
+                    build_dsd(golden.dsd->diameter, golden.dsd->concentration,
+                              golden.rime_factor),
+                    golden.tice);
+    check_golden(golden);
+}
+}  // namespace
+
+TEST_CASE("Testing spectral_bin_classifier from a sounding: golden cases") {
+    const std::pair<const char*, const SBCGolden*> goldens[] = {
+        {"RA", &SBC_CORE_RA},
+        {"SN", &SBC_CORE_SN},
+        {"RASN", &SBC_CORE_RASN},
+        {"dry layer", &SBC_CORE_DRY_LAYER},
+        {"C++ 2.0.3 DSD", &SBC_CORE_CXX_DSD},
+        {"rime factor 5", &SBC_CORE_RIME_5},
+        {"Tice -10 C", &SBC_CORE_TICE_ALT},
+        {"melting below the top", &SBC_MELTING_BELOW_TOP},
+        {"PL, surface at 0 C", &SBC_ZERO_C_PL},
+        {"FZRAPL, surface at 0 C", &SBC_ZERO_C_FZRAPL},
+        {"FZRA, surface at 0 C", &SBC_ZERO_C_FZRA},
+        {"RAPL", &SBC_ZERO_C_RAPL},
+        {"RA, three crossings", &SBC_ZERO_C_RA},
+        {"PL in dry air", &SBC_ZERO_C_DRY_PL},
+        {"0 C above a crossing", &SBC_ZERO_C_ABOVE_CROSSING},
+        {"sample", &SBC_SAMPLE},
+        {"Tice switch", &SBC_TICE_SWITCH},
+        {"remelt", &SBC_REMELT},
+        {"carried FZ", &SBC_CARRIED_FZ},
+        {"rule 2 at Tice", &SBC_RULE_2_AT_TICE},
+        {"supercooled cloud top", &SBC_SUPERCOOLED_TOP},
+        {"warm top, surface at 0 C", &SBC_WARM_TOP_0C_SURFACE},
+        {"warm top, level at 0 C", &SBC_WARM_TOP_0C_LEVEL},
+        {"warm top refreezes", &SBC_WARM_TOP_REFREEZE},
+    };
+    for (const auto& [name, golden] : goldens) {
+        CAPTURE(name);
+        check_full_column(*golden);
+    }
+}
+
+TEST_CASE("Testing spectral_bin_classifier from a sounding: the sample") {
+    const SBCRun run = run_full_column(SBC_SAMPLE.snd);
+    CHECK(run.result.precip_type == sharp::PrecipType::ice_pellets);
+    CHECK(run.result.liquid_fraction == 0.0f);
+    CHECK(run.result.supercooled_liquid_height == 1130.5469f);
+}
+
+TEST_CASE("Testing spectral_bin_classifier from a sounding: defaults") {
+    const SBCProfile& snd = SBC_SAMPLE.snd;
+    const auto N = static_cast<std::ptrdiff_t>(snd.height.size());
+    const sharp::SpectralBinDSD dsd = sharp::spectral_bin_dsd_default();
+    check_same(sharp::spectral_bin_classifier(
+                   snd.pressure.data(), snd.height.data(),
+                   snd.temperature.data(), snd.dewpoint.data(),
+                   snd.relh.data(), snd.wetbulb.data(), N, dsd),
+               sharp::spectral_bin_classifier(
+                   snd.pressure.data(), snd.height.data(),
+                   snd.temperature.data(), snd.dewpoint.data(),
+                   snd.relh.data(), snd.wetbulb.data(), N, dsd,
+                   sharp::SBC_ICE_NUCLEATION_TEMPERATURE, nullptr));
+}
+
+TEST_CASE("Testing spectral_bin_classifier from a sounding: no cloud") {
+    SBCProfile snd = saturated_profile({0.0f, 1000.0f, 2000.0f},
+                                       {278.15f, 275.15f, 272.15f});
+    snd.dewpoint = {258.15f, 255.15f, 252.15f};
+    snd.relh = {0.2f, 0.2f, 0.2f};
+    REQUIRE(sbc_cloud_top(snd) == sharp::MISSING);
+    check_sbc(run_full_column(snd), SBC_MISSING);
+}
+
+TEST_CASE("Testing spectral_bin_classifier from a sounding with few levels") {
+    const SBCProfile& snd = SBC_SAMPLE.snd;
+    for (const std::size_t N : {0, 1}) {
+        CAPTURE(N);
+        const SBCProfile few{
+            {snd.pressure.begin(), snd.pressure.begin() + N},
+            {snd.height.begin(), snd.height.begin() + N},
+            {snd.temperature.begin(), snd.temperature.begin() + N},
+            {snd.dewpoint.begin(), snd.dewpoint.begin() + N},
+            {snd.relh.begin(), snd.relh.begin() + N},
+            {snd.wetbulb.begin(), snd.wetbulb.begin() + N},
+        };
+        check_sbc(run_full_column(few), SBC_MISSING);
+    }
+}
+
+TEST_CASE("Testing spectral_bin_classifier from a sounding ignores Tw above "
+          "the top") {
+    SBCGolden golden = SBC_CORE_RA;
+    for (const float z : {6000.0f, 7000.0f}) {
+        golden.snd.pressure.push_back(100000.0f * std::exp(-z / 8000.0f));
+        golden.snd.height.push_back(z);
+        golden.snd.temperature.push_back(250.0f);
+        golden.snd.dewpoint.push_back(230.0f);
+        golden.snd.relh.push_back(0.2f);
+        golden.snd.wetbulb.push_back(300.0f);
+        golden.profile.insert(golden.profile.end(), 4, sharp::MISSING);
+    }
+    check_full_column(golden);
+}
+
+#ifndef NO_QC
+TEST_CASE("Testing spectral_bin_classifier from a sounding: a cloud top "
+          "without a wet-bulb temperature") {
+    const float NaN = std::numeric_limits<float>::quiet_NaN();
+    for (const float bad : {sharp::MISSING, NaN}) {
+        CAPTURE(bad);
+        const SBCProfile snd{
+            {100000.0f, 88250.0f, 77880.0f},
+            {0.0f, 1000.0f, 2000.0f},
+            {280.0f, 280.0f, 280.0f},
+            {280.0f, 270.0f, 280.0f},
+            {0.9f, 0.5f, 0.9f},
+            {279.0f, 279.0f, bad},
+        };
+        CHECK(sbc_cloud_top(snd) == 2000.0f);
+        check_sbc(run_full_column(snd), SBC_RA);
+    }
+}
+#endif

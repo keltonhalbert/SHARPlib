@@ -1995,6 +1995,97 @@ nwsspc.sharp.calc.params.SpectralBinResult or tuple[nwsspc.sharp.calc.params.Spe
     // -----------------------------------------------------------------------
     // Precipitation type from a full sounding
     // -----------------------------------------------------------------------
+
+    m_params.def(
+        "spectral_bin_classifier",
+        [run_spectral_bin_classifier](
+            const_prof_arr_t pressure, const_prof_arr_t height,
+            const_prof_arr_t temperature, const_prof_arr_t dewpoint,
+            const_prof_arr_t relh, const_prof_arr_t wetbulb,
+            const sharp::SpectralBinDSD& dsd,
+            const float ice_nucleation_temperature, const bool return_profile) {
+            check_equal_sizes(pressure, height, temperature, dewpoint, relh,
+                              wetbulb);
+            return run_spectral_bin_classifier(
+                height.size(), dsd, return_profile, [&](float* profile) {
+                    return sharp::spectral_bin_classifier(
+                        pressure.data(), height.data(), temperature.data(),
+                        dewpoint.data(), relh.data(), wetbulb.data(),
+                        static_cast<std::ptrdiff_t>(height.size()), dsd,
+                        ice_nucleation_temperature, profile);
+                });
+        },
+        nb::arg("pressure"), nb::arg("height"), nb::arg("temperature"),
+        nb::arg("dewpoint"), nb::arg("relh"), nb::arg("wetbulb"),
+        nb::arg("dsd").sig("spectral_bin_dsd_default()") =
+            sharp::spectral_bin_dsd_default(),
+        nb::arg("ice_nucleation_temperature")
+                .sig("SBC_ICE_NUCLEATION_TEMPERATURE") =
+            sharp::SBC_ICE_NUCLEATION_TEMPERATURE,
+        nb::arg("return_profile") = false,
+        R"pbdoc(
+Precipitation type from the spectral bin classifier, from a sounding.
+
+Finds the cloud top with spectral_bin_cloud_top and then runs the
+spectral_bin_classifier overload that takes a cloud top. It does nothing
+else, so calling the two yourself gives the same result. That overload
+documents the pre-classifier, the result, and the profile, and the
+reference page describes the microphysics.
+
+The cloud top depends only on the temperature, dewpoint, and relative
+humidity. A level whose wet-bulb temperature is MISSING or NaN can
+therefore be the cloud top, and the column then starts at the highest valid
+level below it. With no cloud, the result is missing, as in the Python
+reference.
+
+spectral_bin_cloud_top reads the temperature, dewpoint, and relative
+humidity of every level, so unlike the overload that takes a cloud top, this
+function reads them above the cloud top too. It reads the wet-bulb
+temperature only at and below the cloud top. To compute the wet-bulb
+temperature only up to the cloud top, call spectral_bin_cloud_top first and
+then the other overload.
+
+The result is missing for fewer than 2 levels, including empty arrays. The
+profiles must start at the surface (2 m) level, which the reference
+requires before its cloud-top search, and height must be strictly
+increasing. This is not checked.
+
+References
+----------
+Reeves et al. 2016: https://doi.org/10.1175/JAMC-D-16-0044.1
+
+Python reference (sbc_alg_2023Aug31.py, run_sbc.py): D. Tripp, 2023
+
+C++ MRMS code (sbcmodel_core.cc, topCalc.cc): A. Rosenow and D. Tripp
+
+Parameters
+----------
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of height values (meters)
+temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of temperature values (K)
+dewpoint : numpy.ndarray[dtype=float32]
+    1D NumPy array of dewpoint temperature values (K)
+relh : numpy.ndarray[dtype=float32]
+    1D NumPy array of relative humidity over liquid water (fraction)
+wetbulb : numpy.ndarray[dtype=float32]
+    1D NumPy array of wet-bulb temperature values (K)
+dsd : nwsspc.sharp.calc.params.SpectralBinDSD, default = spectral_bin_dsd_default()
+    Drop-size distribution, with diameters in mm (see spectral_bin_dsd)
+ice_nucleation_temperature : float, default = SBC_ICE_NUCLEATION_TEMPERATURE
+    Tice (K; the default is 267.15 K, -6 C)
+return_profile : bool, default = False
+    Also return the liquid fraction of each level and bin
+
+Returns
+-------
+nwsspc.sharp.calc.params.SpectralBinResult or tuple[nwsspc.sharp.calc.params.SpectralBinResult, numpy.ndarray[dtype=float32]]
+    The precipitation type, liquid fraction (fraction), and
+    supercooled-liquid height (m AGL). With return_profile=True, a tuple of
+    that and the (N, nbins) liquid fraction profile (fraction).
+    )pbdoc");
 }
 
 #endif
