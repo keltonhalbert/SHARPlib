@@ -1537,6 +1537,20 @@ def sbc_decision(liquid_fraction, crossings, warm):
                                    many_warm), cold)
 
 
+def sbc_consistent(precip_type, liquid_fraction, crossings, warm):
+    """
+    Whether each category is the decision tree on its liquid fraction. For
+    Nc >= 2 over a warm surface, the classifier tests the ice fraction
+    raini / (raini + rainw), which float32 rounding moves from 1 - liquid
+    fraction by about 1e-7, so within 1e-6 of 0.85 both RA and RAPL pass.
+    """
+    lf = np.asarray(liquid_fraction, dtype=np.float32)
+    edge = (np.asarray(warm) & (np.asarray(crossings) != 1)
+            & (np.abs(lf - np.float32(0.85)) <= 1e-6))
+    return np.where(edge, np.isin(precip_type, (1, 7)),
+                    precip_type == sbc_decision(lf, crossings, warm))
+
+
 def sbc_same_level(agl, height, expected):
     """Whether two heights AGL are both MISSING, or both the same level."""
     if (height == constants.MISSING) or (expected == constants.MISSING):
@@ -1564,10 +1578,11 @@ def sbc_golden_check(select, run=sbc_run_composed):
     Checks the golden cases that select(cases) picks under the golden-data
     comparison rules. run(case, snd, dsd) returns the result and the
     profile. A case without flags must pass every rule, and every case rule
-    1. A near_discontinuity corpus case that breaks rules 2-4 is listed, and
-    the listed cases stay at most 1 % of the corpus. Returns the selected
-    cases with the returned values, the listed case_ids, and the largest
-    liquid-fraction and profile errors outside the exemptions.
+    1. A near_discontinuity or ill_conditioned corpus case that breaks rules
+    2-4 is listed, and the listed cases stay at most 1 % of the corpus.
+    Returns the selected cases with the returned values, the listed case_ids,
+    and the largest liquid-fraction and profile errors outside the
+    exemptions.
     """
     cases, levels, profiles, dsds = sbc_reference()
     chosen = cases[select(cases)].reset_index(drop=True)
@@ -1602,8 +1617,8 @@ def sbc_golden_check(select, run=sbc_run_composed):
 
     exact = ((precip_type == ref_type) & (liquid_fraction == ref_lf)
              & (slw_height == ref_slw))
-    consistent = precip_type == sbc_decision(
-        liquid_fraction, chosen["crossings"].to_numpy(), warm)
+    consistent = sbc_consistent(precip_type, liquid_fraction,
+                                chosen["crossings"].to_numpy(), warm)
     rule_1 = np.where(core, consistent, exact)
 
     nearest = SBC_THRESHOLDS[np.abs(ref_lf[:, None]
@@ -1625,10 +1640,16 @@ def sbc_golden_check(select, run=sbc_run_composed):
     missing = theirs == constants.MISSING
     same_missing = (ours == constants.MISSING) == missing
     error = np.where(missing, 0.0, np.abs(ours - theirs))
-    disc = chosen["near_discontinuity"].to_numpy()[case_of]
-    exempt = disc & (level <= chosen["disc_level"].to_numpy()[case_of]) & (
-        (chosen["disc_scope"].to_numpy()[case_of] == "column")
-        | (bin_ == chosen["disc_bin"].to_numpy()[case_of]))
+
+    def exempt_by(flag, prefix):
+        def column(name):
+            return chosen[name].to_numpy()[case_of]
+        return column(flag) & (level <= column(f"{prefix}_level")) & (
+            (column(f"{prefix}_scope") == "column")
+            | (bin_ == column(f"{prefix}_bin")))
+
+    exempt = (exempt_by("near_discontinuity", "disc")
+              | exempt_by("ill_conditioned", "ill"))
 
     def per_case(bad):
         return np.bincount(case_of, weights=bad, minlength=n) == 0
@@ -1637,7 +1658,8 @@ def sbc_golden_check(select, run=sbc_run_composed):
               & per_case(~same_missing))
     rule_4 = per_case((error > 1e-3) & ~exempt)
 
-    flagged = corpus & chosen["near_discontinuity"].to_numpy()
+    flagged = corpus & (chosen["near_discontinuity"]
+                        | chosen["ill_conditioned"]).to_numpy()
     broken = ~(rule_2 & rule_3 & rule_4)
     failing = chosen.loc[~rule_1 | (broken & ~flagged), "case_id"].tolist()
     assert not failing, f"cases that break the comparison rules: {failing}"

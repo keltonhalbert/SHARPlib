@@ -2697,6 +2697,20 @@ sharp::PrecipType sbc_decision(const float liquid, const int crossings,
                : PrecipType::freezing_rain_ice_pellets;
 }
 
+// Whether a category is the decision tree on its liquid fraction. For Nc >= 2
+// over a warm surface, the classifier tests the ice fraction
+// raini / (raini + rainw), which float32 rounding moves from 1 - liquid by
+// about 1e-7, so within 1e-6 of 0.85 both RA and RAPL pass.
+bool sbc_consistent(const sharp::PrecipType precip_type, const float liquid,
+                    const int crossings, const bool warm) {
+    using sharp::PrecipType;
+    if (warm && (crossings != 1) && (std::abs(liquid - 0.85f) <= 1e-6f)) {
+        return (precip_type == PrecipType::rain) ||
+               (precip_type == PrecipType::rain_ice_pellets);
+    }
+    return precip_type == sbc_decision(liquid, crossings, warm);
+}
+
 // The golden-data comparison rules for a case without flags, whose surface
 // is level 0
 void check_golden(const SBCGolden& golden) {
@@ -2704,9 +2718,9 @@ void check_golden(const SBCGolden& golden) {
         golden.dsd->diameter, golden.dsd->concentration, golden.rime_factor);
     const SBCRun run = run_sbc(golden.snd, golden.cloud_top, dsd, golden.tice);
     const sharp::SpectralBinResult& result = run.result;
-    CHECK(result.precip_type ==
-          sbc_decision(result.liquid_fraction, golden.crossings,
-                       golden.snd.wetbulb[0] > sharp::ZEROCNK));
+    CHECK(sbc_consistent(result.precip_type, result.liquid_fraction,
+                         golden.crossings,
+                         golden.snd.wetbulb[0] > sharp::ZEROCNK));
     CHECK(result.precip_type == golden.precip_type);
     CHECK(std::abs(result.liquid_fraction - golden.liquid_fraction) <= 1e-4);
     CHECK(result.supercooled_liquid_height ==
@@ -3116,6 +3130,81 @@ const SBCGolden SBC_ZERO_C_ABOVE_CROSSING{
      0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
      0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
 };
+
+// A perturbed sample sounding whose melting layers, about 0.2 C above 0 C,
+// leave the 0.75 mm bin at a liquid fraction of 0.99998 above a refreezing
+// level: PL. The melting heat taken from t - 273.15f, 6.1e-6 K off, melts
+// that bin fully, and it reaches the ground as FZRAPL. The results are the
+// reference's on the same values in float64.
+const SBCGolden SBC_MELTING_HEAT_NEAR_0C{
+    {
+        {98210.0f, 97500.0f, 95000.0f, 92500.0f, 90000.0f, 87500.0f, 85000.0f,
+         82500.0f, 80000.0f, 77500.0f, 75000.0f, 72500.0f, 70000.0f, 67500.0f,
+         65000.0f, 62500.0f, 60000.0f, 57500.0f, 55000.0f, 52500.0f, 50000.0f,
+         47500.0f, 45000.0f, 42500.0f, 40000.0f, 37500.0f, 35000.0f, 32500.0f,
+         30000.0f, 27500.0f, 25000.0f, 22500.0f, 20000.0f, 17500.0f, 15000.0f,
+         12500.0f, 10000.0f, 7500.0f, 5000.0f},
+        {0.0f, 56.442383f, 260.70694f, 469.10275f, 681.9126f, 901.26404f,
+         1130.5469f, 1369.6487f, 1616.9025f, 1871.5979f, 2133.8792f, 2403.5466f,
+         2680.673f, 2966.7834f, 3261.1917f, 3565.882f, 3881.2122f, 4207.1167f,
+         4545.4614f, 4895.5923f, 5261.2954f, 5641.041f, 6039.1777f, 6457.2085f,
+         6895.511f, 7356.904f, 7843.8374f, 8359.449f, 8908.406f, 9495.977f,
+         10127.756f, 10809.0205f, 11555.859f, 12411.309f, 13401.112f,
+         14553.105f, 15933.92f, 17685.596f, 20181.354f},
+        {271.12167f, 270.5077f, 268.72443f, 266.66266f, 273.15753f, 273.3841f,
+         273.17624f, 273.40945f, 273.41528f, 273.40598f, 263.2401f, 262.0854f,
+         260.89874f, 259.6736f, 258.41296f, 257.10828f, 255.75804f, 254.36252f,
+         252.91373f, 251.41447f, 249.84853f, 248.22246f, 246.51764f, 244.72765f,
+         242.85083f, 240.87515f, 238.7901f, 236.58226f, 233.99246f, 230.24539f,
+         225.59775f, 219.28473f, 218.21954f, 219.23221f, 214.99388f, 210.06105f,
+         204.1484f, 196.64774f, 185.96092f},
+        {268.97046f, 268.60077f, 268.6226f, 266.66028f, 273.0361f, 273.31723f,
+         273.10626f, 273.35345f, 273.27615f, 273.28436f, 263.0612f, 261.70248f,
+         260.29538f, 258.12213f, 257.56226f, 257.02847f, 255.75327f, 254.32297f,
+         252.68051f, 251.21373f, 249.48729f, 248.03601f, 246.0002f, 244.64174f,
+         241.61948f, 240.45493f, 238.335f, 236.40546f, 233.3062f, 229.01004f,
+         224.76468f, 218.40514f, 218.06982f, 219.03171f, 214.43993f, 209.64696f,
+         203.63173f, 196.4836f, 185.87927f},
+        {0.8724955f, 0.847693f, 0.96501166f, 1.0196258f, 0.99941903f,
+         1.0023345f, 0.99966234f, 0.9709411f, 0.99628896f, 0.9950347f,
+         0.9926302f, 0.9679494f, 0.95742613f, 0.84134614f, 0.8933744f,
+         0.975326f, 0.98824424f, 1.012526f, 0.9459248f, 0.9800897f, 0.9714688f,
+         0.9806573f, 0.92881286f, 0.9739903f, 0.8836441f, 0.94444054f,
+         0.9598136f, 1.0000366f, 0.9199736f, 0.9002992f, 0.933399f, 0.9230446f,
+         0.9711177f, 0.96758634f, 0.9006734f, 0.93895394f, 0.9099493f,
+         0.9535283f, 0.9652933f},
+        {270.28693f, 269.7826f, 268.6879f, 266.66187f, 273.10394f, 273.35388f,
+         273.14435f, 273.3833f, 273.34918f, 273.34726f, 263.1814f, 261.96368f,
+         260.71326f, 259.21332f, 258.16986f, 257.08636f, 255.75679f, 254.35257f,
+         252.85786f, 251.36882f, 249.77083f, 248.18468f, 246.41936f, 244.71243f,
+         242.64882f, 240.81169f, 238.72733f, 236.56017f, 233.91698f, 230.13634f,
+         225.54329f, 219.24817f, 218.21327f, 219.22191f, 214.97171f, 210.04877f,
+         204.13774f, 196.64557f, 185.96028f},
+    },
+    20181.354f,
+    &PYTHON_DSD,
+    5.0f,
+    263.15f,
+    4,
+    sharp::PrecipType::ice_pellets,
+    5.938769847688129e-06,
+    681.9126f,
+    {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+     1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.96618176f, 0.19497295f, 0.11336118f, 1.0f,
+     0.9999813f, 0.20556268f, 0.11934041f, 1.0f, 0.44763714f, 0.12796956f,
+     0.07943784f, 1.0f, 0.45192423f, 0.12952454f, 0.08044348f, 1.0f, 0.3878136f,
+     0.11124752f, 0.06948203f, 1.0f, 0.17066945f, 0.04919503f, 0.032029364f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+};
 }  // namespace
 
 TEST_CASE("Testing spectral_bin_classifier core: RA, SN, and RASN") {
@@ -3149,6 +3238,10 @@ TEST_CASE("Testing spectral_bin_classifier core surface decision") {
 
 TEST_CASE("Testing spectral_bin_classifier core with 0 C above a crossing") {
     check_golden(SBC_ZERO_C_ABOVE_CROSSING);
+}
+
+TEST_CASE("Testing spectral_bin_classifier core melting heat just above 0 C") {
+    check_golden(SBC_MELTING_HEAT_NEAR_0C);
 }
 
 TEST_CASE("Testing spectral_bin_classifier core ignores data above the top") {

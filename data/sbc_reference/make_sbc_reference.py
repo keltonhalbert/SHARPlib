@@ -53,6 +53,10 @@ Patches to classify (source substitution; each anchor must match exactly)
    before its clamp (:316) and of each refreeze update (:438), psd_ri and
    psd_rw of each melting (:350) and refreezing (:459) bin, and the snow
    volume at both of its tests (:330 and :332) with the threshold in use.
+7. ill_conditioned instrumentation: records the melting heat of each melting
+   bin (:308) and the refreezing numerator num_fraction of each refreezing bin
+   (:428), each with the sum of the absolute values of its terms and whether
+   the bin uses it (see Flags).
 
 Files (rows sorted by case_id, then level, then bin)
 ----------------------------------------------------
@@ -86,6 +90,10 @@ cases.parquet
     disc_bin int32, disc_level int32 (from the surface), disc_scope string
         (bin or column): the first near_discontinuity hit; -1, -1, and empty
         when unflagged
+    ill_conditioned bool (see Flags)
+    ill_bin int32, ill_level int32 (from the surface), ill_scope string (bin
+        or column): the first ill_conditioned level; -1, -1, and empty when
+        unflagged
 profiles.parquet
     case_id int32; level int32; bin int32; liquid_fraction float32. Every
     level and bin of every case: the reference water_fraction mapped to
@@ -149,33 +157,50 @@ either side:
 - the snow volume against 1.81e-5 * rime^3.26 at both tests (:330-335).
 disc_bin and disc_level give the first hit, top-down and then by bin.
 disc_scope is column if a G level lies at or below disc_level, otherwise bin.
-Named cases carry neither flag: a flagged named profile has T and Td shifted
+ill_conditioned: at some level, a term that a bin's update uses has a
+cancellation ratio |sum| / (sum of |terms|) below 2e-4:
+- the melting heat (:308), k_a (Tw - T0) + D_v L_v / R_v (RH e_s / Tw -
+  e_s0 / T0), in a bin with snow left and at Tw below 273.65 K (above it, the
+  0.02 floor replaces a small heat). It cancels near saturation just above
+  0 C.
+- the refreezing numerator (:428) with unknwn_xsi expanded,
+  (T0 - Tw) (k_a + L_s D_v deriv_rho_ice) Pr + L_s D_v Pr (1 - RH) rho_ice,
+  times 2e-3 D k_i, in a bin with liquid left. It cancels near -31 C, where
+  k_a + L_s D_v deriv_rho_ice changes sign (:427).
+A float32 port rounds such a term by a few 2^-24 of the sum of |terms|, so
+its profile differs by up to about 5e-8 / ratio from that level down. The
+reference's own profile moves more than that when T or Td there changes by one
+float32 ulp. Over 149,000 seeded profiles, every difference above 1e-4 lay at
+or below a level under 2e-4, and the largest elsewhere was 8e-5.
+ill_level is the first such level, top-down. ill_bin is the bin that uses the
+term there, or -1 if several bins do. ill_scope is column if ill_bin is -1 or
+a G level lies at or below ill_level, otherwise bin.
+Corpus cases with either flag stay at most 1 % of the corpus, or the generator
+fails. Named cases carry no flag: a flagged named profile has T and Td shifted
 by 0.01 K steps until it is clear, or the generator fails.
 
 Comparison rules
 ----------------
 1. Consistency, always: the returned category equals the reference decision
    tree applied to the returned liquid fraction, with the case's crossings and
-   surface class (surface Tw > 273.15 K). Pre-classified and no-cloud cases
-   match their category and floats exactly.
+   surface class (surface Tw > 273.15 K). For Nc >= 2 over a warm surface the
+   tree tests the ice fraction raini / (raini + rainw), which float32 rounding
+   moves from 1 - liquid fraction by about 1e-7, so within 1e-6 of 0.85 both
+   RA and RAPL are consistent. Pre-classified and no-cloud cases match their
+   category and floats exactly.
 2. Category: exactly precip_type, except that a corpus case flagged
    near_threshold may return the category on the other side of that
    threshold. Rule 1 still holds.
 3. Surface values: liquid fraction within 1e-4; supercooled-liquid height
    and cloud top on the same level.
-4. Profiles: within 1e-3 for every bin and level, except in a
-   near_discontinuity case from disc_level downward: only disc_bin is exempt
-   for disc_scope bin, and every bin for disc_scope column.
-5. A near_discontinuity corpus case that breaks rules 2-3, or rule 4 beyond
-   its exemption, is listed, not failed. Such cases stay at most 1 % of the
-   corpus. Named cases carry no flags, so every rule applies to them in full.
-
-The profile tolerance is ten times the liquid-fraction one. Two terms of the
-reference cancel and magnify float32 rounding. One is the melting heat near
-saturation at 0 C (:308). The other is the refreezing numerator near -31 C,
-where unknwn_xsi changes sign (:427-428). At such a level a float32 port
-differs by up to about 1e-3. The reference's own profile moves more than that
-when T or Td at the level changes by one float32 ulp.
+4. Profiles: within 1e-3 for every bin and level, except from the flagged
+   level downward: from disc_level in a near_discontinuity case, and from
+   ill_level in an ill_conditioned case. Only the flagged bin (disc_bin,
+   ill_bin) is exempt for scope bin, and every bin for scope column.
+5. A near_discontinuity or ill_conditioned corpus case that breaks rules 2-3,
+   or rule 4 beyond its exemptions, is listed, not failed. Such cases stay at
+   most 1 % of the corpus. Named cases carry no flags, so every rule applies
+   to them in full.
 """
 
 import argparse
@@ -208,6 +233,7 @@ TICE_ALT = 263.15
 LF_THRESHOLDS = (0.15, 0.60, 0.85)
 NEAR_THRESHOLD = 1e-4
 NEAR_DISC_REL = 1e-5
+ILL_CONDITIONED = 2e-4
 CORPUS_CAP = 0.01
 DELD_CHECK = 1.0
 
@@ -260,7 +286,7 @@ def _patch_classify(src):
     src = _anchor(src, "deld,particle_count,temp_nuc):\n",
                   "deld,particle_count,temp_nuc,rime_factor_init=1.0):\n"
                   "  _inst={'branch':[],'tnuc_switched':False,'refrz_moved':False,"
-                  "'fw':[],'ratio':[],'vs':[]}\n")
+                  "'fw':[],'ratio':[],'vs':[],'cancel':[]}\n")
     src = _anchor(src, "  rime_factor=1.0 #", "  rime_factor=rime_factor_init #")
     branches = (
         ("A", "     if K==0 and wbTemp1d[0]<=temp_nuc:\n", 7),
@@ -291,6 +317,16 @@ def _patch_classify(src):
     src = _after(src, "           volume_snow[K,J]=343.*(rhs/rime_factor)**1.443\n", record_vs)
     src = _anchor(src, "           if volume_snow[K,J]>=1.81e-5*rime_factor**3.26: \n",
                   record_vs + "\n           if volume_snow[K,J]>=1.81e-5*rime_factor**3.26: \n")
+    src = _after(src, "-water_svp_const/particle_t0)\n",
+                 "           _inst['cancel'].append((K,J,heat,abs(therm_conduct_air*(wbTemp1d[K]-particle_t0))"
+                 "+diffu_water_vap*lh_vapor/gas_const*(rh1d[K]/100.0*svp_wrt_water[K]/wbTemp1d[K]"
+                 "+water_svp_const/particle_t0),mass_snow[K-1,J]!=0 and wbTemp1d[K]<273.65))")
+    src = _after(src, "*abs_humid_ice[K])#numerator  \n",
+                 "             _inst['cancel'].append((K,J,num_fraction,"
+                 "2.0*diam_melt_snow[K-1,J]*0.001*conduct_ice*(abs(particle_t0-wbTemp1d[K])"
+                 "*(therm_conduct_air*rfrz_prandtl+lh_sublim*diffu_water_vap*rfrz_prandtl*abs(deriv_rho_ice[K]))"
+                 "+lh_sublim*diffu_water_vap*rfrz_prandtl*abs(1-0.01*rh1d[K])*abs_humid_ice[K]),"
+                 "mass_water[K-1,J]>0))")
     src = _anchor(src, "  return ptype,lwf,psd_ptype,water_fraction,slw_hgt",
                   "  return ptype,lwf,psd_ptype,water_fraction,slw_hgt,rainw,raini,crossings,_inst")
     return src
@@ -369,6 +405,8 @@ class Result:
     near_discontinuity: bool = False
     disc: tuple = (-1, -1, "")
     disc_switch: str = ""
+    ill_conditioned: bool = False
+    ill: tuple = (-1, -1, "")
 
     @property
     def branches(self):
@@ -395,6 +433,19 @@ def _first_discontinuity(inst):
         if abs(vs - threshold) <= NEAR_DISC_REL * threshold:
             hits.append((k, j, "snow_volume"))
     return min(hits) if hits else None
+
+
+def _first_ill_conditioned(inst):
+    """(K, bin) of the first level where a bin uses a term whose cancellation ratio is below ILL_CONDITIONED;
+    bin -1 if several bins use it there."""
+    hits = {}
+    for k, j, total, magnitude, used in inst["cancel"]:
+        if used and abs(total) < ILL_CONDITIONED * magnitude:
+            hits.setdefault(k, []).append(j)
+    if not hits:
+        return None
+    k = min(hits)
+    return k, hits[k][0] if len(hits[k]) == 1 else -1
 
 
 def run_reference(ref, case, deld=None):
@@ -441,6 +492,12 @@ def run_reference(ref, case, deld=None):
         res.near_discontinuity = True
         res.disc = (j, res.cloud_top_level - k, scope)
         res.disc_switch = switch
+    hit = _first_ill_conditioned(inst)
+    if hit is not None:
+        k, j = hit
+        scope = "column" if j == -1 or "G" in res.branch_by_k[k:] else "bin"
+        res.ill_conditioned = True
+        res.ill = (j, res.cloud_top_level - k, scope)
     if len(res.branch_by_k) != res.cloud_top_level + 1:
         raise RuntimeError("branch tags do not cover the column")
     return res
@@ -575,10 +632,14 @@ def named_cases():
     return cases
 
 
+def flagged(res):
+    return res.near_threshold or res.near_discontinuity or res.ill_conditioned
+
+
 def clear_named(ref, case):
     """Shifts T and Td of a flagged named profile by 0.01 K steps until no flag remains."""
     case, res = settle(ref, case)
-    if not (res.near_threshold or res.near_discontinuity):
+    if not flagged(res):
         return case, res
     for step in range(1, 41):
         offset = 0.01 * ((step + 1) // 2) * (1 if step % 2 else -1)
@@ -586,7 +647,7 @@ def clear_named(ref, case):
                           temperature=(case.temperature.astype(F64) + offset).astype(F32),
                           dewpoint=(case.dewpoint.astype(F64) + offset).astype(F32))
         shifted, res = settle(ref, shifted)
-        if not (res.near_threshold or res.near_discontinuity):
+        if not flagged(res):
             return shifted, res
     raise RuntimeError(f"{case.description}: cannot clear its flags")
 
@@ -773,13 +834,17 @@ def print_flags(corpus):
     n = len(corpus)
     near_t = [(cid, r) for cid, _, r in corpus if r.near_threshold]
     near_d = [(cid, r) for cid, _, r in corpus if r.near_discontinuity]
+    ill = [(cid, r) for cid, _, r in corpus if r.ill_conditioned]
     print(f"\nCorpus flags: near_threshold {len(near_t)} ({100 * len(near_t) / n:.2f} %), "
-          f"near_discontinuity {len(near_d)} ({100 * len(near_d) / n:.2f} %)")
+          f"near_discontinuity {len(near_d)} ({100 * len(near_d) / n:.2f} %), "
+          f"ill_conditioned {len(ill)} ({100 * len(ill) / n:.2f} %)")
     for cid, r in near_d:
         print(f"  near_discontinuity case {cid}: switch {r.disc_switch}, bin {r.disc[0]}, "
               f"level {r.disc[1]}, scope {r.disc[2]}")
-    if len(near_d) > CORPUS_CAP * n:
-        raise RuntimeError("near_discontinuity exceeds 1 % of the corpus")
+    for cid, r in ill:
+        print(f"  ill_conditioned case {cid}: bin {r.ill[0]}, level {r.ill[1]}, scope {r.ill[2]}")
+    if len({cid for cid, _ in near_d + ill}) > CORPUS_CAP * n:
+        raise RuntimeError("near_discontinuity and ill_conditioned cases exceed 1 % of the corpus")
 
 
 def check_deld(ref, rows):
@@ -791,11 +856,11 @@ def check_deld(ref, rows):
             continue
         other = run_reference(ref, case, deld=DELD_CHECK)
         same = (other.precip_type, other.supercooled_liquid_height, other.crossings, other.branch_by_k,
-                other.near_threshold, other.near_discontinuity, other.disc, other.tnuc_switched,
-                other.refreeze_level_moved) == \
+                other.near_threshold, other.near_discontinuity, other.disc, other.ill_conditioned,
+                other.ill, other.tnuc_switched, other.refreeze_level_moved) == \
                (res.precip_type, res.supercooled_liquid_height, res.crossings, res.branch_by_k,
-                res.near_threshold, res.near_discontinuity, res.disc, res.tnuc_switched,
-                res.refreeze_level_moved)
+                res.near_threshold, res.near_discontinuity, res.disc, res.ill_conditioned,
+                res.ill, res.tnuc_switched, res.refreeze_level_moved)
         worst_lf = max(worst_lf, abs(other.liquid_fraction - res.liquid_fraction))
         worst_fw = max(worst_fw, float(np.abs(other.water_fraction - res.water_fraction).max()))
         if not same or worst_lf > 1e-12 or worst_fw != 0.0:
@@ -816,6 +881,8 @@ def print_sample(cid, case, res):
     if res.near_discontinuity:
         print(f"  flagged near_discontinuity: switch {res.disc_switch}, bin {res.disc[0]}, "
               f"level {res.disc[1]}, scope {res.disc[2]}")
+    if res.ill_conditioned:
+        print(f"  flagged ill_conditioned: bin {res.ill[0]}, level {res.ill[1]}, scope {res.ill[2]}")
     expected = (F32(9495.977), F32(27500.0), "PL", 0.0, F32(1130.5469))
     got = (case.height[top], case.pressure[top], res.precip_type, res.liquid_fraction,
            F32(res.supercooled_liquid_height))
@@ -833,7 +900,7 @@ def write_parquet(rows, out_dir):
                              "precip_type", "liquid_fraction", "supercooled_liquid_height", "stage",
                              "crossings", "branches", "tnuc_switched", "refreeze_level_moved",
                              "near_threshold", "near_discontinuity", "disc_bin", "disc_level",
-                             "disc_scope")}
+                             "disc_scope", "ill_conditioned", "ill_bin", "ill_level", "ill_scope")}
     profiles = {k: [] for k in ("case_id", "level", "bin", "liquid_fraction")}
     for cid, case, res in rows:
         n = len(case.height)
@@ -851,7 +918,7 @@ def write_parquet(rows, out_dir):
                   PRECIP_TYPE[res.precip_type] if cloud else MISSING, res.liquid_fraction,
                   res.supercooled_liquid_height, res.stage, res.crossings, res.branches,
                   res.tnuc_switched, res.refreeze_level_moved, res.near_threshold,
-                  res.near_discontinuity, *res.disc)
+                  res.near_discontinuity, *res.disc, res.ill_conditioned, *res.ill)
         for key, value in zip(cases, values):
             cases[key].append(value)
         lf = np.full((n, nbins), MISSING, F32)
@@ -870,7 +937,7 @@ def write_parquet(rows, out_dir):
                       precip_type=i32, liquid_fraction=f64, supercooled_liquid_height=f32, stage=s,
                       crossings=i32, branches=s, tnuc_switched=b, refreeze_level_moved=b,
                       near_threshold=b, near_discontinuity=b, disc_bin=i32, disc_level=i32,
-                      disc_scope=s)
+                      disc_scope=s, ill_conditioned=b, ill_bin=i32, ill_level=i32, ill_scope=s)
     profile_types = dict(case_id=i32, level=i32, bin=i32, liquid_fraction=f32)
     dsd_rows = {"dsd_name": [], "bin": [], "diameter": [], "concentration": []}
     for name, dsd in DSDS.items():
