@@ -676,10 +676,13 @@ def test_pft_missing():
     mix_layer = layer.PressureLayer(pres[0], pres[0] - 10000.0)
     theta = snd_data["theta"].copy()
     theta[pres < 75000.0] = M
-    pcl = parcel.Parcel()
-    pft = params.pyrocumulonimbus_firepower_threshold(
-        lifter, mix_layer, pres, snd_data["hght"], snd_data["tmpk"],
-        snd_data["mixr"], snd_data["vtmp"], snd_data["uwin"], snd_data["vwin"],
-        theta, pcl=pcl)
-    assert (pft == M)
-    assert (pcl.pres == M)
+    uwin = snd_data["uwin"].copy()
+    uwin[pres > 80000.0] = M
+    for u, th in ((snd_data["uwin"], theta), (uwin, snd_data["theta"])):
+        pcl = parcel.Parcel()
+        pft = params.pyrocumulonimbus_firepower_threshold(
+            lifter, mix_layer, pres, snd_data["hght"], snd_data["tmpk"],
+            snd_data["mixr"], snd_data["vtmp"], u, snd_data["vwin"], th,
+            pcl=pcl)
+        assert (pft == M)
+        assert (pcl.pres == M)
