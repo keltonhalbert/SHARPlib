@@ -122,9 +122,10 @@ namespace sharp {
  *
  * Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
  *
- * In QC builds, returns sharp::MISSING if the potential temperature is
- * MISSING at the LFC or at the level where the formula evaluates air
- * density.
+ * In QC builds, returns sharp::MISSING if the mix-layer mean potential
+ * temperature, mixing ratio, or wind speed is MISSING, or if the potential
+ * temperature is MISSING at the LFC or at the level where the formula
+ * evaluates air density.
  *
  * References:
  * Tory et al. 2018:
@@ -167,6 +168,19 @@ template <typename Lifter>
         mean_wind(mix_layer, pressure, uwin, vwin, N, false);
     float mean_wspd = sharp::vector_magnitude(mean_uv.u, mean_uv.v);
     float pres_sfc = pressure[0];
+
+    const auto no_pft = [&]() {
+        std::fill_n(&pcl_vtmpk_arr[0], N, sharp::MISSING);
+        std::fill_n(&pcl_buoy_arr[0], N, sharp::MISSING);
+        if (pcl) *pcl = Parcel();
+        return MISSING;
+    };
+#ifndef NO_QC
+    if (is_missing(mean_theta) || is_missing(mean_mixr) ||
+        is_missing(mean_wspd)) {
+        return no_pft();
+    }
+#endif
 
     float beta_max = 0.1f;
     int max_steps = static_cast<int>(beta_max / beta_incr);
@@ -211,12 +225,6 @@ template <typename Lifter>
         }
     }
 
-    const auto no_pft = [&]() {
-        std::fill_n(&pcl_vtmpk_arr[0], N, sharp::MISSING);
-        std::fill_n(&pcl_buoy_arr[0], N, sharp::MISSING);
-        if (pcl) *pcl = Parcel();
-        return MISSING;
-    };
     if (!found) return no_pft();
 
     candidate_z_fc =

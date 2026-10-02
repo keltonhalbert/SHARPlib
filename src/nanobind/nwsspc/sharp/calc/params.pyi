@@ -1415,8 +1415,10 @@ def pyrocumulonimbus_firepower_threshold(lifter: nwsspc.sharp.calc.parcel.lifter
     Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
     If a parcel is passed, the values will be set with the PFT fire parcel.
 
-    In QC builds, returns MISSING if the potential temperature is MISSING at
-    the LFC or at the level where the formula evaluates air density.
+    In QC builds, returns MISSING if the mix-layer mean potential
+    temperature, mixing ratio, or wind speed is MISSING, or if the potential
+    temperature is MISSING at the LFC or at the level where the formula
+    evaluates air density.
 
     References 
     ----------
@@ -1471,8 +1473,10 @@ def pyrocumulonimbus_firepower_threshold(lifter: nwsspc.sharp.calc.parcel.lifter
     Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
     If a parcel is passed, the values will be set with the PFT fire parcel.
 
-    In QC builds, returns MISSING if the potential temperature is MISSING at
-    the LFC or at the level where the formula evaluates air density.
+    In QC builds, returns MISSING if the mix-layer mean potential
+    temperature, mixing ratio, or wind speed is MISSING, or if the potential
+    temperature is MISSING at the LFC or at the level where the formula
+    evaluates air density.
 
     References 
     ----------
@@ -1527,8 +1531,10 @@ def pyrocumulonimbus_firepower_threshold(lifter: nwsspc.sharp.calc.parcel.lifter
     Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
     If a parcel is passed, the values will be set with the PFT fire parcel.
 
-    In QC builds, returns MISSING if the potential temperature is MISSING at
-    the LFC or at the level where the formula evaluates air density.
+    In QC builds, returns MISSING if the mix-layer mean potential
+    temperature, mixing ratio, or wind speed is MISSING, or if the potential
+    temperature is MISSING at the LFC or at the level where the formula
+    evaluates air density.
 
     References 
     ----------
@@ -1583,8 +1589,10 @@ def pyrocumulonimbus_firepower_threshold(lifter: nwsspc.sharp.calc.parcel.lifter
     Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
     If a parcel is passed, the values will be set with the PFT fire parcel.
 
-    In QC builds, returns MISSING if the potential temperature is MISSING at
-    the LFC or at the level where the formula evaluates air density.
+    In QC builds, returns MISSING if the mix-layer mean potential
+    temperature, mixing ratio, or wind speed is MISSING, or if the potential
+    temperature is MISSING at the LFC or at the level where the formula
+    evaluates air density.
 
     References 
     ----------
