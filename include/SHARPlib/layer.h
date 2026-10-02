@@ -367,7 +367,8 @@ template <typename L, typename C>
 
     LayerIndex layer_idx = get_layer_index(layer, coord_arr, N);
 
-#ifndef NO_QC
+    // Each end is clipped only against its own edge of the profile, so a
+    // layer wholly outside it comes out inverted. Not a QC check.
     const bool outside = (layer.coord == LayerCoordinate::pressure)
                              ? (layer.bottom < layer.top)
                              : (layer.bottom > layer.top);
@@ -378,7 +379,6 @@ template <typename L, typename C>
         }
         return MISSING;
     }
-#endif
 
     float min_or_max = MISSING;
     float top_val = MISSING;
@@ -390,7 +390,7 @@ template <typename L, typename C>
         top_val = interp_height(layer.top, coord_arr, data_arr, N);
     }
 
-    const auto replaces = [&](const float val) {
+    const auto replaces = [&min_or_max, comp](const float val) -> bool {
 #ifndef NO_QC
         if (is_missing(val)) return false;
         if (min_or_max == MISSING) return true;

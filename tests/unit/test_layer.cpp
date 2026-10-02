@@ -310,23 +310,21 @@ constexpr float mm_tmpk_hght[MM_N] = {258, 268, 278};
 constexpr float mm_pres[MM_N] = {100000, 90000, 80000};
 constexpr float mm_tmpk_pres[MM_N] = {278, 268, 258};
 
-#ifndef NO_QC
 TEST_CASE("Testing layer_min and layer_max over layers outside the profile") {
     check_min_max(sharp::HeightLayer(1500, 2000), mm_hght, mm_tmpk_hght, MM_N,
-                  {MISSING, 1500}, {MISSING, 1500});
+                  {sharp::MISSING, 1500}, {sharp::MISSING, 1500});
     check_min_max(sharp::HeightLayer(-500, -100), mm_hght, mm_tmpk_hght, MM_N,
-                  {MISSING, -100}, {MISSING, -100});
+                  {sharp::MISSING, -100}, {sharp::MISSING, -100});
     check_min_max(sharp::PressureLayer(70000, 60000), mm_pres, mm_tmpk_pres,
-                  MM_N, {MISSING, 70000}, {MISSING, 70000});
+                  MM_N, {sharp::MISSING, 70000}, {sharp::MISSING, 70000});
     check_min_max(sharp::PressureLayer(110000, 105000), mm_pres, mm_tmpk_pres,
-                  MM_N, {MISSING, 105000}, {MISSING, 105000});
+                  MM_N, {sharp::MISSING, 105000}, {sharp::MISSING, 105000});
 
     CHECK(sharp::layer_max(sharp::HeightLayer(1500, 2000), mm_hght,
-                           mm_tmpk_hght, MM_N) == MISSING);
+                           mm_tmpk_hght, MM_N) == sharp::MISSING);
     CHECK(sharp::layer_max(sharp::PressureLayer(110000, 105000), mm_pres,
-                           mm_tmpk_pres, MM_N) == MISSING);
+                           mm_tmpk_pres, MM_N) == sharp::MISSING);
 }
-#endif
 
 TEST_CASE("Testing layer_mean over a pressure layer") {
     constexpr std::ptrdiff_t N = 10;
