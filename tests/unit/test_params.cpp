@@ -2636,30 +2636,541 @@ TEST_CASE("Testing spectral_bin_classifier with fewer than 2 valid levels") {
 // Microphysics: frozen cloud tops and melting
 // ---------------------------------------------------------------------------
 
-TEST_CASE("Testing spectral_bin_classifier temporary: the core is missing") {
-    // data/sbc_reference case 5
-    const SBCProfile snd{
+namespace {
+// The reference's results for a column, from data/sbc_reference or from the
+// reference run on a hand-made column. The profile is levels x bins.
+struct SBCGolden {
+    SBCProfile snd;
+    float cloud_top;
+    const ExpectedDSD* dsd;
+    float rime_factor;
+    float tice;
+    int crossings;
+    sharp::PrecipType precip_type;
+    double liquid_fraction;
+    float supercooled_liquid_height;
+    std::vector<float> profile;
+};
+
+SBCProfile with_relh(SBCProfile snd, const std::vector<float>& relh) {
+    snd.relh = relh;
+    return snd;
+}
+
+// The reference's decision tree on a liquid fraction
+sharp::PrecipType sbc_decision(const float liquid, const int crossings,
+                               const bool warm) {
+    using sharp::PrecipType;
+    const bool all_ice = (liquid == 0.0f);
+    const bool all_liquid = (liquid == 1.0f);
+    if (warm && (crossings == 1)) {
+        if (all_liquid || (liquid > 0.85f)) return PrecipType::rain;
+        if (all_ice || (liquid < 0.60f)) return PrecipType::snow;
+        return PrecipType::rain_snow;
+    }
+    if (all_ice || (liquid < 0.15f)) return PrecipType::ice_pellets;
+    if (warm) {
+        return (all_liquid || (1.0f - liquid < 0.15f))
+                   ? PrecipType::rain
+                   : PrecipType::rain_ice_pellets;
+    }
+    return (all_liquid || (liquid > 0.85f))
+               ? PrecipType::freezing_rain
+               : PrecipType::freezing_rain_ice_pellets;
+}
+
+// The golden-data comparison rules for a case without flags, whose surface
+// is level 0
+void check_golden(const SBCGolden& golden) {
+    const sharp::SpectralBinDSD dsd = build_dsd(
+        golden.dsd->diameter, golden.dsd->concentration, golden.rime_factor);
+    const SBCRun run = run_sbc(golden.snd, golden.cloud_top, dsd, golden.tice);
+    const sharp::SpectralBinResult& result = run.result;
+    CHECK(result.precip_type ==
+          sbc_decision(result.liquid_fraction, golden.crossings,
+                       golden.snd.wetbulb[0] > sharp::ZEROCNK));
+    CHECK(result.precip_type == golden.precip_type);
+    CHECK(std::abs(result.liquid_fraction - golden.liquid_fraction) <= 0.005);
+    CHECK(result.supercooled_liquid_height ==
+          golden.supercooled_liquid_height);
+    REQUIRE(run.profile.size() == golden.profile.size());
+    for (std::size_t i = 0; i < golden.profile.size(); ++i) {
+        CAPTURE(i);
+        if (golden.profile[i] == sharp::MISSING) {
+            CHECK(run.profile[i] == sharp::MISSING);
+        } else {
+            CHECK(std::abs(run.profile[i] - golden.profile[i]) <= 1e-3f);
+        }
+    }
+}
+
+// The reference's results for the column with a level inserted at index k,
+// which the classifier skips
+SBCGolden with_skipped_level(SBCGolden golden, const std::size_t k,
+                             const float height, const float wetbulb) {
+    SBCProfile& snd = golden.snd;
+    const auto at = static_cast<std::ptrdiff_t>(k);
+    snd.pressure.insert(snd.pressure.begin() + at,
+                        100000.0f * std::exp(-height / 8000.0f));
+    snd.height.insert(snd.height.begin() + at, height);
+    snd.temperature.insert(snd.temperature.begin() + at, wetbulb);
+    snd.dewpoint.insert(snd.dewpoint.begin() + at, wetbulb);
+    snd.relh.insert(snd.relh.begin() + at, 1.0f);
+    snd.wetbulb.insert(snd.wetbulb.begin() + at, wetbulb);
+    const std::size_t nbins = golden.dsd->diameter.size();
+    golden.profile.insert(
+        golden.profile.begin() + static_cast<std::ptrdiff_t>(k * nbins), nbins,
+        sharp::MISSING);
+    return golden;
+}
+
+// data/sbc_reference case 5
+const SBCGolden SBC_CORE_RA{
+    {
         {100000.0f, 96900.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f, 73200.0f,
          68700.0f, 64600.0f, 60700.0f, 53500.0f},
         {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
          3500.0f, 4000.0f, 5000.0f},
-        {273.95f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f,
-         264.15f, 262.15f, 260.15f, 256.15f},
-        {273.95f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f,
-         264.15f, 262.15f, 260.15f, 256.15f},
+        {273.95f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+        {273.95f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
         {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
-        {273.95f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f,
-         264.15f, 262.15f, 260.15f, 256.15f},
-    };
-    check_sbc(run_sbc(snd, 5000.0f), SBC_MISSING);
+        {273.95f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+    },
+    5000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    1,
+    sharp::PrecipType::rain,
+    0.9121556184471886,
+    sharp::MISSING,
+    {1.0f, 1.0f, 1.0f, 0.7434978f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+};
+
+// data/sbc_reference case 6
+const SBCGolden SBC_CORE_SN{
+    {
+        {100000.0f, 96900.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f, 73200.0f,
+         68700.0f, 64600.0f, 60700.0f, 53500.0f},
+        {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
+         3500.0f, 4000.0f, 5000.0f},
+        {273.35f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+        {273.35f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {273.35f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+    },
+    5000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    1,
+    sharp::PrecipType::snow,
+    0.36193448304389836,
+    sharp::MISSING,
+    {1.0f, 0.61596805f, 0.2794438f, 0.18456055f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+};
+
+// data/sbc_reference case 7
+const SBCGolden SBC_CORE_RASN{
+    {
+        {100000.0f, 96900.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f, 73200.0f,
+         68700.0f, 64600.0f, 60700.0f, 53500.0f},
+        {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
+         3500.0f, 4000.0f, 5000.0f},
+        {273.6f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+        {273.6f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {273.6f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+    },
+    5000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    1,
+    sharp::PrecipType::rain_snow,
+    0.6903628867814539,
+    sharp::MISSING,
+    {1.0f, 1.0f, 0.63058996f, 0.41648102f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+};
+
+// data/sbc_reference case 16
+const SBCGolden SBC_CORE_DRY_LAYER{
+    {
+        {100000.0f, 96900.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f, 73200.0f,
+         68700.0f, 64600.0f, 60700.0f, 53500.0f},
+        {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
+         3500.0f, 4000.0f, 5000.0f},
+        {273.6f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+        {273.6f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 249.15f,
+         247.15f, 260.15f, 256.15f},
+        {0.95f, 0.95f, 0.95f, 0.95f, 0.95f, 0.95f, 0.95f, 0.25f, 0.25f, 0.95f,
+         0.95f},
+        {273.6f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f,
+         258.71643f, 256.98294f, 260.15f, 256.15f},
+    },
+    2500.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    1,
+    sharp::PrecipType::snow,
+    0.24678250549865566,
+    sharp::MISSING,
+    {1.0f, 0.42426872f, 0.1924805f, 0.12712616f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, sharp::MISSING, sharp::MISSING,
+     sharp::MISSING, sharp::MISSING, sharp::MISSING, sharp::MISSING,
+     sharp::MISSING, sharp::MISSING, sharp::MISSING, sharp::MISSING,
+     sharp::MISSING, sharp::MISSING, sharp::MISSING, sharp::MISSING,
+     sharp::MISSING, sharp::MISSING},
+};
+
+// data/sbc_reference case 18
+const SBCGolden SBC_CORE_CXX_DSD{
+    {
+        {100000.0f, 96900.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f, 73200.0f,
+         68700.0f, 64600.0f, 60700.0f, 53500.0f},
+        {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
+         3500.0f, 4000.0f, 5000.0f},
+        {273.6f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+        {273.6f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {273.6f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+    },
+    5000.0f,
+    &CXX_2_0_3_DSD,
+    1.0f,
+    267.15f,
+    1,
+    sharp::PrecipType::rain_snow,
+    0.7686941434936196,
+    sharp::MISSING,
+    {1.0f, 1.0f, 0.7457145f, 0.48528457f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+};
+
+// data/sbc_reference case 20
+const SBCGolden SBC_CORE_RIME_5{
+    {
+        {100000.0f, 96900.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f, 73200.0f,
+         68700.0f, 64600.0f, 60700.0f, 53500.0f},
+        {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
+         3500.0f, 4000.0f, 5000.0f},
+        {273.6f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+        {273.6f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {273.6f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+    },
+    5000.0f,
+    &PYTHON_DSD,
+    5.0f,
+    267.15f,
+    1,
+    sharp::PrecipType::snow,
+    0.23181082327704985,
+    sharp::MISSING,
+    {1.0f, 0.4763523f, 0.13665824f, 0.08876687f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+};
+
+// data/sbc_reference case 23
+const SBCGolden SBC_CORE_TICE_ALT{
+    {
+        {100000.0f, 96900.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f, 73200.0f,
+         68700.0f, 64600.0f, 60700.0f, 53500.0f},
+        {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
+         3500.0f, 4000.0f, 5000.0f},
+        {273.6f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+        {273.6f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {273.6f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+         262.15f, 260.15f, 256.15f},
+    },
+    5000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    263.15f,
+    1,
+    sharp::PrecipType::rain_snow,
+    0.6903628867814539,
+    sharp::MISSING,
+    {1.0f, 1.0f, 0.63058996f, 0.41648102f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+};
+
+// Hand-made columns, with the results of the reference on the same values
+// in float64. 273.15f stands for 273.15 K exactly, which the golden data
+// leave out.
+
+// Melting just below a frozen cloud top: RA
+const SBCGolden SBC_MELTING_BELOW_TOP{
+    saturated_profile({0.0f, 500.0f, 1000.0f}, {273.5f, 273.25f, 266.0f}),
+    1000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    1,
+    sharp::PrecipType::rain,
+    0.920670924307368,
+    sharp::MISSING,
+    {1.0f, 1.0f, 1.0f, 0.7377472f, 1.0f, 0.6033493f, 0.2741206f, 0.18115126f,
+     0.0f, 0.0f, 0.0f, 0.0f},
+};
+
+// Two crossings and a surface at 0 C: PL
+const SBCGolden SBC_ZERO_C_PL{
+    saturated_profile(
+        {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
+         3500.0f, 4000.0f},
+        {273.15f, 273.1875f, 271.5f, 270.0f, 269.0f, 268.0f, 266.0f, 264.0f,
+         263.0f, 262.0f}),
+    4000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    2,
+    sharp::PrecipType::ice_pellets,
+    0.0657364244651753,
+    sharp::MISSING,
+    {1.0f, 0.11415317f, 0.051824972f, 0.03423811f, 1.0f, 0.11415317f,
+     0.051824972f, 0.03423811f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+};
+
+// Two crossings and a surface at 0 C: FZRAPL
+const SBCGolden SBC_ZERO_C_FZRAPL{
+    saturated_profile(
+        {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
+         3500.0f, 4000.0f},
+        {273.15f, 273.25f, 271.5f, 270.0f, 269.0f, 268.0f, 266.0f, 264.0f,
+         263.0f, 262.0f}),
+    4000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    2,
+    sharp::PrecipType::freezing_rain_ice_pellets,
+    0.17979090352387,
+    0.0f,
+    {1.0f, 0.30462942f, 0.13830099f, 0.091368586f, 1.0f, 0.30462942f,
+     0.13830099f, 0.091368586f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+};
+
+// Two crossings and a surface at 0 C: FZRA
+const SBCGolden SBC_ZERO_C_FZRA{
+    saturated_profile(
+        {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
+         3500.0f, 4000.0f},
+        {273.15f, 274.0f, 271.5f, 270.0f, 269.0f, 268.0f, 266.0f, 264.0f,
+         263.0f, 262.0f}),
+    4000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    2,
+    sharp::PrecipType::freezing_rain,
+    0.8854490179155798,
+    0.0f,
+    {1.0f, 1.0f, 1.0f, 0.7835615f, 1.0f, 1.0f, 1.0f, 0.7835615f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+};
+
+// Three crossings and a warm surface: RAPL
+const SBCGolden SBC_ZERO_C_RAPL{
+    saturated_profile(
+        {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
+         3500.0f, 4000.0f},
+        {273.5f, 273.15f, 273.25f, 270.0f, 269.0f, 268.0f, 266.0f, 264.0f,
+         263.0f, 262.0f}),
+    4000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    3,
+    sharp::PrecipType::rain_ice_pellets,
+    0.7436840013308715,
+    sharp::MISSING,
+    {1.0f, 1.0f, 0.6673701f, 0.45883283f, 1.0f, 0.6033493f, 0.2741206f,
+     0.18115126f, 1.0f, 0.6033493f, 0.2741206f, 0.18115126f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f},
+};
+
+// Three crossings and a warm surface: RA
+const SBCGolden SBC_ZERO_C_RA{
+    saturated_profile(
+        {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
+         3500.0f, 4000.0f},
+        {273.5f, 273.15f, 273.5f, 270.0f, 269.0f, 268.0f, 266.0f, 264.0f,
+         263.0f, 262.0f}),
+    4000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    3,
+    sharp::PrecipType::rain,
+    0.9279022075581568,
+    sharp::MISSING,
+    {1.0f, 1.0f, 1.0f, 0.7704413f, 1.0f, 1.0f, 0.96224207f, 0.6358984f, 1.0f,
+     1.0f, 0.96224207f, 0.6358984f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+};
+
+// Three crossings and a warm surface, with no melting in dry air: PL
+const SBCGolden SBC_ZERO_C_DRY_PL{
+    with_relh(saturated_profile(
+        {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
+         3500.0f, 4000.0f},
+        {273.5f, 273.15f, 273.5f, 270.0f, 269.0f, 268.0f, 266.0f, 264.0f,
+         263.0f, 262.0f}),
+        {0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f}),
+    4000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    3,
+    sharp::PrecipType::ice_pellets,
+    0.0,
+    sharp::MISSING,
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f},
+};
+
+// 0 C just above the first crossing melts: RASN
+const SBCGolden SBC_ZERO_C_ABOVE_CROSSING{
+    saturated_profile(
+        {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
+         3500.0f, 4000.0f},
+        {273.5f, 273.25f, 273.15f, 270.0f, 269.0f, 268.0f, 266.0f, 264.0f,
+         263.0f, 262.0f}),
+    4000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    1,
+    sharp::PrecipType::rain_snow,
+    0.6830516109364516,
+    sharp::MISSING,
+    {1.0f, 1.0f, 0.58917785f, 0.39497298f, 1.0f, 0.32282987f, 0.14180872f,
+     0.0926089f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+};
+}  // namespace
+
+TEST_CASE("Testing spectral_bin_classifier core: RA, SN, and RASN") {
+    SUBCASE("RA") { check_golden(SBC_CORE_RA); }
+    SUBCASE("SN") { check_golden(SBC_CORE_SN); }
+    SUBCASE("RASN") { check_golden(SBC_CORE_RASN); }
 }
 
-TEST_CASE("Testing spectral_bin_classifier temporary: rule 2 at 0 C") {
-    const SBCProfile snd =
-        saturated_profile({0.0f, 1000.0f, 2000.0f, 3000.0f},
-                          {sharp::ZEROCNK, 275.15f, 276.15f, 274.15f});
-    check_sbc(run_sbc(snd, 3000.0f), SBC_MISSING);
+TEST_CASE("Testing spectral_bin_classifier core: DSD, rime factor, and Tice") {
+    SUBCASE("C++ 2.0.3 DSD") { check_golden(SBC_CORE_CXX_DSD); }
+    SUBCASE("rime factor 5") { check_golden(SBC_CORE_RIME_5); }
+    SUBCASE("Tice -10 C") { check_golden(SBC_CORE_TICE_ALT); }
 }
+
+TEST_CASE("Testing spectral_bin_classifier core below a dry layer") {
+    check_golden(SBC_CORE_DRY_LAYER);
+}
+
+TEST_CASE("Testing spectral_bin_classifier core melting below the top") {
+    check_golden(SBC_MELTING_BELOW_TOP);
+}
+
+TEST_CASE("Testing spectral_bin_classifier core surface decision") {
+    SUBCASE("PL") { check_golden(SBC_ZERO_C_PL); }
+    SUBCASE("FZRAPL") { check_golden(SBC_ZERO_C_FZRAPL); }
+    SUBCASE("FZRA") { check_golden(SBC_ZERO_C_FZRA); }
+    SUBCASE("RAPL") { check_golden(SBC_ZERO_C_RAPL); }
+    SUBCASE("RA") { check_golden(SBC_ZERO_C_RA); }
+    SUBCASE("PL, warm surface") { check_golden(SBC_ZERO_C_DRY_PL); }
+}
+
+TEST_CASE("Testing spectral_bin_classifier core with 0 C above a crossing") {
+    check_golden(SBC_ZERO_C_ABOVE_CROSSING);
+}
+
+TEST_CASE("Testing spectral_bin_classifier core ignores data above the top") {
+    const float NaN = std::numeric_limits<float>::quiet_NaN();
+    SBCGolden golden = SBC_CORE_RA;
+    for (const float z : {6000.0f, 7000.0f}) {
+        golden.snd.pressure.push_back(100000.0f * std::exp(-z / 8000.0f));
+        golden.snd.height.push_back(z);
+        golden.snd.temperature.push_back(NaN);
+        golden.snd.dewpoint.push_back(sharp::MISSING);
+        golden.snd.relh.push_back(NaN);
+        golden.snd.wetbulb.push_back(300.0f);
+        golden.profile.insert(golden.profile.end(), 4, sharp::MISSING);
+    }
+    check_golden(golden);
+}
+
+#ifndef NO_QC
+TEST_CASE("Testing spectral_bin_classifier core skips missing levels") {
+    const float NaN = std::numeric_limits<float>::quiet_NaN();
+    using Field = std::vector<float> SBCProfile::*;
+    const Field fields[] = {&SBCProfile::temperature, &SBCProfile::dewpoint,
+                            &SBCProfile::relh, &SBCProfile::wetbulb};
+    for (const Field field : fields) {
+        for (const float bad : {sharp::MISSING, NaN}) {
+            CAPTURE(bad);
+            SBCGolden golden = with_skipped_level(SBC_ZERO_C_ABOVE_CROSSING, 1,
+                                                  125.0f, 300.0f);
+            golden = with_skipped_level(golden, 4, 750.0f, 300.0f);
+            (golden.snd.*field)[1] = bad;
+            (golden.snd.*field)[4] = bad;
+            check_golden(golden);
+        }
+    }
+}
+#endif
+
+// ---------------------------------------------------------------------------
+// Microphysics: refreezing
+// ---------------------------------------------------------------------------
 
 TEST_CASE("Testing spectral_bin_classifier temporary: rule 2 at Tice") {
     const SBCProfile snd = saturated_profile(
@@ -2669,12 +3180,15 @@ TEST_CASE("Testing spectral_bin_classifier temporary: rule 2 at Tice") {
 }
 
 // ---------------------------------------------------------------------------
-// Microphysics: refreezing
-// ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
 // Microphysics: liquid cloud tops
 // ---------------------------------------------------------------------------
+
+TEST_CASE("Testing spectral_bin_classifier temporary: rule 2 at 0 C") {
+    const SBCProfile snd =
+        saturated_profile({0.0f, 1000.0f, 2000.0f, 3000.0f},
+                          {sharp::ZEROCNK, 275.15f, 276.15f, 274.15f});
+    check_sbc(run_sbc(snd, 3000.0f), SBC_MISSING);
+}
 
 // ---------------------------------------------------------------------------
 // Precipitation type from a full sounding

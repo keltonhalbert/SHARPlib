@@ -1918,9 +1918,6 @@ FZRA     1               0 m
 RA       1               MISSING
 ======== =============== =========================
 
-Columns that the pre-classifier does not decide need the microphysics,
-which is not implemented yet, and return missing.
-
 The result is missing (PrecipType.missing, with MISSING fields) when:
 
 * There are fewer than 2 levels, including empty arrays.

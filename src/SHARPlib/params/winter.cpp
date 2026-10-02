@@ -517,6 +517,11 @@ constexpr SpectralBinResult SBC_SNOW{PrecipType::snow, 0.0f, MISSING};
 constexpr SpectralBinResult SBC_FREEZING_RAIN{PrecipType::freezing_rain, 1.0f,
                                               0.0f};
 constexpr SpectralBinResult SBC_RAIN{PrecipType::rain, 1.0f, MISSING};
+
+SpectralBinResult sbc_microphysics(const SpectralBinColumn& column,
+                                   const SpectralBinDSD& dsd,
+                                   float ice_nucleation_temperature,
+                                   float liquid_fraction_profile[]);
 }  // namespace
 
 SpectralBinResult spectral_bin_classifier(
@@ -584,21 +589,585 @@ SpectralBinResult spectral_bin_classifier(
     }
     if (tw_min > ZEROCNK) return SBC_RAIN;
 
-    // Needs the microphysics.
-    return SpectralBinResult{};
+    return sbc_microphysics(column, dsd, ice_nucleation_temperature,
+                            liquid_fraction_profile);
 }
 
 // ---------------------------------------------------------------------------
 // Microphysics: frozen cloud tops and melting
 // ---------------------------------------------------------------------------
 
+namespace {
+// Values of the reference, in its units. Densities in g cm^-3.
+constexpr float SBC_SEA_LEVEL_AIR_DENSITY = 1.292e-3f;
+constexpr float SBC_DRY_AIR_GAS_CONSTANT = 287.0f;
+// The per-bin class uses this ice density, and the surface SBC_ICE_DENSITY.
+constexpr float SBC_CLASS_ICE_DENSITY = 0.918f;
+constexpr float SBC_CLASS_FRACTION = 0.15f;
+constexpr float SBC_SNOW_ASPECT_RATIO = 0.8f;
+constexpr float SBC_GRAUPEL_RIME_FACTOR = 5.0f;
+// 1.81e-5 * 5^3.26 (cm^3)
+constexpr float SBC_GRAUPEL_SNOW_VOLUME_MIN = 0.00343811815f;
+// 1e-3 / 1.8e-5, mm to m over the kinematic viscosity of air (s m^-2)
+constexpr float SBC_REYNOLDS_COEFF = 55.5555573f;
+// (1.8e-5 / 2.0e-5)^(1/3), the cube root of the Schmidt number
+constexpr float SBC_SCHMIDT_CBRT = 0.965489388f;
+constexpr float SBC_AIR_CONDUCTIVITY = 0.023f;
+// 2.0e-5 * 2.5e6 / 461.5, vapor diffusivity times the latent heat of
+// vaporization over the gas constant of water vapor
+constexpr float SBC_VAPOR_HEAT_COEFF = 0.108342364f;
+// 611 / 273.15
+constexpr float SBC_SVP_OVER_T0 = 2.23686624f;
+constexpr float SBC_HEAT_CLAMP_TW = 273.65f;
+constexpr float SBC_MIN_HEAT = 0.02f;
+// 4 pi / 3.35e5, over the latent heat of melting
+constexpr float SBC_MELT_COEFF = 3.75115522e-05f;
+// 6 / pi
+constexpr float SBC_SIX_OVER_PI = 1.90985930f;
+
+const float SBC_SNOW_CAPACITANCE_FACTOR =
+    sbc_capacitance_factor(SBC_SNOW_ASPECT_RATIO);
+const float SBC_SNOW_LENGTH_FACTOR = sbc_length_factor(SBC_SNOW_ASPECT_RATIO);
+
+// psd_ptype of the reference. Its codes are these values plus 0.5, and -999
+// for unset.
+enum class SBCClass : unsigned char {
+    unset = 0,
+    rain = 1,                          // RA
+    freezing_drizzle = 2,              // FZDZ
+    freezing_rain = 3,                 // FZRA
+    ice_pellets = 4,                   // PL
+    freezing_drizzle_ice_pellets = 5,  // FZDZPL
+    freezing_rain_ice_pellets = 6,     // FZRAPL
+    snow = 7,                          // SN
+    rain_snow = 8,                     // RASN
+    rain_ice_pellets = 9,              // RAPL
+};
+
+// liquid_ar of the reference: the classes that melt with the raindrop
+// aspect ratio. The others melt with SBC_SNOW_ASPECT_RATIO.
+inline bool sbc_liquid_ar(const SBCClass ptype) {
+    switch (ptype) {
+        case SBCClass::rain:
+        case SBCClass::freezing_drizzle:
+        case SBCClass::freezing_rain:
+        case SBCClass::ice_pellets:
+        case SBCClass::freezing_drizzle_ice_pellets:
+        case SBCClass::freezing_rain_ice_pellets:
+        case SBCClass::rain_ice_pellets:
+            return true;
+        case SBCClass::unset:
+        case SBCClass::snow:
+        case SBCClass::rain_snow:
+            return false;
+    }
+    return false;
+}
+
+// Every field of every bin at one level, named as in the reference.
+struct SBCLevelState {
+    std::array<float, SBC_MAX_BINS> water_fraction;      // fw
+    std::array<float, SBC_MAX_BINS> velocity_melt_snow;  // v (m/s)
+    std::array<float, SBC_MAX_BINS> mass_water;          // mw (g)
+    std::array<float, SBC_MAX_BINS> mass_snow;           // ms (g)
+    std::array<float, SBC_MAX_BINS> volume_liq;          // vl (cm^3)
+    std::array<float, SBC_MAX_BINS> volume_ice;          // vi (cm^3)
+    std::array<float, SBC_MAX_BINS> volume_snow;         // vs (cm^3)
+    std::array<float, SBC_MAX_BINS> diam_melt_snow;      // dm (mm)
+    std::array<float, SBC_MAX_BINS> in_diam_sn_core;     // dc (mm)
+    std::array<SBCClass, SBC_MAX_BINS> psd_ptype;
+
+    // The reference's arrays start at 0 (psd_ptype at unset), so a field
+    // that a branch does not write reads back as 0 at the next level. The
+    // core clears every level before a branch writes it.
+    void clear(const std::ptrdiff_t nbins) {
+        for (auto* field :
+             {&water_fraction, &velocity_melt_snow, &mass_water, &mass_snow,
+              &volume_liq, &volume_ice, &volume_snow, &diam_melt_snow,
+              &in_diam_sn_core}) {
+            std::fill_n(field->begin(), nbins, 0.0f);
+        }
+        std::fill_n(psd_ptype.begin(), nbins, SBCClass::unset);
+    }
+};
+
+// One level of the integration, which runs from the cloud top down.
+struct SBCLevel {
+    // Index in the input arrays
+    std::ptrdiff_t k;
+    // The valid level above, the reference's K - 1; -1 at the cloud top
+    std::ptrdiff_t k_above;
+    // Valid levels below the cloud top, the reference's K
+    std::ptrdiff_t K;
+    // (K)
+    float wetbulb;
+    // density_air_g, from the wet-bulb temperature (g cm^-3)
+    float air_density;
+    // layer_depth: height[k_above] - height[k], 0 at the cloud top (m)
+    float layer_depth;
+
+    // Scales the fall speeds near the ground to this level.
+    [[nodiscard]] float density_correction() const {
+        return std::sqrt(SBC_SEA_LEVEL_AIR_DENSITY / air_density);
+    }
+};
+
+// What a column carries from level to level, besides the records of the
+// levels K - 1 and K.
+struct SBCColumnState {
+    // Level 0, the cloud top
+    SBCLevelState top;
+    // uknwn_aa and uknwn_bb, set by the cloud-top branch
+    const float* uknwn_aa = nullptr;
+    const float* uknwn_bb = nullptr;
+
+    // The pre-pass, with the original Tice. A level index of the number of
+    // levels in the column means none, like the reference's len + 1000.
+    std::ptrdiff_t crossings = 0;
+    // cross_index[0]: the first 0 C crossing
+    std::ptrdiff_t cross_index = 0;
+    // ice_nuc_tops[0]: the first level that warms through Tice
+    std::ptrdiff_t ice_nuc_top = 0;
+
+    // temp_nuc: the Tice in use (K)
+    float temp_nuc = MISSING;
+    float rime_factor = MISSING;
+    // 1.81e-5 * rime_factor^3.26 (cm^3)
+    float snow_volume_min = MISSING;
+    bool refrz_detected_flag = false;
+    std::ptrdiff_t refrz_lvl = 0;
+    std::array<bool, SBC_MAX_BINS> refrz_lvl_flag;
+    // in_diam_sn_core, water_fraction, and velocity_melt_snow at refrz_lvl
+    std::array<float, SBC_MAX_BINS> refrz_in_diam_sn_core;
+    std::array<float, SBC_MAX_BINS> refrz_water_fraction;
+    std::array<float, SBC_MAX_BINS> refrz_velocity_melt_snow;
+
+    // slw_hgt (m AGL)
+    float slw_hgt = MISSING;
+    // A branch that is not ported yet ran, and the column gives missing.
+    bool unsupported = false;
+
+    // The refreeze level becomes K, and level holds its values.
+    void set_refrz_lvl(const std::ptrdiff_t K, const SBCLevelState& level,
+                       const std::ptrdiff_t nbins) {
+        refrz_lvl = K;
+        std::copy_n(level.in_diam_sn_core.begin(), nbins,
+                    refrz_in_diam_sn_core.begin());
+        std::copy_n(level.water_fraction.begin(), nbins,
+                    refrz_water_fraction.begin());
+        std::copy_n(level.velocity_melt_snow.begin(), nbins,
+                    refrz_velocity_melt_snow.begin());
+    }
+};
+
+// The branches of classify, in its order. A cloud-top branch writes level 0
+// to next. The others write level K to next from level K - 1 in prev. next
+// arrives cleared, so a branch writes only the fields the reference writes.
+
+// Branch A (classify:138): a frozen cloud top
+inline void sbc_frozen_cloud_top(
+    SBCColumnState& state, SBCLevelState& next, const SBCLevel& level,
+    [[maybe_unused]] const SpectralBinColumn& column,
+    const SpectralBinDSD& dsd) {
+    state.uknwn_aa = dsd.snow_aa().data();
+    state.uknwn_bb = dsd.snow_bb().data();
+    const float rho_air = level.air_density;
+    const float ice_air = SBC_ICE_DENSITY - rho_air;
+    const float density_correction = level.density_correction();
+    const float* m0 = dsd.mass().data();
+    const float* diameter = dsd.snow_diameter().data();
+    const float* rho_snow = dsd.snow_density().data();
+    const float* v_rain = dsd.rain_fall_speed().data();
+    for (std::ptrdiff_t j = 0; j < dsd.nbins(); ++j) {
+        next.diam_melt_snow[j] = diameter[j];
+        next.mass_snow[j] = m0[j];
+        next.volume_ice[j] =
+            m0[j] / rho_snow[j] * (rho_snow[j] - rho_air) / ice_air;
+        next.volume_snow[j] = m0[j] / rho_snow[j];
+        next.velocity_melt_snow[j] =
+            v_rain[j] * density_correction / state.uknwn_aa[j];
+    }
+}
+
+// Branch B (classify:164): the snow of a frozen cloud top, above the first
+// crossing
+inline void sbc_frozen_above_crossing(
+    SBCColumnState& state, [[maybe_unused]] const SBCLevelState& prev,
+    SBCLevelState& next, const SBCLevel& level,
+    [[maybe_unused]] const SpectralBinColumn& column,
+    const SpectralBinDSD& dsd) {
+    const SBCLevelState& top = state.top;
+    const float density_correction = level.density_correction();
+    const float* v_rain = dsd.rain_fall_speed().data();
+    for (std::ptrdiff_t j = 0; j < dsd.nbins(); ++j) {
+        next.mass_snow[j] = top.mass_snow[j];
+        next.volume_ice[j] = top.volume_ice[j];
+        next.volume_snow[j] = top.volume_snow[j];
+        next.diam_melt_snow[j] = top.diam_melt_snow[j];
+        next.velocity_melt_snow[j] =
+            v_rain[j] * density_correction / state.uknwn_aa[j];
+        next.psd_ptype[j] = SBCClass::snow;
+    }
+}
+
+// Branches C (classify:186), D (:217), and E (:243), defined under
+// "Microphysics: liquid cloud tops"
+inline void sbc_liquid_cloud_top(SBCColumnState& state, SBCLevelState& next,
+                                 const SBCLevel& level,
+                                 const SpectralBinColumn& column,
+                                 const SpectralBinDSD& dsd);
+inline void sbc_supercooled_above_crossing(SBCColumnState& state,
+                                           const SBCLevelState& prev,
+                                           SBCLevelState& next,
+                                           const SBCLevel& level,
+                                           const SpectralBinColumn& column,
+                                           const SpectralBinDSD& dsd);
+inline void sbc_warm_above_crossing(SBCColumnState& state,
+                                    const SBCLevelState& prev,
+                                    SBCLevelState& next, const SBCLevel& level,
+                                    const SpectralBinColumn& column,
+                                    const SpectralBinDSD& dsd);
+
+// Branch F (classify:261): a melting level
+inline void sbc_melting(SBCColumnState& state, const SBCLevelState& prev,
+                        SBCLevelState& next, const SBCLevel& level,
+                        const SpectralBinColumn& column,
+                        const SpectralBinDSD& dsd) {
+    const std::ptrdiff_t nbins = dsd.nbins();
+    if (state.refrz_detected_flag) {
+        state.rime_factor = SBC_GRAUPEL_RIME_FACTOR;
+        state.snow_volume_min = SBC_GRAUPEL_SNOW_VOLUME_MIN;
+    }
+    std::fill_n(state.refrz_lvl_flag.begin(), nbins, false);
+
+    bool melted = true;
+    for (std::ptrdiff_t j = 0; j < nbins; ++j) {
+        melted &= (prev.water_fraction[j] == 1.0f);
+    }
+    if (melted) {
+        for (std::ptrdiff_t j = 0; j < nbins; ++j) {
+            next.water_fraction[j] = 1.0f;
+            next.velocity_melt_snow[j] = prev.velocity_melt_snow[j];
+            next.mass_water[j] = prev.mass_water[j];
+            next.volume_liq[j] = prev.volume_liq[j];
+            next.diam_melt_snow[j] = prev.diam_melt_snow[j];
+            next.psd_ptype[j] = SBCClass::rain;
+        }
+        return;
+    }
+
+    const float tw = level.wetbulb;
+    const float rho_air = level.air_density;
+    const float density_correction = level.density_correction();
+    // svp_wrt_water (Pa)
+    const float svp =
+        611.0f * std::exp(17.269f * (tw - ZEROCNK) / (tw - 35.86f));
+    float heat = SBC_AIR_CONDUCTIVITY * (tw - ZEROCNK) +
+                 SBC_VAPOR_HEAT_COEFF *
+                     (column.relh[level.k] * svp / tw - SBC_SVP_OVER_T0);
+    if ((heat < 0.0f) && (tw < SBC_HEAT_CLAMP_TW)) heat = 0.0f;
+    if ((heat < SBC_MIN_HEAT) && (tw > SBC_HEAT_CLAMP_TW)) heat = SBC_MIN_HEAT;
+    const float melt_coeff = SBC_MELT_COEFF * heat * level.layer_depth;
+
+    const float ice_air = SBC_ICE_DENSITY - rho_air;
+    const float dense_snow_ratio = ice_air / (SBC_MAX_SNOW_DENSITY - rho_air);
+    const float rime = state.rime_factor;
+    const float snow_volume_min = state.snow_volume_min;
+    const float snow_density_coeff = 1.75e-2f * rime;
+    const bool refrozen = (state.refrz_lvl != 0);
+    const SBCClass ice_class =
+        refrozen ? SBCClass::ice_pellets : SBCClass::snow;
+    const SBCClass mix_class =
+        refrozen ? SBCClass::rain_ice_pellets : SBCClass::rain_snow;
+
+    const float* m0 = dsd.mass().data();
+    const float* N = dsd.concentration().data();
+    const float* v_rain = dsd.rain_fall_speed().data();
+    const float* v_pellet = dsd.pellet_fall_speed().data();
+    const float* liquid_capacitance = dsd.liquid_capacitance_factor().data();
+    const float* liquid_length = dsd.liquid_length_factor().data();
+    for (std::ptrdiff_t j = 0; j < nbins; ++j) {
+        const float fw_prev = prev.water_fraction[j];
+        if (fw_prev == 1.0f) {
+            next.water_fraction[j] = 1.0f;
+            next.velocity_melt_snow[j] = prev.velocity_melt_snow[j];
+            next.mass_water[j] = prev.mass_water[j];
+            next.volume_liq[j] = prev.volume_liq[j];
+            next.diam_melt_snow[j] = prev.diam_melt_snow[j];
+            next.psd_ptype[j] = SBCClass::rain;
+            continue;
+        }
+
+        const bool liquid_ar = sbc_liquid_ar(prev.psd_ptype[j]);
+        const float dm_prev = prev.diam_melt_snow[j];
+        const float capac =
+            (liquid_ar ? liquid_capacitance[j] : SBC_SNOW_CAPACITANCE_FACTOR) *
+                dm_prev +
+            0.2f * fw_prev;
+        const float length =
+            (liquid_ar ? liquid_length[j] : SBC_SNOW_LENGTH_FACTOR) * dm_prev;
+        const float v =
+            state.refrz_detected_flag
+                ? v_pellet[j] * density_correction
+                : v_rain[j] * density_correction /
+                      (state.uknwn_aa[j] -
+                       state.uknwn_bb[j] * fw_prev * (1.0f + fw_prev));
+        const float melting_schmidt =
+            SBC_SCHMIDT_CBRT * std::sqrt(length * SBC_REYNOLDS_COEFF * v);
+        const float vent =
+            (melting_schmidt <= 1.0f)
+                ? 1.0f + 0.14f * melting_schmidt * melting_schmidt
+                : 0.86f + 0.28f * melting_schmidt;
+
+        const float ms_prev = prev.mass_snow[j];
+        float fw = fw_prev;
+        if (ms_prev == 0.0f) {
+            fw = 1.0f;
+        } else if (heat > 0.0f) {
+            fw = std::min(fw_prev + vent * capac / (ms_prev * v) * melt_coeff,
+                          1.0f);
+        }
+        fw = std::max(fw, 0.0f);
+
+        const float change_ice = ms_prev * fw / SBC_ICE_DENSITY;
+        const float vi = std::max(state.top.volume_ice[j] - change_ice, 0.0f);
+        const float rhs = ice_air * vi + rho_air * prev.volume_snow[j];
+        float vs = 343.0f * std::pow(rhs / rime, 1.443f);
+        if (vs < snow_volume_min) vs = dense_snow_ratio * vi;
+        const float snow_density =
+            (vs >= snow_volume_min)
+                ? snow_density_coeff * std::pow(vs, -0.307f)
+                : SBC_MAX_SNOW_DENSITY;
+        const float vl = change_ice * SBC_ICE_DENSITY;
+
+        next.water_fraction[j] = fw;
+        next.velocity_melt_snow[j] = v;
+        next.mass_water[j] = m0[j] * fw;
+        next.mass_snow[j] = snow_density * vs + vl;
+        next.volume_liq[j] = vl;
+        next.volume_ice[j] = vi;
+        next.volume_snow[j] = vs;
+        next.diam_melt_snow[j] =
+            10.0f * std::cbrt(SBC_SIX_OVER_PI * (vs + vl + vi));
+        next.in_diam_sn_core[j] = 10.0f * std::cbrt(SBC_SIX_OVER_PI * vs);
+
+        const float rw = m0[j] * fw * v * N[j];
+        const float ri = m0[j] * (1.0f - fw) * v * N[j] / SBC_CLASS_ICE_DENSITY;
+        const float total = ri + rw;
+        next.psd_ptype[j] =
+            ((ri == 0.0f) || (ri / total < SBC_CLASS_FRACTION)) ? SBCClass::rain
+            : ((rw == 0.0f) || (rw / total < SBC_CLASS_FRACTION)) ? ice_class
+                                                                  : mix_class;
+    }
+}
+
+// Branch G (classify:402), defined under "Microphysics: refreezing"
+inline void sbc_subfreezing(SBCColumnState& state, const SBCLevelState& prev,
+                            SBCLevelState& next, const SBCLevel& level,
+                            const SpectralBinColumn& column,
+                            const SpectralBinDSD& dsd);
+
+// classify:50-71 over the valid levels, from the cloud top down. A level at
+// exactly 0 C is cold.
+void sbc_crossings(const SpectralBinColumn& column, const float tice,
+                   SBCColumnState& state) {
+    const std::ptrdiff_t none = column.top - column.surface + 1;
+    state.crossings = 0;
+    state.cross_index = none;
+    state.ice_nuc_top = none;
+    float tw_above = column.wetbulb[column.top];
+    std::ptrdiff_t K = 0;
+    for (std::ptrdiff_t k = column.top - 1; k >= column.surface; --k) {
+        if (!column.valid(k)) continue;
+        ++K;
+        const float tw = column.wetbulb[k];
+        if ((tw <= ZEROCNK) != (tw_above <= ZEROCNK)) {
+            if (state.crossings == 0) state.cross_index = K;
+            ++state.crossings;
+        }
+        if ((tw > tice) && (tw_above <= tice) && (state.ice_nuc_top == none)) {
+            state.ice_nuc_top = K;
+        }
+        tw_above = tw;
+    }
+}
+
+// classify:550-616, without the 3600 s and the bin width of the reference's
+// masses, which cancel.
+SpectralBinResult sbc_surface(const SBCColumnState& state,
+                              const SBCLevelState& surface,
+                              const float tw_surface,
+                              const SpectralBinDSD& dsd) {
+    const float* m0 = dsd.mass().data();
+    const float* N = dsd.concentration().data();
+    float rainw = 0.0f;
+    float raini = 0.0f;
+    for (std::ptrdiff_t j = 0; j < dsd.nbins(); ++j) {
+        const float fw = surface.water_fraction[j];
+        const float v = surface.velocity_melt_snow[j];
+        rainw += m0[j] * fw * v * N[j];
+        raini += m0[j] * (1.0f - fw) * v * N[j];
+    }
+    raini /= SBC_ICE_DENSITY;
+
+    const float liquid = rainw / (raini + rainw);
+    SpectralBinResult result{PrecipType::missing, liquid, state.slw_hgt};
+    const bool warm = (tw_surface > ZEROCNK);
+    if (warm && (state.crossings == 1)) {
+        if ((raini == 0.0f) || (liquid > 0.85f)) {
+            result.precip_type = PrecipType::rain;
+        } else if ((rainw == 0.0f) || (liquid < 0.60f)) {
+            result.precip_type = PrecipType::snow;
+        } else {
+            result.precip_type = PrecipType::rain_snow;
+        }
+    } else if (warm) {
+        if ((rainw == 0.0f) || (liquid < 0.15f)) {
+            result.precip_type = PrecipType::ice_pellets;
+        } else if ((raini == 0.0f) || (raini / (raini + rainw) < 0.15f)) {
+            result.precip_type = PrecipType::rain;
+        } else {
+            result.precip_type = PrecipType::rain_ice_pellets;
+        }
+    } else if ((rainw == 0.0f) || (liquid < 0.15f)) {
+        result.precip_type = PrecipType::ice_pellets;
+    } else {
+        result.precip_type = ((raini == 0.0f) || (liquid > 0.85f))
+                                 ? PrecipType::freezing_rain
+                                 : PrecipType::freezing_rain_ice_pellets;
+        result.supercooled_liquid_height = 0.0f;
+    }
+    return result;
+}
+
+SpectralBinResult sbc_microphysics(const SpectralBinColumn& column,
+                                   const SpectralBinDSD& dsd,
+                                   const float ice_nucleation_temperature,
+                                   float liquid_fraction_profile[]) {
+    const std::ptrdiff_t nbins = dsd.nbins();
+    SBCColumnState state;
+    state.temp_nuc = ice_nucleation_temperature;
+    state.rime_factor = dsd.rime_factor();
+    state.snow_volume_min = 1.81e-5f * std::pow(state.rime_factor, 3.26f);
+    std::fill_n(state.refrz_lvl_flag.begin(), nbins, false);
+    sbc_crossings(column, ice_nucleation_temperature, state);
+
+    // Levels K - 1 and K alternate between the buffers. The cloud top keeps
+    // its own record.
+    std::array<SBCLevelState, 2> buffers;
+    SBCLevelState* prev = &state.top;
+    SBCLevelState* next = &state.top;
+    const float tw_top = column.wetbulb[column.top];
+    std::ptrdiff_t K = 0;
+    std::ptrdiff_t k_above = -1;
+    for (std::ptrdiff_t k = column.top; k >= column.surface; --k) {
+        if (!column.valid(k)) continue;
+        const float tw = column.wetbulb[k];
+        const SBCLevel level{
+            k,
+            k_above,
+            K,
+            tw,
+            column.pressure[k] / SBC_DRY_AIR_GAS_CONSTANT / tw * 1.0e-3f,
+            (K == 0) ? 0.0f : column.height[k_above] - column.height[k]};
+        next->clear(nbins);
+
+        if (K == 0) {
+            if (tw_top <= state.temp_nuc) {
+                sbc_frozen_cloud_top(state, *next, level, column, dsd);
+            } else {
+                sbc_liquid_cloud_top(state, *next, level, column, dsd);
+            }
+        } else {
+            const bool above_crossing = (K < state.cross_index);
+            const float tice = state.temp_nuc;
+            if (above_crossing && (tw_top <= tice) && (tw < ZEROCNK)) {
+                sbc_frozen_above_crossing(state, *prev, *next, level, column,
+                                          dsd);
+            } else if (above_crossing && (tice < tw_top) &&
+                       (tw_top <= ZEROCNK) && (tw > tice) &&
+                       (state.ice_nuc_top >= state.cross_index)) {
+                sbc_supercooled_above_crossing(state, *prev, *next, level,
+                                               column, dsd);
+            } else if (above_crossing && (tw_top > ZEROCNK) && (tw > tice)) {
+                sbc_warm_above_crossing(state, *prev, *next, level, column,
+                                        dsd);
+            } else if (tw >= ZEROCNK) {
+                sbc_melting(state, *prev, *next, level, column, dsd);
+            } else {
+                sbc_subfreezing(state, *prev, *next, level, column, dsd);
+            }
+        }
+
+        if (state.unsupported) {
+            if (liquid_fraction_profile != nullptr) {
+                std::fill(liquid_fraction_profile + k * nbins,
+                          liquid_fraction_profile + (column.top + 1) * nbins,
+                          MISSING);
+            }
+            return SpectralBinResult{};
+        }
+        if (liquid_fraction_profile != nullptr) {
+            std::copy_n(next->water_fraction.begin(), nbins,
+                        liquid_fraction_profile + k * nbins);
+        }
+        if (K == 0) state.set_refrz_lvl(0, state.top, nbins);
+
+        prev = next;
+        next = (prev == &buffers[0]) ? &buffers[1] : &buffers[0];
+        k_above = k;
+        ++K;
+    }
+    return sbc_surface(state, *prev, column.wetbulb[column.surface], dsd);
+}
+}  // namespace
+
 // ---------------------------------------------------------------------------
 // Microphysics: refreezing
 // ---------------------------------------------------------------------------
 
+namespace {
+inline void sbc_subfreezing(SBCColumnState& state,
+                            [[maybe_unused]] const SBCLevelState& prev,
+                            [[maybe_unused]] SBCLevelState& next,
+                            [[maybe_unused]] const SBCLevel& level,
+                            [[maybe_unused]] const SpectralBinColumn& column,
+                            [[maybe_unused]] const SpectralBinDSD& dsd) {
+    state.unsupported = true;
+}
+}  // namespace
+
 // ---------------------------------------------------------------------------
 // Microphysics: liquid cloud tops
 // ---------------------------------------------------------------------------
+
+namespace {
+inline void sbc_liquid_cloud_top(
+    SBCColumnState& state, [[maybe_unused]] SBCLevelState& next,
+    [[maybe_unused]] const SBCLevel& level,
+    [[maybe_unused]] const SpectralBinColumn& column,
+    [[maybe_unused]] const SpectralBinDSD& dsd) {
+    state.unsupported = true;
+}
+
+inline void sbc_supercooled_above_crossing(
+    SBCColumnState& state, [[maybe_unused]] const SBCLevelState& prev,
+    [[maybe_unused]] SBCLevelState& next,
+    [[maybe_unused]] const SBCLevel& level,
+    [[maybe_unused]] const SpectralBinColumn& column,
+    [[maybe_unused]] const SpectralBinDSD& dsd) {
+    state.unsupported = true;
+}
+
+inline void sbc_warm_above_crossing(
+    SBCColumnState& state, [[maybe_unused]] const SBCLevelState& prev,
+    [[maybe_unused]] SBCLevelState& next,
+    [[maybe_unused]] const SBCLevel& level,
+    [[maybe_unused]] const SpectralBinColumn& column,
+    [[maybe_unused]] const SpectralBinDSD& dsd) {
+    state.unsupported = true;
+}
+}  // namespace
 
 // ---------------------------------------------------------------------------
 // Precipitation type from a full sounding

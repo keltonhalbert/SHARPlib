@@ -99,6 +99,34 @@ params
 
    .. Microphysics: frozen cloud tops and melting
 
+   .. rubric:: Microphysics: frozen cloud tops and melting
+
+   A column that the pre-classifier does not decide runs the microphysics of the reference (``classify`` in sbc_alg_2023Aug31.py) for every bin of the drop-size distribution, level by level from the cloud top down to the surface. A layer spans two adjacent valid levels. The function first counts the 0 C crossings Nc between adjacent levels, where a level at exactly 0 C counts as subfreezing, and finds the first crossing.
+
+   With Tw at or below Tice at the cloud top, every bin starts as snow, with the diameter, density, and fall-speed coefficients aa and bb of the drop-size distribution. Above the first crossing the snow falls unchanged. Its fall speed is the raindrop fall speed near the ground times sqrt(rho_0 / rho) / aa, with the air density rho and rho_0 = 1.292e-3 g cm^-3. At each level with Tw at or above 0 C, a bin that is not all liquid melts. Its liquid fraction grows with the heat flux from the air across the layer above, which depends on Tw and the relative humidity. A bin melts with the aspect ratio of a raindrop when its class at the level above is liquid-like, ice pellets included. Otherwise its aspect ratio is 0.8. The class of a bin is rain, snow, or both, from the liquid share of its mass flux and a threshold of 0.15.
+
+   At the surface, the liquid and ice mass fluxes are Pw = sum(m0 fw v N) and Pi = sum(m0 (1 - fw) v N) / 0.917 over the bins, with the mass m0, liquid fraction fw, fall speed v, and concentration N of each bin. ``liquid_fraction`` is Pw / (Pw + Pi). The reference rounds it to 0.1 %, and this function does not. A surface with Tw above 0 C is warm:
+
+   ===== ======= ================================================
+   Nc    Surface Category by liquid_fraction
+   ===== ======= ================================================
+   1     warm    RA above 0.85, SN below 0.60, otherwise RASN
+   > 1   warm    PL below 0.15, RA above 0.85, otherwise RAPL
+   any   cold    PL below 0.15, FZRA above 0.85, otherwise FZRAPL
+   ===== ======= ================================================
+
+   FZRA and FZRAPL set ``supercooled_liquid_height`` to 0 m. This decision departs from Fig. 2 of Reeves et al. (2016), which compares Pw and Pi with a ratio of 0.15, has no RAPL, and gives RA, RASN, or PL, never SN, over a warm surface.
+
+   The function keeps these quirks of the reference:
+
+   * The air density p / (R_d Tw), with R_d = 287 J kg^-1 K^-1, uses the wet-bulb temperature.
+   * aa and bb keep their cloud-top values all the way down. The reference recomputes them at melting levels but never reads the new values.
+   * The surface ice flux uses an ice density of 0.917 g cm^-3, and the class of each bin 0.918.
+   * A quantity that the reference does not set at a level reads back as 0 at the next level, because its arrays start at 0. The snow of a frozen cloud top has a liquid fraction of 0, and a bin that has melted completely has no snow mass and no ice or snow volume.
+   * The reference weights the mass flux of each bin by the bin width and by the ratio of its fall speed at the surface to its fall speed at the level. That ratio is always 1 where it is used, and both factors cancel in every ratio of fluxes, so the function leaves them out.
+
+   With ``return_profile=True``, the profile holds the liquid fraction of every bin at every level of the integration.
+
    .. Microphysics: refreezing
 
    .. Microphysics: liquid cloud tops

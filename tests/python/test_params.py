@@ -1734,32 +1734,203 @@ def test_spectral_bin_classifier_missing_levels(field, bad):
 # Microphysics: frozen cloud tops and melting
 # ---------------------------------------------------------------------------
 
-def test_spectral_bin_classifier_temporary_core_is_missing():
-    counts = {}
-    for case, result, profile in sbc_reference_runs(("core",)):
-        counts[case.group] = counts.get(case.group, 0) + 1
-        assert sbc_tuple(result) == SBC_MISSING, case.case_id
-        assert np.all(profile == constants.MISSING)
-    assert counts == {"named": 17, "sample": 1, "corpus": 1158}
+SBC_THRESHOLDS = np.array([0.15, 0.60, 0.85])
 
 
-@pytest.mark.parametrize("wetbulb", [
-    [273.15, 275.15, 276.15, 274.15],
-    [270.15, 275.15, 276.15, SBC_TICE],
-])
-def test_spectral_bin_classifier_temporary_rule_2_edges(wetbulb):
-    snd = saturated_sbc_profile(SBC_HEIGHT_4, wetbulb)
-    assert run_sbc(snd, 3000.0) == SBC_MISSING
+def sbc_decision(liquid_fraction, crossings, warm):
+    """
+    The reference's decision tree on liquid fractions, with each case's 0 C
+    crossings and surface class (Tw > 273.15 K), as PrecipType codes. It
+    compares in float32, as the classifier does.
+    """
+    lf = np.asarray(liquid_fraction, dtype=np.float32)
+    f32 = np.float32
+    ice, liquid = lf == 0, lf == 1
+    one_warm = np.where(liquid | (lf > f32(0.85)), 1,
+                        np.where(ice | (lf < f32(0.60)), 2, 3))
+    many_warm = np.where(ice | (lf < f32(0.15)), 5,
+                         np.where(liquid | (f32(1) - lf < f32(0.15)), 1, 7))
+    cold = np.where(ice | (lf < f32(0.15)), 5,
+                    np.where(liquid | (lf > f32(0.85)), 4, 6))
+    return np.where(warm, np.where(np.asarray(crossings) == 1, one_warm,
+                                   many_warm), cold)
+
+
+def sbc_same_level(agl, height, expected):
+    """Whether two heights AGL are both MISSING, or both the same level."""
+    if (height == constants.MISSING) or (expected == constants.MISSING):
+        return height == expected
+    level, expected_level = np.abs(agl - height), np.abs(agl - expected)
+    return bool(level.argmin() == expected_level.argmin()
+                and level.min() < 0.01 and expected_level.min() < 0.01)
+
+
+def sbc_run_composed(case, snd, dsd):
+    """The composed overload, from the case's reference cloud top."""
+    return params.spectral_bin_classifier(
+        *snd, case.cloud_top_height, dsd, case.ice_nucleation_temperature,
+        return_profile=True)
+
+
+def sbc_branches_within(letters):
+    """Selects the core cases that take only the given branches."""
+    return lambda cases: (cases["stage"] == "core") & cases["branches"].map(
+        lambda branches: set(branches) <= set(letters))
+
+
+def sbc_golden_check(select, run=sbc_run_composed):
+    """
+    Checks the golden cases that select(cases) picks under the golden-data
+    comparison rules. run(case, snd, dsd) returns the result and the
+    profile. A case without flags must pass every rule, and every case rule
+    1. A near_discontinuity corpus case that breaks rules 2-4 is listed, and
+    the listed cases stay at most 1 % of the corpus. Returns the selected
+    cases with the returned values, the listed case_ids, and the largest
+    liquid-fraction and profile errors outside the exemptions.
+    """
+    cases, levels, profiles, dsds = sbc_reference()
+    chosen = cases[select(cases)].reset_index(drop=True)
+    n = len(chosen)
+    assert n > 0
+    precip_type = np.empty(n, dtype=int)
+    liquid_fraction = np.empty(n)
+    slw_height = np.empty(n)
+    same_slw_level = np.empty(n, dtype=bool)
+    warm = np.empty(n, dtype=bool)
+    ours, theirs = [], []
+    for i, case in enumerate(chosen.itertuples()):
+        snd = levels[case.case_id]
+        dsd = params.spectral_bin_dsd(*dsds[case.dsd_name],
+                                      rime_factor=case.rime_factor)
+        result, profile = run(case, snd, dsd)
+        precip_type[i] = int(result.precip_type)
+        liquid_fraction[i] = result.liquid_fraction
+        slw_height[i] = result.supercooled_liquid_height
+        same_slw_level[i] = sbc_same_level(
+            snd[1] - snd[1][0], result.supercooled_liquid_height,
+            case.supercooled_liquid_height)
+        warm[i] = snd[5][0] > np.float32(273.15)
+        ours.append(profile.ravel())
+        theirs.append(profiles[case.case_id].ravel())
+
+    core = (chosen["stage"] == "core").to_numpy()
+    corpus = (chosen["group"] == "corpus").to_numpy()
+    ref_type = chosen["precip_type"].to_numpy()
+    ref_lf = chosen["liquid_fraction"].to_numpy()
+    ref_slw = chosen["supercooled_liquid_height"].to_numpy()
+
+    exact = ((precip_type == ref_type) & (liquid_fraction == ref_lf)
+             & (slw_height == ref_slw))
+    consistent = precip_type == sbc_decision(
+        liquid_fraction, chosen["crossings"].to_numpy(), warm)
+    rule_1 = np.where(core, consistent, exact)
+
+    nearest = SBC_THRESHOLDS[np.abs(ref_lf[:, None]
+                                    - SBC_THRESHOLDS).argmin(axis=1)]
+    other_side = sbc_decision(2 * nearest - ref_lf,
+                              chosen["crossings"].to_numpy(), warm)
+    rule_2 = (precip_type == ref_type) | (
+        corpus & chosen["near_threshold"].to_numpy()
+        & (precip_type == other_side))
+
+    sizes = np.array([p.size for p in ours])
+    case_of = np.repeat(np.arange(n), sizes)
+    ours, theirs = np.concatenate(ours), np.concatenate(theirs)
+    nbins = np.repeat(chosen["dsd_name"].map(
+        lambda name: dsds[name][0].size).to_numpy(), sizes)
+    position = np.arange(ours.size) - np.repeat(np.cumsum(sizes) - sizes,
+                                                sizes)
+    level, bin_ = position // nbins, position % nbins
+    missing = theirs == constants.MISSING
+    same_missing = (ours == constants.MISSING) == missing
+    error = np.where(missing, 0.0, np.abs(ours - theirs))
+    disc = chosen["near_discontinuity"].to_numpy()[case_of]
+    exempt = disc & (level <= chosen["disc_level"].to_numpy()[case_of]) & (
+        (chosen["disc_scope"].to_numpy()[case_of] == "column")
+        | (bin_ == chosen["disc_bin"].to_numpy()[case_of]))
+
+    def per_case(bad):
+        return np.bincount(case_of, weights=bad, minlength=n) == 0
+
+    rule_3 = ((np.abs(liquid_fraction - ref_lf) <= 0.005) & same_slw_level
+              & per_case(~same_missing))
+    rule_4 = per_case((error > 1e-3) & ~exempt)
+
+    flagged = corpus & chosen["near_discontinuity"].to_numpy()
+    broken = ~(rule_2 & rule_3 & rule_4)
+    failing = chosen.loc[~rule_1 | (broken & ~flagged), "case_id"].tolist()
+    assert not failing, f"cases that break the comparison rules: {failing}"
+    listed = chosen.loc[broken & flagged, "case_id"].tolist()
+    assert len(listed) <= 0.01 * (cases["group"] == "corpus").sum(), listed
+
+    return {
+        "cases": chosen.assign(result_precip_type=precip_type,
+                               result_liquid_fraction=liquid_fraction,
+                               result_supercooled_liquid_height=slw_height),
+        "listed": listed,
+        "liquid_fraction_error": float(np.abs(liquid_fraction
+                                              - ref_lf)[core].max(initial=0)),
+        "profile_error": float(error[~exempt].max(initial=0)),
+    }
+
+
+def test_spectral_bin_classifier_golden_frozen_tops():
+    check = sbc_golden_check(sbc_branches_within("ABF"))
+    cases = check["cases"]
+    assert cases["group"].value_counts().to_dict() == {"corpus": 105,
+                                                       "named": 8}
+    assert set(cases["precip_type"]) == {1, 2, 3}
+    assert set(cases["crossings"]) == {1}
+    _, levels, _, _ = sbc_reference()
+    assert all(levels[case_id][5][0] > np.float32(273.15)
+               for case_id in cases["case_id"])
+    assert set(cases["dsd_name"]) == {"python_default", "cpp_2.0.3",
+                                      "python_deld_0.1"}
+    assert set(cases["rime_factor"]) == {1.0, 5.0}
+    assert set(cases["ice_nucleation_temperature"]) == {
+        np.float32(263.15), np.float32(267.15)}
+    assert check["listed"] == []
 
 
 # ---------------------------------------------------------------------------
 # Microphysics: refreezing
 # ---------------------------------------------------------------------------
 
+def test_spectral_bin_classifier_temporary_refreezing_is_missing():
+    counts = {}
+    for case, result, profile in sbc_reference_runs(("core",)):
+        if "G" not in case.branches or set(case.branches) & set("CDE"):
+            continue
+        counts[case.group] = counts.get(case.group, 0) + 1
+        assert sbc_tuple(result) == SBC_MISSING, case.case_id
+        assert np.all(profile == constants.MISSING)
+    assert counts == {"named": 7, "sample": 1, "corpus": 1001}
+
+
+def test_spectral_bin_classifier_temporary_rule_2_at_tice():
+    snd = saturated_sbc_profile(SBC_HEIGHT_4,
+                                [270.15, 275.15, 276.15, SBC_TICE])
+    assert run_sbc(snd, 3000.0) == SBC_MISSING
+
 
 # ---------------------------------------------------------------------------
 # Microphysics: liquid cloud tops
 # ---------------------------------------------------------------------------
+
+def test_spectral_bin_classifier_temporary_liquid_tops_are_missing():
+    counts = {}
+    for case, result, profile in sbc_reference_runs(("core",)):
+        if not set(case.branches) & set("CDE"):
+            continue
+        counts[case.group] = counts.get(case.group, 0) + 1
+        assert sbc_tuple(result) == SBC_MISSING, case.case_id
+        assert np.all(profile == constants.MISSING)
+    assert counts == {"named": 2, "corpus": 52}
+
+
+def test_spectral_bin_classifier_temporary_rule_2_at_0c():
+    snd = saturated_sbc_profile(SBC_HEIGHT_4, [273.15, 275.15, 276.15, 274.15])
+    assert run_sbc(snd, 3000.0) == SBC_MISSING
 
 
 # ---------------------------------------------------------------------------
