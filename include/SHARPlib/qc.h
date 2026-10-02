@@ -30,7 +30,7 @@ namespace sharp {
  * \return  Whether value is sharp::MISSING or NaN
  */
 [[nodiscard]] inline bool is_missing(const float value) {
-    return (value == MISSING) || std::isnan(value);
+    return !std::islessgreater(value, MISSING);
 }
 
 }  // namespace sharp
