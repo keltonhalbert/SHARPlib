@@ -6,51 +6,26 @@ add_custom_target(SHARPlib_tests)
 
 include_directories(${CMAKE_SOURCE_DIR}/include ${DOCTEST_INCLUDE_DIR})
 
+## Fails to compile if NO_QC stops propagating from the SHARPlib target
+add_executable(test_sharp_no_qc_propagation EXCLUDE_FROM_ALL test_no_qc_propagation.cpp)
+target_link_libraries(test_sharp_no_qc_propagation SHARPlib)
+target_compile_definitions(test_sharp_no_qc_propagation PRIVATE SHARPLIB_EXPECT_NO_QC=$<BOOL:${NO_QC}>)
+add_test(NAME sharp_no_qc_propagation COMMAND test_sharp_no_qc_propagation)
+
 ## Create an executable with the given name from the given source, excluding
 ## it from the "make all" target. Then link it to the base static library,
 ## and then add a test to CTests
-add_executable(test_sharp_thermo EXCLUDE_FROM_ALL test_thermo.cpp)
-target_link_libraries(test_sharp_thermo SHARPlib) 
-if (NO_QC)
-    target_compile_definitions(test_sharp_thermo PRIVATE NO_QC)
-endif()
-add_test(NAME sharp_thermo COMMAND test_sharp_thermo)
-
-add_executable(test_sharp_interp EXCLUDE_FROM_ALL test_interp.cpp)
-target_link_libraries(test_sharp_interp SHARPlib) 
-if (NO_QC)
-    target_compile_definitions(test_sharp_interp PRIVATE NO_QC)
-endif()
-add_test(NAME sharp_interp COMMAND test_sharp_interp)
-
-add_executable(test_sharp_layer EXCLUDE_FROM_ALL test_layer.cpp)
-target_link_libraries(test_sharp_layer SHARPlib) 
-if (NO_QC)
-    target_compile_definitions(test_sharp_layer PRIVATE NO_QC)
-endif()
-add_test(NAME sharp_layer COMMAND test_sharp_layer)
-
-add_executable(test_sharp_winds EXCLUDE_FROM_ALL test_winds.cpp)
-target_link_libraries(test_sharp_winds SHARPlib) 
-if (NO_QC)
-    target_compile_definitions(test_sharp_winds PRIVATE NO_QC)
-endif()
-add_test(NAME sharp_winds COMMAND test_sharp_winds)
-
-add_executable(test_sharp_parcel EXCLUDE_FROM_ALL test_parcel.cpp)
-target_link_libraries(test_sharp_parcel SHARPlib) 
-if (NO_QC)
-    target_compile_definitions(test_sharp_parcel PRIVATE NO_QC)
-endif()
-add_test(NAME sharp_parcel COMMAND test_sharp_parcel)
+foreach(suite thermo interp layer winds parcel params qc)
+    add_executable(test_sharp_${suite} EXCLUDE_FROM_ALL test_${suite}.cpp)
+    target_link_libraries(test_sharp_${suite} SHARPlib)
+    add_test(NAME sharp_${suite} COMMAND test_sharp_${suite})
+    list(APPEND SHARP_TEST_TARGETS test_sharp_${suite})
+endforeach()
 
 add_executable(test_sharp_algs EXCLUDE_FROM_ALL test_algorithms.cpp)
 target_link_libraries(test_sharp_algs SHARPlib) 
-if (NO_QC)
-    target_compile_definitions(test_sharp_algs PRIVATE NO_QC)
-endif()
 add_test(NAME sharp_algs COMMAND test_sharp_algs)
 
 ## This aggregates all of the executable names into a single 
 ## target for building and testing
-add_dependencies(SHARPlib_tests test_sharp_thermo test_sharp_interp test_sharp_layer test_sharp_winds test_sharp_parcel test_sharp_algs)
+add_dependencies(SHARPlib_tests ${SHARP_TEST_TARGETS} test_sharp_algs test_sharp_no_qc_propagation)

@@ -1267,6 +1267,9 @@ Computes the lapse rate over a given HeightLayer (meters AGL).
 This routine handles converting the height AGL to MSL by adding
 the surface height value to the HeightLayer.
 
+A layer that extends past the profile is clipped to it. A layer entirely
+outside the profile, or touching it at only one level, returns MISSING.
+
 Parameters
 ----------
 layer_agl : nwsspc.sharp.calc.layer.HeightLayer 
@@ -1294,6 +1297,9 @@ float
         nb::arg("temperature"),
         R"pbdoc(
 Computes the lapse rate over a given PressureLayer (Pa).
+
+Clips the layer and returns MISSING the same way as the HeightLayer
+overload.
 
 Parameters
 ----------
@@ -1331,6 +1337,13 @@ Given a layer of the atmosphere (e.g. 2 - 6 km), find the maximum
 lapse rate over the provided depth (e.g. 2 km) within that given layer. 
 Returns the maximum lapse rate, as well as the layer it was found in. 
 
+Each candidate layer is depth meters deep, starting at the bottom of
+layer and stepping up by its delta. Candidates that extend below the
+surface or above the top of the profile are skipped, not clipped as in
+lapse_rate. The delta must be positive. If it is not, or if no candidate
+fits in the profile and has a lapse rate, this returns MISSING for the
+lapse rate and for both ends of the returned layer.
+
 Parameters
 ----------
 layer : nwsspc.sharp.calc.layer.HeightLayer 
@@ -1367,6 +1380,9 @@ tuple[float, nwsspc.sharp.calc.layer.HeightLayer]
 Given a layer of the atmosphere (e.g. 800 hPa - 500 hPa), find the maximum
 lapse rate over the provided depth (e.g. 100 hPa) within that given layer. 
 Returns the maximum lapse rate, as well as the layer it was found in. 
+
+Same as the HeightLayer overload, except the delta of layer must be
+negative.
 
 Parameters
 ----------
@@ -1441,10 +1457,8 @@ numpy.ndarray[dtype=float32]
             check_equal_sizes(pres_arr, thetav_arr);
             const std::size_t NZ = pres_arr.size();
 
-            std::size_t pbl_idx =
-                sharp::pbl_top(pres_arr.data(), thetav_arr.data(), NZ, offset);
-
-            return pbl_idx;
+            return sharp::pbl_top(pres_arr.data(), thetav_arr.data(), NZ,
+                                  offset);
         },
         nb::arg("pressure"), nb::arg("thetav"), nb::arg("offset") = 0.5,
         R"pbdoc(

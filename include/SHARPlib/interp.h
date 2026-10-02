@@ -110,6 +110,13 @@ template <typename _Fp>
  * values first.Duplicate height values or decreasing height values
  * may produce unexpected results.
  *
+ * By default, this routine skips levels whose data is sharp::MISSING or
+ * NaN. A height_val exactly on a valid level returns that level's value.
+ * Otherwise, it interpolates between the nearest valid levels above and
+ * below height_val, and returns sharp::MISSING if either side has none.
+ * Building with NO_QC turns these checks off. An empty profile (N < 1)
+ * always returns sharp::MISSING.
+ *
  * \param   height_val  The height value to interpolate data to
  * \param   height_arr  The array of height values in the profile
  * \param   data_arr    The array of data values you want interpolated
@@ -136,6 +143,9 @@ template <typename _Fp>
  * Duplicate pressure values or increasing pressure values may produce
  * unexpected results.
  *
+ * Handles missing data and empty profiles the same way as
+ * sharp::interp_height.
+ *
  * \param   pressure_val    The pressure value to interpolate data to
  * \param   pressure_arr    The array of pressure values in the profile
  * \param   data_arr        The array of data values you want interpolated
@@ -156,6 +166,11 @@ template <typename _Fp>
  * Conduct a bottom-up search for the first occurrence of a given value,
  * and interpolate in order to get the pressure level it occurs at.
  *
+ * An exact match returns that level's pressure. By default, the search
+ * skips levels whose data is sharp::MISSING or NaN, so it can find a
+ * crossing across a gap in the data. A sharp::MISSING or NaN data_val
+ * returns sharp::MISSING. Building with NO_QC turns these checks off.
+ *
  * \param   data_val        The value being searched for
  * \param   pressure_arr    The pressure array to get the level from (Pa)
  * \param   data_arr        The data array of values being searched over
@@ -174,6 +189,8 @@ template <typename _Fp>
  *
  * Conduct a bottom-up search for the first occurrence of a given value,
  * and interpolate in order to get the pressure level it occurs at.
+ *
+ * Handles missing data the same way as sharp::find_first_pressure.
  *
  * \param   data_val    The value being searched for
  * \param   height_arr  The height array to get the level from (meters)

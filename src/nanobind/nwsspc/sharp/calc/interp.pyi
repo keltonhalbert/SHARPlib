@@ -9,6 +9,11 @@ def interp_height(hght_val: float, hght_arr: Annotated[NDArray[numpy.float32], d
     Interpolate a value from an array in height coordinates (meters).
     The coordinate array (hght_arr) is assumed to be sorted (ascending).
 
+    This routine skips levels whose data is MISSING or NaN. A hght_val
+    exactly on a valid level returns that level's value. Otherwise, it
+    interpolates between the nearest valid levels above and below hght_val,
+    and returns MISSING if either side has none. Empty arrays return MISSING.
+
     Parameters
     ----------
     hght_val : float 
@@ -30,6 +35,8 @@ def interp_pressure(pres_val: float, pres_arr: Annotated[NDArray[numpy.float32],
     All pressure interpolation happens in log10 space.
     The coordinate array (pres_arr) is assumed to be sorted (descending).
 
+    Handles missing data and empty arrays the same way as interp_height.
+
     Parameters
     ----------
     pres_val : float 
@@ -50,6 +57,10 @@ def find_first_pressure(data_val: float, pressure: Annotated[NDArray[numpy.float
     Conducts a bottom-up search for the first occurrence of a given value,
     and interpolates in order to get the pressure level it occurs at.
 
+    An exact match returns that level's pressure. The search skips levels
+    whose data is MISSING or NaN, so it can find a crossing across a gap in
+    the data. A MISSING or NaN data_val returns MISSING.
+
     Parameters
     ----------
     data_val : float 
@@ -69,6 +80,8 @@ def find_first_height(data_val: float, height: Annotated[NDArray[numpy.float32],
     """
     Conducts a bottom-up search for the first occurrence of a given value,
     and interpolates in order to get the height level it occurs at.
+
+    Handles missing data the same way as find_first_pressure.
 
     Parameters
     ----------

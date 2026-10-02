@@ -150,8 +150,10 @@ def test_bunkers_motion():
         eil, mupcl
     )
 
-    assert (storm_mtn.u == pytest.approx(9.701575))
-    assert (storm_mtn.v == pytest.approx(5.622299))
+    # The parcel lifter's exp/log/pow differ in the last bits across
+    # platforms; 1e-3 allows 0.5 m of drift in the MU EL.
+    assert (storm_mtn.u == pytest.approx(9.701575, abs=1e-3))
+    assert (storm_mtn.v == pytest.approx(5.622299, abs=1e-3))
 
 
 def test_corfidi_vectors():
@@ -371,7 +373,9 @@ def test_ehi():
     )
 
     ehi = params.energy_helicity_index(pcl.cape, srh)
-    assert (ehi == pytest.approx(4.38889, abs=1e-5))
+    # The parcel lifters' results differ in the last bits across
+    # platforms; 1e-3 allows 0.5 m of drift in the EL.
+    assert (ehi == pytest.approx(4.38889, abs=1e-3))
 
 
 def test_convective_temperature():
@@ -441,3 +445,24 @@ def test_pft():
         snd_data["theta"]
     )
     assert (pft == pytest.approx(158187356160.0, abs=1e6))
+
+
+@pytest.mark.parametrize("field, mask", [
+    ("theta", snd_data["pres"] < 75000.0),
+    ("uwin", snd_data["pres"] > 80000.0),
+])
+def test_pft_missing(field, mask):
+    lifter = parcel.lifter_cm1()
+    lifter.ma_type = thermo.adiabat.pseudo_liq
+    pres = snd_data["pres"]
+    mix_layer = layer.PressureLayer(pres[0], pres[0] - 10000.0)
+    data = {"uwin": snd_data["uwin"], "theta": snd_data["theta"]}
+    data[field] = np.where(mask, constants.MISSING,
+                           data[field]).astype("float32")
+    pcl = parcel.Parcel()
+    pft = params.pyrocumulonimbus_firepower_threshold(
+        lifter, mix_layer, pres, snd_data["hght"], snd_data["tmpk"],
+        snd_data["mixr"], snd_data["vtmp"], data["uwin"], snd_data["vwin"],
+        data["theta"], pcl=pcl)
+    assert (pft == constants.MISSING)
+    assert (pcl.pres == constants.MISSING)

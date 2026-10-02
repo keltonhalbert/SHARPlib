@@ -179,3 +179,124 @@ TEST_CASE("Testing find_first_pressure_with_missing") {
           doctest::Approx(79372.6f));
 }
 #endif
+
+#ifndef NO_QC
+constexpr float hght[4] = {0, 100, 200, 300};
+constexpr float pres[4] = {100000, 90000, 80000, 70000};
+constexpr float nan_mid[3] = {1, nanval, 9};
+
+TEST_CASE("Testing interp with NaN and MISSING data") {
+    CHECK(sharp::interp_height(150, hght, nan_mid, 3) == 7);
+    CHECK(sharp::interp_height(50, hght, nan_mid, 3) == 3);
+    CHECK(sharp::interp_pressure(85000, pres, nan_mid, 3) ==
+          doctest::Approx(6.82651615));
+    CHECK(sharp::interp_pressure(95000, pres, nan_mid, 3) ==
+          doctest::Approx(2.83893538));
+
+    constexpr float nan_top[2] = {1, nanval};
+    constexpr float nan_below[3] = {nanval, nanval, 9};
+    constexpr float nan_above[3] = {1, nanval, nanval};
+    CHECK(sharp::interp_height(50, hght, nan_top, 2) == sharp::MISSING);
+    CHECK(sharp::interp_height(50, hght, nan_below, 3) == sharp::MISSING);
+    CHECK(sharp::interp_height(150, hght, nan_above, 3) == sharp::MISSING);
+    CHECK(sharp::interp_pressure(95000, pres, nan_top, 2) == sharp::MISSING);
+    CHECK(sharp::interp_pressure(95000, pres, nan_below, 3) == sharp::MISSING);
+    CHECK(sharp::interp_pressure(85000, pres, nan_above, 3) == sharp::MISSING);
+
+    constexpr float hght_td[3] = {2950, 3000, 3050};
+    for (const float bad : {nanval, sharp::MISSING}) {
+        CAPTURE(bad);
+        const float top[2] = {bad, 280};
+        CHECK(sharp::interp_height(100, hght, top, 2) == 280);
+        CHECK(sharp::interp_pressure(90000, pres, top, 2) == 280);
+
+        const float bottom[2] = {280, bad};
+        CHECK(sharp::interp_height(0, hght, bottom, 2) == 280);
+        CHECK(sharp::interp_pressure(100000, pres, bottom, 2) == 280);
+
+        const float td[3] = {270.0f, 269.5f, bad};
+        CHECK(sharp::interp_height(3000, hght_td, td, 3) == 269.5f);
+        CHECK(sharp::interp_pressure(90000, pres, td, 3) == 269.5f);
+    }
+    constexpr float td_mis[3] = {270.0f, 269.5f, sharp::MISSING};
+    CHECK(sharp::interp_height(2999.9f, hght_td, td_mis, 3) ==
+          doctest::Approx(269.501));
+}
+
+TEST_CASE("Testing interp at exact levels with a complete bracket") {
+    constexpr float data4[4] = {sharp::MISSING, 2.25f, 7.75f, nanval};
+    CHECK(sharp::interp_height(100, hght, data4, 4) == 2.25f);
+    CHECK(sharp::interp_height(150, hght, data4, 4) == 5.0f);
+    CHECK(sharp::interp_pressure(90000, pres, data4, 4) == 2.25f);
+    CHECK(sharp::interp_pressure(85000, pres, data4, 4) ==
+          doctest::Approx(4.91907024f));
+}
+
+TEST_CASE("Testing find_first with NaN and MISSING data") {
+    constexpr float data3[3] = {1, 5, 9};
+    CHECK(sharp::find_first_height(nanval, hght, data3, 3) == sharp::MISSING);
+    CHECK(sharp::find_first_pressure(nanval, pres, data3, 3) == sharp::MISSING);
+
+    CHECK(sharp::find_first_height(5, hght, nan_mid, 3) == 100);
+    CHECK(sharp::find_first_pressure(5, pres, nan_mid, 3) ==
+          doctest::Approx(89442.7));
+
+    for (const float bad : {nanval, sharp::MISSING}) {
+        CAPTURE(bad);
+        const float v5_bad[2] = {5, bad};
+        const float bad_v5[2] = {bad, 5};
+        const float bad_v5_bad[3] = {bad, 5, bad};
+        CHECK(sharp::find_first_height(5, hght, v5_bad, 2) == 0);
+        CHECK(sharp::find_first_height(5, hght, bad_v5, 2) == 100);
+        CHECK(sharp::find_first_height(5, hght, bad_v5_bad, 3) == 100);
+        CHECK(sharp::find_first_pressure(5, pres, v5_bad, 2) == 100000);
+        CHECK(sharp::find_first_pressure(5, pres, bad_v5, 2) == 90000);
+        CHECK(sharp::find_first_pressure(5, pres, bad_v5_bad, 3) == 90000);
+
+        CHECK(sharp::find_first_height(6, hght, v5_bad, 2) == sharp::MISSING);
+        CHECK(sharp::find_first_pressure(6, pres, v5_bad, 2) == sharp::MISSING);
+    }
+}
+#endif
+
+TEST_CASE("Testing interp on an empty profile") {
+    CHECK(sharp::interp_height(0, nullptr, nullptr, 0) == sharp::MISSING);
+    CHECK(sharp::interp_pressure(100000, nullptr, nullptr, 0) ==
+          sharp::MISSING);
+    CHECK(sharp::interp_height(0, nullptr, nullptr, -1) == sharp::MISSING);
+    CHECK(sharp::interp_pressure(100000, nullptr, nullptr, -1) ==
+          sharp::MISSING);
+}
+
+TEST_CASE("Testing interp on a single-level profile") {
+    constexpr float hght1[1] = {100};
+    constexpr float pres1[1] = {85000};
+    constexpr float data1[1] = {280.5f};
+
+    CHECK(sharp::interp_height(100, hght1, data1, 1) == 280.5f);
+    CHECK(sharp::interp_pressure(85000, pres1, data1, 1) == 280.5f);
+
+    CHECK(sharp::interp_height(99, hght1, data1, 1) == sharp::MISSING);
+    CHECK(sharp::interp_height(101, hght1, data1, 1) == sharp::MISSING);
+    CHECK(sharp::interp_pressure(85001, pres1, data1, 1) == sharp::MISSING);
+    CHECK(sharp::interp_pressure(84999, pres1, data1, 1) == sharp::MISSING);
+
+#ifndef NO_QC
+    for (const float bad : {sharp::MISSING, nanval}) {
+        CAPTURE(bad);
+        const float data[1] = {bad};
+        CHECK(sharp::interp_height(100, hght1, data, 1) == sharp::MISSING);
+        CHECK(sharp::interp_pressure(85000, pres1, data, 1) == sharp::MISSING);
+    }
+#endif
+}
+
+TEST_CASE("Testing find_first on a single-level profile") {
+    constexpr float hght1[1] = {100};
+    constexpr float pres1[1] = {85000};
+    constexpr float v5[1] = {5};
+    CHECK(sharp::find_first_height(5, hght1, v5, 1) == 100);
+    CHECK(sharp::find_first_height(6, hght1, v5, 1) == sharp::MISSING);
+    CHECK(sharp::find_first_pressure(5, pres1, v5, 1) == 85000);
+    CHECK(sharp::find_first_pressure(6, pres1, v5, 1) == sharp::MISSING);
+}

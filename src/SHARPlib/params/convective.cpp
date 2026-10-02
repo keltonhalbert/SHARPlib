@@ -17,12 +17,19 @@
 #include <SHARPlib/layer.h>
 #include <SHARPlib/params/convective.h>
 #include <SHARPlib/parcel.h>
+#include <SHARPlib/qc.h>
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
 
 #include <utility>
 
 namespace sharp {
+
+#ifndef NO_QC
+static bool wind_is_missing(const WindComponents& wind) {
+    return is_missing(wind.u) || is_missing(wind.v);
+}
+#endif
 
 WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
@@ -31,12 +38,15 @@ WindComponents storm_motion_bunkers(
     const bool leftMover, const bool pressureWeighted) {
     constexpr float deviation = 7.5;  // deviation from mean wind in m/s
 
+#ifndef NO_QC
+    if (is_missing(wind_shear_layer_agl.bottom) ||
+        is_missing(wind_shear_layer_agl.top)) {
+        return {MISSING, MISSING};
+    }
+#endif
+
     PressureLayer mw_lyr = height_layer_to_pressure(mean_wind_layer_agl,
                                                     pressure, height, N, true);
-
-    WindComponents layer_mean_wind = {MISSING, MISSING};
-    layer_mean_wind =
-        mean_wind(mw_lyr, pressure, u_wind, v_wind, N, pressureWeighted);
 
     // The shear is computed by finding the 500m deep
     // mean winds at the top and bottom of the wind_shear_layer
@@ -52,10 +62,25 @@ WindComponents storm_motion_bunkers(
     PressureLayer p_layer_hi =
         height_layer_to_pressure(h_layer_hi, pressure, height, N, true);
 
+#ifndef NO_QC
+    if ((mw_lyr.bottom == MISSING) || (p_layer_lo.bottom == MISSING) ||
+        (p_layer_hi.bottom == MISSING)) {
+        return {MISSING, MISSING};
+    }
+#endif
+
+    WindComponents layer_mean_wind =
+        mean_wind(mw_lyr, pressure, u_wind, v_wind, N, pressureWeighted);
     WindComponents winds_lo =
         mean_wind(p_layer_lo, pressure, u_wind, v_wind, N, false);
     WindComponents winds_hi =
         mean_wind(p_layer_hi, pressure, u_wind, v_wind, N, false);
+#ifndef NO_QC
+    if (wind_is_missing(layer_mean_wind) || wind_is_missing(winds_lo) ||
+        wind_is_missing(winds_hi)) {
+        return {MISSING, MISSING};
+    }
+#endif
 
     const float shear_u = winds_hi.u - winds_lo.u;
     const float shear_v = winds_hi.v - winds_lo.v;
@@ -92,20 +117,26 @@ WindComponents storm_motion_bunkers(
                                     dflt_mw_lyr, shr_layer, leftMover, false);
     }
 
-    HeightLayer eil_hght =
+    HeightLayer eil_agl =
         pressure_layer_to_height(eff_infl_lyr, pressure, height, N, true);
 
-    float eql_ht = interp_pressure(eql_pres, pressure, height, N);
-    // get AGL
-    eql_ht -= height[0];
-    const float htop = 0.65 * (eql_ht - eil_hght.bottom);
+    const float eql_hght_msl = interp_pressure(eql_pres, pressure, height, N);
+#ifndef NO_QC
+    if ((eil_agl.bottom == MISSING) || (eql_hght_msl == MISSING)) {
+        return storm_motion_bunkers(pressure, height, u_wind, v_wind, N,
+                                    dflt_mw_lyr, shr_layer, leftMover, false);
+    }
+#endif
+    const float eql_hght_agl = eql_hght_msl - height[0];
 
-    if ((htop < 3000.0f) || (eil_hght.bottom > htop)) {
+    const float mw_top = 0.65 * eql_hght_agl;
+    const float mw_depth = mw_top - eil_agl.bottom;
+    if (mw_depth < 3000.0f) {
         return storm_motion_bunkers(pressure, height, u_wind, v_wind, N,
                                     dflt_mw_lyr, shr_layer, leftMover, false);
     }
 
-    HeightLayer mw_layer = {eil_hght.bottom, htop};
+    HeightLayer mw_layer = {eil_agl.bottom, mw_top};
     return storm_motion_bunkers(pressure, height, u_wind, v_wind, N, mw_layer,
                                 shr_layer, leftMover, true);
 }
@@ -114,6 +145,13 @@ WindComponents storm_motion_bunkers(
     const float pressure[], const float height[], const float u_wind[],
     const float v_wind[], const std::ptrdiff_t N) {
     const float pres_sfc = pressure[0];
+    HeightLayer low_layer = {0, 1500.0};  // agl
+    PressureLayer low_layer_pres =
+        height_layer_to_pressure(low_layer, pressure, height, N, true);
+#ifndef NO_QC
+    if (low_layer_pres.bottom == MISSING)
+        return {{MISSING, MISSING}, {MISSING, MISSING}};
+#endif
 
     WindComponents cloud_layer_mean;
     if (pres_sfc < 85000.0f) {
@@ -124,12 +162,13 @@ WindComponents storm_motion_bunkers(
             mean_wind({85000.0, 30000.0}, pressure, u_wind, v_wind, N, false);
     }
 
-    HeightLayer low_layer = {0, 1500.0};  // agl
-    PressureLayer low_layer_pres =
-        height_layer_to_pressure(low_layer, pressure, height, N, true);
-
     WindComponents low_level_mean =
         mean_wind(low_layer_pres, pressure, u_wind, v_wind, N, false);
+#ifndef NO_QC
+    if (wind_is_missing(cloud_layer_mean) || wind_is_missing(low_level_mean)) {
+        return {{MISSING, MISSING}, {MISSING, MISSING}};
+    }
+#endif
 
     WindComponents upshear = {cloud_layer_mean.u - low_level_mean.u,
                               cloud_layer_mean.v - low_level_mean.v};
@@ -148,13 +187,19 @@ WindComponents effective_bulk_wind_difference(
         (effective_inflow_lyr.bottom == MISSING))
         return {MISSING, MISSING};
 
-    sharp::HeightLayer eil_hght =
-        pressure_layer_to_height(effective_inflow_lyr, pressure, height, N);
-    float eql_hght =
+    // wind_shear takes a HeightLayer in meters AGL.
+    sharp::HeightLayer eil_agl = pressure_layer_to_height(
+        effective_inflow_lyr, pressure, height, N, true);
+    const float eql_hght_msl =
         interp_pressure(equilibrium_level_pressure, pressure, height, N);
+#ifndef NO_QC
+    if ((eil_agl.bottom == MISSING) || (eql_hght_msl == MISSING))
+        return {MISSING, MISSING};
+#endif
+    const float eql_hght_agl = eql_hght_msl - height[0];
 
-    float depth = 0.5f * (eql_hght - eil_hght.bottom);
-    sharp::HeightLayer ebwd_lyr = {eil_hght.bottom, eil_hght.bottom + depth};
+    float depth = 0.5f * (eql_hght_agl - eil_agl.bottom);
+    sharp::HeightLayer ebwd_lyr = {eil_agl.bottom, eil_agl.bottom + depth};
 
     return sharp::wind_shear(ebwd_lyr, height, u_wind, v_wind, N);
 }
@@ -381,6 +426,9 @@ float large_hail_parameter(const Parcel mu_pcl,
                            std::ptrdiff_t N) {
     HeightLayer lyr_0_6km = {0.0f, 6000.0f};
     WindComponents shr_0_6km = wind_shear(lyr_0_6km, height, u_wind, v_wind, N);
+#ifndef NO_QC
+    if (wind_is_missing(shr_0_6km)) return MISSING;
+#endif
     const float shr_spd_0_6km = vector_magnitude(shr_0_6km.u, shr_0_6km.v);
 
     if ((shr_spd_0_6km < 14.f) || mu_pcl.cape < 400) return 0.0f;
@@ -388,6 +436,9 @@ float large_hail_parameter(const Parcel mu_pcl,
 
     HeightLayer hgz_hght =
         pressure_layer_to_height(hail_growth_zone, pressure, height, N, true);
+#ifndef NO_QC
+    if (hgz_hght.bottom == MISSING) return MISSING;
+#endif
     const float hgz_depth = hgz_hght.top - hgz_hght.bottom;
     const float TermA = ((mu_pcl.cape - 2000.0f) / 1000.0f) +
                         ((3200.0f - hgz_depth) / 500.0f) +
@@ -397,6 +448,9 @@ float large_hail_parameter(const Parcel mu_pcl,
     HeightLayer lyr_3_6km = {3000.0, 6000.0};
     const float el_hght =
         interp_pressure(mu_pcl.eql_pressure, pressure, height, N);
+#ifndef NO_QC
+    if (el_hght == MISSING) return MISSING;
+#endif
     HeightLayer el_lyr = {el_hght - 1500.0f, el_hght};
     PressureLayer el_lyr_pres =
         height_layer_to_pressure(el_lyr, pressure, height, N);
@@ -404,12 +458,24 @@ float large_hail_parameter(const Parcel mu_pcl,
         height_layer_to_pressure(lyr_0_1km, pressure, height, N, true);
     PressureLayer lyr_3_6km_pres =
         height_layer_to_pressure(lyr_3_6km, pressure, height, N, true);
+#ifndef NO_QC
+    if ((el_lyr_pres.bottom == MISSING) || (lyr_0_1km_pres.bottom == MISSING) ||
+        (lyr_3_6km_pres.bottom == MISSING)) {
+        return MISSING;
+    }
+#endif
     const WindComponents mw_el =
         mean_wind(el_lyr_pres, pressure, u_wind, v_wind, N, false);
     const WindComponents mw_0_1km =
         mean_wind(lyr_0_1km_pres, pressure, u_wind, v_wind, N, false);
     const WindComponents mw_3_6km =
         mean_wind(lyr_3_6km_pres, pressure, u_wind, v_wind, N, false);
+#ifndef NO_QC
+    if (wind_is_missing(mw_el) || wind_is_missing(mw_0_1km) ||
+        wind_is_missing(mw_3_6km) || wind_is_missing(storm_motion)) {
+        return MISSING;
+    }
+#endif
     const WindComponents shear_el = {mw_el.u - u_wind[0], mw_el.v - v_wind[0]};
     const WindComponents srw_3_6km = {mw_3_6km.u - storm_motion.u,
                                       mw_3_6km.v - storm_motion.v};

@@ -457,7 +457,31 @@ def test_buoyancy():
 def test_pbl_top():
     thetav = thermo.theta(snd_data["pres"], snd_data["vtmp"])
     pbl_top = thermo.pbl_top(snd_data["pres"], thetav)
-    assert (pbl_top == 81704)
+    assert (pbl_top == pytest.approx(81704.81, abs=0.25))
+
+
+def test_pbl_top_known_value():
+    pres = np.array([100000.0, 90000.0, 60000.0], dtype="float32")
+    thetav = np.array([300.0, 300.25, 300.75], dtype="float32")
+
+    expected = np.sqrt(90000.0 * 60000.0)
+
+    pbl_top = thermo.pbl_top(pres, thetav)
+    assert (isinstance(pbl_top, float))
+    assert (pbl_top == pytest.approx(expected, abs=0.2))
+
+
+@pytest.mark.parametrize("thetav", [
+    [300.0, 300.2, 300.4],
+    [300.0, constants.MISSING, constants.MISSING],
+])
+def test_pbl_top_missing(thetav):
+    pres = np.array([100000.0, 90000.0, 80000.0], dtype="float32")
+    thetav = np.array(thetav, dtype="float32")
+
+    pbl_top = thermo.pbl_top(pres, thetav)
+    assert (isinstance(pbl_top, float))
+    assert (pbl_top == constants.MISSING)
 
 def test_temperature_layer():
     hgz = thermo.temperature_layer(

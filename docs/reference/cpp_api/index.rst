@@ -6,6 +6,7 @@ C++ API
   :caption: Contents 
 
   constants
+  qc
 
 .. toctree::
    :maxdepth: 3 
