@@ -476,8 +476,8 @@ float lapse_rate(PressureLayer layer, const float pressure[],
         layer.top = pressure[N - 1];
     }
 
-    // Clipping inverts a layer wholly outside the profile. Complete data
-    // reaches this, so NO_QC builds keep the check.
+    // Each end is clipped only against its own edge of the profile, so a
+    // layer wholly outside it comes out inverted. Not a QC check.
     if (layer.bottom < layer.top) return MISSING;
 
     HeightLayer h_layer =

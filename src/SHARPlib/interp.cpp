@@ -19,22 +19,28 @@
 #include <cmath>
 #include <cstddef>
 #include <functional>
-#include <optional>
 
 namespace sharp {
 
 #ifndef NO_QC
-static inline std::optional<float> widen_bracket_past_missing(
-    const float coord_val, const float coord_arr[], const float data_arr[],
-    const std::ptrdiff_t N, std::ptrdiff_t& idx_bot, std::ptrdiff_t& idx_top) {
+static bool widen_bracket_past_missing(const float coord_val,
+                                       const float coord_arr[],
+                                       const float data_arr[],
+                                       const std::ptrdiff_t N,
+                                       std::ptrdiff_t& idx_bot,
+                                       std::ptrdiff_t& idx_top, float& result) {
     const bool bot_missing = is_missing(data_arr[idx_bot]);
     const bool top_missing = is_missing(data_arr[idx_top]);
-    if (!bot_missing && !top_missing) return std::nullopt;
+    if (!bot_missing && !top_missing) return false;
 
-    if (!bot_missing && (coord_val == coord_arr[idx_bot]))
-        return data_arr[idx_bot];
-    if (!top_missing && (coord_val == coord_arr[idx_top]))
-        return data_arr[idx_top];
+    if (!bot_missing && (coord_val == coord_arr[idx_bot])) {
+        result = data_arr[idx_bot];
+        return true;
+    }
+    if (!top_missing && (coord_val == coord_arr[idx_top])) {
+        result = data_arr[idx_top];
+        return true;
+    }
 
     for (; idx_bot > 0; --idx_bot) {
         if (!is_missing(data_arr[idx_bot])) break;
@@ -46,9 +52,11 @@ static inline std::optional<float> widen_bracket_past_missing(
 
     // in the case the data are still missing at this point,
     // return a missing value
-    if (is_missing(data_arr[idx_bot]) || is_missing(data_arr[idx_top]))
-        return MISSING;
-    return std::nullopt;
+    if (is_missing(data_arr[idx_bot]) || is_missing(data_arr[idx_top])) {
+        result = MISSING;
+        return true;
+    }
+    return false;
 }
 #endif
 
@@ -75,9 +83,10 @@ float interp_height(const float height_val, const float height_arr[],
     std::ptrdiff_t idx_bot = idx_top - 1;
 
 #ifndef NO_QC
-    if (const auto early = widen_bracket_past_missing(
-            height_val, height_arr, data_arr, N, idx_bot, idx_top))
-        return *early;
+    float bridged = MISSING;
+    if (widen_bracket_past_missing(height_val, height_arr, data_arr, N, idx_bot,
+                                   idx_top, bridged))
+        return bridged;
 #endif
 
     const float height_bot = height_arr[idx_bot];
@@ -118,9 +127,10 @@ float interp_pressure(const float pressure_val, const float pressure_arr[],
     std::ptrdiff_t idx_bot = idx_top - 1;
 
 #ifndef NO_QC
-    if (const auto early = widen_bracket_past_missing(
-            pressure_val, pressure_arr, data_arr, N, idx_bot, idx_top))
-        return *early;
+    float bridged = MISSING;
+    if (widen_bracket_past_missing(pressure_val, pressure_arr, data_arr, N,
+                                   idx_bot, idx_top, bridged))
+        return bridged;
 #endif
 
     const float pressure_bot = pressure_arr[idx_bot];

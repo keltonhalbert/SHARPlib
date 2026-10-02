@@ -182,8 +182,8 @@ float layer_mean(HeightLayer layer, const float height[],
         layer.top = height[N - 1];
     }
 
-    // Clipping inverts a layer wholly outside the profile. Complete data
-    // reaches this, so NO_QC builds keep the check.
+    // Each end is clipped only against its own edge of the profile, so a
+    // layer wholly outside it comes out inverted. Not a QC check.
     if (layer.bottom > layer.top) return MISSING;
 
     PressureLayer pres_layer =
