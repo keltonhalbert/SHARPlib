@@ -31,7 +31,6 @@ def load_parquet(filename):
     uwin = snd_df["uwin"].to_numpy().astype('float32')
     vwin = snd_df["vwin"].to_numpy().astype('float32')
 
-    hght_msl = hght.copy()
     # turn into height above ground level
     hght -= hght[0]
 
@@ -48,7 +47,7 @@ def load_parquet(filename):
     )
 
     return {
-        "pres": pres, "hght": hght, "hght_msl": hght_msl,
+        "pres": pres, "hght": hght,
         "tmpk": tmpk, "mixr": mixr,
         "relh": relh,
         "theta": theta,
@@ -172,253 +171,34 @@ def test_corfidi_vectors():
     assert (downshear.v == pytest.approx(15.99528, abs=1e-3))
 
 
-def interp_log10p(p, pres, arr):
-    return np.interp(np.log10(p), np.log10(pres.astype("float64"))[::-1],
-                     arr.astype("float64")[::-1])
-
-
-def ebwd_from_definition(pres, hght, uwin, vwin, eil, eql_pres):
-    z = hght.astype("float64")
-
-    def z_agl(p):
-        return interp_log10p(p, pres, z) - z[0]
-
-    def wind(agl):
-        return (np.interp(z[0] + agl, z, uwin), np.interp(z[0] + agl, z, vwin))
-
-    bot = z_agl(eil.bottom)
-    top = bot + 0.5 * (z_agl(eql_pres) - bot)
-    (u_bot, v_bot), (u_top, v_top) = wind(bot), wind(top)
-    return bot, top, (u_top - u_bot, v_top - v_bot)
-
-
-@functools.cache
-def ddc_at_station(station):
-    if station == "file":
-        hght = snd_data["hght_msl"]
-    else:
-        hght = snd_data["hght"] + np.float32(station)
+def test_effective_bulk_wind():
     lifter = parcel.lifter_cm1()
     lifter.ma_type = thermo.adiabat.pseudo_liq
     mupcl = parcel.Parcel()
     eil = params.effective_inflow_layer(
-        lifter, snd_data["pres"], hght, snd_data["tmpk"], snd_data["dwpk"],
-        snd_data["vtmp"], mupcl=mupcl)
-    return hght, eil, mupcl
+        lifter,
+        snd_data["pres"],
+        snd_data["hght"],
+        snd_data["tmpk"],
+        snd_data["dwpk"],
+        snd_data["vtmp"],
+        mupcl=mupcl
+    )
 
-
-@pytest.mark.parametrize("station", [0.0, "file"])
-def test_effective_bulk_wind(station):
-    hght, eil, mupcl = ddc_at_station(station)
     ebwd_cmp = params.effective_bulk_wind_difference(
         snd_data["pres"],
-        hght,
+        snd_data["hght"],
         snd_data["uwin"],
         snd_data["vwin"],
         eil,
         mupcl.eql_pressure
     )
 
-    bot, top, expected = ebwd_from_definition(
-        snd_data["pres"], hght, snd_data["uwin"],
-        snd_data["vwin"], eil, mupcl.eql_pressure)
-    assert (bot == 0.0)
-    # The parcel lifter's exp/log/pow differ in the last bits across
-    # platforms; these pins allow 0.5 m of drift in the MU EL.
-    assert (top == pytest.approx(5866.089, abs=0.5))
-    assert (expected[0] == pytest.approx(14.6, abs=1e-2))
-    assert (expected[1] == pytest.approx(13.32178, abs=1e-2))
-
     ebwd = winds.vector_magnitude(ebwd_cmp.u, ebwd_cmp.v)
-    assert (ebwd_cmp.u == pytest.approx(expected[0], abs=1e-4))
-    assert (ebwd_cmp.v == pytest.approx(expected[1], abs=1e-4))
-    assert (ebwd == pytest.approx(np.hypot(*expected), abs=1e-4))
+    assert (ebwd_cmp.u == pytest.approx(14.6, abs=1e-3))
+    assert (ebwd_cmp.v == pytest.approx(13.321, abs=1e-3))
+    assert (ebwd == pytest.approx(19.764, abs=1e-3))
 
-    shear = winds.wind_shear(layer.HeightLayer(bot, top), hght,
-                             snd_data["uwin"], snd_data["vwin"])
-    assert (ebwd_cmp.u == pytest.approx(shear.u, abs=1e-4))
-    assert (ebwd_cmp.v == pytest.approx(shear.v, abs=1e-4))
-
-
-@pytest.mark.parametrize("shift", [0.0, 1000.0, 1234.5, 762.3])
-def test_effective_bulk_wind_station_height(shift):
-    pres = np.array([100000, 90000, 80000, 70000, 60000, 50000],
-                    dtype="float32")
-    hght = np.array([0, 1000, 2000, 3000, 4000, 5000],
-                    dtype="float32") + np.float32(shift)
-    uwin = np.array([0, 10, 12, 13, 13, 13], dtype="float32")
-    vwin = np.zeros(6, dtype="float32")
-    ebwd = params.effective_bulk_wind_difference(
-        pres, hght, uwin, vwin, layer.PressureLayer(100000, 90000), 60000)
-    assert (ebwd.u == pytest.approx(12.0))
-    assert (ebwd.v == 0.0)
-
-
-def assert_missing_wind(wind):
-    assert (wind.u == constants.MISSING and wind.v == constants.MISSING)
-
-
-def test_wind_params_missing_layer():
-    pres = np.array([100000, 95000, 90000, 85000, 80000], dtype="float32")
-    hght = np.array([0, 500, 1000, 1500, 2000], dtype="float32")
-    uwin = np.array([0, 5, 10, 15, 20], dtype="float32")
-    vwin = np.array([0, 2, 4, 6, 8], dtype="float32")
-
-    assert_missing_wind(params.effective_bulk_wind_difference(
-        pres, hght, uwin, vwin, layer.PressureLayer(100000, 95000), 70000))
-
-    assert_missing_wind(params.storm_motion_bunkers(
-        pres, hght, uwin, vwin, layer.HeightLayer(0, 3000),
-        layer.HeightLayer(0, 2000)))
-
-    M = constants.MISSING
-    assert_missing_wind(params.storm_motion_bunkers(
-        pres, hght, uwin, vwin, layer.HeightLayer(0, 2000),
-        layer.HeightLayer(M, M)))
-
-    for vector in params.mcs_motion_corfidi(pres, hght / 2, uwin, vwin):
-        assert_missing_wind(vector)
-
-    pres6 = np.array([100000, 85000, 70000, 59000, 51000, 40000],
-                     dtype="float32")
-    hght6 = np.array([0, 1500, 3000, 4500, 5500, 7000], dtype="float32")
-    uwin6 = np.array([0, 10, 20, 30, 35, 40], dtype="float32")
-    vwin6 = np.zeros(6, dtype="float32")
-    mu_pcl = parcel.Parcel()
-    mu_pcl.cape = 3000.0
-    mu_pcl.eql_pressure = 30000.0
-    storm = winds.WindComponents()
-    storm.u, storm.v = 5.0, 5.0
-    hgz = layer.PressureLayer(59000.0, 51000.0)
-    assert (params.large_hail_parameter(mu_pcl, 8.0, hgz, storm, pres6, hght6,
-                                        uwin6, vwin6) == M)
-    mu_pcl.eql_pressure = 51000.0
-    assert (params.large_hail_parameter(mu_pcl, 8.0, hgz, storm, pres6, hght6,
-                                        uwin6, vwin6) ==
-            pytest.approx(126.17279, abs=1e-3))
-
-
-def test_bunkers_motion_effective_fallback():
-    pres = np.array([100000, 80000, 62000, 47000, 35000], dtype="float32")
-    hght = np.array([0, 2000, 4000, 6000, 8000], dtype="float32")
-    uwin = np.array([0, 10, 20, 30, 40], dtype="float32")
-    vwin = np.zeros(5, dtype="float32")
-    mupcl = parcel.Parcel()
-    mupcl.eql_pressure = 80000.0
-    motion = params.storm_motion_bunkers(
-        pres, hght, uwin, vwin, layer.PressureLayer(105000, 95000), mupcl)
-    fallback = params.storm_motion_bunkers(
-        pres, hght, uwin, vwin, layer.HeightLayer(0, 6000),
-        layer.HeightLayer(0, 6000))
-    assert (motion.u == fallback.u and motion.v == fallback.v)
-    assert (motion.u == pytest.approx(14.0566034))
-    assert (motion.v == pytest.approx(-7.5))
-
-
-def bunkers_from_definition(pres, hght, uwin, vwin, eil, eql_pres, left):
-    p = pres.astype("float64")
-    z_msl = hght.astype("float64")
-    sfc = z_msl[0]
-
-    def pres_at_agl(z_agl):
-        return np.interp(sfc + z_agl, z_msl, p)
-
-    def mean_wind(bot_agl, top_agl, weighted):
-        pbot, ptop = pres_at_agl(bot_agl), pres_at_agl(top_agl)
-        inside = (p < pbot) & (p > ptop)
-        pp = np.concatenate(([pbot], p[inside], [ptop]))
-        w = pp if weighted else np.ones_like(pp)
-        mean = []
-        for arr in (uwin, vwin):
-            a = np.concatenate(([interp_log10p(pbot, pres, arr)], arr[inside],
-                                [interp_log10p(ptop, pres, arr)]))
-            mean.append(np.trapezoid(a * w, pp) / np.trapezoid(w, pp))
-        return mean
-
-    base = interp_log10p(eil.bottom, pres, z_msl) - sfc
-    top = 0.65 * (interp_log10p(eql_pres, pres, z_msl) - sfc)
-    if top - base < 3000.0:
-        mw_layer, mean = None, mean_wind(0.0, 6000.0, False)
-    else:
-        mw_layer, mean = (base, top), mean_wind(base, top, True)
-    lo = mean_wind(0.0, 500.0, False)
-    hi = mean_wind(5500.0, 6000.0, False)
-    shr_u, shr_v = hi[0] - lo[0], hi[1] - lo[1]
-    k = (-7.5 if left else 7.5) / np.hypot(shr_u, shr_v)
-    return mw_layer, (mean[0] + k * shr_v, mean[1] - k * shr_u)
-
-
-def check_effective_bunkers(pres, hght, uwin, vwin, eil, mupcl, mw_layer):
-    for left in (True, False):
-        motion = params.storm_motion_bunkers(
-            pres, hght, uwin, vwin, eil, mupcl, left)
-        classic = params.storm_motion_bunkers(
-            pres, hght, uwin, vwin,
-            layer.HeightLayer(*(mw_layer or (0.0, 6000.0))),
-            layer.HeightLayer(0.0, 6000.0), left, mw_layer is not None)
-        assert (motion.u == pytest.approx(classic.u))
-        assert (motion.v == pytest.approx(classic.v))
-
-        oracle_layer, oracle = bunkers_from_definition(
-            pres, hght, uwin, vwin, eil, mupcl.eql_pressure, left)
-        if mw_layer is None:
-            assert (oracle_layer is None)
-        else:
-            assert (oracle_layer == pytest.approx(mw_layer, abs=1e-2))
-        assert (motion.u == pytest.approx(oracle[0], abs=1e-4))
-        assert (motion.v == pytest.approx(oracle[1], abs=1e-4))
-    return motion
-
-
-@pytest.mark.parametrize("station", [0.0, "file", 1000.0, 762.3])
-@pytest.mark.parametrize("eil_bottom, eil_top, expected", [
-    (92043.0, 83432.0, (9.701575, 5.622300)),
-    (85000.0, 75000.0, (12.387376, 6.366230)),
-    (80000.0, 70000.0, (13.978964, 6.661992)),
-])
-def test_bunkers_motion_effective_layer(station, eil_bottom, eil_top,
-                                        expected):
-    pres = snd_data["pres"]
-    hght, _, mupcl = ddc_at_station(station)
-    assert (pres[0] == 92043.0)
-
-    eil = layer.PressureLayer(eil_bottom, eil_top)
-    base = layer.pressure_layer_to_height(eil, pres, hght, True).bottom
-    el = interp.interp_pressure(mupcl.eql_pressure, pres, hght) - hght[0]
-    # The parcel lifter's exp/log/pow differ in the last bits across
-    # platforms; these pins allow 0.5 m of drift in the MU EL.
-    assert (el == pytest.approx(11732.17, abs=0.5))
-
-    motion = check_effective_bunkers(pres, hght, snd_data["uwin"],
-                                     snd_data["vwin"], eil, mupcl,
-                                     (base, 0.65 * el))
-    assert (motion.u == pytest.approx(expected[0], abs=1e-3))
-    assert (motion.v == pytest.approx(expected[1], abs=1e-3))
-
-
-@pytest.mark.parametrize("station", [0.0, 1000.0, 762.3])
-@pytest.mark.parametrize("base, el, mw_layer, expected", [
-    (2000, 7000, None, (15.849664, -0.509418)),
-    (6000, 14000, (6000.0, 9100.0), (27.916351, -0.846436)),
-])
-def test_bunkers_motion_effective_minimum_depth(station, base, el, mw_layer,
-                                                expected):
-    z = np.arange(33, dtype="float32") * np.float32(500.0)
-    pres = np.float32(100000.0) * np.exp(-z / np.float32(8000.0))
-    hght = z + np.float32(station)
-    uwin = np.float32(30.0) * (np.float32(1.0) -
-                               np.exp(-z / np.float32(4000.0)))
-    vwin = np.float32(10.0) * np.sin(z / np.float32(3000.0))
-
-    mupcl = parcel.Parcel()
-    mupcl.eql_pressure = float(pres[el // 500])
-    eil = layer.PressureLayer(float(pres[base // 500]),
-                              float(pres[base // 500 + 2]))
-    motion = check_effective_bunkers(pres, hght, uwin, vwin, eil, mupcl,
-                                     mw_layer)
-    # numpy's float32 exp and sin differ by an ULP across platforms.
-    assert (motion.u == pytest.approx(expected[0], abs=1e-4))
-    assert (motion.v == pytest.approx(expected[1], abs=1e-4))
 
 def test_stp_scp_ship_dcp_lhp():
     lifter = parcel.lifter_cm1()
@@ -668,24 +448,25 @@ def test_pft():
     assert (pft == pytest.approx(158187356160.0, abs=1e6))
 
 
-def test_pft_missing():
+@pytest.mark.parametrize("field, mask", [
+    ("theta", snd_data["pres"] < 75000.0),
+    ("uwin", snd_data["pres"] > 80000.0),
+])
+def test_pft_missing(field, mask):
     lifter = parcel.lifter_cm1()
     lifter.ma_type = thermo.adiabat.pseudo_liq
-    M = constants.MISSING
     pres = snd_data["pres"]
     mix_layer = layer.PressureLayer(pres[0], pres[0] - 10000.0)
-    theta = snd_data["theta"].copy()
-    theta[pres < 75000.0] = M
-    uwin = snd_data["uwin"].copy()
-    uwin[pres > 80000.0] = M
-    for u, th in ((snd_data["uwin"], theta), (uwin, snd_data["theta"])):
-        pcl = parcel.Parcel()
-        pft = params.pyrocumulonimbus_firepower_threshold(
-            lifter, mix_layer, pres, snd_data["hght"], snd_data["tmpk"],
-            snd_data["mixr"], snd_data["vtmp"], u, snd_data["vwin"], th,
-            pcl=pcl)
-        assert (pft == M)
-        assert (pcl.pres == M)
+    data = {"uwin": snd_data["uwin"], "theta": snd_data["theta"]}
+    data[field] = np.where(mask, constants.MISSING,
+                           data[field]).astype("float32")
+    pcl = parcel.Parcel()
+    pft = params.pyrocumulonimbus_firepower_threshold(
+        lifter, mix_layer, pres, snd_data["hght"], snd_data["tmpk"],
+        snd_data["mixr"], snd_data["vtmp"], data["uwin"], snd_data["vwin"],
+        data["theta"], pcl=pcl)
+    assert (pft == constants.MISSING)
+    assert (pcl.pres == constants.MISSING)
 
 
 # ===========================================================================

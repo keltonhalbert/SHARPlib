@@ -24,9 +24,6 @@ Layer Conversions
 Layer Calculations
 ------------------
 
-The missing-data handling below is for QC builds, the default;
-:ref:`NO_QC builds <no_qc>` skip it.
-
 .. doxygenfunction:: sharp::layer_min
 .. doxygenfunction:: sharp::layer_max
 .. doxygenfunction:: sharp::layer_mean(PressureLayer, const float[], const float[], const std::ptrdiff_t)

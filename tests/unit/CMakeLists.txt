@@ -6,11 +6,11 @@ add_custom_target(SHARPlib_tests)
 
 include_directories(${CMAKE_SOURCE_DIR}/include ${DOCTEST_INCLUDE_DIR})
 
+## Fails to compile if NO_QC stops propagating from the SHARPlib target
 add_executable(test_sharp_no_qc_propagation EXCLUDE_FROM_ALL test_no_qc_propagation.cpp)
 target_link_libraries(test_sharp_no_qc_propagation SHARPlib)
 target_compile_definitions(test_sharp_no_qc_propagation PRIVATE SHARPLIB_EXPECT_NO_QC=$<BOOL:${NO_QC}>)
 add_test(NAME sharp_no_qc_propagation COMMAND test_sharp_no_qc_propagation)
-add_dependencies(SHARPlib_tests test_sharp_no_qc_propagation)
 
 ## Create an executable with the given name from the given source, excluding
 ## it from the "make all" target. Then link it to the base static library,
@@ -28,4 +28,4 @@ add_test(NAME sharp_algs COMMAND test_sharp_algs)
 
 ## This aggregates all of the executable names into a single 
 ## target for building and testing
-add_dependencies(SHARPlib_tests ${SHARP_TEST_TARGETS} test_sharp_algs)
+add_dependencies(SHARPlib_tests ${SHARP_TEST_TARGETS} test_sharp_algs test_sharp_no_qc_propagation)

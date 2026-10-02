@@ -1,12 +1,12 @@
 /**
  * \file
- * \brief Quality control: how SHARPlib recognizes missing data
+ * \brief Routines for detecting missing data
  * \author
  *   Kelton Halbert                  \n
  *   Email: kelton.halbert@noaa.gov  \n
  * \date   2026-10-01
  *
- * Written for the NWS Storm Predidiction Center \n
+ * Written for the NWS Storm Prediction Center \n
  */
 
 #ifndef SHARP_QC_H
@@ -21,11 +21,9 @@ namespace sharp {
 /**
  * \author Kelton Halbert - NWS Storm Prediction Center
  *
- * \brief Whether a value is missing: sharp::MISSING or NaN
+ * \brief Check whether a value is sharp::MISSING or NaN
  *
- * NaN should never reach the library, but where it does, the quality-control
- * paths (builds without NO_QC) treat it the same as sharp::MISSING. Every
- * routine that skips or bridges missing data uses this check.
+ * Returns true if value is sharp::MISSING or NaN.
  *
  * \param   value   The value to check
  *

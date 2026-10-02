@@ -139,10 +139,9 @@ template <typename Lifter>
  * 2014, which uses Effective Inflow Layer metricks to get better estimates of
  * storm motion, especially when considering elevated convection.
  *
- * In QC builds, returns {MISSING, MISSING} if either layer is MISSING, or if
- * the mean wind layer or either 500 m deep end of the wind shear layer can't
- * be converted to pressure (see sharp::height_layer_to_pressure), for example
- * because it extends past the profile.
+ * By default, this routine returns {sharp::MISSING, sharp::MISSING} if
+ * either layer is sharp::MISSING or extends past the profile, or if the
+ * mean wind or either end of the shear has no valid wind data.
  *
  * \param   pressure                (Pa)
  * \param   height                  (meters)
@@ -168,32 +167,28 @@ template <typename Lifter>
  *  \brief Estimates supercell storm motion by using the<!--
  *  --> Bunkers et al. 2014 method.
  *
- *  Estimates supercell storm motion using the effective-inflow mean wind of
- *  Bunkers, M. J., D. A. Barber, R. L. Thompson, R. Edwards, and J. Garner,
- *  2014: Choosing a universal mean wind for supercell motion prediction.
- *  J. Operational Meteor., 2 (11), 115-129,
+ *  Estimates supercell storm motion using the Bunkers et al. 2014 method
+ *  described in the following paper:
  *      https://doi.org/10.15191/nwajom.2014.0211
  *
- *  The mean wind is pressure weighted, with the height of the effective
- *  inflow base (see sharp::effective_inflow_layer) as its base and 65% of
- *  the height of the most-unstable parcel's Equilibrium Level as its top,
- *  both in meters AGL. The storm moves 7.5 m/s from that mean wind,
- *  perpendicular to the 0-6 km AGL shear between the 0-0.5 km and
- *  5.5-6 km mean winds, as in the Bunkers 2000 method. Bunkers et al.
- *  found this does as well as the Bunkers 2000 method overall, and better
- *  for elevated supercells.
+ *  The mean wind is pressure weighted over the layer from the base of the
+ *  effective inflow layer (see sharp::effective_inflow_layer) to 65% of the
+ *  height AGL of the most-unstable parcel's Equilibrium Level. As in the
+ *  Bunkers 2000 method, the storm motion deviates 7.5 m/s from this mean
+ *  wind, perpendicular to the shear between the 0-0.5 km and 5.5-6 km AGL
+ *  mean winds. Bunkers et al. found that this does as well as the Bunkers
+ *  2000 method overall and better for elevated supercells.
  *
  *  This falls back to the Bunkers 2000 method with 0-6 km AGL layers when:
- *  - the effective inflow layer or the parcel's EL pressure is MISSING;
- *  - in QC builds, the effective inflow layer or the EL can't be converted
- *    to height (see sharp::pressure_layer_to_height), for example because
- *    it lies outside the profile; or
- *  - the mean wind layer would be less than 3 km deep, that is, 65% of the
- *    EL height AGL is less than 3 km above the inflow base.
+ *  - the effective inflow layer or the parcel's EL pressure is sharp::MISSING,
+ *  - by default, the effective inflow layer or the EL is outside the
+ *    profile, or
+ *  - the mean wind layer would be less than 3 km deep.
  *
- *  The inflow base and the EL are converted to meters AGL internally, so
- *  height may be AGL or MSL, and the result doesn't depend on the station
- *  elevation.
+ *  By default, it returns {sharp::MISSING, sharp::MISSING} if the wind data
+ *  it uses are sharp::MISSING, as the Bunkers 2000 method does.
+ *
+ *  The height array may be in meters AGL or MSL.
  *
  *  The input parameters eff_infl_lyr and mupcl (effective inflow layer
  *  bounds and the most unstable parcel, respectively) are required to be
@@ -228,11 +223,11 @@ template <typename Lifter>
  * 1) the advection of existing cells by the mean wind and
  * 2) the propagation of new convection relative to existing storms.
  *
- * https://www.spc.noaa.gov/publications/corfidi/mcs2003.pdf
+ * By default, this routine returns sharp::MISSING for both vectors if the
+ * profile ends below 1.5 km AGL, or if the cloud-layer or 0-1.5 km mean
+ * wind has no valid wind data.
  *
- * In QC builds, returns a pair of {MISSING, MISSING} if the 0-1.5 km AGL
- * layer can't be converted to pressure (see sharp::height_layer_to_pressure),
- * for example because the profile ends below 1.5 km AGL.
+ * https://www.spc.noaa.gov/publications/corfidi/mcs2003.pdf
  *
  * \param   pressure    (Pa)
  * \param   height      (meters)
@@ -251,20 +246,20 @@ template <typename Lifter>
  *
  * \brief Compute the Effective Bulk Wind Difference
  *
- * The effective bulk wind difference is the wind shear over the layer
- * from the base of the effective inflow layer up half the distance from
- * that base to the equilibrium level, normally that of the most unstable
- * parcel (Thompson et al. 2007). This is analogous to the usage
- * of 0-6 km wind shear, but allows more flexibility for elevated
- * convection. The effective inflow layer and the equilibrium level are
- * converted to meters AGL internally, so height may be AGL or MSL, and the
- * result doesn't depend on the station elevation.
+ * The effective bulk wind difference is the wind shear from the base of
+ * the effective inflow layer to halfway between that base and the
+ * equilibrium level, as in Thompson et al. 2007. This is analogous to the
+ * usage of 0-6 km wind shear, but allows more flexibility for elevated
+ * convection. The equilibrium level is normally that of the most unstable
+ * parcel. The height array may be in meters AGL or MSL.
  *
- * Returns sharp::MISSING if the effective inflow layer
- * or equilibrium level pressure are sharp::MISSING. In QC builds it also
- * returns {MISSING, MISSING} if either can't be converted to height (see
- * sharp::pressure_layer_to_height), for example because it lies outside the
- * profile.
+ * Returns {sharp::MISSING, sharp::MISSING} if the effective inflow layer
+ * or equilibrium level pressure is sharp::MISSING. By default, it also
+ * does so if either one is outside the profile.
+ *
+ * References:
+ * Thompson et al. 2007:
+ * https://www.spc.noaa.gov/publications/thompson/effective.pdf
  *
  * \param   pressure                        (Pa)
  * \param   height                          (meters)
@@ -473,17 +468,15 @@ template <typename Lifter>
  * skill when differentiating environments that suppor hail
  * >= 3.5 in from those with < 2.0 in.
  *
+ * By default, this routine returns sharp::MISSING if the hail growth zone
+ * is sharp::MISSING, or if the hail growth zone, the equilibrium level, the
+ * 1500 m layer below the equilibrium level, or the 0-1 km or 3-6 km AGL
+ * layer is outside the profile. It also returns sharp::MISSING if the
+ * 0-6 km shear, a mean wind it uses, or storm_motion is sharp::MISSING.
+ *
  * References:
  * Johnson and Sugden 2014:
  * https://ejssm.org/archives/wp-content/uploads/2021/09/vol9-5.pdf
- *
- * In QC builds, returns sharp::MISSING if the hail growth zone, the 1500 m
- * below the equilibrium level, or the 0-1 km or 3-6 km AGL layer can't be
- * converted between height and pressure (see sharp::pressure_layer_to_height
- * and sharp::height_layer_to_pressure), for example because it extends past
- * the profile or the hail growth zone is MISSING. It also returns
- * sharp::MISSING if the equilibrium level can't be interpolated to height,
- * for example because it lies above the top of the profile.
  *
  * \param   mu_pcl                  (sharp::Parcel::most_unstable_parcel)
  * \param   lapse_rate_700_500mb    (K)

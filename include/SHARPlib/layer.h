@@ -341,8 +341,8 @@ template <typename L, typename Cb, typename Ct>
  * dereferenced and filled with the pressure or height of the maximum/minum
  * value.
  *
- * QC builds skip MISSING and NaN data and return MISSING for a layer
- * wholly outside the profile. sharp::layer_min gives the details.
+ * Handles missing data and layers outside the profile the same way as
+ * sharp::layer_min.
  *
  * \param   layer           (sharp::PressureLayer or sharp::HeightLayer)
  * \param   coord_arr       (pressure or height)
@@ -367,7 +367,8 @@ template <typename L, typename C>
 
     LayerIndex layer_idx = get_layer_index(layer, coord_arr, N);
 
-#ifndef NO_QC
+    // Each end is clipped only against its own edge of the profile, so a
+    // layer wholly outside it comes out inverted. Not a QC check.
     const bool outside = (layer.coord == LayerCoordinate::pressure)
                              ? (layer.bottom < layer.top)
                              : (layer.bottom > layer.top);
@@ -378,7 +379,6 @@ template <typename L, typename C>
         }
         return MISSING;
     }
-#endif
 
     float min_or_max = MISSING;
     float top_val = MISSING;
@@ -390,7 +390,7 @@ template <typename L, typename C>
         top_val = interp_height(layer.top, coord_arr, data_arr, N);
     }
 
-    const auto replaces = [&](const float val) {
+    const auto replaces = [&min_or_max, comp](const float val) -> bool {
 #ifndef NO_QC
         if (is_missing(val)) return false;
         if (min_or_max == MISSING) return true;
@@ -430,13 +430,14 @@ template <typename L, typename C>
  * dereferenced and filled with the coordinate of the minimum
  * value.
  *
- * QC builds, the default, skip levels whose data is MISSING or NaN. They
- * interpolate the layer bottom and top across missing levels, as
- * sharp::interp_height and sharp::interp_pressure do, and skip an endpoint
- * that has no valid level on one side of it. A layer with no valid data
- * returns MISSING, as does a layer wholly outside the profile, for which
- * lvl_of_min is set to the layer's endpoint nearest the profile. Builds
- * with NO_QC skip these checks.
+ * By default, this routine skips levels whose data is sharp::MISSING or
+ * NaN. It interpolates the layer bottom and top across missing levels,
+ * like sharp::interp_height and sharp::interp_pressure, and ignores an
+ * endpoint that has no valid data on one side. If the layer has no valid
+ * data, it returns sharp::MISSING. Building with NO_QC turns these checks
+ * off. In every build, a layer entirely outside the profile returns
+ * sharp::MISSING, and lvl_of_min is set to the layer endpoint closest to
+ * the profile.
  *
  * \param   layer       (sharp::PressureLayer or sharp::HeightLayer)
  * \param   coord_arr   (coordinate units; Pa or meters)
@@ -469,8 +470,8 @@ constexpr float layer_min(L layer, const float coord_arr[],
  * dereferenced and filled with the coordinate of the maximum
  * value.
  *
- * QC builds skip MISSING and NaN data and return MISSING for a layer
- * wholly outside the profile. sharp::layer_min gives the details.
+ * Handles missing data and layers outside the profile the same way as
+ * sharp::layer_min.
  *
  * \param   layer           (sharp::PressureLayer or sharp::HeightLayer)
  * \param   coord_arr       (coordinate units; Pa or meters)
@@ -616,7 +617,7 @@ template <typename L>
  * Computes the mass-weighted mean value of given arrays of data
  * and corresponding pressure coordinates over the given sharp::PressureLayer.
  *
- * A layer that extends past the profile is clipped to it. A layer wholly
+ * A layer that extends past the profile is clipped to it. A layer entirely
  * outside the profile, or touching it at only one level, returns
  * sharp::MISSING.
  *
@@ -640,8 +641,6 @@ template <typename L>
  * and corresponding height coordinates over the given sharp::HeightLayer.
  * This is really just a fancy wrapper around the implementation that uses
  * sharp::PressureLayer.
- *
- * Behaves as the sharp::PressureLayer overload.
  *
  * \param   layer       (sharp::HeightLayer)
  * \param   height      (vertical height array; meters)

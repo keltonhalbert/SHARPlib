@@ -196,11 +196,9 @@ def storm_motion_bunkers(pressure: Annotated[NDArray[numpy.float32], dict(shape=
     which uses Effective Inflow Layer metrics to get better estimates of storm 
     motion, especially when considering elevated convection. 
 
-    In QC builds, returns MISSING components if either layer is MISSING, or if
-    the mean wind layer or either 500 m deep end of the wind shear layer can't
-    be converted to pressure (see
-    nwsspc.sharp.calc.layer.height_layer_to_pressure), for example because it
-    extends past the profile.
+    Returns MISSING components if either layer is MISSING or extends past the
+    profile, or if the mean wind or either end of the shear has no valid wind
+    data.
 
     References 
     ----------
@@ -235,29 +233,28 @@ def storm_motion_bunkers(pressure: Annotated[NDArray[numpy.float32], dict(shape=
 @overload
 def storm_motion_bunkers(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], u_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], v_wind: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], eff_infl_lyr: nwsspc.sharp.calc.layer.PressureLayer, mupcl: nwsspc.sharp.calc.parcel.Parcel, leftMover: bool = False) -> nwsspc.sharp.calc.winds.WindComponents:
     """
-    Estimates supercell storm motion using the effective-inflow mean wind of
-    Bunkers et al. (2014).
+    Estimates supercell storm motion using the Bunkers et al. 2014 
+    method described in the following paper:
+    https://doi.org/10.15191/nwajom.2014.0211
 
-    The mean wind is pressure weighted, with the height of the effective
-    inflow base (see effective_inflow_layer) as its base and 65% of the
-    height of the most-unstable parcel's Equilibrium Level as its top, both
-    in meters AGL. The storm moves 7.5 m/s from that mean wind, perpendicular
-    to the 0-6 km AGL shear between the 0-0.5 km and 5.5-6 km mean winds, as
-    in the Bunkers 2000 method. Bunkers et al. found this does as well as the
-    Bunkers 2000 method overall, and better for elevated supercells.
+    The mean wind is pressure weighted over the layer from the base of the
+    effective inflow layer (see effective_inflow_layer) to 65% of the height
+    AGL of the most unstable parcel's Equilibrium Level. As in the Bunkers
+    2000 method, the storm motion deviates 7.5 m/s from this mean wind,
+    perpendicular to the shear between the 0-0.5 km and 5.5-6 km AGL mean
+    winds. Bunkers et al. found that this does as well as the Bunkers 2000
+    method overall and better for elevated supercells.
 
     This falls back to the Bunkers 2000 method with 0-6 km AGL layers when:
 
-    - the effective inflow layer or the parcel's EL pressure is MISSING;
-    - in QC builds, the effective inflow layer or the EL can't be converted
-      to height (see nwsspc.sharp.calc.layer.pressure_layer_to_height), for
-      example because it lies outside the profile; or
-    - the mean wind layer would be less than 3 km deep, that is, 65% of the
-      EL height AGL is less than 3 km above the inflow base.
+    - the effective inflow layer or the parcel's EL pressure is MISSING,
+    - the effective inflow layer or the EL is outside the profile, or
+    - the mean wind layer would be less than 3 km deep.
 
-    The inflow base and the EL are converted to meters AGL internally, so
-    height may be AGL or MSL, and the result doesn't depend on the station
-    elevation.
+    It returns MISSING components if the wind data it uses are MISSING, as the
+    Bunkers 2000 method does.
+
+    The height array may be in meters AGL or MSL.
 
     The input parameters of eff_infl_lyr and mupcl (effective inflow layer 
     pressure bounds and the most unstable parcel, respectively) are required
@@ -267,10 +264,7 @@ def storm_motion_bunkers(pressure: Annotated[NDArray[numpy.float32], dict(shape=
 
     References
     ----------
-    Bunkers, M. J., D. A. Barber, R. L. Thompson, R. Edwards, and J. Garner,
-    2014: Choosing a universal mean wind for supercell motion prediction.
-    J. Operational Meteor., 2 (11), 115-129,
-    https://doi.org/10.15191/nwajom.2014.0211
+    Bunkers et al. 2014: https://doi.org/10.15191/nwajom.2014.0211
 
     Parameters 
     ----------
@@ -305,10 +299,9 @@ def mcs_motion_corfidi(pressure: Annotated[NDArray[numpy.float32], dict(shape=(N
     1) the advection of existing cells by the mean wind and 
     2) the propagation of new convection relative to existing storms.
 
-    In QC builds, returns MISSING components for both vectors if the 0-1.5 km
-    AGL layer can't be converted to pressure (see
-    nwsspc.sharp.calc.layer.height_layer_to_pressure), for example because the
-    profile ends below 1.5 km AGL.
+    Returns MISSING components for both vectors if the profile ends below
+    1.5 km AGL, or if the cloud-layer or 0-1.5 km mean wind has no valid wind
+    data.
 
     References
     ----------
@@ -335,20 +328,19 @@ def effective_bulk_wind_difference(pressure: Annotated[NDArray[numpy.float32], d
     """
     Compute the Effective Bulk Wind Difference 
 
-    The effective bulk wind difference is the wind shear over the layer
-    from the base of the effective inflow layer up half the distance from
-    that base to the equilibrium level, normally that of the most unstable
-    parcel (Thompson et al. 2007). This is analogous to the usage 
+    The effective bulk wind difference is the wind shear from the base of
+    the effective inflow layer to halfway between that base and the
+    equilibrium level, as in Thompson et al. 2007. This is analogous to the usage 
     of 0-6 km wind shear, but allows more flexibility for elevated 
-    convection. The effective inflow layer and the equilibrium level are
-    converted to meters AGL internally, so height may be AGL or MSL, and the
-    result doesn't depend on the station elevation.
+    convection. The equilibrium level is normally that of the most unstable
+    parcel. The height array may be in meters AGL or MSL.
 
-    Returns MISSING if the effective inflow layer or 
-    equilibrium level pressure are MISSING. In QC builds it also returns
-    MISSING if either can't be converted to height (see
-    nwsspc.sharp.calc.layer.pressure_layer_to_height), for example because it
-    lies outside the profile.
+    Returns MISSING if the effective inflow layer or equilibrium level
+    pressure is MISSING or outside the profile.
+
+    References
+    ----------
+    Thompson et al. 2007: https://www.spc.noaa.gov/publications/thompson/effective.pdf
 
     Parameters 
     ----------
@@ -571,14 +563,11 @@ def large_hail_parameter(mu_pcl: nwsspc.sharp.calc.parcel.Parcel, lapse_rate_700
     when differentiationg environments that support hail >= 3.5 in from those 
     with < 2.0 in.
 
-    In QC builds, returns MISSING if the hail growth zone, the 1500 m below
-    the equilibrium level, or the 0-1 km or 3-6 km AGL layer can't be
-    converted between height and pressure (see
-    nwsspc.sharp.calc.layer.pressure_layer_to_height and
-    nwsspc.sharp.calc.layer.height_layer_to_pressure), for example because it
-    extends past the profile or the hail growth zone is MISSING. It also
-    returns MISSING if the equilibrium level can't be interpolated to height, for
-    example because it lies above the top of the profile.
+    Returns MISSING if the hail growth zone is MISSING, or if the hail growth
+    zone, the equilibrium level, the 1500 m layer below the equilibrium level,
+    or the 0-1 km or 3-6 km AGL layer is outside the profile. It also returns
+    MISSING if the 0-6 km shear, a mean wind it uses, or storm_motion is
+    MISSING.
 
     References
     ----------
@@ -1416,10 +1405,9 @@ def pyrocumulonimbus_firepower_threshold(lifter: nwsspc.sharp.calc.parcel.lifter
     Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
     If a parcel is passed, the values will be set with the PFT fire parcel.
 
-    In QC builds, returns MISSING if the mix-layer mean potential
-    temperature, mixing ratio, or wind speed is MISSING, or if the potential
-    temperature is MISSING at the LFC or at the level where the formula
-    evaluates air density.
+    Returns MISSING if the mixing layer mean potential temperature, mixing
+    ratio, or wind speed is MISSING, or if the potential temperature is
+    MISSING at the LFC or at the other level the PFT formula uses.
 
     References 
     ----------
@@ -1474,10 +1462,9 @@ def pyrocumulonimbus_firepower_threshold(lifter: nwsspc.sharp.calc.parcel.lifter
     Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
     If a parcel is passed, the values will be set with the PFT fire parcel.
 
-    In QC builds, returns MISSING if the mix-layer mean potential
-    temperature, mixing ratio, or wind speed is MISSING, or if the potential
-    temperature is MISSING at the LFC or at the level where the formula
-    evaluates air density.
+    Returns MISSING if the mixing layer mean potential temperature, mixing
+    ratio, or wind speed is MISSING, or if the potential temperature is
+    MISSING at the LFC or at the other level the PFT formula uses.
 
     References 
     ----------
@@ -1532,10 +1519,9 @@ def pyrocumulonimbus_firepower_threshold(lifter: nwsspc.sharp.calc.parcel.lifter
     Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
     If a parcel is passed, the values will be set with the PFT fire parcel.
 
-    In QC builds, returns MISSING if the mix-layer mean potential
-    temperature, mixing ratio, or wind speed is MISSING, or if the potential
-    temperature is MISSING at the LFC or at the level where the formula
-    evaluates air density.
+    Returns MISSING if the mixing layer mean potential temperature, mixing
+    ratio, or wind speed is MISSING, or if the potential temperature is
+    MISSING at the LFC or at the other level the PFT formula uses.
 
     References 
     ----------
@@ -1590,10 +1576,9 @@ def pyrocumulonimbus_firepower_threshold(lifter: nwsspc.sharp.calc.parcel.lifter
     Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
     If a parcel is passed, the values will be set with the PFT fire parcel.
 
-    In QC builds, returns MISSING if the mix-layer mean potential
-    temperature, mixing ratio, or wind speed is MISSING, or if the potential
-    temperature is MISSING at the LFC or at the level where the formula
-    evaluates air density.
+    Returns MISSING if the mixing layer mean potential temperature, mixing
+    ratio, or wind speed is MISSING, or if the potential temperature is
+    MISSING at the LFC or at the other level the PFT formula uses.
 
     References 
     ----------

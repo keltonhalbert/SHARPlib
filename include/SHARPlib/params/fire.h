@@ -122,10 +122,10 @@ namespace sharp {
  *
  * Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
  *
- * In QC builds, returns sharp::MISSING if the mix-layer mean potential
- * temperature, mixing ratio, or wind speed is MISSING, or if the potential
- * temperature is MISSING at the LFC or at the level where the formula
- * evaluates air density.
+ * By default, this routine returns sharp::MISSING if the mixing layer mean
+ * potential temperature, mixing ratio, or wind speed is sharp::MISSING, or
+ * if the potential temperature is sharp::MISSING at the LFC or at the other
+ * level the PFT formula uses.
  *
  * References:
  * Tory et al. 2018:
@@ -169,7 +169,7 @@ template <typename Lifter>
     float mean_wspd = sharp::vector_magnitude(mean_uv.u, mean_uv.v);
     float pres_sfc = pressure[0];
 
-    const auto no_pft = [&]() {
+    const auto no_pft = [pcl_vtmpk_arr, pcl_buoy_arr, N, pcl]() -> float {
         std::fill_n(&pcl_vtmpk_arr[0], N, sharp::MISSING);
         std::fill_n(&pcl_buoy_arr[0], N, sharp::MISSING);
         if (pcl) *pcl = Parcel();
@@ -244,9 +244,7 @@ template <typename Lifter>
     float theta_pl_c =
         sharp::interp_pressure(pres_pl_c, pressure, potential_temperature, N);
 #ifndef NO_QC
-    if (is_missing(theta_fc) || is_missing(theta_pl_c)) {
-        return no_pft();
-    }
+    if ((theta_fc == MISSING) || (theta_pl_c == MISSING)) return no_pft();
 #endif
     float z_fc = candidate_z_fc - height[0];
     delta_theta = theta_fc - mean_theta;

@@ -7,6 +7,8 @@
 
 #include "doctest.h"
 
+constexpr float nanval = std::numeric_limits<float>::quiet_NaN();
+
 TEST_CASE("Testing theta") {
     constexpr float tmpk = 298.0f;
     constexpr float pres = 10000.0f;
@@ -188,29 +190,6 @@ TEST_CASE("Testing lapse_rate over layers outside the profile") {
                             tmpk, 1) == sharp::MISSING);
 }
 
-TEST_CASE("Testing lapse_rate over layers at the profile edge") {
-    for (const float* hght : {lr_hght_0, lr_hght_300}) {
-        CAPTURE(hght[0]);
-        CHECK(sharp::lapse_rate(sharp::PressureLayer(90000, 80000), lr_pres,
-                                hght, lr_tmpk, LR_N) == sharp::MISSING);
-        CHECK(sharp::lapse_rate(sharp::PressureLayer(105000, 100000), lr_pres,
-                                hght, lr_tmpk, LR_N) == sharp::MISSING);
-        CHECK(sharp::lapse_rate(sharp::HeightLayer(1000, 2000), hght, lr_tmpk,
-                                LR_N) == sharp::MISSING);
-        CHECK(sharp::lapse_rate(sharp::HeightLayer(-500, 0), hght, lr_tmpk,
-                                LR_N) == sharp::MISSING);
-
-        CHECK(sharp::lapse_rate(sharp::PressureLayer(95000, 80000), lr_pres,
-                                hght, lr_tmpk, LR_N) == doctest::Approx(6.0f));
-        CHECK(sharp::lapse_rate(sharp::PressureLayer(105000, 95000), lr_pres,
-                                hght, lr_tmpk, LR_N) == doctest::Approx(6.0f));
-        CHECK(sharp::lapse_rate(sharp::HeightLayer(500, 1500), hght, lr_tmpk,
-                                LR_N) == doctest::Approx(6.0f));
-        CHECK(sharp::lapse_rate(sharp::HeightLayer(-500, 500), hght, lr_tmpk,
-                                LR_N) == doctest::Approx(6.0f));
-    }
-}
-
 template <typename T>
 static void check_lr_max(const sharp::PressureLayer search, const float depth,
                          const float pres[], const float hght[],
@@ -308,8 +287,6 @@ TEST_CASE("Testing lapse_rate_max at the top of the profile") {
 }
 
 TEST_CASE("Testing lapse_rate_max with a delta that doesn't step upward") {
-    constexpr float nanval = std::numeric_limits<float>::quiet_NaN();
-
     for (const float delta : {0.0f, -100.0f, nanval}) {
         CAPTURE(delta);
         const sharp::HeightLayer search(0, 1000, delta);

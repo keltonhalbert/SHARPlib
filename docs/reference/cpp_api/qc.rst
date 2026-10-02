@@ -1,6 +1,6 @@
 qc
 ==
 
-QC checks are on by default; :ref:`NO_QC builds <no_qc>` skip them.
+QC checks are on by default. :ref:`Building with NO_QC <no_qc>` turns them off.
 
 .. doxygenfunction:: sharp::is_missing
