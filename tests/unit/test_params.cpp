@@ -3172,11 +3172,203 @@ TEST_CASE("Testing spectral_bin_classifier core skips missing levels") {
 // Microphysics: refreezing
 // ---------------------------------------------------------------------------
 
-TEST_CASE("Testing spectral_bin_classifier temporary: rule 2 at Tice") {
-    const SBCProfile snd = saturated_profile(
+namespace {
+// data/sbc_reference case 1000
+const SBCGolden SBC_SAMPLE{
+    {
+        {98210.0f, 97500.0f, 95000.0f, 92500.0f, 90000.0f, 87500.0f, 85000.0f,
+         82500.0f, 80000.0f, 77500.0f, 75000.0f, 72500.0f, 70000.0f, 67500.0f,
+         65000.0f, 62500.0f, 60000.0f, 57500.0f, 55000.0f, 52500.0f, 50000.0f,
+         47500.0f, 45000.0f, 42500.0f, 40000.0f, 37500.0f, 35000.0f, 32500.0f,
+         30000.0f, 27500.0f, 25000.0f, 22500.0f, 20000.0f, 17500.0f, 15000.0f,
+         12500.0f, 10000.0f, 7500.0f, 5000.0f},
+        {0.0f, 56.442383f, 260.70694f, 469.10275f, 681.9126f, 901.26404f,
+         1130.5469f, 1369.6487f, 1616.9025f, 1871.5979f, 2133.8792f, 2403.5466f,
+         2680.673f, 2966.7834f, 3261.1917f, 3565.882f, 3881.2122f, 4207.1167f,
+         4545.4614f, 4895.5923f, 5261.2954f, 5641.041f, 6039.1777f, 6457.2085f,
+         6895.511f, 7356.904f, 7843.8374f, 8359.449f, 8908.406f, 9495.977f,
+         10127.756f, 10809.0205f, 11555.859f, 12411.309f, 13401.112f,
+         14553.105f, 15933.92f, 17685.596f, 20181.354f},
+        {269.5766f, 269.07043f, 267.5222f, 265.7832f, 265.22726f, 267.7831f,
+         271.326f, 273.35565f, 273.753f, 272.99402f, 271.7636f, 270.32312f,
+         268.6287f, 267.1676f, 265.66608f, 264.2079f, 262.53174f, 260.54184f,
+         258.4745f, 256.37653f, 254.39236f, 252.43417f, 250.50314f, 248.35762f,
+         245.80988f, 242.88681f, 239.50732f, 236.00835f, 232.58592f, 228.92673f,
+         224.08499f, 218.03888f, 216.89758f, 220.19148f, 217.91052f, 214.21368f,
+         208.7692f, 209.2101f, 211.9147f},
+        {267.84027f, 267.2251f, 267.17688f, 265.34628f, 264.62677f, 267.3271f,
+         270.72638f, 272.98447f, 273.4998f, 272.6873f, 271.4373f, 270.1248f,
+         268.5623f, 267.1248f, 265.3748f, 263.4373f, 261.3748f, 259.1873f,
+         256.9998f, 254.56229f, 252.43729f, 250.18729f, 248.12479f, 245.81229f,
+         243.06229f, 239.81229f, 236.18729f, 232.49979f, 228.81229f, 224.62479f,
+         217.56229f, 203.68729f, 199.31229f, 192.49979f, 192.12479f, 192.12479f,
+         192.12479f, 192.12479f, 192.12479f},
+        {0.874f, 0.8661301f, 0.9670676f, 0.9688999f, 0.9583809f, 0.9959251f,
+         0.99636406f, 0.9963686f, 0.9968148f, 0.9961528f, 0.9861289f,
+         0.9834164f, 0.9911664f, 0.98461264f, 0.9653304f, 0.93880683f,
+         0.9168299f, 0.8952456f, 0.8777837f, 0.8567047f, 0.8419585f, 0.8228494f,
+         0.8083167f, 0.7945054f, 0.775455f, 0.75370675f, 0.7282403f, 0.7048327f,
+         0.6836666f, 0.6608954f, 0.6338591f, 0.6003386f, 0.4446618f,
+         0.036687344f, 0.023816185f, 0.022249507f, 0.029207146f, 0.021175709f,
+         0.010973916f},
+        {268.94424f, 268.40955f, 267.4046f, 265.6432f, 265.03622f, 267.6174f,
+         271.07037f, 273.18256f, 273.63135f, 272.84793f, 271.612f, 270.23395f,
+         268.6001f, 267.1498f, 265.54956f, 263.91086f, 262.10638f, 260.0743f,
+         257.99957f, 255.83368f, 253.84691f, 251.84987f, 249.92656f, 247.79037f,
+         245.26207f, 242.35379f, 239.02518f, 235.58836f, 232.21382f, 228.5855f,
+         223.70995f, 217.5039f, 216.24294f, 218.64377f, 216.56673f, 213.25244f,
+         208.24313f, 208.49329f, 210.38112f},
+    },
+    9495.977f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    2,
+    sharp::PrecipType::ice_pellets,
+    0.0,
+    1130.5469f,
+    {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+     1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.62460726f, 0.41479364f, 1.0f, 1.0f,
+     0.6179453f, 0.40897992f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, sharp::MISSING, sharp::MISSING, sharp::MISSING,
+     sharp::MISSING, sharp::MISSING, sharp::MISSING, sharp::MISSING,
+     sharp::MISSING, sharp::MISSING, sharp::MISSING, sharp::MISSING,
+     sharp::MISSING, sharp::MISSING, sharp::MISSING, sharp::MISSING,
+     sharp::MISSING, sharp::MISSING, sharp::MISSING, sharp::MISSING,
+     sharp::MISSING, sharp::MISSING, sharp::MISSING, sharp::MISSING,
+     sharp::MISSING, sharp::MISSING, sharp::MISSING, sharp::MISSING,
+     sharp::MISSING, sharp::MISSING, sharp::MISSING, sharp::MISSING,
+     sharp::MISSING, sharp::MISSING, sharp::MISSING, sharp::MISSING,
+     sharp::MISSING},
+};
+
+// data/sbc_reference case 10
+const SBCGolden SBC_TICE_SWITCH{
+    {
+        {100000.0f, 96900.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f, 73200.0f,
+         68700.0f, 64600.0f, 60700.0f, 53500.0f},
+        {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
+         3500.0f, 4000.0f, 5000.0f},
+        {270.15f, 265.15f, 265.15f, 271.15f, 275.15f, 274.15f, 272.15f, 270.15f,
+         265.15f, 261.15f, 256.15f},
+        {270.15f, 265.15f, 265.15f, 271.15f, 275.15f, 274.15f, 272.15f, 270.15f,
+         265.15f, 261.15f, 256.15f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {270.15f, 265.15f, 265.15f, 271.15f, 275.15f, 274.15f, 272.15f, 270.15f,
+         265.15f, 261.15f, 256.15f},
+    },
+    5000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    2,
+    sharp::PrecipType::freezing_rain,
+    1.0,
+    0.0f,
+    {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+     1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+};
+
+// data/sbc_reference case 11
+const SBCGolden SBC_REMELT{
+    {
+        {100000.0f, 96900.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f, 73200.0f,
+         68700.0f, 64600.0f, 60700.0f, 53500.0f},
+        {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
+         3500.0f, 4000.0f, 5000.0f},
+        {274.15f, 272.15f, 269.15f, 265.15f, 271.15f, 273.55f, 272.15f, 270.15f,
+         265.15f, 261.15f, 256.15f},
+        {274.15f, 272.15f, 269.15f, 265.15f, 271.15f, 273.55f, 272.15f, 270.15f,
+         265.15f, 261.15f, 256.15f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {274.15f, 272.15f, 269.15f, 265.15f, 271.15f, 273.55f, 272.15f, 270.15f,
+         265.15f, 261.15f, 256.15f},
+    },
+    5000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    3,
+    sharp::PrecipType::rain_ice_pellets,
+    0.46042058216143616,
+    1500.0f,
+    {1.0f, 1.0f, 0.25688764f, 0.280271f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+     1.0f, 0.6902354f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+};
+
+// Hand-made columns, with the results of the reference on the same values
+// in float64.
+
+// Rain becomes FZ at 2000 m, and the FZ carried to 1000 m keeps the height: RA
+const SBCGolden SBC_CARRIED_FZ{
+    saturated_profile(
+        {0.0f, 1000.0f, 2000.0f, 3000.0f, 4000.0f},
+        {277.0f, 268.0f, 269.0f, 280.0f, 265.0f}),
+    4000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    3,
+    sharp::PrecipType::rain,
+    1.0,
+    2000.0f,
+    {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+     1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f},
+};
+
+// A cloud top at Tice is frozen, so rule 2 does not fire: FZRA
+const SBCGolden SBC_RULE_2_AT_TICE{
+    saturated_profile(
         {0.0f, 1000.0f, 2000.0f, 3000.0f},
-        {270.15f, 275.15f, 276.15f, sharp::SBC_ICE_NUCLEATION_TEMPERATURE});
-    check_sbc(run_sbc(snd, 3000.0f), SBC_MISSING);
+        {270.15f, 275.15f, 276.15f,
+         sharp::SBC_ICE_NUCLEATION_TEMPERATURE}),
+    3000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    2,
+    sharp::PrecipType::freezing_rain,
+    1.0,
+    0.0f,
+    {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+     0.0f, 0.0f, 0.0f, 0.0f},
+};
+}  // namespace
+
+TEST_CASE("Testing spectral_bin_classifier core: the sample sounding") {
+    check_golden(SBC_SAMPLE);
+    const sharp::SpectralBinResult result =
+        run_sbc(SBC_SAMPLE.snd, SBC_SAMPLE.cloud_top).result;
+    CHECK(result.precip_type == sharp::PrecipType::ice_pellets);
+    CHECK(result.liquid_fraction == 0.0f);
+    CHECK(result.supercooled_liquid_height == 1130.5469f);
+}
+
+TEST_CASE("Testing spectral_bin_classifier core: the Tice switch") {
+    check_golden(SBC_TICE_SWITCH);
+}
+
+TEST_CASE("Testing spectral_bin_classifier core: refrozen pellets melt again") {
+    check_golden(SBC_REMELT);
+}
+
+TEST_CASE("Testing spectral_bin_classifier core: a carried FZ class") {
+    check_golden(SBC_CARRIED_FZ);
+}
+
+TEST_CASE("Testing spectral_bin_classifier core: rule 2 at Tice") {
+    check_golden(SBC_RULE_2_AT_TICE);
 }
 
 // ---------------------------------------------------------------------------

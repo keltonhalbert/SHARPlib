@@ -1127,13 +1127,171 @@ SpectralBinResult sbc_microphysics(const SpectralBinColumn& column,
 // ---------------------------------------------------------------------------
 
 namespace {
-inline void sbc_subfreezing(SBCColumnState& state,
-                            [[maybe_unused]] const SBCLevelState& prev,
-                            [[maybe_unused]] SBCLevelState& next,
-                            [[maybe_unused]] const SBCLevel& level,
-                            [[maybe_unused]] const SpectralBinColumn& column,
-                            [[maybe_unused]] const SpectralBinDSD& dsd) {
-    state.unsupported = true;
+inline void sbc_subfreezing(SBCColumnState& state, const SBCLevelState& prev,
+                            SBCLevelState& next, const SBCLevel& level,
+                            const SpectralBinColumn& column,
+                            const SpectralBinDSD& dsd) {
+    // tnuc_alt: Tice below a level where every bin is liquid (K)
+    constexpr float TICE_ALT = 263.15f;
+    // Liquid bins of a smaller diameter are drizzle (mm).
+    constexpr float DRIZZLE_DIAMETER = 0.6f;
+    // conduct_ice (J m^-1 s^-1 K^-1)
+    constexpr float ICE_CONDUCTIVITY = 2.26f;
+    // lh_melt (J kg^-1)
+    constexpr float LATENT_HEAT_MELTING = 3.35e5f;
+    // 2.85e6 / 461.5, the latent heat of sublimation over the gas constant
+    // of water vapor (K)
+    constexpr float SUBLIMATION_OVER_RV = 6175.51465f;
+    // 2.85e6 * 2.0e-5, the latent heat of sublimation times the vapor
+    // diffusivity
+    constexpr float SUBLIMATION_DIFFUSION = 57.0f;
+    // 0.308 Pr^(1/3), with the Prandtl number Pr = 1.8e-5 / 1.91e-5
+    constexpr float PRANDTL_COEFF = 0.301969975f;
+    // pi / 6
+    constexpr float PI_OVER_SIX = 0.52359879f;
+    // 1000 / 0.917, mm^3 of ice per g
+    constexpr float ICE_VOLUME_PER_MASS = 1090.51257f;
+
+    const std::ptrdiff_t nbins = dsd.nbins();
+    state.refrz_detected_flag = true;
+    bool melted = true;
+    for (std::ptrdiff_t j = 0; j < nbins; ++j) {
+        melted &= (prev.water_fraction[j] == 1.0f);
+    }
+    if (melted) state.temp_nuc = TICE_ALT;
+    // Tw is below 0 C here, so a bin that holds ice refreezes, and at or
+    // below Tice every bin does.
+    const bool nucleates = (level.wetbulb <= state.temp_nuc);
+
+    const float* D = dsd.diameter().data();
+    bool supercooled = false;
+
+    // classify:500-539: a liquid bin above Tice falls unchanged.
+    if (!nucleates) {
+        for (std::ptrdiff_t j = 0; j < nbins; ++j) {
+            if (prev.water_fraction[j] != 1.0f) continue;
+            next.water_fraction[j] = prev.water_fraction[j];
+            next.velocity_melt_snow[j] = prev.velocity_melt_snow[j];
+            next.mass_water[j] = prev.mass_water[j];
+            next.mass_snow[j] = prev.mass_snow[j];
+            next.volume_liq[j] = prev.volume_liq[j];
+            next.volume_ice[j] = prev.volume_ice[j];
+            next.volume_snow[j] = prev.volume_snow[j];
+            next.diam_melt_snow[j] = prev.diam_melt_snow[j];
+            const SBCClass ptype = prev.psd_ptype[j];
+            const bool drizzle = (D[j] < DRIZZLE_DIAMETER);
+            const bool rain = (ptype == SBCClass::rain);
+            const bool mixed = (ptype == SBCClass::rain_snow) ||
+                               (ptype == SBCClass::rain_ice_pellets);
+            next.psd_ptype[j] =
+                rain    ? (drizzle ? SBCClass::freezing_drizzle
+                                   : SBCClass::freezing_rain)
+                : mixed ? (drizzle ? SBCClass::freezing_drizzle_ice_pellets
+                                   : SBCClass::freezing_rain_ice_pellets)
+                        : ptype;
+            supercooled |= (rain || mixed);
+        }
+    }
+
+    // classify:412-497: the other bins refreeze.
+    if (nucleates || !melted) {
+        const float tw = level.wetbulb;
+        const float undercooling = ZEROCNK - tw;
+        // deriv_rho_ice (kg m^-3 K^-1)
+        const float deriv_rho_ice = (3.8f + 0.25f * (tw - ZEROCNK)) * 1.0e-4f;
+        // svp_wrt_ice (Pa)
+        const float svp_ice =
+            611.0f *
+            std::exp(SUBLIMATION_OVER_RV * (tw - ZEROCNK) / (ZEROCNK * tw));
+        // abs_humid_ice, with the dry-air density p / (R_d T) (kg m^-3)
+        const float abs_humid_ice =
+            svp_ice * 0.622f /
+            (SBC_DRY_AIR_GAS_CONSTANT * column.temperature[level.k]);
+        // unknwn_xsi and the vapor term of the numerator, over the
+        // refreezing Prandtl number
+        const float xsi_factor =
+            SBC_AIR_CONDUCTIVITY + SUBLIMATION_DIFFUSION * deriv_rho_ice;
+        const float vapor_factor = SUBLIMATION_DIFFUSION *
+                                   (1.0f - column.relh[level.k]) *
+                                   abs_humid_ice;
+        const float latent_factor =
+            LATENT_HEAT_MELTING * (1.0f + 0.012f * (state.temp_nuc - ZEROCNK));
+        const float density_correction = level.density_correction();
+
+        const float* m0 = dsd.mass().data();
+        const float* N = dsd.concentration().data();
+        const float* v_pellet = dsd.pellet_fall_speed().data();
+        for (std::ptrdiff_t j = 0; j < nbins; ++j) {
+            const float fw_prev = prev.water_fraction[j];
+            if (!nucleates && (fw_prev == 1.0f)) continue;
+            // A bin that starts refreezing moves the refreeze level of every
+            // bin to K - 1. prev holds level K - 1 for the bins before it too.
+            if (!state.refrz_lvl_flag[j]) {
+                state.refrz_lvl_flag[j] = true;
+                if (state.refrz_lvl != level.K - 1) {
+                    state.set_refrz_lvl(level.K - 1, prev, nbins);
+                }
+            }
+
+            const float fw_refrz = state.refrz_water_fraction[j];
+            const float v_ground = v_pellet[j] * density_correction;
+            const float ratio =
+                (fw_prev == fw_refrz) ? 1.0f : fw_prev / fw_refrz;
+            const float v =
+                v_ground +
+                (state.refrz_velocity_melt_snow[j] - v_ground) * ratio;
+            const float dm_prev = prev.diam_melt_snow[j];
+            const float prandtl =
+                0.78f + PRANDTL_COEFF *
+                            std::sqrt(dm_prev * SBC_REYNOLDS_COEFF * v);
+            const float xsi = prandtl * xsi_factor;
+            const float numerator = std::max(
+                2.0e-3f * dm_prev * ICE_CONDUCTIVITY *
+                    (undercooling * xsi + prandtl * vapor_factor),
+                0.0f);
+            // The reference adds xsi D / D_w, with the diameter D of this
+            // level read before it is set, so the term is 0.
+            const float denominator =
+                v * latent_factor * (ICE_CONDUCTIVITY - xsi);
+            const float change =
+                1000.0f * numerator / denominator * level.layer_depth;
+
+            const float mw = std::max(prev.mass_water[j] - change, 0.0f);
+            const float fw = mw / m0[j];
+            // rfrz_volume_snow, rfrz_volume_water, and rfrz_volume_ice (mm^3)
+            const float dc = state.refrz_in_diam_sn_core[j];
+            const float vs = PI_OVER_SIX * dc * dc * dc;
+            const float vw = std::max(1000.0f * (m0[j] * fw_refrz - change),
+                                      0.0f);
+            const float vi = std::max(ICE_VOLUME_PER_MASS * change, 0.0f);
+
+            next.water_fraction[j] = fw;
+            next.velocity_melt_snow[j] = v;
+            next.mass_water[j] = mw;
+            next.mass_snow[j] = m0[j] - mw;
+            next.diam_melt_snow[j] =
+                std::cbrt(SBC_SIX_OVER_PI * (vs + vw + vi));
+            next.in_diam_sn_core[j] = std::cbrt(SBC_SIX_OVER_PI * (vs + vw));
+
+            const float rw = m0[j] * fw * v * N[j];
+            const float ri =
+                m0[j] * (1.0f - fw) * v * N[j] / SBC_CLASS_ICE_DENSITY;
+            const float total = ri + rw;
+            const bool drizzle = (D[j] < DRIZZLE_DIAMETER);
+            const SBCClass ptype =
+                ((ri == 0.0f) || (ri / total < SBC_CLASS_FRACTION))
+                    ? (drizzle ? SBCClass::freezing_drizzle
+                               : SBCClass::freezing_rain)
+                : ((rw == 0.0f) || (rw / total < SBC_CLASS_FRACTION))
+                    ? SBCClass::ice_pellets
+                    : (drizzle ? SBCClass::freezing_drizzle_ice_pellets
+                               : SBCClass::freezing_rain_ice_pellets);
+            next.psd_ptype[j] = ptype;
+            supercooled |= (ptype != SBCClass::ice_pellets);
+        }
+    }
+
+    if (supercooled) state.slw_hgt = column.height_agl(level.k);
 }
 }  // namespace
 

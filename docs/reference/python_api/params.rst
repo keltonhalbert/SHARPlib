@@ -129,6 +129,25 @@ params
 
    .. Microphysics: refreezing
 
+   .. rubric:: Microphysics: refreezing
+
+   Every other level with Tw below 0 C refreezes. With a frozen cloud top, these are the levels below the first crossing. There a bin refreezes when it holds ice at the level above, with fw below 1, and every bin refreezes when Tw is at or below Tice. A refreezing bin loses liquid mass as it gives heat to the air across the layer above, by conduction and by vapor exchange. The rate depends on Tw and the relative humidity and follows Kumjian et al. (2012), as in Reeves et al. (2016). The fall speed of the bin is v_PL + (v_r - v_PL) fw / fw_r. Here fw is its liquid fraction at the level above, v_r and fw_r are its fall speed and liquid fraction at the refreeze level, and v_PL is the ice pellet fall speed near the ground times sqrt(rho_0 / rho). Its class comes from the liquid share of its mass flux and a threshold of 0.15. It is freezing rain FZRA, ice pellets PL, or the mix FZRAPL, with FZDZ and FZDZPL for drizzle, the bins below 0.6 mm. A later melting level melts all of these classes, PL included, with the aspect ratio of a raindrop.
+
+   A bin that does not refreeze falls unchanged. Rain becomes FZRA or FZDZ, and rain mixed with snow or ice pellets becomes FZRAPL or FZDZPL. ``supercooled_liquid_height`` takes the height of each level where a bin refreezes into a class with liquid, or where one of these conversions happens, so it ends at the lowest one. A bin that falls unchanged with any other class, FZRA included, leaves it alone.
+
+   Two rules of the reference depart from Reeves et al. (2016):
+
+   * The Tice switch. At a level of this kind where every bin is all liquid at the level above, Tice becomes 263.15 K, or -10 C, for the rest of the column. The new value decides the refreezing test and the refreezing rate at this level, and the branch at each level below.
+   * The graupel switch. Below the first level of this kind, a melting level uses a riming factor of 5 instead of the one of the drop-size distribution, and the ice pellet fall speed near the ground times sqrt(rho_0 / rho).
+
+   The function keeps these quirks of the reference:
+
+   * One refreeze level serves all bins. Whenever a bin starts refreezing, at its first refreezing level since the cloud top or the last melting level, the refreeze level moves to the level above. The move applies to every bin, including bins that started refreezing earlier. At the level of the move, it reaches the bins after the mover in the drop-size distribution but not those before it.
+   * The denominator of the refreezing rate has a term xsi D / D_w that is always 0, because the reference reads the diameter D of the level before it sets it.
+   * A refreeze level of 0, the cloud top, means that nothing has refrozen. A melting level classes ice as ice pellets once something has refrozen, and as snow before. Refreezing that starts just below the cloud top sets the refreeze level to 0, so its ice still counts as snow.
+   * The absolute humidity at ice saturation uses the dry-air density p / (R_d T), from the temperature rather than Tw.
+   * A refreezing bin has no liquid, ice, or snow volume at the next level, and a bin that falls unchanged has no snow-core diameter there.
+
    .. Microphysics: liquid cloud tops
 
    .. rubric:: Microphysics: liquid cloud tops
