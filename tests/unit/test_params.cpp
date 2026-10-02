@@ -6,7 +6,6 @@
 #include <SHARPlib/winds.h>
 
 #include <cmath>
-#include <optional>
 
 #include "doctest.h"
 
@@ -132,6 +131,38 @@ TEST_CASE("Testing large_hail_parameter with a MISSING layer") {
                                       uwin, vwin,
                                       N) == doctest::Approx(70.2362289f));
 }
+
+TEST_CASE("Testing wind parameters with MISSING wind data") {
+    constexpr float none[KN] = {M, M, M, M, M};
+    constexpr float u_low[KN] = {0, 10, 20, M, M};
+    constexpr float v_low[KN] = {0, 2, 4, M, M};
+    check_missing_wind(sharp::storm_motion_bunkers(d_pres, d_hght, none, none,
+                                                   KN, {0, 6000}, {0, 6000}));
+    check_missing_wind(sharp::storm_motion_bunkers(d_pres, d_hght, u_low, v_low,
+                                                   KN, {0, 3000}, {0, 6000}));
+    check_missing_wind(sharp::storm_motion_bunkers(d_pres, d_hght, u_low, v_low,
+                                                   KN, {0, 6000}, {0, 6000}));
+
+    const auto vectors =
+        sharp::mcs_motion_corfidi(d_pres, d_hght, none, none, KN);
+    check_missing_wind(vectors.first);
+    check_missing_wind(vectors.second);
+
+    constexpr std::ptrdiff_t N = 6;
+    constexpr float hght[N] = {0, 1500, 3000, 4500, 5500, 7000};
+    constexpr float pres[N] = {100000, 85000, 70000, 59000, 51000, 40000};
+    constexpr float uwin[N] = {0, 6, 12, 18, 24, 30};
+    constexpr float vwin[N] = {0, 2, 4, 6, 8, 10};
+    constexpr float u_none[N] = {M, M, M, M, M, M};
+    sharp::Parcel mu_pcl;
+    mu_pcl.cape = 3000;
+    mu_pcl.eql_pressure = 55000;
+    const sharp::PressureLayer hgz = {65000, 52000};
+    CHECK(sharp::large_hail_parameter(mu_pcl, 8.0f, hgz, {5, 5}, pres, hght,
+                                      u_none, u_none, N) == M);
+    CHECK(sharp::large_hail_parameter(mu_pcl, 8.0f, hgz, {M, M}, pres, hght,
+                                      uwin, vwin, N) == M);
+}
 #endif
 
 namespace {
@@ -206,7 +237,7 @@ struct BunkersSounding {
 struct BunkersCase {
     float base_agl;
     float el_agl;
-    std::optional<float> mw_top_agl;
+    float mw_top_agl;  // sharp::MISSING for the 0-6 km fallback
     float u;
     float v;
 };
@@ -222,8 +253,8 @@ void check_bunkers(const BunkersCase c) {
             const sharp::WindComponents motion =
                 snd.effective(c.base_agl, c.el_agl, left);
             const sharp::WindComponents expected =
-                c.mw_top_agl
-                    ? snd.classic({c.base_agl, *c.mw_top_agl}, left, true)
+                (c.mw_top_agl != sharp::MISSING)
+                    ? snd.classic({c.base_agl, c.mw_top_agl}, left, true)
                     : snd.classic({0, 6000}, left, false);
             CHECK(motion.u == doctest::Approx(expected.u).epsilon(1e-6));
             CHECK(motion.v == doctest::Approx(expected.v).epsilon(1e-6));
@@ -247,7 +278,8 @@ TEST_CASE("Testing the effective-inflow storm_motion_bunkers mean wind layer") {
 
 TEST_CASE("Testing the effective-inflow storm_motion_bunkers 3 km fallback") {
     for (const BunkersCase c : {
-             BunkersCase{2000, 7000, std::nullopt, 15.8496647f, -0.509417534f},
+             BunkersCase{2000, 7000, sharp::MISSING, 15.8496647f,
+                         -0.509417534f},
              BunkersCase{6000, 14000, 9100, 27.9163494f, -0.846437931f},
          }) {
         check_bunkers(c);
