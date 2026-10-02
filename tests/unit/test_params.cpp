@@ -2690,7 +2690,7 @@ void check_golden(const SBCGolden& golden) {
           sbc_decision(result.liquid_fraction, golden.crossings,
                        golden.snd.wetbulb[0] > sharp::ZEROCNK));
     CHECK(result.precip_type == golden.precip_type);
-    CHECK(std::abs(result.liquid_fraction - golden.liquid_fraction) <= 0.005);
+    CHECK(std::abs(result.liquid_fraction - golden.liquid_fraction) <= 1e-4);
     CHECK(result.supercooled_liquid_height ==
           golden.supercooled_liquid_height);
     REQUIRE(run.profile.size() == golden.profile.size());

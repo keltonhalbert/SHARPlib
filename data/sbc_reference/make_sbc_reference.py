@@ -137,7 +137,7 @@ remain.
 
 Flags
 -----
-near_threshold: a core liquid fraction within 0.005 of 0.15, 0.60, or 0.85.
+near_threshold: a core liquid fraction within 1e-4 of 0.15, 0.60, or 0.85.
 near_discontinuity: at some level, some bin's deciding value lies within 1e-5
 (relative) of the threshold of one of the reference's hard switches, on
 either side:
@@ -152,8 +152,8 @@ disc_scope is column if a G level lies at or below disc_level, otherwise bin.
 Named cases carry neither flag: a flagged named profile has T and Td shifted
 by 0.01 K steps until it is clear, or the generator fails.
 
-Comparison rules (first tolerances; differential validation revisits them)
--------------------------------------------------------------------------
+Comparison rules
+----------------
 1. Consistency, always: the returned category equals the reference decision
    tree applied to the returned liquid fraction, with the case's crossings and
    surface class (surface Tw > 273.15 K). Pre-classified and no-cloud cases
@@ -161,7 +161,7 @@ Comparison rules (first tolerances; differential validation revisits them)
 2. Category: exactly precip_type, except that a corpus case flagged
    near_threshold may return the category on the other side of that
    threshold. Rule 1 still holds.
-3. Surface values: liquid fraction within 0.005; supercooled-liquid height
+3. Surface values: liquid fraction within 1e-4; supercooled-liquid height
    and cloud top on the same level.
 4. Profiles: within 1e-3 for every bin and level, except in a
    near_discontinuity case from disc_level downward: only disc_bin is exempt
@@ -169,6 +169,13 @@ Comparison rules (first tolerances; differential validation revisits them)
 5. A near_discontinuity corpus case that breaks rules 2-3, or rule 4 beyond
    its exemption, is listed, not failed. Such cases stay at most 1 % of the
    corpus. Named cases carry no flags, so every rule applies to them in full.
+
+The profile tolerance is ten times the liquid-fraction one. Two terms of the
+reference cancel and magnify float32 rounding. One is the melting heat near
+saturation at 0 C (:308). The other is the refreezing numerator near -31 C,
+where unknwn_xsi changes sign (:427-428). At such a level a float32 port
+differs by up to about 1e-3. The reference's own profile moves more than that
+when T or Td at the level changes by one float32 ulp.
 """
 
 import argparse
@@ -199,7 +206,7 @@ PRECLASSIFIED = {"SN": (0.0, MISSING), "FZRA": (1.0, 0.0), "RA": (1.0, MISSING)}
 TICE_DEFAULT = 267.15
 TICE_ALT = 263.15
 LF_THRESHOLDS = (0.15, 0.60, 0.85)
-NEAR_THRESHOLD = 0.005
+NEAR_THRESHOLD = 1e-4
 NEAR_DISC_REL = 1e-5
 CORPUS_CAP = 0.01
 DELD_CHECK = 1.0

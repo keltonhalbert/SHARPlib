@@ -1852,7 +1852,7 @@ def sbc_golden_check(select, run=sbc_run_composed):
     def per_case(bad):
         return np.bincount(case_of, weights=bad, minlength=n) == 0
 
-    rule_3 = ((np.abs(liquid_fraction - ref_lf) <= 0.005) & same_slw_level
+    rule_3 = ((np.abs(liquid_fraction - ref_lf) <= 1e-4) & same_slw_level
               & per_case(~same_missing))
     rule_4 = per_case((error > 1e-3) & ~exempt)
 
