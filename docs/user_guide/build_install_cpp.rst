@@ -67,7 +67,7 @@ By default, SHARPlib's quality control checks handle missing and NaN values in t
 
    cmake -B build . -DNO_QC=ON
 
-SHARPlib's header templates and inline functions compile in your translation units, so they need the same ``NO_QC`` setting as the library. CMake handles this: ``NO_QC`` is a public compile definition of the ``SHARPlib`` target, so every target that links ``SHARPlib`` through ``add_subdirectory``, or ``SHARPlib::SHARPlib`` through ``find_package(SHARPlib)`` after ``cmake --install``, inherits it.
+SHARPlib's header templates and inline functions compile in your translation units, so they need the same ``NO_QC`` setting as the library. If you use CMake, this happens automatically. ``NO_QC`` is a public compile definition on the ``SHARPlib`` target, so any target that links ``SHARPlib`` (from ``add_subdirectory``) or ``SHARPlib::SHARPlib`` (from ``find_package``) inherits it.
 
 Without CMake, add ``-DNO_QC`` to your compiler flags if and only if the library was built with ``-DNO_QC=ON``. If the two settings differ, the header code and the compiled library handle missing and NaN values differently.
 

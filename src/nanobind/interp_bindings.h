@@ -31,13 +31,10 @@ inline void make_interp_bindings(nb::module_ m) {
 Interpolate a value from an array in height coordinates (meters).
 The coordinate array (hght_arr) is assumed to be sorted (ascending).
 
-QC builds, the default, treat a level whose data is MISSING or NaN as
-missing. A hght_val exactly on a level with valid data returns that
-level's stored value, even when a neighbouring level is missing. For any
-other hght_val, the routine interpolates between the nearest valid levels
-below and above it, and returns MISSING when one side has none.
-
-Empty arrays return MISSING in every build.
+This routine skips levels whose data is MISSING or NaN. A hght_val
+exactly on a valid level returns that level's value. Otherwise, it
+interpolates between the nearest valid levels above and below hght_val,
+and returns MISSING if either side has none. Empty arrays return MISSING.
 
 Parameters
 ----------
@@ -68,8 +65,7 @@ Interpolate a value from an array in pressure coordinates (Pa).
 All pressure interpolation happens in log10 space.
 The coordinate array (pres_arr) is assumed to be sorted (descending).
 
-MISSING and NaN data (QC builds) and empty arrays (every build) are
-handled as in interp_height.
+Handles missing data and empty arrays the same way as interp_height.
 
 Parameters
 ----------
@@ -99,10 +95,9 @@ float
 Conducts a bottom-up search for the first occurrence of a given value,
 and interpolates in order to get the pressure level it occurs at.
 
-QC builds, the default, skip levels whose data is MISSING or NaN, so the
-search still finds a crossing between the valid levels on either side of
-them. An exact match returns that level's pressure, even when it is the only
-valid level in the profile. A MISSING or NaN data_val returns MISSING.
+An exact match returns that level's pressure. The search skips levels
+whose data is MISSING or NaN, so it can find a crossing across a gap in
+the data. A MISSING or NaN data_val returns MISSING.
 
 Parameters
 ----------
@@ -132,7 +127,7 @@ float
 Conducts a bottom-up search for the first occurrence of a given value,
 and interpolates in order to get the height level it occurs at.
 
-QC builds handle MISSING and NaN data as find_first_pressure does.
+Handles missing data the same way as find_first_pressure.
 
 Parameters
 ----------

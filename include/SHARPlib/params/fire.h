@@ -122,10 +122,10 @@ namespace sharp {
  *
  * Default values for beta_incr and phi are 0.005 and 6.67e-5, respectively.
  *
- * In QC builds, returns sharp::MISSING if the mix-layer mean potential
- * temperature, mixing ratio, or wind speed is MISSING, or if the potential
- * temperature is MISSING at the LFC or at the level where the formula
- * evaluates air density.
+ * By default, this routine returns sharp::MISSING if the mixing layer mean
+ * potential temperature, mixing ratio, or wind speed is sharp::MISSING, or
+ * if the potential temperature is sharp::MISSING at the LFC or at the other
+ * level the PFT formula uses.
  *
  * References:
  * Tory et al. 2018:
