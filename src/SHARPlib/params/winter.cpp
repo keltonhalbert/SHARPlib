@@ -629,6 +629,11 @@ const float SBC_SNOW_CAPACITANCE_FACTOR =
     sbc_capacitance_factor(SBC_SNOW_ASPECT_RATIO);
 const float SBC_SNOW_LENGTH_FACTOR = sbc_length_factor(SBC_SNOW_ASPECT_RATIO);
 
+// t - 273.15 (C): t - 273.15f is exact, and 6.103515625e-6 = 273.15 - 273.15f
+inline float sbc_celsius(const float t) {
+    return (t - ZEROCNK) - 6.103515625e-6f;
+}
+
 // psd_ptype of the reference. Its codes are these values plus 0.5, and -999
 // for unset.
 enum class SBCClass : unsigned char {
@@ -857,12 +862,12 @@ inline void sbc_melting(SBCColumnState& state, const SBCLevelState& prev,
     }
 
     const float tw = level.wetbulb;
+    const float tw_c = sbc_celsius(tw);
     const float rho_air = level.air_density;
     const float density_correction = level.density_correction();
     // svp_wrt_water (Pa)
-    const float svp =
-        611.0f * std::exp(17.269f * (tw - ZEROCNK) / (tw - 35.86f));
-    float heat = SBC_AIR_CONDUCTIVITY * (tw - ZEROCNK) +
+    const float svp = 611.0f * std::exp(17.269f * tw_c / (tw - 35.86f));
+    float heat = SBC_AIR_CONDUCTIVITY * tw_c +
                  SBC_VAPOR_HEAT_COEFF *
                      (column.relh[level.k] * svp / tw - SBC_SVP_OVER_T0);
     if ((heat < 0.0f) && (tw < SBC_HEAT_CLAMP_TW)) heat = 0.0f;
@@ -1196,13 +1201,13 @@ inline void sbc_subfreezing(SBCColumnState& state, const SBCLevelState& prev,
     // classify:412-497: the other bins refreeze.
     if (nucleates || !melted) {
         const float tw = level.wetbulb;
-        const float undercooling = ZEROCNK - tw;
+        const float tw_c = sbc_celsius(tw);
+        const float undercooling = -tw_c;
         // deriv_rho_ice (kg m^-3 K^-1)
-        const float deriv_rho_ice = (3.8f + 0.25f * (tw - ZEROCNK)) * 1.0e-4f;
+        const float deriv_rho_ice = (3.8f + 0.25f * tw_c) * 1.0e-4f;
         // svp_wrt_ice (Pa)
         const float svp_ice =
-            611.0f *
-            std::exp(SUBLIMATION_OVER_RV * (tw - ZEROCNK) / (ZEROCNK * tw));
+            611.0f * std::exp(SUBLIMATION_OVER_RV * tw_c / (ZEROCNK * tw));
         // abs_humid_ice, with the dry-air density p / (R_d T) (kg m^-3)
         const float abs_humid_ice =
             svp_ice * 0.622f /
@@ -1215,7 +1220,7 @@ inline void sbc_subfreezing(SBCColumnState& state, const SBCLevelState& prev,
                                    (1.0f - column.relh[level.k]) *
                                    abs_humid_ice;
         const float latent_factor =
-            LATENT_HEAT_MELTING * (1.0f + 0.012f * (state.temp_nuc - ZEROCNK));
+            LATENT_HEAT_MELTING * (1.0f + 0.012f * sbc_celsius(state.temp_nuc));
         const float density_correction = level.density_correction();
 
         const float* m0 = dsd.mass().data();

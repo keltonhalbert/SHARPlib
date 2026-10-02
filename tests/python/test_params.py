@@ -1896,22 +1896,12 @@ def test_spectral_bin_classifier_golden_frozen_tops():
 # Microphysics: refreezing
 # ---------------------------------------------------------------------------
 
-# Corpus cases whose profile breaks rule 4 at one melting level just above
-# 0 C, where the heat term cancels and 273.15f differs from 273.15 K
-SBC_HEAT_CANCELLATION = {12294: 8}
-
-
-def sbc_refreezing_cases(cases):
-    return sbc_branches_within("ABFG")(cases) & ~cases["case_id"].isin(
-        list(SBC_HEAT_CANCELLATION))
-
-
 def test_spectral_bin_classifier_golden_refreezing():
-    check = sbc_golden_check(sbc_refreezing_cases)
+    check = sbc_golden_check(sbc_branches_within("ABFG"))
     cases = check["cases"]
     refreezing = cases[cases["branches"].str.contains("G")]
     assert refreezing["group"].value_counts().to_dict() == {
-        "corpus": 1000, "named": 7, "sample": 1}
+        "corpus": 1001, "named": 7, "sample": 1}
     assert set(refreezing["precip_type"]) == {1, 4, 5, 6, 7}
     assert refreezing["tnuc_switched"].sum() == 642
     assert refreezing["refreeze_level_moved"].sum() == 249
@@ -1919,9 +1909,10 @@ def test_spectral_bin_classifier_golden_refreezing():
 
 
 def test_spectral_bin_classifier_golden_refreezing_switches():
-    check = sbc_golden_check(lambda cases: sbc_refreezing_cases(cases) & (
-        cases["group"] != "corpus") & (cases["tnuc_switched"]
-                                       | cases["refreeze_level_moved"]))
+    check = sbc_golden_check(lambda cases: sbc_branches_within("ABFG")(cases)
+                             & (cases["group"] != "corpus")
+                             & (cases["tnuc_switched"]
+                                | cases["refreeze_level_moved"]))
     assert check["cases"]["case_id"].tolist() == [8, 10, 11, 14, 19, 1000]
 
 
@@ -1931,21 +1922,6 @@ def test_spectral_bin_classifier_golden_sample():
     assert sample["result_precip_type"] == int(params.PrecipType.ice_pellets)
     assert sample["result_liquid_fraction"] == 0.0
     assert sample["result_supercooled_liquid_height"] == np.float32(1130.5469)
-
-
-def test_spectral_bin_classifier_temporary_heat_cancellation():
-    cases, levels, profiles, dsds = sbc_reference()
-    for case_id, level in SBC_HEAT_CANCELLATION.items():
-        case = next(cases[cases["case_id"] == case_id].itertuples())
-        dsd = params.spectral_bin_dsd(*dsds[case.dsd_name],
-                                      rime_factor=case.rime_factor)
-        result, profile = sbc_run_composed(case, levels[case_id], dsd)
-        assert sbc_tuple(result) == (params.PrecipType(case.precip_type),
-                                     case.liquid_fraction,
-                                     case.supercooled_liquid_height)
-        error = np.abs(profile - profiles[case_id]).max(axis=1)
-        assert np.flatnonzero(error > 1e-3).tolist() == [level]
-        assert error[level] < 5e-3
 
 
 def test_spectral_bin_classifier_rule_2_at_tice():
