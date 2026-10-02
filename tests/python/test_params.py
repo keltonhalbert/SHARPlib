@@ -1917,20 +1917,34 @@ def test_spectral_bin_classifier_temporary_rule_2_at_tice():
 # Microphysics: liquid cloud tops
 # ---------------------------------------------------------------------------
 
-def test_spectral_bin_classifier_temporary_liquid_tops_are_missing():
-    counts = {}
-    for case, result, profile in sbc_reference_runs(("core",)):
-        if not set(case.branches) & set("CDE"):
-            continue
-        counts[case.group] = counts.get(case.group, 0) + 1
-        assert sbc_tuple(result) == SBC_MISSING, case.case_id
-        assert np.all(profile == constants.MISSING)
-    assert counts == {"named": 2, "corpus": 52}
+def test_spectral_bin_classifier_golden_liquid_tops():
+    check = sbc_golden_check(sbc_branches_within("CDF"))
+    cases = check["cases"]
+    assert cases.groupby(["group", "branches"]).size().to_dict() == {
+        ("corpus", "CDF"): 8, ("corpus", "CF"): 5, ("named", "CDF"): 1}
+    _, levels, _, _ = sbc_reference()
+    for case in cases.itertuples():
+        wetbulb = levels[case.case_id][5]
+        assert case.ice_nucleation_temperature < wetbulb[
+            case.cloud_top_level] <= np.float32(273.15)
+        assert wetbulb[0] > np.float32(273.15)
+    assert set(cases["dsd_name"]) == {"python_default", "cpp_2.0.3",
+                                      "python_deld_0.1"}
+    assert set(cases["ice_nucleation_temperature"]) == {
+        np.float32(263.15), np.float32(267.15)}
+    assert check["listed"] == []
 
 
-def test_spectral_bin_classifier_temporary_rule_2_at_0c():
-    snd = saturated_sbc_profile(SBC_HEIGHT_4, [273.15, 275.15, 276.15, 274.15])
-    assert run_sbc(snd, 3000.0) == SBC_MISSING
+@pytest.mark.parametrize("wetbulb, expected", [
+    ([273.15, 275.15, 276.15, 274.15], SBC_FZRA),
+    ([278.15, 273.15, 275.15, 274.15], (params.PrecipType.rain, 1.0, 3000.0)),
+])
+def test_spectral_bin_classifier_warm_top_at_0c(wetbulb, expected):
+    result, profile = params.spectral_bin_classifier(
+        *saturated_sbc_profile(SBC_HEIGHT_4, wetbulb), 3000.0,
+        params.spectral_bin_dsd_default(), return_profile=True)
+    assert sbc_tuple(result) == expected
+    np.testing.assert_array_equal(profile, np.ones((4, 4)))
 
 
 # ---------------------------------------------------------------------------

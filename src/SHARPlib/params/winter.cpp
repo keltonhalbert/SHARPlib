@@ -1142,30 +1142,82 @@ inline void sbc_subfreezing(SBCColumnState& state,
 // ---------------------------------------------------------------------------
 
 namespace {
-inline void sbc_liquid_cloud_top(
-    SBCColumnState& state, [[maybe_unused]] SBCLevelState& next,
-    [[maybe_unused]] const SBCLevel& level,
-    [[maybe_unused]] const SpectralBinColumn& column,
-    [[maybe_unused]] const SpectralBinDSD& dsd) {
-    state.unsupported = true;
+// Foote and du Toit (1969) scale their fall speed by exp(z / this) (m).
+constexpr float SBC_FOOTE_DU_TOIT_SCALE_HEIGHT = 20000.0f;
+
+// The class of a supercooled drop from a liquid cloud top: drizzle below
+// 0.6 mm, rain otherwise
+inline SBCClass sbc_liquid_top_class(const float diameter) {
+    return (diameter < 0.6f) ? SBCClass::freezing_drizzle
+                             : SBCClass::freezing_rain;
 }
 
+// Branches D and E: the drops of a liquid cloud top fall unchanged, at the
+// Foote and du Toit fall speed. Each branch sets its own classes.
+inline void sbc_liquid_top_drops(const SBCLevelState& top, SBCLevelState& next,
+                                 const SBCLevel& level,
+                                 const SpectralBinColumn& column,
+                                 const SpectralBinDSD& dsd) {
+    const float height_factor =
+        std::exp(column.height[level.k] / SBC_FOOTE_DU_TOIT_SCALE_HEIGHT);
+    const float* diameter = dsd.diameter().data();
+    const float* v_drop = dsd.foote_du_toit_fall_speed().data();
+    for (std::ptrdiff_t j = 0; j < dsd.nbins(); ++j) {
+        next.water_fraction[j] = top.water_fraction[j];
+        next.velocity_melt_snow[j] = v_drop[j] * height_factor;
+        next.mass_water[j] = top.mass_water[j];
+        next.volume_liq[j] = top.volume_liq[j];
+        next.volume_ice[j] = top.volume_ice[j];
+        next.volume_snow[j] = top.volume_snow[j];
+        next.diam_melt_snow[j] = diameter[j];
+    }
+}
+
+// Branch C (classify:186): a liquid cloud top
+inline void sbc_liquid_cloud_top(SBCColumnState& state, SBCLevelState& next,
+                                 const SBCLevel& level,
+                                 const SpectralBinColumn& column,
+                                 const SpectralBinDSD& dsd) {
+    state.uknwn_aa = dsd.liquid_aa().data();
+    state.uknwn_bb = dsd.liquid_bb().data();
+    const float density_correction = level.density_correction();
+    const float* diameter = dsd.diameter().data();
+    const float* m0 = dsd.mass().data();
+    const float* v_rain = dsd.rain_fall_speed().data();
+    for (std::ptrdiff_t j = 0; j < dsd.nbins(); ++j) {
+        next.water_fraction[j] = 1.0f;
+        next.velocity_melt_snow[j] = v_rain[j] * density_correction;
+        next.mass_water[j] = m0[j];
+        // A liquid density of 1 g cm^-3
+        next.volume_liq[j] = m0[j];
+        next.diam_melt_snow[j] = diameter[j];
+        next.psd_ptype[j] = sbc_liquid_top_class(diameter[j]);
+    }
+    state.slw_hgt = column.height_agl(level.k);
+}
+
+// Branch D (classify:217): the drops of a cloud top at or below 0 C, above
+// the first crossing
 inline void sbc_supercooled_above_crossing(
     SBCColumnState& state, [[maybe_unused]] const SBCLevelState& prev,
-    [[maybe_unused]] SBCLevelState& next,
-    [[maybe_unused]] const SBCLevel& level,
-    [[maybe_unused]] const SpectralBinColumn& column,
-    [[maybe_unused]] const SpectralBinDSD& dsd) {
-    state.unsupported = true;
+    SBCLevelState& next, const SBCLevel& level,
+    const SpectralBinColumn& column, const SpectralBinDSD& dsd) {
+    sbc_liquid_top_drops(state.top, next, level, column, dsd);
+    const float* diameter = dsd.diameter().data();
+    for (std::ptrdiff_t j = 0; j < dsd.nbins(); ++j) {
+        next.psd_ptype[j] = sbc_liquid_top_class(diameter[j]);
+    }
+    state.slw_hgt = column.height_agl(level.k);
 }
 
+// Branch E (classify:243): the drops of a cloud top above 0 C, above the
+// first crossing
 inline void sbc_warm_above_crossing(
     SBCColumnState& state, [[maybe_unused]] const SBCLevelState& prev,
-    [[maybe_unused]] SBCLevelState& next,
-    [[maybe_unused]] const SBCLevel& level,
-    [[maybe_unused]] const SpectralBinColumn& column,
-    [[maybe_unused]] const SpectralBinDSD& dsd) {
-    state.unsupported = true;
+    SBCLevelState& next, const SBCLevel& level,
+    const SpectralBinColumn& column, const SpectralBinDSD& dsd) {
+    sbc_liquid_top_drops(state.top, next, level, column, dsd);
+    std::fill_n(next.psd_ptype.begin(), dsd.nbins(), SBCClass::rain);
 }
 }  // namespace
 

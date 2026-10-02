@@ -3183,11 +3183,79 @@ TEST_CASE("Testing spectral_bin_classifier temporary: rule 2 at Tice") {
 // Microphysics: liquid cloud tops
 // ---------------------------------------------------------------------------
 
-TEST_CASE("Testing spectral_bin_classifier temporary: rule 2 at 0 C") {
-    const SBCProfile snd =
-        saturated_profile({0.0f, 1000.0f, 2000.0f, 3000.0f},
-                          {sharp::ZEROCNK, 275.15f, 276.15f, 274.15f});
-    check_sbc(run_sbc(snd, 3000.0f), SBC_MISSING);
+namespace {
+// data/sbc_reference case 12
+const SBCGolden SBC_SUPERCOOLED_TOP{
+    {
+        {100000.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f, 73200.0f, 68700.0f},
+        {0.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f},
+        {278.15f, 277.15f, 275.15f, 274.15f, 272.15f, 271.15f, 270.15f},
+        {278.15f, 277.15f, 275.15f, 274.15f, 272.15f, 271.15f, 270.15f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {278.15f, 277.15f, 275.15f, 274.15f, 272.15f, 271.15f, 270.15f},
+    },
+    3000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    1,
+    sharp::PrecipType::rain,
+    1.0,
+    2000.0f,
+    {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+     1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+     1.0f, 1.0f, 1.0f, 1.0f},
+};
+
+// A warm cloud top reaches the surface without refreezing only through
+// levels at exactly 0 C. The reference ran on 273.15 K exactly.
+
+// A warm cloud top over a surface at 0 C: FZRA
+const SBCGolden SBC_WARM_TOP_0C_SURFACE{
+    saturated_profile({0.0f, 1000.0f, 2000.0f, 3000.0f},
+                      {273.15f, 275.15f, 276.15f, 274.15f}),
+    3000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    1,
+    sharp::PrecipType::freezing_rain,
+    1.0,
+    0.0f,
+    {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+     1.0f, 1.0f, 1.0f, 1.0f},
+};
+
+// A warm cloud top above a level at 0 C: RA
+const SBCGolden SBC_WARM_TOP_0C_LEVEL{
+    saturated_profile({0.0f, 1000.0f, 2000.0f, 3000.0f},
+                      {278.15f, 273.15f, 275.15f, 274.15f}),
+    3000.0f,
+    &PYTHON_DSD,
+    1.0f,
+    267.15f,
+    2,
+    sharp::PrecipType::rain,
+    1.0,
+    3000.0f,
+    {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+     1.0f, 1.0f, 1.0f, 1.0f},
+};
+}  // namespace
+
+TEST_CASE("Testing spectral_bin_classifier core: supercooled cloud top") {
+    SUBCASE("AGL") { check_golden(SBC_SUPERCOOLED_TOP); }
+    SUBCASE("MSL") {
+        SBCGolden golden = SBC_SUPERCOOLED_TOP;
+        for (float& z : golden.snd.height) z += 1500.0f;
+        golden.cloud_top += 1500.0f;
+        check_golden(golden);
+    }
+}
+
+TEST_CASE("Testing spectral_bin_classifier core: warm cloud top") {
+    SUBCASE("surface at 0 C") { check_golden(SBC_WARM_TOP_0C_SURFACE); }
+    SUBCASE("level at 0 C") { check_golden(SBC_WARM_TOP_0C_LEVEL); }
 }
 
 // ---------------------------------------------------------------------------

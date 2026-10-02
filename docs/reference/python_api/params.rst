@@ -131,4 +131,19 @@ params
 
    .. Microphysics: liquid cloud tops
 
+   .. rubric:: Microphysics: liquid cloud tops
+
+   With Tw above Tice at the cloud top, every bin starts as a liquid drop of its melted diameter D. It falls at the raindrop fall speed near the ground times sqrt(rho_0 / rho). A drop below 0.6 mm is freezing drizzle and a larger one freezing rain. The cloud top becomes the supercooled-liquid height, even when it is warmer than 0 C, as in the reference.
+
+   Above the first crossing, the drops fall unchanged at the fall speed of Foote and du Toit (1969), -0.193 + 4.96 D - 0.904 D^2 + 0.0566 D^3, times exp(z / 20 km):
+
+   * Below a cloud top at or below 0 C, at each level warmer than Tice, unless some level above the first crossing warms through Tice. The drops stay supercooled, and each of these levels lowers the supercooled-liquid height.
+   * Below a cloud top warmer than 0 C, at each level warmer than Tice. The drops are rain.
+
+   Other levels above the first crossing follow the rules for the levels below it. Both conditions compare Tw with the Tice in use, which refreezing can switch to -10 C. Whether a level warms through Tice uses the Tice passed in, as in the reference.
+
+   z is the height as passed, AGL or MSL. The Python reference passes height AGL and the C++ MRMS code height MSL. The fall speed changes the result only when some drops refreeze below. Moving z by 1500 m changed no result in tests of the reference.
+
+   Reeves et al. (2016) only state that every drop of a cloud top warmer than Tice starts as liquid.
+
    .. Precipitation type from a full sounding
