@@ -1463,10 +1463,293 @@ def test_spectral_bin_cloud_top():
 # Precipitation type from a given cloud top: pre-classifier
 # ---------------------------------------------------------------------------
 
+sbc_reference_dir = os.path.join(
+    os.path.dirname(__file__), "..", "..", "data", "sbc_reference")
+
+
+@functools.cache
+def sbc_reference():
+    """
+    The golden data of the spectral bin classifier: the cases table, and per
+    case_id the level arrays (surface up) and the reference profile
+    (levels x bins).
+    """
+    def read(name):
+        return pd.read_parquet(os.path.join(sbc_reference_dir, name))
+
+    cases = read("cases.parquet")
+    levels = {
+        case_id: tuple(group[field].to_numpy() for field in (
+            "pressure", "height", "temperature", "dewpoint", "relh",
+            "wetbulb"))
+        for case_id, group in read("levels.parquet").groupby("case_id")
+    }
+    profiles = {
+        case_id: group["liquid_fraction"].to_numpy().reshape(
+            group["level"].nunique(), group["bin"].nunique())
+        for case_id, group in read("profiles.parquet").groupby("case_id")
+    }
+    dsds = {
+        name: (group["diameter"].to_numpy(), group["concentration"].to_numpy())
+        for name, group in read("dsds.parquet").groupby("dsd_name")
+    }
+    return cases, levels, profiles, dsds
+
+
+def sbc_reference_runs(stages):
+    """
+    Each golden case of the given stages, run with its reference cloud top,
+    as (case, result, profile).
+    """
+    cases, levels, _, dsds = sbc_reference()
+    for case in cases[cases["stage"].isin(stages)].itertuples():
+        dsd = params.spectral_bin_dsd(*dsds[case.dsd_name],
+                                      rime_factor=case.rime_factor)
+        result, profile = params.spectral_bin_classifier(
+            *levels[case.case_id], case.cloud_top_height, dsd,
+            case.ice_nucleation_temperature, return_profile=True)
+        without = params.spectral_bin_classifier(
+            *levels[case.case_id], case.cloud_top_height, dsd,
+            case.ice_nucleation_temperature)
+        assert sbc_tuple(without) == sbc_tuple(result)
+        yield case, result, profile
+
+
+def sbc_tuple(result):
+    return (result.precip_type, result.liquid_fraction,
+            result.supercooled_liquid_height)
+
+
+SBC_SN = (params.PrecipType.snow, 0.0, constants.MISSING)
+SBC_FZRA = (params.PrecipType.freezing_rain, 1.0, 0.0)
+SBC_RA = (params.PrecipType.rain, 1.0, constants.MISSING)
+SBC_MISSING = (params.PrecipType.missing, constants.MISSING,
+               constants.MISSING)
+
+
+def test_spectral_bin_classifier_reference():
+    _, _, profiles, _ = sbc_reference()
+    counts = {}
+    for case, result, profile in sbc_reference_runs(
+            ("preclassifier", "no_cloud")):
+        key = (case.group, case.stage)
+        counts[key] = counts.get(key, 0) + 1
+        assert sbc_tuple(result) == (
+            params.PrecipType(case.precip_type), case.liquid_fraction,
+            case.supercooled_liquid_height), case.case_id
+        np.testing.assert_array_equal(profile, profiles[case.case_id])
+        assert np.all(profile == constants.MISSING)
+    assert counts == {
+        ("named", "preclassifier"): 6,
+        ("named", "no_cloud"): 1,
+        ("corpus", "preclassifier"): 1207,
+        ("corpus", "no_cloud"): 35,
+    }
+
+
+def saturated_sbc_profile(height, wetbulb):
+    height = np.array(height, dtype="float32")
+    wetbulb = np.array(wetbulb, dtype="float32")
+    pressure = (100000.0 * np.exp(-height / 8000.0)).astype("float32")
+    return (pressure, height, wetbulb, wetbulb.copy(),
+            np.ones_like(wetbulb), wetbulb.copy())
+
+
+def run_sbc(snd, cloud_top, dsd=None,
+            tice=params.SBC_ICE_NUCLEATION_TEMPERATURE):
+    """
+    The result as a tuple, after checking that the profile is all MISSING
+    and that asking for it does not change the result.
+    """
+    if dsd is None:
+        dsd = params.spectral_bin_dsd_default()
+    result, profile = params.spectral_bin_classifier(
+        *snd, cloud_top, dsd, tice, return_profile=True)
+    assert profile.dtype == np.float32
+    assert profile.shape == (snd[1].size, dsd.nbins)
+    assert np.all(profile == constants.MISSING)
+    without = params.spectral_bin_classifier(*snd, cloud_top, dsd, tice)
+    assert sbc_tuple(without) == sbc_tuple(result)
+    return sbc_tuple(result)
+
+
+SBC_TICE = float(params.SBC_ICE_NUCLEATION_TEMPERATURE)
+SBC_HEIGHT_5 = [0.0, 1000.0, 2000.0, 3000.0, 4000.0]
+SBC_HEIGHT_4 = SBC_HEIGHT_5[:4]
+SBC_TIES_TW = [272.15, 271.15, 270.15, 268.15, 265.15, 262.15]
+
+
+@pytest.mark.parametrize("height, wetbulb, cloud_top, expected", [
+    (SBC_HEIGHT_5, [272.15, 273.15, 270.15, 265.15, 262.15], 4000.0, SBC_SN),
+    (SBC_HEIGHT_4, [273.1, 275.15, 276.15, 274.15], 3000.0, SBC_FZRA),
+    (SBC_HEIGHT_5, [270.15, 268.15, 262.15, 260.15, SBC_TICE], 4000.0,
+     SBC_FZRA),
+    (SBC_HEIGHT_5, [270.15, 268.15, 262.15, 260.15, 267.1], 4000.0, SBC_SN),
+    (SBC_HEIGHT_5, [270.15, 268.15, SBC_TICE, 269.15, 262.15], 4000.0,
+     SBC_FZRA),
+    (SBC_HEIGHT_5, [270.15, 268.15, 267.1, 269.15, 262.15], 4000.0, SBC_SN),
+    (SBC_HEIGHT_4, [270.15, 275.15, 276.15, 267.2], 3000.0, SBC_FZRA),
+])
+def test_spectral_bin_classifier_thresholds(height, wetbulb, cloud_top,
+                                            expected):
+    assert run_sbc(saturated_sbc_profile(height, wetbulb),
+                   cloud_top) == expected
+
+
+@pytest.mark.parametrize("height, wetbulb, cloud_top, expected", [
+    ([0.0, 1000.0, 2000.0, 2900.0, 3100.0, 4000.0], SBC_TIES_TW, 4000.0,
+     SBC_SN),
+    ([0.0, 1000.0, 2000.0, 2901.0, 3100.0, 4000.0], SBC_TIES_TW, 4000.0,
+     SBC_FZRA),
+    ([0.0, 1000.0, 2000.0, 2900.0, 3099.0, 4000.0], SBC_TIES_TW, 4000.0,
+     SBC_SN),
+    ([1000.0, 2000.0, 3000.0, 3900.0, 4100.0, 5000.0], SBC_TIES_TW, 5000.0,
+     SBC_SN),
+    ([1000.0, 2000.0, 3000.0, 3901.0, 4100.0, 5000.0], SBC_TIES_TW, 5000.0,
+     SBC_FZRA),
+    ([0.0, 6000.0], [270.15, 262.15], 6000.0, SBC_SN),
+    ([0.0, 6001.0], [270.15, 262.15], 6001.0, SBC_FZRA),
+    ([0.0, 500.0, 1000.0, 1500.0, 2000.0, 2500.0, 3000.0, 3500.0],
+     [270.15, 269.15, 268.15, 268.15, 266.15, 275.15, 262.15, 260.15],
+     2000.0, SBC_SN),
+])
+def test_spectral_bin_classifier_3km_window(height, wetbulb, cloud_top,
+                                            expected):
+    assert run_sbc(saturated_sbc_profile(height, wetbulb),
+                   cloud_top) == expected
+
+
+@pytest.mark.parametrize("wetbulb, tice, expected", [
+    ([270.15, 268.15, 266.15, 264.15, 262.15], 267.15, SBC_SN),
+    ([270.15, 268.15, 266.15, 264.15, 262.15], 263.15, SBC_FZRA),
+    ([270.15, 268.15, 266.15, 262.15, 265.15], 267.15, SBC_SN),
+    ([270.15, 268.15, 266.15, 262.15, 265.15], 263.15, SBC_FZRA),
+])
+def test_spectral_bin_classifier_tice(wetbulb, tice, expected):
+    snd = saturated_sbc_profile(SBC_HEIGHT_5, wetbulb)
+    assert run_sbc(snd, 4000.0, tice=tice) == expected
+
+
+@pytest.mark.parametrize("surface", [0.0, 1500.0])
+@pytest.mark.parametrize("cloud_top, expected", [
+    (1000.0, SBC_FZRA),
+    (1500.0, SBC_FZRA),
+    (2000.0, SBC_SN),
+    (2999.0, SBC_SN),
+    (3000.0, SBC_FZRA),
+    (3500.0, SBC_FZRA),
+    (4000.0, SBC_SN),
+    (20000.0, SBC_SN),
+    (999.0, SBC_MISSING),
+    (0.0, SBC_MISSING),
+    (-1.0, SBC_MISSING),
+])
+def test_spectral_bin_classifier_cloud_top(surface, cloud_top, expected):
+    snd = saturated_sbc_profile(
+        np.array(SBC_HEIGHT_5) + surface,
+        [272.15, 270.15, 266.15, 268.15, 262.15])
+    assert run_sbc(snd, surface + cloud_top) == expected
+
+
+def test_spectral_bin_classifier_invalid():
+    snd = saturated_sbc_profile(SBC_HEIGHT_5,
+                                [272.15, 270.15, 266.15, 268.15, 262.15])
+    assert run_sbc(snd, 4000.0) == SBC_SN
+
+    for cloud_top in (constants.MISSING, np.nan):
+        assert run_sbc(snd, cloud_top) == SBC_MISSING
+
+    empty = np.array([], dtype="float32")
+    invalid_dsd = params.spectral_bin_dsd(empty, empty)
+    assert run_sbc(snd, 4000.0, dsd=invalid_dsd) == SBC_MISSING
+
+    for tice in (constants.MISSING, np.nan, 0.0, -1.0):
+        assert run_sbc(snd, 4000.0, tice=tice) == SBC_MISSING
+
+    for N in (0, 1):
+        assert run_sbc(tuple(arr[:N] for arr in snd), 4000.0) == SBC_MISSING
+
+    with pytest.raises(BufferError):
+        params.spectral_bin_classifier(*snd[:5], snd[5][:4], 4000.0)
+
+
+def test_spectral_bin_classifier_defaults():
+    snd = saturated_sbc_profile(SBC_HEIGHT_5,
+                                [270.15, 268.15, 266.15, 264.15, 262.15])
+    result = params.spectral_bin_classifier(*snd, 4000.0)
+    assert isinstance(result, params.SpectralBinResult)
+    assert sbc_tuple(result) == SBC_SN
+    assert sbc_tuple(params.spectral_bin_classifier(
+        *snd, cloud_top=4000.0, ice_nucleation_temperature=263.15)) == SBC_FZRA
+
+    deld_0_1 = params.spectral_bin_dsd(*python_reference_dsd(0.1))
+    result, profile = params.spectral_bin_classifier(
+        *snd, 4000.0, deld_0_1, return_profile=True)
+    assert sbc_tuple(result) == SBC_SN
+    assert profile.shape == (5, 19)
+
+    signature = params.spectral_bin_classifier.__doc__.splitlines()[0]
+    assert "dsd: nwsspc.sharp.calc.params.SpectralBinDSD = " \
+        "spectral_bin_dsd_default()" in signature
+    assert "ice_nucleation_temperature: float = " \
+        "SBC_ICE_NUCLEATION_TEMPERATURE" in signature
+    assert "return_profile: bool = False" in signature
+
+
+@pytest.mark.parametrize("field", [2, 3, 4, 5])
+@pytest.mark.parametrize("bad", [constants.MISSING, np.nan])
+def test_spectral_bin_classifier_missing_levels(field, bad):
+    def spoil(snd, level):
+        snd = tuple(arr.copy() for arr in snd)
+        snd[field][level] = bad
+        return snd
+
+    window = saturated_sbc_profile(
+        [0.0, 1000.0, 2500.0, 3000.0, 4000.0, 5000.0],
+        [272.15, 270.15, 268.15, 264.15, 262.15, 260.15])
+    assert run_sbc(window, 5000.0) == SBC_SN
+    assert run_sbc(spoil(window, 3), 5000.0) == SBC_FZRA
+
+    surface = saturated_sbc_profile(
+        [0.0, 500.0, 1000.0, 3200.0, 3600.0, 5000.0],
+        [272.15, 271.15, 270.15, 268.15, 264.15, 260.15])
+    assert run_sbc(surface, 5000.0) == SBC_FZRA
+    assert run_sbc(spoil(surface, 0), 5000.0) == SBC_SN
+
+    top = saturated_sbc_profile(SBC_HEIGHT_5,
+                                [272.15, 270.15, 266.15, 268.15, 262.15])
+    for cloud_top in (4000.0, 20000.0):
+        assert run_sbc(top, cloud_top) == SBC_SN
+        assert run_sbc(spoil(top, 4), cloud_top) == SBC_FZRA
+
+    two = saturated_sbc_profile(SBC_HEIGHT_5[:3], [272.15, 270.15, 266.15])
+    assert run_sbc(two, 2000.0) == SBC_SN
+    assert run_sbc(spoil(two, 0), 2000.0) == SBC_SN
+    assert run_sbc(spoil(two, 0), 1000.0) == SBC_MISSING
+    assert run_sbc(spoil(spoil(two, 0), 1), 2000.0) == SBC_MISSING
+    assert run_sbc(spoil(spoil(two, 1), 2), 2000.0) == SBC_MISSING
+
 
 # ---------------------------------------------------------------------------
 # Microphysics: frozen cloud tops and melting
 # ---------------------------------------------------------------------------
+
+def test_spectral_bin_classifier_temporary_core_is_missing():
+    counts = {}
+    for case, result, profile in sbc_reference_runs(("core",)):
+        counts[case.group] = counts.get(case.group, 0) + 1
+        assert sbc_tuple(result) == SBC_MISSING, case.case_id
+        assert np.all(profile == constants.MISSING)
+    assert counts == {"named": 17, "sample": 1, "corpus": 1158}
+
+
+@pytest.mark.parametrize("wetbulb", [
+    [273.15, 275.15, 276.15, 274.15],
+    [270.15, 275.15, 276.15, SBC_TICE],
+])
+def test_spectral_bin_classifier_temporary_rule_2_edges(wetbulb):
+    snd = saturated_sbc_profile(SBC_HEIGHT_4, wetbulb)
+    assert run_sbc(snd, 3000.0) == SBC_MISSING
 
 
 # ---------------------------------------------------------------------------

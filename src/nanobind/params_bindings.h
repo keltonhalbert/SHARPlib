@@ -4,6 +4,8 @@
 // clang-format off
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/pair.h>
+#include <nanobind/stl/tuple.h>
+#include <nanobind/stl/variant.h>
 
 // clang-format on
 #include <SHARPlib/layer.h>
@@ -1815,6 +1817,171 @@ float
     // -----------------------------------------------------------------------
     // Precipitation type from a given cloud top: pre-classifier
     // -----------------------------------------------------------------------
+
+    using sbc_profile_arr_t =
+        nb::ndarray<nb::numpy, float, nb::ndim<2>, nb::c_contig>;
+    using sbc_return_t =
+        std::variant<sharp::SpectralBinResult,
+                     std::tuple<sharp::SpectralBinResult, sbc_profile_arr_t>>;
+
+    // classify(profile) with a new N x nbins profile, or with nullptr.
+    const auto run_spectral_bin_classifier =
+        [](const std::size_t N, const sharp::SpectralBinDSD& dsd,
+           const bool return_profile, const auto& classify) -> sbc_return_t {
+        if (!return_profile) return classify(nullptr);
+        const auto nbins = static_cast<std::size_t>(dsd.nbins());
+        auto buf = std::make_unique<float[]>(N * nbins);
+        const sharp::SpectralBinResult result = classify(buf.get());
+        float* raw = buf.release();
+        nb::capsule owner(raw, [](void* p) noexcept { delete[] (float*)p; });
+        return std::make_tuple(result,
+                               sbc_profile_arr_t(raw, {N, nbins}, owner));
+    };
+
+    m_params.def(
+        "spectral_bin_classifier",
+        [run_spectral_bin_classifier](
+            const_prof_arr_t pressure, const_prof_arr_t height,
+            const_prof_arr_t temperature, const_prof_arr_t dewpoint,
+            const_prof_arr_t relh, const_prof_arr_t wetbulb,
+            const float cloud_top, const sharp::SpectralBinDSD& dsd,
+            const float ice_nucleation_temperature, const bool return_profile) {
+            check_equal_sizes(pressure, height, temperature, dewpoint, relh,
+                              wetbulb);
+            return run_spectral_bin_classifier(
+                height.size(), dsd, return_profile, [&](float* profile) {
+                    return sharp::spectral_bin_classifier(
+                        pressure.data(), height.data(), temperature.data(),
+                        dewpoint.data(), relh.data(), wetbulb.data(),
+                        static_cast<std::ptrdiff_t>(height.size()), cloud_top,
+                        dsd, ice_nucleation_temperature, profile);
+                });
+        },
+        nb::arg("pressure"), nb::arg("height"), nb::arg("temperature"),
+        nb::arg("dewpoint"), nb::arg("relh"), nb::arg("wetbulb"),
+        nb::arg("cloud_top"),
+        nb::arg("dsd").sig("spectral_bin_dsd_default()") =
+            sharp::spectral_bin_dsd_default(),
+        nb::arg("ice_nucleation_temperature")
+                .sig("SBC_ICE_NUCLEATION_TEMPERATURE") =
+            sharp::SBC_ICE_NUCLEATION_TEMPERATURE,
+        nb::arg("return_profile") = false,
+        R"pbdoc(
+Precipitation type from the spectral bin classifier, given a cloud top.
+
+The column runs from the surface, the lowest valid level, up to the highest
+valid level at or below cloud_top. The function never reads the
+temperature, dewpoint, relative humidity, or wet-bulb temperature of a level
+above cloud_top, so a caller can compute the wet-bulb temperature only up to
+the cloud top and fill the rest of the array with MISSING. Heights above
+ground level (AGL) are height minus the height of the surface. The
+pre-classifier of the 2023 version of the algorithm (run_sbc.py) then
+applies these rules in order, with Tw the wet-bulb temperature, Tice the
+ice nucleation temperature, and 0 C = 273.15 K:
+
+1. If the maximum Tw of the column is at or below 0 C: snow (SN) if Tw at
+   the cloud top is below Tice and the minimum Tw from the level nearest
+   3000 m AGL down to the surface is below Tice, otherwise freezing rain
+   (FZRA). Of two levels equally near 3000 m AGL, the higher one counts, as
+   in the reference. With a cloud top below 3000 m AGL, the level nearest
+   3000 m AGL is the cloud top.
+2. Otherwise, if Tw at the cloud top is above Tice and Tw at the surface is
+   below 0 C: FZRA.
+3. Otherwise, if the minimum Tw of the column is above 0 C: rain (RA).
+
+Each comparison uses the operator of the reference against a float32
+constant, so a Tw of exactly 273.15 K in float32 is at 0 C: it counts as
+subfreezing in rule 1 and does not fire rule 2.
+
+The rules are unpublished. The comments of the C++ MRMS code credit
+H. Reeves, who developed them from tests on a large dataset in the study
+published as Reeves et al. (2023, Weather and Forecasting). They depart
+from Fig. 2 of Reeves et al. (2016):
+
+* For a column at or below 0 C, the paper gives SN when Tw at the cloud top
+  is at or below Tice, and FZRA otherwise. Rule 1 also requires the minimum
+  Tw from 3000 m AGL down to be below Tice, and gives FZRA, "non-classical
+  freezing rain", for a cloud top at exactly Tice.
+* Every cloud top warmer than Tice over a subfreezing surface gives FZRA,
+  even with a deep layer colder than Tice below a warm layer, where the
+  paper integrates the microphysics and can give ice pellets.
+* A column above 0 C everywhere gives RA without the microphysics.
+
+The reference reports no liquid fraction or supercooled-liquid height for
+a column the pre-classifier decides. This function returns:
+
+======== =============== =========================
+Category liquid_fraction supercooled_liquid_height
+======== =============== =========================
+SN       0               MISSING
+FZRA     1               0 m
+RA       1               MISSING
+======== =============== =========================
+
+Columns that the pre-classifier does not decide need the microphysics,
+which is not implemented yet, and return missing.
+
+The result is missing (PrecipType.missing, with MISSING fields) when:
+
+* There are fewer than 2 levels, including empty arrays.
+* dsd is invalid (nbins == 0).
+* ice_nucleation_temperature is MISSING, NaN, or not above 0.
+* cloud_top is MISSING or NaN, as when there is no cloud.
+* The column has fewer than 2 valid levels, including a cloud top below
+  the surface. This departs from the reference, which pre-classifies a
+  column whose cloud top is the surface level.
+
+A level is valid when its temperature, dewpoint, relative humidity, and
+wet-bulb temperature are neither MISSING nor NaN, and the function skips
+the other levels. Pressure and height are never checked.
+
+With return_profile=True, the function also returns the liquid fraction of
+each level and bin, a new float32 array of shape (N, nbins), with levels in
+input order. It holds MISSING outside the integrated column, at skipped
+levels, and everywhere for a column that the pre-classifier decides or that
+gives missing.
+
+The profiles must start at the surface, and height must be strictly
+increasing. This is not checked.
+
+References
+----------
+Reeves et al. 2016: https://doi.org/10.1175/JAMC-D-16-0044.1
+
+Python reference (run_sbc.py): D. Tripp, 2023
+
+C++ MRMS code (sbcmodel_core.cc): A. Rosenow and D. Tripp
+
+Parameters
+----------
+pressure : numpy.ndarray[dtype=float32]
+    1D NumPy array of pressure values (Pa)
+height : numpy.ndarray[dtype=float32]
+    1D NumPy array of height values (meters)
+temperature : numpy.ndarray[dtype=float32]
+    1D NumPy array of temperature values (K)
+dewpoint : numpy.ndarray[dtype=float32]
+    1D NumPy array of dewpoint temperature values (K)
+relh : numpy.ndarray[dtype=float32]
+    1D NumPy array of relative humidity over liquid water (fraction)
+wetbulb : numpy.ndarray[dtype=float32]
+    1D NumPy array of wet-bulb temperature values (K)
+cloud_top : float
+    Cloud-top height, AGL or MSL like height (meters)
+dsd : nwsspc.sharp.calc.params.SpectralBinDSD, default = spectral_bin_dsd_default()
+    Drop-size distribution, with diameters in mm (see spectral_bin_dsd)
+ice_nucleation_temperature : float, default = SBC_ICE_NUCLEATION_TEMPERATURE
+    Tice (K; the default is 267.15 K, -6 C)
+return_profile : bool, default = False
+    Also return the liquid fraction of each level and bin
+
+Returns
+-------
+nwsspc.sharp.calc.params.SpectralBinResult or tuple[nwsspc.sharp.calc.params.SpectralBinResult, numpy.ndarray[dtype=float32]]
+    The precipitation type, liquid fraction (fraction), and
+    supercooled-liquid height (m AGL). With return_profile=True, a tuple of
+    that and the (N, nbins) liquid fraction profile (fraction).
+    )pbdoc");
 
     // -----------------------------------------------------------------------
     // Microphysics: frozen cloud tops and melting

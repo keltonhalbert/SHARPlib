@@ -111,6 +111,8 @@ paper. Drop-size distribution diameters are in mm.
 
 .. Precipitation type from a given cloud top: pre-classifier
 
+.. doxygenfunction:: sharp::spectral_bin_classifier(const float[], const float[], const float[], const float[], const float[], const float[], const std::ptrdiff_t, const float, const SpectralBinDSD&, const float, float[])
+
 .. Microphysics: frozen cloud tops and melting
 
 .. Microphysics: refreezing

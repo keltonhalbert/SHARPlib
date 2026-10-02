@@ -2256,9 +2256,417 @@ TEST_CASE("Testing spectral_bin_cloud_top skips missing levels") {
 // Precipitation type from a given cloud top: pre-classifier
 // ---------------------------------------------------------------------------
 
+namespace {
+// From the surface up.
+struct SBCProfile {
+    std::vector<float> pressure;
+    std::vector<float> height;
+    std::vector<float> temperature;
+    std::vector<float> dewpoint;
+    std::vector<float> relh;
+    std::vector<float> wetbulb;
+};
+
+SBCProfile saturated_profile(const std::vector<float>& height,
+                             const std::vector<float>& wetbulb) {
+    SBCProfile snd;
+    for (const float z : height) {
+        snd.pressure.push_back(100000.0f * std::exp(-z / 8000.0f));
+    }
+    snd.height = height;
+    snd.temperature = wetbulb;
+    snd.dewpoint = wetbulb;
+    snd.relh.assign(wetbulb.size(), 1.0f);
+    snd.wetbulb = wetbulb;
+    return snd;
+}
+
+struct SBCRun {
+    sharp::SpectralBinResult result;
+    std::vector<float> profile;
+};
+
+// Asking for the profile must not change the result.
+SBCRun run_sbc(
+    const SBCProfile& snd, const float cloud_top,
+    const sharp::SpectralBinDSD& dsd = sharp::spectral_bin_dsd_default(),
+    const float tice = sharp::SBC_ICE_NUCLEATION_TEMPERATURE) {
+    const auto N = static_cast<std::ptrdiff_t>(snd.height.size());
+    SBCRun run;
+    run.profile.assign(
+        snd.height.size() * static_cast<std::size_t>(dsd.nbins()), 0.0f);
+    run.result = sharp::spectral_bin_classifier(
+        snd.pressure.data(), snd.height.data(), snd.temperature.data(),
+        snd.dewpoint.data(), snd.relh.data(), snd.wetbulb.data(), N,
+        cloud_top, dsd, tice, run.profile.data());
+    const sharp::SpectralBinResult without = sharp::spectral_bin_classifier(
+        snd.pressure.data(), snd.height.data(), snd.temperature.data(),
+        snd.dewpoint.data(), snd.relh.data(), snd.wetbulb.data(), N,
+        cloud_top, dsd, tice);
+    CHECK(without.precip_type == run.result.precip_type);
+    CHECK(without.liquid_fraction == run.result.liquid_fraction);
+    CHECK(without.supercooled_liquid_height ==
+          run.result.supercooled_liquid_height);
+    return run;
+}
+
+constexpr sharp::SpectralBinResult SBC_SN{sharp::PrecipType::snow, 0.0f,
+                                          sharp::MISSING};
+constexpr sharp::SpectralBinResult SBC_FZRA{sharp::PrecipType::freezing_rain,
+                                            1.0f, 0.0f};
+constexpr sharp::SpectralBinResult SBC_RA{sharp::PrecipType::rain, 1.0f,
+                                          sharp::MISSING};
+constexpr sharp::SpectralBinResult SBC_MISSING{};
+
+void check_sbc(const SBCRun& run, const sharp::SpectralBinResult& expected) {
+    CHECK(run.result.precip_type == expected.precip_type);
+    CHECK(run.result.liquid_fraction == expected.liquid_fraction);
+    CHECK(run.result.supercooled_liquid_height ==
+          expected.supercooled_liquid_height);
+    std::size_t not_missing = 0;
+    for (const float lf : run.profile) not_missing += (lf != sharp::MISSING);
+    CHECK(not_missing == 0);
+}
+}  // namespace
+
+// The named cases of data/sbc_reference, one per pre-classifier path, with
+// their reference cloud tops.
+
+TEST_CASE("Testing spectral_bin_classifier pre-classifies snow") {
+    // Case 0
+    const SBCProfile snd{
+        {100000.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f, 73200.0f, 68700.0f,
+         64600.0f, 60700.0f, 57000.0f, 53500.0f},
+        {0.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f, 3500.0f,
+         4000.0f, 4500.0f, 5000.0f},
+        {270.15f, 269.15f, 268.15f, 266.15f, 265.15f, 264.15f, 262.15f,
+         260.15f, 258.15f, 256.15f, 253.15f},
+        {270.15f, 269.15f, 268.15f, 266.15f, 265.15f, 264.15f, 262.15f,
+         260.15f, 258.15f, 256.15f, 253.15f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {270.15f, 269.15f, 268.15f, 266.15f, 265.15f, 264.15f, 262.15f,
+         260.15f, 258.15f, 256.15f, 253.15f},
+    };
+    check_sbc(run_sbc(snd, 5000.0f), SBC_SN);
+}
+
+TEST_CASE("Testing spectral_bin_classifier subfreezing column, warm top") {
+    // Case 1
+    const SBCProfile snd{
+        {100000.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f},
+        {0.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f},
+        {272.15f, 271.15f, 270.15f, 269.15f, 268.65f},
+        {272.15f, 271.15f, 270.15f, 269.15f, 268.65f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {272.15f, 271.15f, 270.15f, 269.15f, 268.65f},
+    };
+    check_sbc(run_sbc(snd, 2000.0f), SBC_FZRA);
+}
+
+TEST_CASE("Testing spectral_bin_classifier subfreezing column, warm 3 km") {
+    // Case 2
+    const SBCProfile snd{
+        {100000.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f, 73200.0f, 68700.0f,
+         64600.0f, 60700.0f, 57000.0f, 53500.0f},
+        {0.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f, 3500.0f,
+         4000.0f, 4500.0f, 5000.0f},
+        {272.15f, 271.65f, 271.15f, 270.65f, 270.15f, 269.65f, 269.15f,
+         267.65f, 265.15f, 262.15f, 259.15f},
+        {272.15f, 271.65f, 271.15f, 270.65f, 270.15f, 269.65f, 269.15f,
+         267.65f, 265.15f, 262.15f, 259.15f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {272.15f, 271.65f, 271.15f, 270.65f, 270.15f, 269.65f, 269.15f,
+         267.65f, 265.15f, 262.15f, 259.15f},
+    };
+    check_sbc(run_sbc(snd, 5000.0f), SBC_FZRA);
+}
+
+TEST_CASE("Testing spectral_bin_classifier warm top over a cold surface") {
+    // Case 3
+    const SBCProfile snd{
+        {100000.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f, 73200.0f},
+        {0.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f},
+        {271.15f, 272.15f, 275.15f, 276.15f, 274.15f, 270.15f},
+        {271.15f, 272.15f, 275.15f, 276.15f, 274.15f, 270.15f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {271.15f, 272.15f, 275.15f, 276.15f, 274.15f, 270.15f},
+    };
+    check_sbc(run_sbc(snd, 2500.0f), SBC_FZRA);
+}
+
+TEST_CASE("Testing spectral_bin_classifier pre-classifies rain") {
+    // Case 4
+    const SBCProfile snd{
+        {100000.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f},
+        {0.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f},
+        {281.15f, 279.15f, 277.15f, 276.15f, 275.15f},
+        {281.15f, 279.15f, 277.15f, 276.15f, 275.15f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {281.15f, 279.15f, 277.15f, 276.15f, 275.15f},
+    };
+    check_sbc(run_sbc(snd, 2000.0f), SBC_RA);
+}
+
+TEST_CASE("Testing spectral_bin_classifier with a maximum Tw of 0 C") {
+    const SBCProfile snd =
+        saturated_profile({0.0f, 1000.0f, 2000.0f, 3000.0f, 4000.0f},
+                          {272.15f, sharp::ZEROCNK, 270.15f, 265.15f, 262.15f});
+    check_sbc(run_sbc(snd, 4000.0f), SBC_SN);
+}
+
+TEST_CASE("Testing spectral_bin_classifier rule 2 at a surface below 0 C") {
+    const SBCProfile snd =
+        saturated_profile({0.0f, 1000.0f, 2000.0f, 3000.0f},
+                          {273.1f, 275.15f, 276.15f, 274.15f});
+    check_sbc(run_sbc(snd, 3000.0f), SBC_FZRA);
+}
+
+TEST_CASE("Testing spectral_bin_classifier with Tw at Tice") {
+    const float tice = sharp::SBC_ICE_NUCLEATION_TEMPERATURE;
+    const std::vector<float> height = {0.0f, 1000.0f, 2000.0f, 3000.0f,
+                                       4000.0f};
+    check_sbc(run_sbc(saturated_profile(
+                          height, {270.15f, 268.15f, 262.15f, 260.15f, tice}),
+                      4000.0f),
+              SBC_FZRA);
+    check_sbc(run_sbc(saturated_profile(height, {270.15f, 268.15f, 262.15f,
+                                                 260.15f, 267.1f}),
+                      4000.0f),
+              SBC_SN);
+
+    check_sbc(run_sbc(saturated_profile(
+                          height, {270.15f, 268.15f, tice, 269.15f, 262.15f}),
+                      4000.0f),
+              SBC_FZRA);
+    check_sbc(run_sbc(saturated_profile(height, {270.15f, 268.15f, 267.1f,
+                                                 269.15f, 262.15f}),
+                      4000.0f),
+              SBC_SN);
+
+    check_sbc(run_sbc(saturated_profile({0.0f, 1000.0f, 2000.0f, 3000.0f},
+                                        {270.15f, 275.15f, 276.15f, 267.2f}),
+                      3000.0f),
+              SBC_FZRA);
+}
+
+TEST_CASE("Testing spectral_bin_classifier ties in the 3 km window") {
+    const std::vector<float> tw = {272.15f, 271.15f, 270.15f,
+                                   268.15f, 265.15f, 262.15f};
+    for (const float surface : {0.0f, 1000.0f}) {
+        CAPTURE(surface);
+        const auto run = [&](const float below, const float above) {
+            return run_sbc(
+                saturated_profile({surface, surface + 1000.0f,
+                                   surface + 2000.0f, surface + below,
+                                   surface + above, surface + 4000.0f},
+                                  tw),
+                surface + 4000.0f);
+        };
+        check_sbc(run(2900.0f, 3100.0f), SBC_SN);
+        check_sbc(run(2901.0f, 3100.0f), SBC_FZRA);
+        check_sbc(run(2900.0f, 3099.0f), SBC_SN);
+    }
+
+    check_sbc(run_sbc(saturated_profile({0.0f, 6000.0f}, {270.15f, 262.15f}),
+                      6000.0f),
+              SBC_SN);
+    check_sbc(run_sbc(saturated_profile({0.0f, 6001.0f}, {270.15f, 262.15f}),
+                      6001.0f),
+              SBC_FZRA);
+}
+
+TEST_CASE("Testing spectral_bin_classifier with a cloud top below 3 km") {
+    const SBCProfile snd = saturated_profile(
+        {0.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f, 3500.0f},
+        {270.15f, 269.15f, 268.15f, 268.15f, 266.15f, 275.15f, 262.15f,
+         260.15f});
+    check_sbc(run_sbc(snd, 2000.0f), SBC_SN);
+}
+
+TEST_CASE("Testing spectral_bin_classifier with Tice -10 C") {
+    const sharp::SpectralBinDSD dsd = sharp::spectral_bin_dsd_default();
+    const std::vector<float> height = {0.0f, 1000.0f, 2000.0f, 3000.0f,
+                                       4000.0f};
+    const SBCProfile window = saturated_profile(
+        height, {270.15f, 268.15f, 266.15f, 264.15f, 262.15f});
+    check_sbc(run_sbc(window, 4000.0f, dsd, 267.15f), SBC_SN);
+    check_sbc(run_sbc(window, 4000.0f, dsd, 263.15f), SBC_FZRA);
+
+    const SBCProfile top = saturated_profile(
+        height, {270.15f, 268.15f, 266.15f, 262.15f, 265.15f});
+    check_sbc(run_sbc(top, 4000.0f, dsd, 267.15f), SBC_SN);
+    check_sbc(run_sbc(top, 4000.0f, dsd, 263.15f), SBC_FZRA);
+}
+
+TEST_CASE("Testing spectral_bin_classifier cloud-top handling") {
+    const float NaN = std::numeric_limits<float>::quiet_NaN();
+    const std::vector<float> tw = {272.15f, 270.15f, 266.15f, 268.15f,
+                                   262.15f};
+    for (const float surface : {0.0f, 1500.0f}) {
+        CAPTURE(surface);
+        const SBCProfile snd = saturated_profile(
+            {surface, surface + 1000.0f, surface + 2000.0f, surface + 3000.0f,
+             surface + 4000.0f},
+            tw);
+        check_sbc(run_sbc(snd, surface + 1000.0f), SBC_FZRA);
+        check_sbc(run_sbc(snd, surface + 1500.0f), SBC_FZRA);
+        check_sbc(run_sbc(snd, surface + 2000.0f), SBC_SN);
+        check_sbc(run_sbc(snd, surface + 2999.0f), SBC_SN);
+        check_sbc(run_sbc(snd, surface + 3000.0f), SBC_FZRA);
+        check_sbc(run_sbc(snd, surface + 3500.0f), SBC_FZRA);
+        check_sbc(run_sbc(snd, surface + 4000.0f), SBC_SN);
+        check_sbc(run_sbc(snd, surface + 20000.0f), SBC_SN);
+
+        check_sbc(run_sbc(snd, surface + 999.0f), SBC_MISSING);
+        check_sbc(run_sbc(snd, surface), SBC_MISSING);
+        check_sbc(run_sbc(snd, surface - 1.0f), SBC_MISSING);
+
+        check_sbc(run_sbc(snd, sharp::MISSING), SBC_MISSING);
+        check_sbc(run_sbc(snd, NaN), SBC_MISSING);
+    }
+}
+
+TEST_CASE("Testing spectral_bin_classifier ignores data above the cloud top") {
+    const SBCProfile snd =
+        saturated_profile({0.0f, 1000.0f, 2000.0f, 3000.0f},
+                          {280.15f, 278.15f, 276.15f, sharp::MISSING});
+    check_sbc(run_sbc(snd, 2000.0f), SBC_RA);
+    check_sbc(run_sbc(snd, 2999.0f), SBC_RA);
+}
+
+TEST_CASE("Testing spectral_bin_classifier with invalid inputs") {
+    const float NaN = std::numeric_limits<float>::quiet_NaN();
+    const SBCProfile snd = saturated_profile(
+        {0.0f, 1000.0f, 2000.0f, 3000.0f, 4000.0f},
+        {272.15f, 270.15f, 266.15f, 268.15f, 262.15f});
+    const sharp::SpectralBinDSD dsd = sharp::spectral_bin_dsd_default();
+    check_sbc(run_sbc(snd, 4000.0f, dsd), SBC_SN);
+
+    const SBCRun invalid_dsd = run_sbc(snd, 4000.0f, sharp::SpectralBinDSD{});
+    check_sbc(invalid_dsd, SBC_MISSING);
+    CHECK(invalid_dsd.profile.empty());
+
+    for (const float tice : {sharp::MISSING, NaN, 0.0f, -1.0f}) {
+        CAPTURE(tice);
+        check_sbc(run_sbc(snd, 4000.0f, dsd, tice), SBC_MISSING);
+    }
+
+    // N < 2 returns before reading an input array.
+    for (const std::ptrdiff_t N : {-1, 0, 1}) {
+        CAPTURE(N);
+        std::array<float, 4> profile = {0.0f, 0.0f, 0.0f, 0.0f};
+        const sharp::SpectralBinResult result = sharp::spectral_bin_classifier(
+            nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, N, 4000.0f,
+            dsd, sharp::SBC_ICE_NUCLEATION_TEMPERATURE, profile.data());
+        CHECK(result.precip_type == sharp::PrecipType::missing);
+        CHECK(result.liquid_fraction == sharp::MISSING);
+        CHECK(result.supercooled_liquid_height == sharp::MISSING);
+        for (const float lf : profile) {
+            CHECK(lf == ((N == 1) ? sharp::MISSING : 0.0f));
+        }
+    }
+}
+
+#ifndef NO_QC
+TEST_CASE("Testing spectral_bin_classifier skips missing levels") {
+    const float NaN = std::numeric_limits<float>::quiet_NaN();
+    using Field = std::vector<float> SBCProfile::*;
+    const Field fields[] = {&SBCProfile::temperature, &SBCProfile::dewpoint,
+                            &SBCProfile::relh, &SBCProfile::wetbulb};
+
+    const SBCProfile window = saturated_profile(
+        {0.0f, 1000.0f, 2500.0f, 3000.0f, 4000.0f, 5000.0f},
+        {272.15f, 270.15f, 268.15f, 264.15f, 262.15f, 260.15f});
+    check_sbc(run_sbc(window, 5000.0f), SBC_SN);
+
+    const SBCProfile surface = saturated_profile(
+        {0.0f, 500.0f, 1000.0f, 3200.0f, 3600.0f, 5000.0f},
+        {272.15f, 271.15f, 270.15f, 268.15f, 264.15f, 260.15f});
+    check_sbc(run_sbc(surface, 5000.0f), SBC_FZRA);
+
+    const SBCProfile top = saturated_profile(
+        {0.0f, 1000.0f, 2000.0f, 3000.0f, 4000.0f},
+        {272.15f, 270.15f, 266.15f, 268.15f, 262.15f});
+    check_sbc(run_sbc(top, 4000.0f), SBC_SN);
+    check_sbc(run_sbc(top, 20000.0f), SBC_SN);
+
+    for (const Field field : fields) {
+        for (const float bad : {sharp::MISSING, NaN}) {
+            CAPTURE(bad);
+            SBCProfile snd = window;
+            (snd.*field)[3] = bad;
+            check_sbc(run_sbc(snd, 5000.0f), SBC_FZRA);
+
+            snd = surface;
+            (snd.*field)[0] = bad;
+            check_sbc(run_sbc(snd, 5000.0f), SBC_SN);
+
+            snd = top;
+            (snd.*field)[4] = bad;
+            check_sbc(run_sbc(snd, 4000.0f), SBC_FZRA);
+            check_sbc(run_sbc(snd, 20000.0f), SBC_FZRA);
+        }
+    }
+}
+
+TEST_CASE("Testing spectral_bin_classifier with fewer than 2 valid levels") {
+    const SBCProfile snd = saturated_profile(
+        {0.0f, 1000.0f, 2000.0f}, {272.15f, 270.15f, 266.15f});
+    check_sbc(run_sbc(snd, 2000.0f), SBC_SN);
+    check_sbc(run_sbc(snd, 1000.0f), SBC_FZRA);
+
+    SBCProfile one = snd;
+    one.wetbulb[1] = sharp::MISSING;
+    one.temperature[2] = sharp::MISSING;
+    check_sbc(run_sbc(one, 2000.0f), SBC_MISSING);
+    check_sbc(run_sbc(one, 1000.0f), SBC_MISSING);
+
+    SBCProfile no_surface = snd;
+    no_surface.relh[0] = sharp::MISSING;
+    check_sbc(run_sbc(no_surface, 2000.0f), SBC_SN);
+    check_sbc(run_sbc(no_surface, 1000.0f), SBC_MISSING);
+
+    SBCProfile none = snd;
+    none.dewpoint.assign(3, sharp::MISSING);
+    check_sbc(run_sbc(none, 2000.0f), SBC_MISSING);
+}
+#endif
+
 // ---------------------------------------------------------------------------
 // Microphysics: frozen cloud tops and melting
 // ---------------------------------------------------------------------------
+
+TEST_CASE("Testing spectral_bin_classifier temporary: the core is missing") {
+    // data/sbc_reference case 5
+    const SBCProfile snd{
+        {100000.0f, 96900.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f, 73200.0f,
+         68700.0f, 64600.0f, 60700.0f, 53500.0f},
+        {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
+         3500.0f, 4000.0f, 5000.0f},
+        {273.95f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f,
+         264.15f, 262.15f, 260.15f, 256.15f},
+        {273.95f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f,
+         264.15f, 262.15f, 260.15f, 256.15f},
+        {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+        {273.95f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f,
+         264.15f, 262.15f, 260.15f, 256.15f},
+    };
+    check_sbc(run_sbc(snd, 5000.0f), SBC_MISSING);
+}
+
+TEST_CASE("Testing spectral_bin_classifier temporary: rule 2 at 0 C") {
+    const SBCProfile snd =
+        saturated_profile({0.0f, 1000.0f, 2000.0f, 3000.0f},
+                          {sharp::ZEROCNK, 275.15f, 276.15f, 274.15f});
+    check_sbc(run_sbc(snd, 3000.0f), SBC_MISSING);
+}
+
+TEST_CASE("Testing spectral_bin_classifier temporary: rule 2 at Tice") {
+    const SBCProfile snd = saturated_profile(
+        {0.0f, 1000.0f, 2000.0f, 3000.0f},
+        {270.15f, 275.15f, 276.15f, sharp::SBC_ICE_NUCLEATION_TEMPERATURE});
+    check_sbc(run_sbc(snd, 3000.0f), SBC_MISSING);
+}
 
 // ---------------------------------------------------------------------------
 // Microphysics: refreezing

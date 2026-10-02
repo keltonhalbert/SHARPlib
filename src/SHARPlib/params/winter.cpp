@@ -484,6 +484,110 @@ float spectral_bin_cloud_top([[maybe_unused]] const float pressure[],
 // Precipitation type from a given cloud top: pre-classifier
 // ---------------------------------------------------------------------------
 
+namespace {
+// The levels the classifier reads, from the surface (the lowest valid level)
+// up to the top (the highest valid level at or below the cloud top). Levels
+// between them that are not valid are skipped.
+struct SpectralBinColumn {
+    const float* pressure;
+    const float* height;
+    const float* temperature;
+    const float* dewpoint;
+    const float* relh;
+    const float* wetbulb;
+    std::ptrdiff_t surface;
+    std::ptrdiff_t top;
+
+    [[nodiscard]] bool valid([[maybe_unused]] const std::ptrdiff_t k) const {
+#ifdef NO_QC
+        return true;
+#else
+        return !(is_missing(temperature[k]) || is_missing(dewpoint[k]) ||
+                 is_missing(relh[k]) || is_missing(wetbulb[k]));
+#endif
+    }
+
+    // Height above the surface (m)
+    [[nodiscard]] float height_agl(const std::ptrdiff_t k) const {
+        return height[k] - height[surface];
+    }
+};
+
+constexpr SpectralBinResult SBC_SNOW{PrecipType::snow, 0.0f, MISSING};
+constexpr SpectralBinResult SBC_FREEZING_RAIN{PrecipType::freezing_rain, 1.0f,
+                                              0.0f};
+constexpr SpectralBinResult SBC_RAIN{PrecipType::rain, 1.0f, MISSING};
+}  // namespace
+
+SpectralBinResult spectral_bin_classifier(
+    const float pressure[], const float height[], const float temperature[],
+    const float dewpoint[], const float relh[], const float wetbulb[],
+    const std::ptrdiff_t N, const float cloud_top, const SpectralBinDSD& dsd,
+    const float ice_nucleation_temperature, float liquid_fraction_profile[]) {
+    const std::ptrdiff_t nbins = dsd.nbins();
+    if ((liquid_fraction_profile != nullptr) && (N > 0)) {
+        std::fill_n(liquid_fraction_profile, N * nbins, MISSING);
+    }
+    // Before any array read.
+    if (N < 2) return SpectralBinResult{};
+    // Fails for NaN too.
+    if ((nbins == 0) || !(ice_nucleation_temperature > 0.0f) ||
+        is_missing(cloud_top)) {
+        return SpectralBinResult{};
+    }
+
+    // sharp::upper_bound never returns N, so a cloud top at or above the
+    // highest level needs the guard.
+    const std::ptrdiff_t top = (height[N - 1] <= cloud_top)
+                                   ? N - 1
+                                   : upper_bound(height, N, cloud_top) - 1;
+    SpectralBinColumn column{pressure, height, temperature, dewpoint,
+                             relh,     wetbulb, 0,          top};
+    while ((column.surface < column.top) && !column.valid(column.surface)) {
+        ++column.surface;
+    }
+    while ((column.top > column.surface) && !column.valid(column.top)) {
+        --column.top;
+    }
+    if (column.top <= column.surface) return SpectralBinResult{};
+
+    const float tice = ice_nucleation_temperature;
+    const float tw_top = wetbulb[column.top];
+    const float tw_surface = wetbulb[column.surface];
+
+    // Rule 2 needs no pass over the column, and where it holds, rule 1 gives
+    // FZRA too.
+    if ((tw_top > tice) && (tw_surface < ZEROCNK)) return SBC_FREEZING_RAIN;
+
+    // Bottom up, so of two levels equally near 3 km, the higher one wins, as
+    // the reference takes the first from the top. The surface is 3 km away.
+    constexpr float AGL_3KM = 3000.0f;
+    float tw_min = tw_surface;
+    float tw_max = tw_surface;
+    float nearest_3km = AGL_3KM;
+    float tw_min_below_3km = tw_surface;
+    for (std::ptrdiff_t k = column.surface + 1; k <= column.top; ++k) {
+        if (!column.valid(k)) continue;
+        tw_min = std::min(tw_min, wetbulb[k]);
+        tw_max = std::max(tw_max, wetbulb[k]);
+        const float distance = std::abs(column.height_agl(k) - AGL_3KM);
+        if (distance <= nearest_3km) {
+            nearest_3km = distance;
+            tw_min_below_3km = tw_min;
+        }
+    }
+
+    if (tw_max <= ZEROCNK) {
+        return ((tw_top < tice) && (tw_min_below_3km < tice))
+                   ? SBC_SNOW
+                   : SBC_FREEZING_RAIN;
+    }
+    if (tw_min > ZEROCNK) return SBC_RAIN;
+
+    // Needs the microphysics.
+    return SpectralBinResult{};
+}
+
 // ---------------------------------------------------------------------------
 // Microphysics: frozen cloud tops and melting
 // ---------------------------------------------------------------------------
