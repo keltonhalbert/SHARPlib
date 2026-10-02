@@ -1814,3 +1814,84 @@ def spectral_bin_dsd_default() -> SpectralBinDSD:
     nwsspc.sharp.calc.params.SpectralBinDSD
         The default drop-size distribution
     """
+
+def spectral_bin_cloud_top(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], dewpoint: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], relh: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> float:
+    """
+    Cloud-top height of the spectral bin classifier from a sounding.
+
+    Finds the cloud top of the 2023 version of the classifier from the
+    dewpoint depression T - Td and the relative humidity, searching from the
+    highest level down. A cloud level has T - Td of at most 6 K and relative
+    humidity above 0.60.
+
+    1. The cloud top is the highest cloud level.
+    2. If a level below it has T - Td above 10 K or relative humidity below
+       0.40, the cloud top moves down to the highest cloud level at or below
+       the driest level. The driest level has the largest T - Td at or below
+       the cloud top, and the highest of tied levels wins. With no cloud level
+       there, the cloud top stays.
+    3. With no cloud level at all, the cloud top is the highest level, other
+       than the highest level of the profile, with relative humidity of at
+       least 0.80.
+    4. Otherwise there is no cloud, and the result is MISSING.
+
+    The thresholds compare as written. T - Td of exactly 6 K makes a cloud
+    level, and exactly 10 K is not dry. Relative humidity of exactly 0.60
+    does not make a cloud level, exactly 0.40 is not dry, and exactly 0.80
+    passes step 3.
+
+    The Python reference and the C++ MRMS code use this rule, and it departs
+    from the paper. Reeves et al. (2016) put the cloud top at the level of
+    highest relative humidity when the column maximum is above 80 %, and
+    otherwise classify rain or snow from the surface wet-bulb temperature.
+    Here, no cloud gives MISSING, as in the Python reference. This port leaves
+    out the rain and snow fallback of the C++ MRMS code.
+
+    The C++ MRMS code differs from the Python reference in two ways. This
+    function follows the Python, which the authors consider authoritative:
+
+    * A negative T - Td, from supersaturated data, is used as it is. The C++
+      code raises it to 0, which can change the driest level.
+    * The highest level can be the cloud top in steps 1 and 2. The C++ code
+      treats a cloud top there as no cloud.
+
+    Relative humidity is an input, as in the reference, which reads it from
+    the model. That is why step 3 can fire. A relative humidity of 0.80 or
+    more computed from T and Td would mean T - Td under 6 K, which already
+    makes a cloud level.
+
+    The rule does not read pressure. The parameter keeps the argument list of
+    the classifier.
+
+    The search skips levels whose temperature, dewpoint, or relative humidity
+    is MISSING or NaN, and the highest level of the profile is the highest
+    valid one. Empty arrays give MISSING.
+
+    The profiles must start at the surface. This is not checked.
+
+    References
+    ----------
+    Reeves et al. 2016: https://doi.org/10.1175/JAMC-D-16-0044.1
+
+    Python reference (run_sbc.py): D. Tripp, 2023
+
+    C++ MRMS code (topCalc.cc): A. Rosenow and D. Tripp
+
+    Parameters
+    ----------
+    pressure : numpy.ndarray[dtype=float32]
+        1D NumPy array of pressure values (Pa; not read)
+    height : numpy.ndarray[dtype=float32]
+        1D NumPy array of height values (m)
+    temperature : numpy.ndarray[dtype=float32]
+        1D NumPy array of temperature values (K)
+    dewpoint : numpy.ndarray[dtype=float32]
+        1D NumPy array of dewpoint temperature values (K)
+    relh : numpy.ndarray[dtype=float32]
+        1D NumPy array of relative humidity values (fraction)
+
+    Returns
+    -------
+    float
+        The cloud-top height (m, AGL or MSL like height), or MISSING
+    """

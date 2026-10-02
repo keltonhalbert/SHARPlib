@@ -1392,6 +1392,72 @@ def test_spectral_bin_dsd_sizes():
 # Cloud top from a sounding
 # ---------------------------------------------------------------------------
 
+sbc_reference_dir = os.path.join(
+    os.path.dirname(__file__), "..", "..", "data", "sbc_reference")
+
+
+def test_spectral_bin_cloud_top_golden():
+    cases = pd.read_parquet(os.path.join(sbc_reference_dir, "cases.parquet"))
+    levels = pd.read_parquet(
+        os.path.join(sbc_reference_dir, "levels.parquet"))
+    assert set(cases["group"]) == {"named", "sample", "corpus"}
+
+    pres, hght, tmpk, dwpk, relh = (
+        levels[name].to_numpy()
+        for name in ("pressure", "height", "temperature", "dewpoint", "relh"))
+    case_id = cases["case_id"].to_numpy()
+    starts = np.searchsorted(levels["case_id"].to_numpy(), case_id)
+    stops = np.searchsorted(levels["case_id"].to_numpy(), case_id,
+                            side="right")
+    assert np.all(stops > starts)
+
+    tops = np.array([
+        params.spectral_bin_cloud_top(pres[a:b], hght[a:b], tmpk[a:b],
+                                      dwpk[a:b], relh[a:b])
+        for a, b in zip(starts, stops)
+    ], dtype="float32")
+    np.testing.assert_array_equal(tops, cases["cloud_top_height"].to_numpy())
+
+    level = cases["cloud_top_level"].to_numpy()
+    cloud = level != constants.MISSING
+    assert np.all(cloud == (tops != constants.MISSING))
+    np.testing.assert_array_equal(tops[cloud],
+                                  hght[starts[cloud] + level[cloud]])
+
+
+def test_spectral_bin_cloud_top():
+    hght = np.array([0.0, 1000.0, 2000.0], dtype="float32")
+    pres = np.array([100000.0, 88250.0, 77880.0], dtype="float32")
+    tmpk = np.full(3, 270.0, dtype="float32")
+    dwpk = tmpk - np.array([1.0, 15.0, 2.0], dtype="float32")
+    relh = np.array([0.9, 0.2, 0.9], dtype="float32")
+
+    top = params.spectral_bin_cloud_top(pres, hght, tmpk, dwpk, relh)
+    assert isinstance(top, float)
+    assert top == 0.0
+
+    missing = tmpk.copy()
+    missing[0] = constants.MISSING
+    assert params.spectral_bin_cloud_top(
+        pres, hght, missing, dwpk, relh) == 2000.0
+    missing = relh.copy()
+    missing[2] = np.nan
+    assert params.spectral_bin_cloud_top(
+        pres, hght, tmpk, dwpk, missing) == 0.0
+
+    dry = tmpk - np.float32(8.0)
+    assert params.spectral_bin_cloud_top(
+        pres, hght, tmpk, dry, relh) == 0.0
+    assert params.spectral_bin_cloud_top(
+        pres, hght, tmpk, dry, relh / np.float32(2.0)) == constants.MISSING
+
+    empty = np.array([], dtype="float32")
+    assert params.spectral_bin_cloud_top(
+        empty, empty, empty, empty, empty) == constants.MISSING
+
+    with pytest.raises(BufferError):
+        params.spectral_bin_cloud_top(pres, hght, tmpk, dwpk, relh[:2])
+
 
 # ---------------------------------------------------------------------------
 # Precipitation type from a given cloud top: pre-classifier

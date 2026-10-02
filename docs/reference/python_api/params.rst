@@ -91,6 +91,8 @@ params
 
    .. Cloud top from a sounding
 
+   .. autofunction:: nwsspc.sharp.calc.params.spectral_bin_cloud_top
+
    .. Precipitation type from a given cloud top: pre-classifier
 
    .. Microphysics: frozen cloud tops and melting

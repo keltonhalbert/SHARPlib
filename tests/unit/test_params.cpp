@@ -2049,6 +2049,209 @@ TEST_CASE("Testing spectral_bin_dsd rejects invalid distributions") {
 // Cloud top from a sounding
 // ---------------------------------------------------------------------------
 
+namespace {
+struct CloudTopSounding {
+    std::vector<float> pressure;
+    std::vector<float> height;
+    std::vector<float> temperature;
+    std::vector<float> dewpoint;
+    std::vector<float> relh;
+};
+
+float cloud_top(const CloudTopSounding& s) {
+    return sharp::spectral_bin_cloud_top(
+        s.pressure.data(), s.height.data(), s.temperature.data(),
+        s.dewpoint.data(), s.relh.data(),
+        static_cast<std::ptrdiff_t>(s.height.size()));
+}
+
+// Levels every 1000 m at 270 K, from the dewpoint depression (K) and the
+// relative humidity (fraction) of each level
+CloudTopSounding depression_sounding(const std::vector<float>& depression,
+                                     const std::vector<float>& relh) {
+    CloudTopSounding s;
+    for (std::size_t k = 0; k < depression.size(); ++k) {
+        const float z = 1000.0f * static_cast<float>(k);
+        s.pressure.push_back(100000.0f * std::exp(-z / 8000.0f));
+        s.height.push_back(z);
+        s.temperature.push_back(270.0f);
+        s.dewpoint.push_back(270.0f - depression[k]);
+    }
+    s.relh = relh;
+    return s;
+}
+
+CloudTopSounding without_level(CloudTopSounding s, const std::size_t k) {
+    for (std::vector<float>* v :
+         {&s.pressure, &s.height, &s.temperature, &s.dewpoint, &s.relh}) {
+        v->erase(v->begin() + static_cast<std::ptrdiff_t>(k));
+    }
+    return s;
+}
+
+// Named cases of data/sbc_reference (levels.parquet)
+const CloudTopSounding TOP_AT_HIGHEST_LEVEL{
+    {100000.0f, 88200.0f, 77900.0f, 68700.0f, 60700.0f},
+    {0.0f, 1000.0f, 2000.0f, 3000.0f, 4000.0f},
+    {277.0f, 268.0f, 269.0f, 280.0f, 265.0f},
+    {277.0f, 268.0f, 269.0f, 280.0f, 265.0f},
+    {1.0f, 1.0f, 1.0f, 1.0f, 1.0f},
+};
+
+const CloudTopSounding NO_CLOUD{
+    {100000.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f},
+    {0.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f},
+    {278.15f, 276.15f, 274.15f, 272.15f, 270.15f},
+    {266.15f, 264.15f, 262.15f, 260.15f, 258.15f},
+    {0.3f, 0.3f, 0.3f, 0.3f, 0.3f},
+};
+
+const CloudTopSounding DRY_LAYER_RESTART{
+    {100000.0f, 96900.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f, 73200.0f,
+     68700.0f, 64600.0f, 60700.0f, 53500.0f},
+    {0.0f, 250.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f,
+     3500.0f, 4000.0f, 5000.0f},
+    {273.6f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 264.15f,
+     262.15f, 260.15f, 256.15f},
+    {273.6f, 272.15f, 271.15f, 270.15f, 269.15f, 268.15f, 266.15f, 249.15f,
+     247.15f, 260.15f, 256.15f},
+    {0.95f, 0.95f, 0.95f, 0.95f, 0.95f, 0.95f, 0.95f, 0.25f, 0.25f, 0.95f,
+     0.95f},
+};
+
+const CloudTopSounding RELH_FALLBACK{
+    {100000.0f, 93900.0f, 88200.0f, 82900.0f, 77900.0f, 73200.0f, 68700.0f},
+    {0.0f, 500.0f, 1000.0f, 1500.0f, 2000.0f, 2500.0f, 3000.0f},
+    {271.15f, 269.15f, 266.65f, 265.15f, 262.65f, 260.15f, 257.15f},
+    {263.15f, 261.15f, 258.65f, 257.15f, 254.65f, 252.15f, 249.15f},
+    {0.5f, 0.5f, 0.5f, 0.85f, 0.85f, 0.5f, 0.5f},
+};
+}  // namespace
+
+TEST_CASE("Testing spectral_bin_cloud_top on the golden named cases") {
+    CHECK(cloud_top(TOP_AT_HIGHEST_LEVEL) == 4000.0f);
+    CHECK(cloud_top(NO_CLOUD) == sharp::MISSING);
+    CHECK(cloud_top(DRY_LAYER_RESTART) == 2500.0f);
+    CHECK(cloud_top(RELH_FALLBACK) == 2000.0f);
+
+    const CloudTopSounding& s = DRY_LAYER_RESTART;
+    CHECK(sharp::spectral_bin_cloud_top(
+              nullptr, s.height.data(), s.temperature.data(),
+              s.dewpoint.data(), s.relh.data(),
+              static_cast<std::ptrdiff_t>(s.height.size())) == 2500.0f);
+}
+
+TEST_CASE("Testing spectral_bin_cloud_top thresholds") {
+    // The highest level is tested, over a level that is neither cloud, dry,
+    // nor moist enough for the fallback.
+    const auto top = [](const float depression, const float relh) {
+        return cloud_top(depression_sounding({8.0f, depression}, {0.5f, relh}));
+    };
+    CHECK(top(6.0f, 0.9f) == 1000.0f);
+    CHECK(top(6.5f, 0.9f) == sharp::MISSING);
+    CHECK(top(2.0f, 0.60f) == sharp::MISSING);
+    CHECK(top(2.0f, 0.61f) == 1000.0f);
+
+    // A level between two cloud levels, dry or not
+    const auto dry = [](const float depression, const float relh) {
+        return cloud_top(depression_sounding({1.0f, depression, 0.0f},
+                                             {0.9f, relh, 0.9f}));
+    };
+    CHECK(dry(10.0f, 0.5f) == 2000.0f);
+    CHECK(dry(10.5f, 0.5f) == 0.0f);
+    CHECK(dry(8.0f, 0.40f) == 2000.0f);
+    CHECK(dry(8.0f, 0.39f) == 0.0f);
+
+    // No cloud level, so the fallback decides.
+    const auto fallback = [](const float relh_0, const float relh_1,
+                             const float relh_2) {
+        return cloud_top(depression_sounding({8.0f, 8.0f, 8.0f},
+                                             {relh_0, relh_1, relh_2}));
+    };
+    CHECK(fallback(0.80f, 0.5f, 0.5f) == 0.0f);
+    CHECK(fallback(0.79f, 0.5f, 0.5f) == sharp::MISSING);
+    CHECK(fallback(0.85f, 0.85f, 0.5f) == 1000.0f);
+    CHECK(fallback(0.5f, 0.5f, 0.9f) == sharp::MISSING);
+    CHECK(fallback(0.85f, 0.5f, 0.9f) == 0.0f);
+}
+
+TEST_CASE("Testing spectral_bin_cloud_top driest level") {
+    // Tied driest levels: the highest one wins.
+    CHECK(cloud_top(depression_sounding({3.0f, 1.0f, 12.0f, 1.0f, 12.0f, 2.0f},
+                                        {0.5f, 0.9f, 0.3f, 0.9f, 0.3f,
+                                         0.9f})) == 3000.0f);
+
+    // Negative depressions are not raised to 0, which would make the
+    // first cloud top the driest level.
+    CHECK(cloud_top(depression_sounding({-3.0f, -0.5f, -1.0f, -2.0f},
+                                        {0.3f, 0.9f, 0.9f, 0.9f})) ==
+          1000.0f);
+
+    // Dry by relative humidity, with the driest level above it
+    CHECK(cloud_top(depression_sounding({1.0f, 5.0f, 2.0f, 9.0f, 2.0f},
+                                        {0.9f, 0.3f, 0.9f, 0.5f, 0.9f})) ==
+          2000.0f);
+
+    // No cloud level at or below the driest level keeps the first cloud top,
+    // even with a cloud level between them.
+    CHECK(cloud_top(depression_sounding({8.0f, 15.0f, 2.0f},
+                                        {0.5f, 0.2f, 0.9f})) == 2000.0f);
+    CHECK(cloud_top(depression_sounding({8.0f, 15.0f, 1.0f, 2.0f},
+                                        {0.5f, 0.2f, 0.9f, 0.9f})) == 3000.0f);
+}
+
+TEST_CASE("Testing spectral_bin_cloud_top with few levels") {
+    CHECK(sharp::spectral_bin_cloud_top(nullptr, nullptr, nullptr, nullptr,
+                                        nullptr, 0) == sharp::MISSING);
+    CHECK(sharp::spectral_bin_cloud_top(nullptr, nullptr, nullptr, nullptr,
+                                        nullptr, -1) == sharp::MISSING);
+    CHECK(cloud_top(depression_sounding({2.0f}, {0.9f})) == 0.0f);
+    CHECK(cloud_top(depression_sounding({8.0f}, {0.9f})) == sharp::MISSING);
+}
+
+#ifndef NO_QC
+TEST_CASE("Testing spectral_bin_cloud_top skips missing levels") {
+    const float NaN = std::numeric_limits<float>::quiet_NaN();
+    // A missing value gives the cloud top of the sounding without its level.
+    for (const CloudTopSounding& base : {
+             TOP_AT_HIGHEST_LEVEL,
+             NO_CLOUD,
+             DRY_LAYER_RESTART,
+             RELH_FALLBACK,
+             depression_sounding({3.0f, 1.0f, 12.0f, 1.0f, 12.0f, 2.0f},
+                                 {0.5f, 0.9f, 0.3f, 0.9f, 0.3f, 0.9f}),
+             depression_sounding({-3.0f, -0.5f, -1.0f, -2.0f},
+                                 {0.3f, 0.9f, 0.9f, 0.9f}),
+             depression_sounding({8.0f, 8.0f, 8.0f}, {0.85f, 0.85f, 0.5f}),
+         }) {
+        for (std::vector<float> CloudTopSounding::*field :
+             {&CloudTopSounding::temperature, &CloudTopSounding::dewpoint,
+              &CloudTopSounding::relh}) {
+            for (const float bad : {sharp::MISSING, NaN}) {
+                for (std::size_t k = 0; k < base.height.size(); ++k) {
+                    CAPTURE(base.height.size());
+                    CAPTURE(k);
+                    CAPTURE(bad);
+                    CloudTopSounding s = base;
+                    (s.*field)[k] = bad;
+                    CHECK(cloud_top(s) == cloud_top(without_level(base, k)));
+                }
+            }
+        }
+    }
+
+    CHECK(cloud_top(depression_sounding({8.0f, 8.0f, 8.0f},
+                                        {0.85f, 0.85f, NaN})) == 0.0f);
+
+    CloudTopSounding all_missing = DRY_LAYER_RESTART;
+    for (float& t : all_missing.temperature) t = sharp::MISSING;
+    CHECK(cloud_top(all_missing) == sharp::MISSING);
+    all_missing = DRY_LAYER_RESTART;
+    for (float& rh : all_missing.relh) rh = NaN;
+    CHECK(cloud_top(all_missing) == sharp::MISSING);
+}
+#endif
+
 // ---------------------------------------------------------------------------
 // Precipitation type from a given cloud top: pre-classifier
 // ---------------------------------------------------------------------------

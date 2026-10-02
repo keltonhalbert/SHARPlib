@@ -107,6 +107,8 @@ paper. Drop-size distribution diameters are in mm.
 
 .. Cloud top from a sounding
 
+.. doxygenfunction:: sharp::spectral_bin_cloud_top
+
 .. Precipitation type from a given cloud top: pre-classifier
 
 .. Microphysics: frozen cloud tops and melting

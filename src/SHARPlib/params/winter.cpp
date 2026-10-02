@@ -407,6 +407,79 @@ SpectralBinDSD spectral_bin_dsd_default() {
 // Cloud top from a sounding
 // ---------------------------------------------------------------------------
 
+namespace {
+// Thresholds of the reference's cloud-top rule. Dewpoint depressions in K,
+// relative humidities as fractions.
+constexpr float SBC_CLOUD_DEPRESSION = 6.0f;
+constexpr float SBC_CLOUD_RELH = 0.60f;
+constexpr float SBC_DRY_DEPRESSION = 10.0f;
+constexpr float SBC_DRY_RELH = 0.40f;
+constexpr float SBC_FALLBACK_RELH = 0.80f;
+
+inline bool sbc_is_cloud(const float depression, const float relh) {
+    return (depression <= SBC_CLOUD_DEPRESSION) && (relh > SBC_CLOUD_RELH);
+}
+
+// Level of the cloud top, or -1 for no cloud. One pass from the top: the
+// first loop finds the highest cloud level, and the second tracks the dry
+// test and the highest cloud level at or below the driest level so far.
+std::ptrdiff_t sbc_cloud_top_level(const float temperature[],
+                                   const float dewpoint[], const float relh[],
+                                   const std::ptrdiff_t N) {
+    std::ptrdiff_t k = N - 1;
+    std::ptrdiff_t fallback = -1;
+    bool below_highest = false;
+    for (; k >= 0; --k) {
+#ifndef NO_QC
+        if (is_missing(temperature[k]) || is_missing(dewpoint[k]) ||
+            is_missing(relh[k])) {
+            continue;
+        }
+#endif
+        if (sbc_is_cloud(temperature[k] - dewpoint[k], relh[k])) break;
+        if ((fallback < 0) && below_highest &&
+            (relh[k] >= SBC_FALLBACK_RELH)) {
+            fallback = k;
+        }
+        below_highest = true;
+    }
+    if (k < 0) return fallback;
+
+    const std::ptrdiff_t first_top = k;
+    float max_depression = temperature[k] - dewpoint[k];
+    std::ptrdiff_t below_driest = k;
+    bool dry = false;
+    for (--k; k >= 0; --k) {
+#ifndef NO_QC
+        if (is_missing(temperature[k]) || is_missing(dewpoint[k]) ||
+            is_missing(relh[k])) {
+            continue;
+        }
+#endif
+        const float depression = temperature[k] - dewpoint[k];
+        dry |= (depression > SBC_DRY_DEPRESSION) || (relh[k] < SBC_DRY_RELH);
+        if (depression > max_depression) {
+            max_depression = depression;
+            below_driest = -1;
+        }
+        if ((below_driest < 0) && sbc_is_cloud(depression, relh[k])) {
+            below_driest = k;
+        }
+    }
+    return (dry && (below_driest >= 0)) ? below_driest : first_top;
+}
+}  // namespace
+
+float spectral_bin_cloud_top([[maybe_unused]] const float pressure[],
+                             const float height[], const float temperature[],
+                             const float dewpoint[], const float relh[],
+                             const std::ptrdiff_t N) {
+    if (N < 1) return MISSING;
+    const std::ptrdiff_t top =
+        sbc_cloud_top_level(temperature, dewpoint, relh, N);
+    return (top < 0) ? MISSING : height[top];
+}
+
 // ---------------------------------------------------------------------------
 // Precipitation type from a given cloud top: pre-classifier
 // ---------------------------------------------------------------------------
