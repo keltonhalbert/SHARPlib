@@ -2099,6 +2099,7 @@ CloudTopSounding depression_sounding(const std::vector<float>& depression,
     return s;
 }
 
+#ifndef NO_QC
 CloudTopSounding without_level(CloudTopSounding s, const std::size_t k) {
     for (std::vector<float>* v :
          {&s.pressure, &s.height, &s.temperature, &s.dewpoint, &s.relh}) {
@@ -2106,6 +2107,7 @@ CloudTopSounding without_level(CloudTopSounding s, const std::size_t k) {
     }
     return s;
 }
+#endif
 
 // Named cases of data/sbc_reference (levels.parquet)
 const CloudTopSounding TOP_AT_HIGHEST_LEVEL{
@@ -2736,6 +2738,7 @@ void check_golden(const SBCGolden& golden) {
     }
 }
 
+#ifndef NO_QC
 // The reference's results for the column with a level inserted at index k,
 // which the classifier skips
 SBCGolden with_skipped_level(SBCGolden golden, const std::size_t k,
@@ -2755,6 +2758,7 @@ SBCGolden with_skipped_level(SBCGolden golden, const std::size_t k,
         sharp::MISSING);
     return golden;
 }
+#endif
 
 // data/sbc_reference case 5
 const SBCGolden SBC_CORE_RA{
