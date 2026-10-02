@@ -432,10 +432,16 @@ inline bool sbc_is_cloud(const float depression, const float relh) {
     return (depression <= SBC_CLOUD_DEPRESSION) && (relh > SBC_CLOUD_RELH);
 }
 
+// Whether any value is sharp::MISSING or NaN. The tests combine as int with
+// |, not ||, so a level costs one branch instead of one per value.
+template <typename... Values>
+inline bool sbc_any_missing(const Values... values) {
+    return (0 | ... | static_cast<int>(is_missing(values))) != 0;
+}
+
 // Level of the cloud top, or -1 for no cloud. One pass from the top: the
 // first loop finds the highest cloud level, and the second tracks the dry
-// test and the highest cloud level at or below the driest level so far. The
-// missing-data tests combine with | rather than ||, for one branch per level.
+// test and the highest cloud level at or below the driest level so far.
 std::ptrdiff_t sbc_cloud_top_level(const float temperature[],
                                    const float dewpoint[], const float relh[],
                                    const std::ptrdiff_t N) {
@@ -444,10 +450,7 @@ std::ptrdiff_t sbc_cloud_top_level(const float temperature[],
     bool below_highest = false;
     for (; k >= 0; --k) {
 #ifndef NO_QC
-        if (is_missing(temperature[k]) | is_missing(dewpoint[k]) |
-            is_missing(relh[k])) {
-            continue;
-        }
+        if (sbc_any_missing(temperature[k], dewpoint[k], relh[k])) continue;
 #endif
         if (sbc_is_cloud(temperature[k] - dewpoint[k], relh[k])) break;
         if ((fallback < 0) && below_highest &&
@@ -464,10 +467,7 @@ std::ptrdiff_t sbc_cloud_top_level(const float temperature[],
     bool dry = false;
     for (--k; k >= 0; --k) {
 #ifndef NO_QC
-        if (is_missing(temperature[k]) | is_missing(dewpoint[k]) |
-            is_missing(relh[k])) {
-            continue;
-        }
+        if (sbc_any_missing(temperature[k], dewpoint[k], relh[k])) continue;
 #endif
         const float depression = temperature[k] - dewpoint[k];
         dry |= (depression > SBC_DRY_DEPRESSION) || (relh[k] < SBC_DRY_RELH);
@@ -515,9 +515,8 @@ struct SpectralBinColumn {
 #ifdef NO_QC
         return true;
 #else
-        // | rather than ||, so that a level costs one branch, not four
-        return !(is_missing(temperature[k]) | is_missing(dewpoint[k]) |
-                 is_missing(relh[k]) | is_missing(wetbulb[k]));
+        return !sbc_any_missing(temperature[k], dewpoint[k], relh[k],
+                                wetbulb[k]);
 #endif
     }
 
