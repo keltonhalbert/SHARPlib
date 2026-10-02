@@ -318,32 +318,38 @@ SpectralBinDSD spectral_bin_dsd(const float diameter[],
                                 const float concentration[],
                                 const std::ptrdiff_t nbins,
                                 const float rime_factor) {
+    // Every return returns dsd, so that it is built in place. A rejected
+    // distribution is a default-constructed one.
+    SpectralBinDSD dsd;
     // Before any array read.
-    if ((nbins < 1) || (nbins > SBC_MAX_BINS)) return SpectralBinDSD{};
+    if ((nbins < 1) || (nbins > SBC_MAX_BINS)) return dsd;
     // Fails for NaN too.
-    if (!((rime_factor >= 1.0f) && (rime_factor <= 5.0f))) {
-        return SpectralBinDSD{};
-    }
+    if (!((rime_factor >= 1.0f) && (rime_factor <= 5.0f))) return dsd;
 
+    // pow(0.5, -0.75), with the maximum snow density 0.5
+    constexpr float MAX_DENSITY_POW = 1.68179286f;
+    // 1 / cbrt(0.5)
+    constexpr float DENSE_SNOW_COEFF = 1.25992107f;
+    // cbrt(1 / 0.917), with the ice density 0.917
+    constexpr float FROZEN_DROP_COEFF = 1.02930379f;
     // maxD_melt_snow: snow with a smaller melted diameter (mm) has the
     // maximum density.
     const float max_dense_snow_diameter =
-        0.154f * std::pow(rime_factor, 1.08f) *
-        std::pow(SBC_MAX_SNOW_DENSITY, -0.75f);
+        0.154f * std::pow(rime_factor, 1.08f) * MAX_DENSITY_POW;
     const float large_snow_coeff = 2.29f * std::pow(rime_factor, -0.48f);
-    const float dense_snow_coeff = 1.0f / std::cbrt(SBC_MAX_SNOW_DENSITY);
-    const float frozen_drop_coeff = std::cbrt(1.0f / SBC_ICE_DENSITY);
     constexpr float MASS_COEFF = PI / 6.0f * 1.0e-3f;
 
-    SpectralBinDSD dsd;
     bool has_positive = false;
     float smaller = 0.0f;
     float rain_fall_speed = 0.01f;
     for (std::ptrdiff_t j = 0; j < nbins; ++j) {
         const float D = diameter[j];
         const float N = concentration[j];
-        if (!std::isfinite(D) || (D <= smaller)) return SpectralBinDSD{};
-        if (!std::isfinite(N) || (N < 0.0f)) return SpectralBinDSD{};
+        if (!std::isfinite(D) || (D <= smaller) || !std::isfinite(N) ||
+            (N < 0.0f)) {
+            dsd = SpectralBinDSD{};
+            return dsd;
+        }
         const float D2 = D * D;
         const float D3 = D2 * D;
         const float D4 = D3 * D;
@@ -351,7 +357,10 @@ SpectralBinDSD spectral_bin_dsd(const float diameter[],
             std::min(0.9951f + 0.02510f * D - 0.03644f * D2 + 0.005303f * D3 -
                          0.0002492f * D4,
                      1.0f);
-        if (!(aspect_ratio > 0.0f)) return SpectralBinDSD{};
+        if (!(aspect_ratio > 0.0f)) {
+            dsd = SpectralBinDSD{};
+            return dsd;
+        }
         has_positive |= (N > 0.0f);
         smaller = D;
 
@@ -364,7 +373,7 @@ SpectralBinDSD spectral_bin_dsd(const float diameter[],
                                           0.07932f * D3 - 0.002362f * D4);
         dsd.m_rain_fall_speed[j] = rain_fall_speed;
 
-        const float Di = frozen_drop_coeff * D;
+        const float Di = FROZEN_DROP_COEFF * D;
         dsd.m_pellet_fall_speed[j] = 0.2259f + 1.5954f * Di - 0.0405f * Di * Di;
         dsd.m_foote_du_toit_fall_speed[j] =
             -0.193f + 4.96f * D - 0.904f * D2 + 0.0566f * D3;
@@ -376,7 +385,7 @@ SpectralBinDSD spectral_bin_dsd(const float diameter[],
         const float snow_diameter =
             (D >= max_dense_snow_diameter)
                 ? large_snow_coeff * std::pow(D, 1.443f)
-                : dense_snow_coeff * D;
+                : DENSE_SNOW_COEFF * D;
         const float snow_density =
             sbc_dry_snow_density(rime_factor, snow_diameter);
         dsd.m_snow_diameter[j] = snow_diameter;
@@ -388,7 +397,10 @@ SpectralBinDSD spectral_bin_dsd(const float diameter[],
             sbc_fall_speed_aa(sbc_dry_snow_density(rime_factor, D));
         dsd.m_liquid_bb[j] = (dsd.m_liquid_aa[j] - 1.0f) / 2.0f;
     }
-    if (!has_positive) return SpectralBinDSD{};
+    if (!has_positive) {
+        dsd = SpectralBinDSD{};
+        return dsd;
+    }
 
     dsd.m_nbins = nbins;
     dsd.m_rime_factor = rime_factor;
@@ -422,7 +434,8 @@ inline bool sbc_is_cloud(const float depression, const float relh) {
 
 // Level of the cloud top, or -1 for no cloud. One pass from the top: the
 // first loop finds the highest cloud level, and the second tracks the dry
-// test and the highest cloud level at or below the driest level so far.
+// test and the highest cloud level at or below the driest level so far. The
+// missing-data tests combine with | rather than ||, for one branch per level.
 std::ptrdiff_t sbc_cloud_top_level(const float temperature[],
                                    const float dewpoint[], const float relh[],
                                    const std::ptrdiff_t N) {
@@ -431,7 +444,7 @@ std::ptrdiff_t sbc_cloud_top_level(const float temperature[],
     bool below_highest = false;
     for (; k >= 0; --k) {
 #ifndef NO_QC
-        if (is_missing(temperature[k]) || is_missing(dewpoint[k]) ||
+        if (is_missing(temperature[k]) | is_missing(dewpoint[k]) |
             is_missing(relh[k])) {
             continue;
         }
@@ -451,7 +464,7 @@ std::ptrdiff_t sbc_cloud_top_level(const float temperature[],
     bool dry = false;
     for (--k; k >= 0; --k) {
 #ifndef NO_QC
-        if (is_missing(temperature[k]) || is_missing(dewpoint[k]) ||
+        if (is_missing(temperature[k]) | is_missing(dewpoint[k]) |
             is_missing(relh[k])) {
             continue;
         }
@@ -502,8 +515,9 @@ struct SpectralBinColumn {
 #ifdef NO_QC
         return true;
 #else
-        return !(is_missing(temperature[k]) || is_missing(dewpoint[k]) ||
-                 is_missing(relh[k]) || is_missing(wetbulb[k]));
+        // | rather than ||, so that a level costs one branch, not four
+        return !(is_missing(temperature[k]) | is_missing(dewpoint[k]) |
+                 is_missing(relh[k]) | is_missing(wetbulb[k]));
 #endif
     }
 
@@ -604,7 +618,6 @@ constexpr float SBC_DRY_AIR_GAS_CONSTANT = 287.0f;
 // The per-bin class uses this ice density, and the surface SBC_ICE_DENSITY.
 constexpr float SBC_CLASS_ICE_DENSITY = 0.918f;
 constexpr float SBC_CLASS_FRACTION = 0.15f;
-constexpr float SBC_SNOW_ASPECT_RATIO = 0.8f;
 constexpr float SBC_GRAUPEL_RIME_FACTOR = 5.0f;
 // 1.81e-5 * 5^3.26 (cm^3)
 constexpr float SBC_GRAUPEL_SNOW_VOLUME_MIN = 0.00343811815f;
@@ -625,9 +638,10 @@ constexpr float SBC_MELT_COEFF = 3.75115522e-05f;
 // 6 / pi
 constexpr float SBC_SIX_OVER_PI = 1.90985930f;
 
-const float SBC_SNOW_CAPACITANCE_FACTOR =
-    sbc_capacitance_factor(SBC_SNOW_ASPECT_RATIO);
-const float SBC_SNOW_LENGTH_FACTOR = sbc_length_factor(SBC_SNOW_ASPECT_RATIO);
+// sbc_capacitance_factor(0.8) and sbc_length_factor(0.8), for the snow aspect
+// ratio of 0.8
+constexpr float SBC_SNOW_CAPACITANCE_FACTOR = 0.428010523f;
+constexpr float SBC_SNOW_LENGTH_FACTOR = 0.887979627f;
 
 // t - 273.15 (C): t - 273.15f is exact, and 6.103515625e-6 = 273.15 - 273.15f
 inline float sbc_celsius(const float t) {
@@ -650,7 +664,7 @@ enum class SBCClass : unsigned char {
 };
 
 // liquid_ar of the reference: the classes that melt with the raindrop
-// aspect ratio. The others melt with SBC_SNOW_ASPECT_RATIO.
+// aspect ratio. The others melt with the snow aspect ratio of 0.8.
 inline bool sbc_liquid_ar(const SBCClass ptype) {
     switch (ptype) {
         case SBCClass::rain:
@@ -691,20 +705,31 @@ struct SBCLevelState {
     std::array<float, SBC_MAX_BINS> volume_ice;          // vi (cm^3)
     std::array<float, SBC_MAX_BINS> volume_snow;         // vs (cm^3)
     std::array<float, SBC_MAX_BINS> diam_melt_snow;      // dm (mm)
-    std::array<float, SBC_MAX_BINS> in_diam_sn_core;     // dc (mm)
+    // in_diam_sn_core (dc, mm) is sn_core_scale cbrt(sn_core_cube), or 0
+    // where sn_core_scale is 0, at a level with no snow core. Only a refreeze
+    // level reads it, so the cube root waits until then.
+    std::array<float, SBC_MAX_BINS> sn_core_cube;
     std::array<SBCClass, SBC_MAX_BINS> psd_ptype;
+    float sn_core_scale;
 
     // The reference's arrays start at 0 (psd_ptype at unset), so a field
     // that a branch does not write reads back as 0 at the next level. The
-    // core clears every level before a branch writes it.
+    // core clears a level before a branch writes it, except before branch
+    // B, which writes the zeros itself.
     void clear(const std::ptrdiff_t nbins) {
-        for (auto* field :
-             {&water_fraction, &velocity_melt_snow, &mass_water, &mass_snow,
-              &volume_liq, &volume_ice, &volume_snow, &diam_melt_snow,
-              &in_diam_sn_core}) {
-            std::fill_n(field->begin(), nbins, 0.0f);
+        for (std::ptrdiff_t j = 0; j < nbins; ++j) {
+            water_fraction[j] = 0.0f;
+            velocity_melt_snow[j] = 0.0f;
+            mass_water[j] = 0.0f;
+            mass_snow[j] = 0.0f;
+            volume_liq[j] = 0.0f;
+            volume_ice[j] = 0.0f;
+            volume_snow[j] = 0.0f;
+            diam_melt_snow[j] = 0.0f;
+            sn_core_cube[j] = 0.0f;
+            psd_ptype[j] = SBCClass::unset;
         }
-        std::fill_n(psd_ptype.begin(), nbins, SBCClass::unset);
+        sn_core_scale = 0.0f;
     }
 };
 
@@ -761,15 +786,19 @@ struct SBCColumnState {
 
     // slw_hgt (m AGL)
     float slw_hgt = MISSING;
-    // A branch that is not ported yet ran, and the column gives missing.
-    bool unsupported = false;
 
     // The refreeze level becomes K, and level holds its values.
     void set_refrz_lvl(const std::ptrdiff_t K, const SBCLevelState& level,
                        const std::ptrdiff_t nbins) {
         refrz_lvl = K;
-        std::copy_n(level.in_diam_sn_core.begin(), nbins,
-                    refrz_in_diam_sn_core.begin());
+        if (level.sn_core_scale == 0.0f) {
+            std::fill_n(refrz_in_diam_sn_core.begin(), nbins, 0.0f);
+        } else {
+            for (std::ptrdiff_t j = 0; j < nbins; ++j) {
+                refrz_in_diam_sn_core[j] =
+                    level.sn_core_scale * std::cbrt(level.sn_core_cube[j]);
+            }
+        }
         std::copy_n(level.water_fraction.begin(), nbins,
                     refrz_water_fraction.begin());
         std::copy_n(level.velocity_melt_snow.begin(), nbins,
@@ -780,6 +809,7 @@ struct SBCColumnState {
 // The branches of classify, in its order. A cloud-top branch writes level 0
 // to next. The others write level K to next from level K - 1 in prev. next
 // arrives cleared, so a branch writes only the fields the reference writes.
+// Branch B is the exception: it writes every field.
 
 // Branch A (classify:138): a frozen cloud top
 inline void sbc_frozen_cloud_top(
@@ -807,7 +837,8 @@ inline void sbc_frozen_cloud_top(
 }
 
 // Branch B (classify:164): the snow of a frozen cloud top, above the first
-// crossing
+// crossing. Most levels of such a column take it, so it writes the zeros of
+// a cleared level itself, which saves a pass over the level.
 inline void sbc_frozen_above_crossing(
     SBCColumnState& state, [[maybe_unused]] const SBCLevelState& prev,
     SBCLevelState& next, const SBCLevel& level,
@@ -817,6 +848,10 @@ inline void sbc_frozen_above_crossing(
     const float density_correction = level.density_correction();
     const float* v_rain = dsd.rain_fall_speed().data();
     for (std::ptrdiff_t j = 0; j < dsd.nbins(); ++j) {
+        next.water_fraction[j] = 0.0f;
+        next.mass_water[j] = 0.0f;
+        next.volume_liq[j] = 0.0f;
+        next.sn_core_cube[j] = 0.0f;
         next.mass_snow[j] = top.mass_snow[j];
         next.volume_ice[j] = top.volume_ice[j];
         next.volume_snow[j] = top.volume_snow[j];
@@ -825,6 +860,7 @@ inline void sbc_frozen_above_crossing(
             v_rain[j] * density_correction / state.uknwn_aa[j];
         next.psd_ptype[j] = SBCClass::snow;
     }
+    next.sn_core_scale = 0.0f;
 }
 
 // Branches C (classify:186), D (:217), and E (:243), defined under
@@ -873,6 +909,8 @@ inline void sbc_melting(SBCColumnState& state, const SBCLevelState& prev,
         return;
     }
 
+    // cm to mm
+    next.sn_core_scale = 10.0f;
     const float tw = level.wetbulb;
     const float tw_c = sbc_celsius(tw);
     const float rho_air = level.air_density;
@@ -949,25 +987,40 @@ inline void sbc_melting(SBCColumnState& state, const SBCLevelState& prev,
         const float change_ice = ms_prev * fw / SBC_ICE_DENSITY;
         const float vi = std::max(state.top.volume_ice[j] - change_ice, 0.0f);
         const float rhs = ice_air * vi + rho_air * prev.volume_snow[j];
-        float vs = 343.0f * std::pow(rhs / rime, 1.443f);
-        if (vs < snow_volume_min) vs = dense_snow_ratio * vi;
-        const float snow_density =
-            (vs >= snow_volume_min)
-                ? snow_density_coeff * std::pow(vs, -0.307f)
-                : SBC_MAX_SNOW_DENSITY;
         const float vl = change_ice * SBC_ICE_DENSITY;
 
         next.water_fraction[j] = fw;
         next.velocity_melt_snow[j] = v;
         next.mass_water[j] = m0[j] * fw;
-        next.mass_snow[j] = snow_density * vs + vl;
         next.volume_liq[j] = vl;
         next.volume_ice[j] = vi;
+        // The base of the power law for vs, which the next loop replaces
+        next.volume_snow[j] = rhs / rime;
+    }
+    // At the surface, the surface decision and the profile read only fw and
+    // v, so the snow and the diameters are left undone.
+    if (level.k == column.surface) return;
+    for (std::ptrdiff_t j = 0; j < nbins; ++j) {
+        if (prev.water_fraction[j] == 1.0f) continue;
+        const float vi = next.volume_ice[j];
+        const float vl = next.volume_liq[j];
+        float vs = 343.0f * std::pow(next.volume_snow[j], 1.443f);
+        if (vs < snow_volume_min) vs = dense_snow_ratio * vi;
+        const float snow_density =
+            (vs >= snow_volume_min)
+                ? snow_density_coeff * std::pow(vs, -0.307f)
+                : SBC_MAX_SNOW_DENSITY;
+        next.mass_snow[j] = snow_density * vs + vl;
         next.volume_snow[j] = vs;
-        next.diam_melt_snow[j] =
-            10.0f * std::cbrt(SBC_SIX_OVER_PI * (vs + vl + vi));
-        next.in_diam_sn_core[j] = 10.0f * std::cbrt(SBC_SIX_OVER_PI * vs);
-
+        // Its cube root follows, in a loop of its own.
+        next.diam_melt_snow[j] = SBC_SIX_OVER_PI * (vs + vl + vi);
+        next.sn_core_cube[j] = SBC_SIX_OVER_PI * vs;
+    }
+    for (std::ptrdiff_t j = 0; j < nbins; ++j) {
+        if (prev.water_fraction[j] == 1.0f) continue;
+        next.diam_melt_snow[j] = 10.0f * std::cbrt(next.diam_melt_snow[j]);
+        const float fw = next.water_fraction[j];
+        const float v = next.velocity_melt_snow[j];
         const float rw = m0[j] * fw * v * N[j];
         const float ri = m0[j] * (1.0f - fw) * v * N[j] / SBC_CLASS_ICE_DENSITY;
         const float total = ri + rw;
@@ -1087,9 +1140,8 @@ SpectralBinResult sbc_microphysics(const SpectralBinColumn& column,
             tw,
             column.pressure[k] / SBC_DRY_AIR_GAS_CONSTANT / tw * 1.0e-3f,
             (K == 0) ? 0.0f : column.height[k_above] - column.height[k]};
-        next->clear(nbins);
-
         if (K == 0) {
+            next->clear(nbins);
             if (tw_top <= state.temp_nuc) {
                 sbc_frozen_cloud_top(state, *next, level, column, dsd);
             } else {
@@ -1101,29 +1153,24 @@ SpectralBinResult sbc_microphysics(const SpectralBinColumn& column,
             if (above_crossing && (tw_top <= tice) && (tw < ZEROCNK)) {
                 sbc_frozen_above_crossing(state, *prev, *next, level, column,
                                           dsd);
-            } else if (above_crossing && (tice < tw_top) &&
-                       (tw_top <= ZEROCNK) && (tw > tice) &&
-                       (state.ice_nuc_top >= state.cross_index)) {
-                sbc_supercooled_above_crossing(state, *prev, *next, level,
-                                               column, dsd);
-            } else if (above_crossing && (tw_top > ZEROCNK) && (tw > tice)) {
-                sbc_warm_above_crossing(state, *prev, *next, level, column,
-                                        dsd);
-            } else if (tw >= ZEROCNK) {
-                sbc_melting(state, *prev, *next, level, column, dsd);
             } else {
-                sbc_subfreezing(state, *prev, *next, level, column, dsd);
+                next->clear(nbins);
+                if (above_crossing && (tice < tw_top) && (tw_top <= ZEROCNK) &&
+                    (tw > tice) && (state.ice_nuc_top >= state.cross_index)) {
+                    sbc_supercooled_above_crossing(state, *prev, *next, level,
+                                                   column, dsd);
+                } else if (above_crossing && (tw_top > ZEROCNK) &&
+                           (tw > tice)) {
+                    sbc_warm_above_crossing(state, *prev, *next, level,
+                                            column, dsd);
+                } else if (tw >= ZEROCNK) {
+                    sbc_melting(state, *prev, *next, level, column, dsd);
+                } else {
+                    sbc_subfreezing(state, *prev, *next, level, column, dsd);
+                }
             }
         }
 
-        if (state.unsupported) {
-            if (liquid_fraction_profile != nullptr) {
-                std::fill(liquid_fraction_profile + k * nbins,
-                          liquid_fraction_profile + (column.top + 1) * nbins,
-                          MISSING);
-            }
-            return SpectralBinResult{};
-        }
         if (liquid_fraction_profile != nullptr) {
             std::copy_n(next->water_fraction.begin(), nbins,
                         liquid_fraction_profile + k * nbins);
@@ -1227,6 +1274,8 @@ inline void sbc_subfreezing(SBCColumnState& state, const SBCLevelState& prev,
         const float latent_factor =
             LATENT_HEAT_MELTING * (1.0f + 0.012f * sbc_celsius(state.temp_nuc));
         const float density_correction = level.density_correction();
+        const bool surface = (level.k == column.surface);
+        next.sn_core_scale = 1.0f;
 
         const float* m0 = dsd.mass().data();
         const float* N = dsd.concentration().data();
@@ -1279,10 +1328,18 @@ inline void sbc_subfreezing(SBCColumnState& state, const SBCLevelState& prev,
             next.velocity_melt_snow[j] = v;
             next.mass_water[j] = mw;
             next.mass_snow[j] = m0[j] - mw;
-            next.diam_melt_snow[j] =
-                std::cbrt(SBC_SIX_OVER_PI * (vs + vw + vi));
-            next.in_diam_sn_core[j] = std::cbrt(SBC_SIX_OVER_PI * (vs + vw));
-
+            // Its cube root follows, in a loop of its own.
+            next.diam_melt_snow[j] = SBC_SIX_OVER_PI * (vs + vw + vi);
+            next.sn_core_cube[j] = SBC_SIX_OVER_PI * (vs + vw);
+        }
+        for (std::ptrdiff_t j = 0; j < nbins; ++j) {
+            if (!nucleates && (prev.water_fraction[j] == 1.0f)) continue;
+            // Nothing reads the diameter at the surface.
+            if (!surface) {
+                next.diam_melt_snow[j] = std::cbrt(next.diam_melt_snow[j]);
+            }
+            const float fw = next.water_fraction[j];
+            const float v = next.velocity_melt_snow[j];
             const float rw = m0[j] * fw * v * N[j];
             const float ri =
                 m0[j] * (1.0f - fw) * v * N[j] / SBC_CLASS_ICE_DENSITY;
