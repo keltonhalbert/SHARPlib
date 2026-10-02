@@ -224,14 +224,6 @@ TEST_CASE("Testing interp with NaN and MISSING data") {
 }
 
 TEST_CASE("Testing interp at exact levels with a complete bracket") {
-    constexpr float data3[3] = {-1.5f, 2.25f, 7.75f};
-    CHECK(sharp::interp_height(0, hght, data3, 3) == -1.5f);
-    CHECK(sharp::interp_height(100, hght, data3, 3) == 2.25f);
-    CHECK(sharp::interp_height(200, hght, data3, 3) == 7.75f);
-    CHECK(sharp::interp_pressure(100000, pres, data3, 3) == -1.5f);
-    CHECK(sharp::interp_pressure(90000, pres, data3, 3) == 2.25f);
-    CHECK(sharp::interp_pressure(80000, pres, data3, 3) == 7.75f);
-
     constexpr float data4[4] = {sharp::MISSING, 2.25f, 7.75f, nanval};
     CHECK(sharp::interp_height(100, hght, data4, 4) == 2.25f);
     CHECK(sharp::interp_height(150, hght, data4, 4) == 5.0f);

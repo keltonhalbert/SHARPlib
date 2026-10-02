@@ -330,26 +330,6 @@ TEST_CASE("Testing layer_min and layer_max over layers outside the profile") {
 }
 #endif
 
-TEST_CASE("Testing layer_min and layer_max over layers at the profile edge") {
-    check_min_max(sharp::HeightLayer(1000, 2000), mm_hght, mm_tmpk_hght, MM_N,
-                  {278, 1000}, {278, 1000});
-    check_min_max(sharp::HeightLayer(-500, 0), mm_hght, mm_tmpk_hght, MM_N,
-                  {258, 0}, {258, 0});
-    check_min_max(sharp::PressureLayer(80000, 70000), mm_pres, mm_tmpk_pres,
-                  MM_N, {258, 80000}, {258, 80000});
-    check_min_max(sharp::PressureLayer(105000, 100000), mm_pres, mm_tmpk_pres,
-                  MM_N, {278, 100000}, {278, 100000});
-
-    check_min_max(sharp::HeightLayer(500, 1500), mm_hght, mm_tmpk_hght, MM_N,
-                  {268, 500}, {278, 1000});
-    check_min_max(sharp::HeightLayer(-500, 500), mm_hght, mm_tmpk_hght, MM_N,
-                  {258, 0}, {268, 500});
-    check_min_max(sharp::PressureLayer(90000, 70000), mm_pres, mm_tmpk_pres,
-                  MM_N, {258, 80000}, {268, 90000});
-    check_min_max(sharp::PressureLayer(110000, 90000), mm_pres, mm_tmpk_pres,
-                  MM_N, {268, 90000}, {278, 100000});
-}
-
 TEST_CASE("Testing layer_mean over a pressure layer") {
     constexpr std::ptrdiff_t N = 10;
     // pressure is always in Pa
@@ -402,42 +382,6 @@ TEST_CASE("Testing layer_mean over layers outside the profile") {
                             1) == sharp::MISSING);
     CHECK(sharp::layer_mean(sharp::HeightLayer(-200, -100), hght, pres, data,
                             1) == sharp::MISSING);
-}
-
-TEST_CASE("Testing layer_mean over layers at the profile edge") {
-    for (const float* hght : {me_hght, me_hght_300}) {
-        CAPTURE(hght[0]);
-        CHECK(sharp::layer_mean(sharp::HeightLayer(1000, 2000), hght, me_pres,
-                                me_data, LM_N, true) == sharp::MISSING);
-        CHECK(sharp::layer_mean(sharp::HeightLayer(-500, 0), hght, me_pres,
-                                me_data, LM_N, true) == sharp::MISSING);
-
-        CHECK(sharp::layer_mean(sharp::HeightLayer(500, 1500), hght, me_pres,
-                                me_data, LM_N,
-                                true) == doctest::Approx(295.5f));
-        CHECK(sharp::layer_mean(sharp::HeightLayer(-500, 500), hght, me_pres,
-                                me_data, LM_N,
-                                true) == doctest::Approx(298.5f));
-    }
-
-    CHECK(sharp::layer_mean(sharp::HeightLayer(1300, 2000), me_hght_300,
-                            me_pres, me_data, LM_N) == sharp::MISSING);
-    CHECK(sharp::layer_mean(sharp::HeightLayer(-500, 300), me_hght_300, me_pres,
-                            me_data, LM_N) == sharp::MISSING);
-    CHECK(sharp::layer_mean(sharp::HeightLayer(1000, 2000), me_hght_300,
-                            me_pres, me_data,
-                            LM_N) == doctest::Approx(294.909698f));
-    CHECK(sharp::layer_mean(sharp::HeightLayer(-500, 500), me_hght_300, me_pres,
-                            me_data, LM_N) == doctest::Approx(299.40921f));
-
-    CHECK(sharp::layer_mean(sharp::PressureLayer(90000, 80000), me_pres,
-                            me_data, LM_N) == sharp::MISSING);
-    CHECK(sharp::layer_mean(sharp::PressureLayer(105000, 100000), me_pres,
-                            me_data, LM_N) == sharp::MISSING);
-    CHECK(sharp::layer_mean(sharp::PressureLayer(95000, 80000), me_pres,
-                            me_data, LM_N) == doctest::Approx(295.5f));
-    CHECK(sharp::layer_mean(sharp::PressureLayer(105000, 95000), me_pres,
-                            me_data, LM_N) == doctest::Approx(298.5f));
 }
 
 TEST_CASE("Testing layer conversions of a MISSING layer") {

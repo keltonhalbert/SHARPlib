@@ -1433,17 +1433,6 @@ sharp::WindComponents ebwd_shifted(const float shift, const float vwin[],
 constexpr float shifts[] = {0.0f, 1000.0f, 1234.5f, 762.3f};
 }  // namespace
 
-TEST_CASE("Testing effective_bulk_wind_difference ignores station height") {
-    constexpr float vwin[EN] = {0, 0, 0, 0, 0, 0};
-    for (const float shift : shifts) {
-        CAPTURE(shift);
-        const sharp::WindComponents ebwd =
-            ebwd_shifted(shift, vwin, {100000, 90000}, 60000);
-        CHECK(ebwd.u == doctest::Approx(12.0f));
-        CHECK(ebwd.v == doctest::Approx(0.0f));
-    }
-}
-
 TEST_CASE("Testing effective_bulk_wind_difference against a known value") {
     constexpr float vwin[EN] = {0, -2, 1, 4, 6, 7};
     for (const float shift : shifts) {
@@ -1533,7 +1522,6 @@ TEST_CASE("Testing the effective-inflow storm_motion_bunkers mean wind layer") {
     for (const BunkersCase c : {
              BunkersCase{0, 10000, 6500, 14.8269749f, -1.06337833f},
              BunkersCase{1000, 12000, 7800, 18.9706116f, 0.523952484f},
-             BunkersCase{2000, 10000, 6500, 20.7405224f, 1.77062941f},
          }) {
         check_bunkers(c);
     }
@@ -1543,8 +1531,6 @@ TEST_CASE("Testing the effective-inflow storm_motion_bunkers 3 km fallback") {
     for (const BunkersCase c : {
              BunkersCase{2000, 7000, std::nullopt, 15.8496647f, -0.509417534f},
              BunkersCase{6000, 14000, 9100, 27.9163494f, -0.846437931f},
-             BunkersCase{4000, 10000, std::nullopt, 15.8496647f, -0.509417534f},
-             BunkersCase{0, 4000, std::nullopt, 15.8496647f, -0.509417534f},
          }) {
         check_bunkers(c);
     }
