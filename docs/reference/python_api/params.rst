@@ -66,3 +66,37 @@ params
    .. Precipitation type from a full sounding
 
    :func:`~nwsspc.sharp.calc.params.modified_bourgouin` also computes the probabilities from the profiles of a full sounding. Both overloads are documented together above.
+
+   Spectral bin classifier
+   ^^^^^^^^^^^^^^^^^^^^^^^
+   Precipitation type from the spectral bin classifier (SBC) of Reeves et al. (2016, https://doi.org/10.1175/JAMC-D-16-0044.1). The classifier follows a spectrum of drop sizes from the cloud top to the surface, computes the liquid fraction of each through melting and refreezing layers, and returns one of seven categories at the surface. It gives no probabilities.
+
+   SHARPlib ports the 2023 version of the algorithm. It follows the Python reference by D. Tripp, which the authors consider authoritative, and the C++ MRMS code by A. Rosenow and D. Tripp. The authors gave permission for the port, and its documentation notes each place where it departs from the paper. Drop-size distribution diameters are in mm.
+
+   .. Result types and the drop-size distribution
+
+   .. autoclass:: nwsspc.sharp.calc.params.PrecipType
+      :members:
+
+   .. autoclass:: nwsspc.sharp.calc.params.SpectralBinResult
+      :members: precip_type, liquid_fraction, supercooled_liquid_height
+
+   A drop-size distribution holds at most ``params.SBC_MAX_BINS`` (64) bins. The default ice nucleation temperature, 267.15 K (-6 C), is available as ``params.SBC_ICE_NUCLEATION_TEMPERATURE``.
+
+   .. autoclass:: nwsspc.sharp.calc.params.SpectralBinDSD
+      :members: nbins, rime_factor, diameter, concentration
+
+   .. autofunction:: nwsspc.sharp.calc.params.spectral_bin_dsd
+   .. autofunction:: nwsspc.sharp.calc.params.spectral_bin_dsd_default
+
+   .. Cloud top from a sounding
+
+   .. Precipitation type from a given cloud top: pre-classifier
+
+   .. Microphysics: frozen cloud tops and melting
+
+   .. Microphysics: refreezing
+
+   .. Microphysics: liquid cloud tops
+
+   .. Precipitation type from a full sounding

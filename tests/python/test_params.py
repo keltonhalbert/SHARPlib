@@ -1255,3 +1255,164 @@ def test_modified_bourgouin_1hz_2023_04_20_00z():
     # at or above 250 hPa.
     pres = _check_1hz_missing("2023-04-20_00_72357.pq", 1514.2, 3265.2)
     assert pres[-1] >= 25000.0
+
+
+# ===========================================================================
+# Precipitation type: the spectral bin classifier (Reeves et al. 2016)
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+# Result types and the drop-size distribution
+# ---------------------------------------------------------------------------
+
+def test_precip_type_encoding():
+    assert {member.name: int(member) for member in params.PrecipType} == {
+        "missing": -9999,
+        "rain": 1,
+        "snow": 2,
+        "rain_snow": 3,
+        "freezing_rain": 4,
+        "ice_pellets": 5,
+        "freezing_rain_ice_pellets": 6,
+        "rain_ice_pellets": 7,
+    }
+    assert float(params.PrecipType.missing) == constants.MISSING
+    assert params.PrecipType(4) == params.PrecipType.freezing_rain
+
+
+def test_spectral_bin_result():
+    result = params.SpectralBinResult()
+    assert result.precip_type == params.PrecipType.missing
+    assert result.liquid_fraction == constants.MISSING
+    assert result.supercooled_liquid_height == constants.MISSING
+
+    for field in ("precip_type", "liquid_fraction",
+                  "supercooled_liquid_height"):
+        with pytest.raises(AttributeError):
+            setattr(result, field, 1.0)
+
+
+def test_spectral_bin_classifier_constants():
+    assert params.SBC_MAX_BINS == 64
+    assert params.SBC_ICE_NUCLEATION_TEMPERATURE == np.float32(267.15)
+
+
+def test_spectral_bin_dsd_default():
+    dsd = params.spectral_bin_dsd_default()
+    assert dsd.nbins == 4
+    assert dsd.rime_factor == 1.0
+    assert dsd.diameter.dtype == np.float32
+    assert dsd.concentration.dtype == np.float32
+    np.testing.assert_array_equal(
+        dsd.diameter, np.array([0.05, 0.75, 1.45, 2.15], dtype="float32"))
+    np.testing.assert_array_equal(
+        dsd.concentration,
+        np.array([55.1843, 146.647, 11.6891, 3.60886], dtype="float32"))
+
+
+def python_reference_dsd(deld):
+    # run_sbc.py, cast to float32
+    psd_orig = [55.1843, 66.0695, 130.272, 154.556, 203.649, 171.814,
+                206.606, 146.647, 94.9404, 79.4013, 61.0083, 35.6567,
+                25.4924, 16.2522, 11.6891, 7.49152, 3.60886]
+    diameter_orig = [0.05 + 0.1 * i for i in range(len(psd_orig))]
+    diameter = np.arange(0.05, 1.85 + deld, deld)
+    concentration = np.interp(diameter, diameter_orig, psd_orig)
+    return diameter.astype("float32"), concentration.astype("float32")
+
+
+def test_spectral_bin_dsd():
+    cxx_diameter = np.array([0.05, 0.65, 1.25, 1.85], dtype="float32")
+    cxx_concentration = np.array([55.1843, 206.606, 25.4924, 3.60886],
+                                 dtype="float32")
+
+    for diameter, concentration in (
+        python_reference_dsd(0.7),
+        python_reference_dsd(0.1),
+        (cxx_diameter, cxx_concentration),
+    ):
+        for rime_factor in (1.0, 5.0):
+            dsd = params.spectral_bin_dsd(diameter, concentration,
+                                          rime_factor=rime_factor)
+            assert dsd.nbins == diameter.size
+            assert dsd.rime_factor == rime_factor
+            np.testing.assert_array_equal(dsd.diameter, diameter)
+            np.testing.assert_array_equal(dsd.concentration, concentration)
+
+    default = params.spectral_bin_dsd_default()
+    diameter, concentration = python_reference_dsd(0.7)
+    np.testing.assert_array_equal(default.diameter, diameter)
+    np.testing.assert_array_equal(default.concentration, concentration)
+    assert python_reference_dsd(0.1)[0].size == 19
+
+    dsd = params.spectral_bin_dsd(cxx_diameter, cxx_concentration)
+    assert dsd.rime_factor == 1.0
+    for field in ("nbins", "rime_factor", "diameter", "concentration"):
+        with pytest.raises(AttributeError):
+            setattr(dsd, field, 1.0)
+
+    diameter = (0.05 + 0.1 * np.arange(params.SBC_MAX_BINS + 1)).astype(
+        "float32")
+    concentration = np.ones(diameter.size, dtype="float32")
+    assert params.spectral_bin_dsd(
+        diameter[:-1], concentration[:-1]).nbins == params.SBC_MAX_BINS
+    assert params.spectral_bin_dsd(diameter, concentration).nbins == 0
+
+
+@pytest.mark.parametrize("diameter, concentration, rime_factor", [
+    ([], [], 1.0),
+    ([0.05, 0.65, 0.65, 1.85], [55.1843, 206.606, 25.4924, 3.60886], 1.0),
+    ([0.0, 0.65, 1.25, 1.85], [55.1843, 206.606, 25.4924, 3.60886], 1.0),
+    ([0.05, np.nan, 1.25, 1.85], [55.1843, 206.606, 25.4924, 3.60886], 1.0),
+    ([0.05, 0.65, 1.25, 12.16], [55.1843, 206.606, 25.4924, 3.60886], 1.0),
+    ([0.05, 0.65, 1.25, 1.85], [55.1843, -206.606, 25.4924, 3.60886], 1.0),
+    ([0.05, 0.65, 1.25, 1.85], [0.0, 0.0, 0.0, 0.0], 1.0),
+    ([0.05, 0.65, 1.25, 1.85], [55.1843, np.nan, 25.4924, 3.60886], 1.0),
+    ([0.05, 0.65, 1.25, 1.85], [55.1843, 206.606, 25.4924, 3.60886], 0.99),
+    ([0.05, 0.65, 1.25, 1.85], [55.1843, 206.606, 25.4924, 3.60886], 5.01),
+    ([0.05, 0.65, 1.25, 1.85], [55.1843, 206.606, 25.4924, 3.60886], np.nan),
+])
+def test_spectral_bin_dsd_invalid(diameter, concentration, rime_factor):
+    dsd = params.spectral_bin_dsd(np.array(diameter, dtype="float32"),
+                                  np.array(concentration, dtype="float32"),
+                                  rime_factor)
+    assert dsd.nbins == 0
+    assert dsd.rime_factor == constants.MISSING
+    assert dsd.diameter.size == 0
+    assert dsd.concentration.size == 0
+
+
+def test_spectral_bin_dsd_sizes():
+    diameter = np.array([0.05, 0.65, 1.25, 1.85], dtype="float32")
+    with pytest.raises(BufferError):
+        params.spectral_bin_dsd(diameter, diameter[:3])
+
+
+# ---------------------------------------------------------------------------
+# Cloud top from a sounding
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Precipitation type from a given cloud top: pre-classifier
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Microphysics: frozen cloud tops and melting
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Microphysics: refreezing
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Microphysics: liquid cloud tops
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Precipitation type from a full sounding
+# ---------------------------------------------------------------------------

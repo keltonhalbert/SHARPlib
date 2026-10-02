@@ -259,4 +259,172 @@ PrecipTypeProbabilities modified_bourgouin(
     return modified_bourgouin(energy, prob_ice, wetbulb[surface]);
 }
 
+// ===========================================================================
+// Precipitation type: the spectral bin classifier (Reeves et al. 2016)
+// ===========================================================================
+
+// A port of the spectral bin classifier (SBC) of Reeves, H. D., A. V.
+// Ryzhkov, and J. Krause, 2016: Discrimination between winter precipitation
+// types based on spectral-bin microphysical modeling. J. Appl. Meteor.
+// Climatol., 55, 1747-1761, https://doi.org/10.1175/JAMC-D-16-0044.1
+//
+// It follows the 2023 version of the algorithm in the Python reference by
+// D. Tripp (sbc_alg_2023Aug31.py and run_sbc.py, 2023-08-31), which the
+// authors consider authoritative, and in the C++ MRMS code by A. Rosenow and
+// D. Tripp (sbcmodel_core.cc and topCalc.cc, versions 2.0.0 to 2.0.3). The
+// authors gave permission for this port. The work is NOAA-funded, and the
+// port is in the public domain.
+
+// ---------------------------------------------------------------------------
+// Result types and the drop-size distribution
+// ---------------------------------------------------------------------------
+
+namespace {
+// Values of the reference, which differ slightly from SHARPlib's constants.
+// Densities in g cm^-3.
+constexpr float SBC_ICE_DENSITY = 0.917f;
+constexpr float SBC_MAX_SNOW_DENSITY = 0.5f;
+// unknwn_e of the reference, sqrt(1 - 0.98^2)
+constexpr float SBC_E = 0.198997487f;
+// e / asin(e)
+constexpr float SBC_E_OVER_ASIN_E = 0.993324402f;
+// log((1 + e) / (1 - e))
+constexpr float SBC_LOG_E_RATIO = 0.403376976f;
+
+// The reference's capac is this factor times the diameter, plus 0.2 fw.
+inline float sbc_capacitance_factor(const float aspect_ratio) {
+    return 0.5f * SBC_E_OVER_ASIN_E * 0.8f / std::cbrt(aspect_ratio);
+}
+
+// The reference's unknwn_leng is this factor times the diameter.
+inline float sbc_length_factor(const float aspect_ratio) {
+    return (2.0f + aspect_ratio * aspect_ratio / SBC_E * SBC_LOG_E_RATIO) /
+           (4.0f * std::cbrt(aspect_ratio));
+}
+
+// Dry-snow density (g cm^-3) at a diameter (mm).
+inline float sbc_dry_snow_density(const float rime_factor,
+                                  const float diameter) {
+    return 0.178f * rime_factor * std::pow(diameter, -0.922f);
+}
+
+// uknwn_aa of the reference, from a dry-snow density (g cm^-3).
+inline float sbc_fall_speed_aa(const float density) {
+    return 1.26f / std::cbrt(density);
+}
+}  // namespace
+
+SpectralBinDSD spectral_bin_dsd(const float diameter[],
+                                const float concentration[],
+                                const std::ptrdiff_t nbins,
+                                const float rime_factor) {
+    // Before any array read.
+    if ((nbins < 1) || (nbins > SBC_MAX_BINS)) return SpectralBinDSD{};
+    // Fails for NaN too.
+    if (!((rime_factor >= 1.0f) && (rime_factor <= 5.0f))) {
+        return SpectralBinDSD{};
+    }
+
+    // maxD_melt_snow: snow with a smaller melted diameter (mm) has the
+    // maximum density.
+    const float max_dense_snow_diameter =
+        0.154f * std::pow(rime_factor, 1.08f) *
+        std::pow(SBC_MAX_SNOW_DENSITY, -0.75f);
+    const float large_snow_coeff = 2.29f * std::pow(rime_factor, -0.48f);
+    const float dense_snow_coeff = 1.0f / std::cbrt(SBC_MAX_SNOW_DENSITY);
+    const float frozen_drop_coeff = std::cbrt(1.0f / SBC_ICE_DENSITY);
+    constexpr float MASS_COEFF = PI / 6.0f * 1.0e-3f;
+
+    SpectralBinDSD dsd;
+    bool has_positive = false;
+    float smaller = 0.0f;
+    float rain_fall_speed = 0.01f;
+    for (std::ptrdiff_t j = 0; j < nbins; ++j) {
+        const float D = diameter[j];
+        const float N = concentration[j];
+        if (!std::isfinite(D) || (D <= smaller)) return SpectralBinDSD{};
+        if (!std::isfinite(N) || (N < 0.0f)) return SpectralBinDSD{};
+        const float D2 = D * D;
+        const float D3 = D2 * D;
+        const float D4 = D3 * D;
+        const float aspect_ratio =
+            std::min(0.9951f + 0.02510f * D - 0.03644f * D2 + 0.005303f * D3 -
+                         0.0002492f * D4,
+                     1.0f);
+        if (!(aspect_ratio > 0.0f)) return SpectralBinDSD{};
+        has_positive |= (N > 0.0f);
+        smaller = D;
+
+        dsd.m_diameter[j] = D;
+        dsd.m_concentration[j] = N;
+        dsd.m_mass[j] = MASS_COEFF * D3;
+
+        rain_fall_speed =
+            std::max(rain_fall_speed, -0.1021f + 4.932f * D - 0.9551f * D2 +
+                                          0.07932f * D3 - 0.002362f * D4);
+        dsd.m_rain_fall_speed[j] = rain_fall_speed;
+
+        const float Di = frozen_drop_coeff * D;
+        dsd.m_pellet_fall_speed[j] = 0.2259f + 1.5954f * Di - 0.0405f * Di * Di;
+        dsd.m_foote_du_toit_fall_speed[j] =
+            -0.193f + 4.96f * D - 0.904f * D2 + 0.0566f * D3;
+
+        dsd.m_liquid_capacitance_factor[j] =
+            sbc_capacitance_factor(aspect_ratio);
+        dsd.m_liquid_length_factor[j] = sbc_length_factor(aspect_ratio);
+
+        const float snow_diameter =
+            (D >= max_dense_snow_diameter)
+                ? large_snow_coeff * std::pow(D, 1.443f)
+                : dense_snow_coeff * D;
+        const float snow_density =
+            sbc_dry_snow_density(rime_factor, snow_diameter);
+        dsd.m_snow_diameter[j] = snow_diameter;
+        dsd.m_snow_density[j] = std::min(snow_density, SBC_MAX_SNOW_DENSITY);
+        dsd.m_snow_aa[j] = sbc_fall_speed_aa(snow_density);
+        dsd.m_snow_bb[j] = (dsd.m_snow_aa[j] - 1.0f) / 2.0f;
+
+        dsd.m_liquid_aa[j] =
+            sbc_fall_speed_aa(sbc_dry_snow_density(rime_factor, D));
+        dsd.m_liquid_bb[j] = (dsd.m_liquid_aa[j] - 1.0f) / 2.0f;
+    }
+    if (!has_positive) return SpectralBinDSD{};
+
+    dsd.m_nbins = nbins;
+    dsd.m_rime_factor = rime_factor;
+    return dsd;
+}
+
+SpectralBinDSD spectral_bin_dsd_default() {
+    constexpr std::ptrdiff_t NBINS = 4;
+    constexpr float DIAMETER[NBINS] = {0.05f, 0.75f, 1.45f, 2.15f};
+    constexpr float CONCENTRATION[NBINS] = {55.1843f, 146.647f, 11.6891f,
+                                            3.60886f};
+    return spectral_bin_dsd(DIAMETER, CONCENTRATION, NBINS);
+}
+
+// ---------------------------------------------------------------------------
+// Cloud top from a sounding
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Precipitation type from a given cloud top: pre-classifier
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Microphysics: frozen cloud tops and melting
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Microphysics: refreezing
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Microphysics: liquid cloud tops
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Precipitation type from a full sounding
+// ---------------------------------------------------------------------------
+
 }  // namespace sharp

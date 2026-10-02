@@ -7,9 +7,11 @@
 #include <SHARPlib/thermo.h>
 #include <SHARPlib/winds.h>
 
+#include <array>
 #include <cmath>
 #include <limits>
 #include <optional>
+#include <type_traits>
 #include <vector>
 
 #include "doctest.h"
@@ -1549,3 +1551,520 @@ TEST_CASE("Testing the effective-inflow storm_motion_bunkers 3 km fallback") {
         check_bunkers(c);
     }
 }
+
+// ===========================================================================
+// Precipitation type: the spectral bin classifier (Reeves et al. 2016)
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// Result types and the drop-size distribution
+// ---------------------------------------------------------------------------
+
+static_assert(std::is_trivially_copyable_v<sharp::SpectralBinDSD>);
+static_assert(std::is_trivially_copyable_v<sharp::SpectralBinResult>);
+
+TEST_CASE("Testing the PrecipType encoding") {
+    using sharp::PrecipType;
+    CHECK(static_cast<int>(PrecipType::missing) == -9999);
+    CHECK(static_cast<float>(PrecipType::missing) == sharp::MISSING);
+    CHECK(static_cast<int>(PrecipType::rain) == 1);
+    CHECK(static_cast<int>(PrecipType::snow) == 2);
+    CHECK(static_cast<int>(PrecipType::rain_snow) == 3);
+    CHECK(static_cast<int>(PrecipType::freezing_rain) == 4);
+    CHECK(static_cast<int>(PrecipType::ice_pellets) == 5);
+    CHECK(static_cast<int>(PrecipType::freezing_rain_ice_pellets) == 6);
+    CHECK(static_cast<int>(PrecipType::rain_ice_pellets) == 7);
+}
+
+TEST_CASE("Testing SpectralBinResult defaults to missing") {
+    const sharp::SpectralBinResult result;
+    CHECK(result.precip_type == sharp::PrecipType::missing);
+    CHECK(result.liquid_fraction == sharp::MISSING);
+    CHECK(result.supercooled_liquid_height == sharp::MISSING);
+}
+
+TEST_CASE("Testing the spectral bin classifier constants") {
+    CHECK(sharp::SBC_MAX_BINS == 64);
+    CHECK(sharp::SBC_ICE_NUCLEATION_TEMPERATURE == 267.15f);
+}
+
+namespace {
+struct DiameterConstants {
+    std::vector<double> mass;
+    std::vector<double> rain_fall_speed;
+    std::vector<double> pellet_fall_speed;
+    std::vector<double> foote_du_toit_fall_speed;
+    std::vector<double> liquid_capacitance_factor;
+    std::vector<double> liquid_length_factor;
+};
+
+struct RimeConstants {
+    std::vector<double> snow_diameter;
+    std::vector<double> snow_density;
+    std::vector<double> snow_aa;
+    std::vector<double> snow_bb;
+    std::vector<double> liquid_aa;
+    std::vector<double> liquid_bb;
+};
+
+// A drop-size distribution and its per-bin constants from the reference
+// formulas (sbc_alg_2023Aug31.py), evaluated in float64 numpy on the float32
+// diameters, at rime factors 1 and 5.
+struct ExpectedDSD {
+    std::vector<float> diameter;
+    std::vector<float> concentration;
+    DiameterConstants constants;
+    RimeConstants rime_1;
+    RimeConstants rime_5;
+};
+
+// The Python default (run_sbc.py, deld = 0.7)
+const ExpectedDSD PYTHON_DSD{
+    {0.05f, 0.75f, 1.45f, 2.15f},
+    {55.1843f, 146.647f, 11.6891f, 3.60886f},
+    {
+        // mass
+        {6.54498499e-08, 0.000220893233, 0.00159625647, 0.00520372167},
+        // rain_fall_speed
+        {0.142122154, 3.09237202, 5.27257807, 6.82459228},
+        // pellet_fall_speed
+        {0.30790029, 1.43337744, 2.51680444, 3.55818123},
+        // foote_du_toit_fall_speed
+        {0.0527470786, 3.04237812, 5.2708923, 6.8547722},
+        // liquid_capacitance_factor
+        {0.39782573, 0.397916111, 0.40139199, 0.407350743},
+        // liquid_length_factor
+        {1.00423449, 1.00377655, 0.986744087, 0.960031483},
+    },
+    {
+        // snow_diameter
+        {0.0629960534, 1.51198988, 3.91461928, 6.91105275},
+        // snow_density
+        {0.5, 0.121583861, 0.0505778374, 0.0299474772},
+        // snow_aa
+        {0.957678002, 2.54338381, 3.40709147, 4.05742466},
+        // snow_bb
+        {-0.0211609991, 0.771691903, 1.20354574, 1.52871233},
+        // liquid_aa
+        {0.892032466, 2.05037221, 2.5108705, 2.83400081},
+        // liquid_bb
+        {-0.053983767, 0.525186103, 0.755435252, 0.917000406},
+    },
+    {
+        // snow_diameter
+        {0.0629960534, 0.944940787, 1.82688558, 3.19182157},
+        // snow_density
+        {0.5, 0.5, 0.5, 0.305257549},
+        // snow_aa
+        {0.560053493, 1.28730529, 1.57642446, 1.8713215},
+        // snow_bb
+        {-0.219973254, 0.143652647, 0.288212228, 0.435660751},
+        // liquid_aa
+        {0.521663751, 1.19906494, 1.46836598, 1.65733373},
+        // liquid_bb
+        {-0.239168125, 0.0995324698, 0.234182989, 0.328666864},
+    },
+};
+
+// The C++ MRMS code, version 2.0.3
+const ExpectedDSD CXX_2_0_3_DSD{
+    {0.05f, 0.65f, 1.25f, 1.85f},
+    {55.1843f, 206.606f, 25.4924f, 3.60886f},
+    {
+        // mass
+        {6.54498499e-08, 0.000143793298, 0.00102265386, 0.00331523123},
+        // rain_fall_speed
+        {0.142122154, 2.72153178, 4.71971152, 6.22782749},
+        // pellet_fall_speed
+        {0.30790029, 1.27516945, 2.21154466, 3.11702582},
+        // foote_du_toit_fall_speed
+        {0.0527470786, 2.66460368, 4.70504687, 6.24743003},
+        // liquid_capacitance_factor
+        {0.39782573, 0.397670598, 0.400111625, 0.404540105},
+        // liquid_length_factor
+        {1.00423449, 1.00502234, 0.992888514, 0.972254874},
+    },
+    {
+        // snow_diameter
+        {0.0629960534, 1.22989896, 3.15992395, 5.56370756},
+        // snow_density
+        {0.5, 0.147082291, 0.0616194969, 0.0365758243},
+        // snow_aa
+        {0.957678002, 2.386989, 3.19005249, 3.79582199},
+        // snow_bb
+        {-0.0211609991, 0.693494498, 1.09502624, 1.397911},
+        // liquid_aa
+        {0.892032466, 1.96215169, 2.39891147, 2.70608431},
+        // liquid_bb
+        {-0.053983767, 0.481075843, 0.699455737, 0.853042157},
+    },
+    {
+        // snow_diameter
+        {0.0629960534, 0.818948652, 1.57490131, 2.56955958},
+        // snow_density
+        {0.5, 0.5, 0.5, 0.372820936},
+        // snow_aa
+        {0.560053493, 1.23191694, 1.50613212, 1.75066795},
+        // snow_bb
+        {-0.219973254, 0.11595847, 0.253066061, 0.375333975},
+        // liquid_aa
+        {0.521663751, 1.14747327, 1.40289194, 1.58252771},
+        // liquid_bb
+        {-0.239168125, 0.0737366333, 0.20144597, 0.291263854},
+    },
+};
+
+// The Python construction with deld = 0.1
+const ExpectedDSD DELD_0_1_DSD{
+    {0.05f, 0.15f, 0.25f, 0.35f, 0.45f, 0.55f, 0.65f, 0.75f, 0.85f, 0.95f,
+     1.05f, 1.15f, 1.25f, 1.35f, 1.45f, 1.55f, 1.65f, 1.75f, 1.85f},
+    {55.1843f, 66.0695f, 130.272f, 154.556f, 203.649f, 171.814f, 206.606f,
+     146.647f, 94.9404f, 79.4013f, 61.0083f, 35.6567f, 25.4924f, 16.2522f,
+     11.6891f, 7.49152f, 3.60886f, 3.60886f, 3.60886f},
+    {
+        // mass
+        {6.54498499e-08, 1.76714608e-06, 8.18123087e-06, 2.24492964e-05,
+         4.77129346e-05, 8.7113752e-05, 0.000143793298, 0.000220893233,
+         0.000321555125, 0.000448920483, 0.00060613095, 0.000796328238,
+         0.00102265386, 0.00128824941, 0.00159625647, 0.00194981621,
+         0.00235207105, 0.00280616219, 0.00331523123},
+        // rain_fall_speed
+        {0.142122154, 0.616476787, 1.0724364, 1.51046562, 1.93102338,
+         2.33456302, 2.72153178, 3.09237202, 3.44751975, 3.78740533, 4.11245389,
+         4.42308483, 4.71971152, 5.00274186, 5.27257807, 5.52961642, 5.77424839,
+         6.0068589, 6.22782749},
+        // pellet_fall_speed
+        {0.30790029, 0.471257251, 0.633756027, 0.795396634, 0.956179074,
+         1.11610339, 1.27516945, 1.43337744, 1.59072725, 1.74721881, 1.9028522,
+         2.05762751, 2.21154466, 2.36460363, 2.51680444, 2.6681469, 2.81863138,
+         2.96825769, 3.11702582},
+        // foote_du_toit_fall_speed
+        {0.0527470786, 0.530851053, 0.991384375, 1.4346867, 1.86109763,
+         2.27095687, 2.66460368, 3.04237812, 3.40461956, 3.75166738, 4.08386142,
+         4.40154145, 4.70504687, 4.99471729, 5.2708923, 5.5339112, 5.78411422,
+         6.02184063, 6.24743003},
+        // liquid_capacitance_factor
+        {0.39782573, 0.397586652, 0.397438505, 0.397376825, 0.397397473,
+         0.397496596, 0.397670598, 0.397916111, 0.398229973, 0.398609202,
+         0.399050981, 0.399552636, 0.400111625, 0.400725518, 0.40139199,
+         0.402108804, 0.402873807, 0.403684914, 0.404540105},
+        // liquid_length_factor
+        {1.00423449, 1.00544962, 1.00620533, 1.00652059, 1.00641501, 1.00590875,
+         1.00502234, 1.00377655, 1.0021923, 1.00029056, 0.998092224,
+         0.995618031, 0.992888514, 0.989923906, 0.986744087, 0.983368528,
+         0.979816228, 0.976105691, 0.972254874},
+    },
+    {
+        // snow_diameter
+        {0.0629960534, 0.188988165, 0.314980262, 0.503414429, 0.723470993,
+         0.966448813, 1.22989896, 1.51198988, 1.81128591, 2.12662364,
+         2.45703652, 2.80170531, 3.15992395, 3.53107646, 3.91461928, 4.31006782,
+         4.71698836, 5.13498745, 5.56370756},
+        // snow_density
+        {0.5, 0.5, 0.5, 0.335154106, 0.239901922, 0.183689823, 0.147082291,
+         0.121583861, 0.10293332, 0.0887747044, 0.0777070632, 0.0688488199,
+         0.0616194969, 0.0556223888, 0.0505778374, 0.046283443, 0.042589354,
+         0.0393824462, 0.0365758243},
+        // snow_aa
+        {0.957678002, 1.34231604, 1.57049403, 1.81393769, 2.02780397,
+         2.21653969, 2.386989, 2.54338381, 2.68855269, 2.82449493, 2.95268452,
+         3.07424431, 3.19005249, 3.30081106, 3.40709147, 3.50936596, 3.60803045,
+         3.70342013, 3.79582199},
+        // snow_bb
+        {-0.0211609991, 0.171158021, 0.285247017, 0.406968843, 0.513901986,
+         0.608269847, 0.693494498, 0.771691903, 0.844276345, 0.912247467,
+         0.976342258, 1.03712216, 1.09502624, 1.15040553, 1.20354574,
+         1.25468298, 1.30401523, 1.35171006, 1.397911},
+        // liquid_aa
+        {0.892032466, 1.25030489, 1.46284207, 1.62221142, 1.7524724, 1.86395467,
+         1.96215169, 2.05037221, 2.1307801, 2.20487648, 2.27375002, 2.33821806,
+         2.39891147, 2.45632856, 2.5108705, 2.5628655, 2.61258608, 2.66026094,
+         2.70608431},
+        // liquid_bb
+        {-0.053983767, 0.125152445, 0.231421033, 0.31110571, 0.3762362,
+         0.431977337, 0.481075843, 0.525186103, 0.565390048, 0.602438238,
+         0.636875011, 0.669109032, 0.699455737, 0.728164281, 0.755435252,
+         0.781432752, 0.806293038, 0.83013047, 0.853042157},
+    },
+    {
+        // snow_diameter
+        {0.0629960534, 0.188988165, 0.314980262, 0.44097236, 0.566964457,
+         0.692956592, 0.818948652, 0.944940787, 1.07093292, 1.19692498,
+         1.32291704, 1.44890918, 1.57490131, 1.70089345, 1.82688558, 1.9905748,
+         2.17850822, 2.37155819, 2.56955958},
+        // snow_density
+        {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
+         0.5, 0.471771638, 0.434117428, 0.401429105, 0.372820936},
+        // snow_aa
+        {0.560053493, 0.784991184, 0.918430483, 1.01848891, 1.10027194,
+         1.17026495, 1.23191694, 1.28730529, 1.33778857, 1.38430923, 1.42755078,
+         1.46802638, 1.50613212, 1.54218086, 1.57642446, 1.6185518, 1.66405677,
+         1.70805136, 1.75066795},
+        // snow_bb
+        {-0.219973254, -0.107504408, -0.0407847586, 0.00924445397, 0.0501359682,
+         0.0851324729, 0.11595847, 0.143652647, 0.168894284, 0.192154613,
+         0.21377539, 0.234013191, 0.253066061, 0.271090428, 0.288212228,
+         0.309275899, 0.332028384, 0.354025681, 0.375333975},
+        // liquid_aa
+        {0.521663751, 0.731182736, 0.855475229, 0.948674993, 1.02485208,
+         1.09004731, 1.14747327, 1.19906494, 1.24608776, 1.28941959, 1.32969708,
+         1.36739822, 1.40289194, 1.43646966, 1.46836598, 1.49877284, 1.52784961,
+         1.55573004, 1.58252771},
+        // liquid_bb
+        {-0.239168125, -0.134408632, -0.0722623853, -0.0256625033, 0.0124260381,
+         0.0450236527, 0.0737366333, 0.0995324698, 0.12304388, 0.144709793,
+         0.16484854, 0.183699109, 0.20144597, 0.218234829, 0.234182989,
+         0.249386419, 0.263924803, 0.277865018, 0.291263854},
+    },
+};
+
+// Drops small enough for the 0.01 m/s floor and a negative Foote-du Toit
+// fall speed, and large enough for the non-decreasing fix
+const ExpectedDSD EDGE_DSD{
+    {0.01f, 0.02f, 0.05f, 5.95f, 7.0f, 8.0f, 12.0f},
+    {10.0f, 20.0f, 30.0f, 40.0f, 30.0f, 20.0f, 10.0f},
+    {
+        // mass
+        {5.2359874e-10, 4.18878992e-09, 6.54498499e-08, 0.110293388, 0.17959438,
+         0.268082573, 0.904778684},
+        // rain_fall_speed
+        {0.01, 0.01, 0.142122154, 9.17834173, 9.17834173, 9.17834173, 9.634028},
+        // pellet_fall_speed
+        {0.242317221, 0.25872586, 0.30790029, 8.47763546, 9.61844772,
+         10.6169732, 13.7529075},
+        // foote_du_toit_fall_speed
+        {-0.143490345, -0.0941611494, 0.0527470786, 9.23763988, 9.6448, 10.6102,
+         26.9558},
+        // liquid_capacitance_factor
+        {0.39794789, 0.397915896, 0.39782573, 0.456563843, 0.469568003,
+         0.482577119, 1.11613785},
+        // liquid_length_factor
+        {1.00361571, 1.00377763, 1.00423449, 0.827499954, 0.8107243,
+         0.799020908, 1.40744565},
+    },
+    {
+        // snow_diameter
+        {0.0125992102, 0.0251984204, 0.0629960534, 30.0236469, 37.9587545,
+         46.0250568, 82.6216798},
+        // snow_density
+        {0.5, 0.5, 0.5, 0.00773034198, 0.00622722246, 0.00521361823,
+         0.00303990013},
+        // snow_aa
+        {0.583986389, 0.722635474, 0.957678002, 6.37241879, 6.84866229,
+         7.2664809, 8.69796068},
+        // snow_bb
+        {-0.208006805, -0.138682263, -0.0211609991, 2.68620939, 2.92433115,
+         3.13324045, 3.84898034},
+        // liquid_aa
+        {0.543956129, 0.673101296, 0.892032466, 3.87494391, 4.07340265,
+         4.24404715, 4.80727442},
+        // liquid_bb
+        {-0.228021935, -0.163449352, -0.053983767, 1.43747196, 1.53670133,
+         1.62202358, 1.90363721},
+    },
+    {
+        // snow_diameter
+        {0.0125992102, 0.0251984204, 0.0629960534, 13.8662122, 17.5309864,
+         21.2563519, 38.1582473},
+        // snow_density
+        {0.5, 0.5, 0.5, 0.0787961279, 0.0634746844, 0.0531429179, 0.0309859977},
+        // snow_aa
+        {0.341517312, 0.422599789, 0.560053493, 2.93901805, 3.15866592,
+         3.3513677, 4.01157932},
+        // snow_bb
+        {-0.329241344, -0.288700105, -0.219973254, 0.969509024, 1.07933296,
+         1.17568385, 1.50578966},
+        // liquid_aa
+        {0.318107474, 0.393632026, 0.521663751, 2.26608095, 2.38214032,
+         2.48193383, 2.81131113},
+        // liquid_bb
+        {-0.340946263, -0.303183987, -0.239168125, 0.633040474, 0.691070161,
+         0.740966915, 0.905655567},
+    },
+};
+
+// float32 stays within 2e-6 of the float64 reference.
+constexpr double SBC_RTOL = 1e-5;
+
+void check_bins(const char* name,
+                const std::array<float, sharp::SBC_MAX_BINS>& actual,
+                const std::vector<double>& expected) {
+    for (std::size_t j = 0; j < expected.size(); ++j) {
+        CAPTURE(name);
+        CAPTURE(j);
+        CHECK(actual[j] ==
+              doctest::Approx(expected[j]).epsilon(SBC_RTOL).scale(0.0));
+    }
+}
+
+void check_dsd(const sharp::SpectralBinDSD& dsd, const ExpectedDSD& expected,
+               const float rime_factor) {
+    REQUIRE(dsd.nbins() ==
+            static_cast<std::ptrdiff_t>(expected.diameter.size()));
+    CHECK(dsd.rime_factor() == rime_factor);
+    for (std::size_t j = 0; j < expected.diameter.size(); ++j) {
+        CHECK(dsd.diameter()[j] == expected.diameter[j]);
+        CHECK(dsd.concentration()[j] == expected.concentration[j]);
+    }
+
+    const DiameterConstants& c = expected.constants;
+    check_bins("mass", dsd.mass(), c.mass);
+    check_bins("rain_fall_speed", dsd.rain_fall_speed(), c.rain_fall_speed);
+    check_bins("pellet_fall_speed", dsd.pellet_fall_speed(),
+               c.pellet_fall_speed);
+    check_bins("foote_du_toit_fall_speed", dsd.foote_du_toit_fall_speed(),
+               c.foote_du_toit_fall_speed);
+    check_bins("liquid_capacitance_factor", dsd.liquid_capacitance_factor(),
+               c.liquid_capacitance_factor);
+    check_bins("liquid_length_factor", dsd.liquid_length_factor(),
+               c.liquid_length_factor);
+
+    const RimeConstants& r =
+        (rime_factor == 5.0f) ? expected.rime_5 : expected.rime_1;
+    check_bins("snow_diameter", dsd.snow_diameter(), r.snow_diameter);
+    check_bins("snow_density", dsd.snow_density(), r.snow_density);
+    check_bins("snow_aa", dsd.snow_aa(), r.snow_aa);
+    check_bins("snow_bb", dsd.snow_bb(), r.snow_bb);
+    check_bins("liquid_aa", dsd.liquid_aa(), r.liquid_aa);
+    check_bins("liquid_bb", dsd.liquid_bb(), r.liquid_bb);
+}
+
+sharp::SpectralBinDSD build_dsd(const std::vector<float>& diameter,
+                                const std::vector<float>& concentration,
+                                const float rime_factor = 1.0f) {
+    return sharp::spectral_bin_dsd(
+        diameter.data(), concentration.data(),
+        static_cast<std::ptrdiff_t>(diameter.size()), rime_factor);
+}
+
+void check_invalid(const sharp::SpectralBinDSD& dsd) {
+    CHECK(dsd.nbins() == 0);
+    CHECK(dsd.rime_factor() == sharp::MISSING);
+    CHECK(dsd.diameter()[0] == 0.0f);
+    CHECK(dsd.mass()[0] == 0.0f);
+}
+}  // namespace
+
+TEST_CASE("Testing spectral_bin_dsd_default") {
+    const sharp::SpectralBinDSD dsd = sharp::spectral_bin_dsd_default();
+    REQUIRE(dsd.nbins() == 4);
+    CHECK(dsd.diameter()[0] == 0.05f);
+    CHECK(dsd.diameter()[1] == 0.75f);
+    CHECK(dsd.diameter()[2] == 1.45f);
+    CHECK(dsd.diameter()[3] == 2.15f);
+    CHECK(dsd.concentration()[0] == 55.1843f);
+    CHECK(dsd.concentration()[1] == 146.647f);
+    CHECK(dsd.concentration()[2] == 11.6891f);
+    CHECK(dsd.concentration()[3] == 3.60886f);
+    check_dsd(dsd, PYTHON_DSD, 1.0f);
+}
+
+TEST_CASE("Testing spectral_bin_dsd per-bin constants") {
+    for (const ExpectedDSD* expected :
+         {&PYTHON_DSD, &CXX_2_0_3_DSD, &DELD_0_1_DSD, &EDGE_DSD}) {
+        for (const float rime_factor : {1.0f, 5.0f}) {
+            CAPTURE(expected->diameter.size());
+            CAPTURE(rime_factor);
+            check_dsd(build_dsd(expected->diameter, expected->concentration,
+                                rime_factor),
+                      *expected, rime_factor);
+        }
+    }
+}
+
+TEST_CASE("Testing spectral_bin_dsd at its limits") {
+    const std::vector<float>& D = CXX_2_0_3_DSD.diameter;
+    const std::vector<float>& N = CXX_2_0_3_DSD.concentration;
+    CHECK(build_dsd(D, N, 1.0f).nbins() == 4);
+    CHECK(build_dsd(D, N, 5.0f).nbins() == 4);
+    CHECK(build_dsd({D[0]}, {N[0]}).nbins() == 1);
+    CHECK(build_dsd(D, {0.0f, N[1], 0.0f, 0.0f}).nbins() == 4);
+    CHECK(build_dsd({0.05f, 12.15f}, {1.0f, 1.0f}).nbins() == 2);
+
+    std::vector<float> D64(sharp::SBC_MAX_BINS);
+    for (std::size_t j = 0; j < D64.size(); ++j) {
+        D64[j] = 0.05f + 0.1f * static_cast<float>(j);
+    }
+    const std::vector<float> N64(sharp::SBC_MAX_BINS, 1.0f);
+    const sharp::SpectralBinDSD dsd = build_dsd(D64, N64);
+    REQUIRE(dsd.nbins() == sharp::SBC_MAX_BINS);
+    CHECK(dsd.diameter()[sharp::SBC_MAX_BINS - 1] == D64.back());
+}
+
+TEST_CASE("Testing spectral_bin_dsd rejects invalid distributions") {
+    const std::vector<float>& D = CXX_2_0_3_DSD.diameter;
+    const std::vector<float>& N = CXX_2_0_3_DSD.concentration;
+    const float NaN = std::numeric_limits<float>::quiet_NaN();
+    const float inf = std::numeric_limits<float>::infinity();
+
+    check_invalid(sharp::SpectralBinDSD{});
+    check_invalid(sharp::spectral_bin_dsd(D.data(), N.data(), 0));
+    check_invalid(sharp::spectral_bin_dsd(D.data(), N.data(), -1));
+    check_invalid(sharp::spectral_bin_dsd(nullptr, nullptr, 0));
+
+    std::vector<float> D65(sharp::SBC_MAX_BINS + 1);
+    for (std::size_t j = 0; j < D65.size(); ++j) {
+        D65[j] = 0.05f + 0.1f * static_cast<float>(j);
+    }
+    check_invalid(build_dsd(D65, std::vector<float>(D65.size(), 1.0f)));
+
+    for (const std::vector<float>& bad : {
+             std::vector<float>{0.05f, 0.65f, 0.65f, 1.85f},
+             std::vector<float>{0.05f, 0.65f, 0.6f, 1.85f},
+             std::vector<float>{0.0f, 0.65f, 1.25f, 1.85f},
+             std::vector<float>{-0.05f, 0.65f, 1.25f, 1.85f},
+             std::vector<float>{0.05f, NaN, 1.25f, 1.85f},
+             std::vector<float>{0.05f, 0.65f, 1.25f, inf},
+             std::vector<float>{0.05f, 0.65f, 1.25f, 12.16f},
+             std::vector<float>{0.05f, 0.65f, 1.25f, sharp::MISSING},
+         }) {
+        CAPTURE(bad[0]);
+        CAPTURE(bad[1]);
+        CAPTURE(bad[2]);
+        CAPTURE(bad[3]);
+        check_invalid(build_dsd(bad, N));
+    }
+
+    for (const std::vector<float>& bad : {
+             std::vector<float>{55.1843f, -206.606f, 25.4924f, 3.60886f},
+             std::vector<float>{0.0f, 0.0f, 0.0f, 0.0f},
+             std::vector<float>{55.1843f, NaN, 25.4924f, 3.60886f},
+             std::vector<float>{55.1843f, 206.606f, inf, 3.60886f},
+             std::vector<float>{55.1843f, 206.606f, 25.4924f, sharp::MISSING},
+         }) {
+        CAPTURE(bad[0]);
+        CAPTURE(bad[1]);
+        CAPTURE(bad[2]);
+        CAPTURE(bad[3]);
+        check_invalid(build_dsd(D, bad));
+    }
+
+    for (const float rime_factor : {0.99f, 5.01f, 0.0f, NaN, sharp::MISSING}) {
+        CAPTURE(rime_factor);
+        check_invalid(build_dsd(D, N, rime_factor));
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Cloud top from a sounding
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Precipitation type from a given cloud top: pre-classifier
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Microphysics: frozen cloud tops and melting
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Microphysics: refreezing
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Microphysics: liquid cloud tops
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Precipitation type from a full sounding
+// ---------------------------------------------------------------------------

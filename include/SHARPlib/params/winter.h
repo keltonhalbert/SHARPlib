@@ -17,6 +17,7 @@
 #include <SHARPlib/constants.h>
 #include <SHARPlib/layer.h>
 
+#include <array>
 #include <cstddef>
 
 namespace sharp {
@@ -568,6 +569,435 @@ struct PrecipTypeProbabilities {
     const float dewpoint[], const float wetbulb[], const std::ptrdiff_t N,
     const float min_depth = 0.0f, const float min_energy = 0.0f,
     const float pressure_min = BOURGOUIN_PRESSURE_MIN);
+
+// ===========================================================================
+// Precipitation type: the spectral bin classifier (Reeves et al. 2016)
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// Result types and the drop-size distribution
+// ---------------------------------------------------------------------------
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Precipitation type from the spectral bin classifier.
+ *
+ * The seven categories of the 2023 version of the classifier, which adds
+ * rain mixed with ice pellets to the six categories of Reeves et al. (2016).
+ * The integer values are stable, for gridded output, and 0 is unused.
+ * PrecipType::missing converts to sharp::MISSING as a float.
+ *
+ * References:
+ * Reeves et al. 2016: https://doi.org/10.1175/JAMC-D-16-0044.1
+ */
+enum class PrecipType : int {
+    /**
+     * \brief No classification
+     */
+    missing = -9999,
+
+    /**
+     * \brief Rain (RA)
+     */
+    rain = 1,
+
+    /**
+     * \brief Snow (SN)
+     */
+    snow = 2,
+
+    /**
+     * \brief Rain and snow (RASN)
+     */
+    rain_snow = 3,
+
+    /**
+     * \brief Freezing rain (FZRA)
+     */
+    freezing_rain = 4,
+
+    /**
+     * \brief Ice pellets (PL)
+     */
+    ice_pellets = 5,
+
+    /**
+     * \brief Freezing rain and ice pellets (FZRAPL)
+     */
+    freezing_rain_ice_pellets = 6,
+
+    /**
+     * \brief Rain and ice pellets (RAPL)
+     */
+    rain_ice_pellets = 7,
+};
+
+/**
+ * \brief Capacity of a sharp::SpectralBinDSD (bins)
+ *
+ * The classifier keeps its per-bin state in fixed-size blocks of this many
+ * bins on the stack.
+ */
+static constexpr std::ptrdiff_t SBC_MAX_BINS = 64;
+
+/**
+ * \brief Default ice nucleation temperature of the spectral bin <!--
+ * --> classifier (K)
+ *
+ * -6 C, as in Reeves et al. (2016) and the reference code.
+ */
+static constexpr float SBC_ICE_NUCLEATION_TEMPERATURE = 267.15f;
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Result of the spectral bin classifier for one column.
+ *
+ * Every field defaults to missing: PrecipType::missing and sharp::MISSING.
+ */
+struct SpectralBinResult {
+    /**
+     * \brief Precipitation type at the surface
+     */
+    PrecipType precip_type = PrecipType::missing;
+
+    /**
+     * \brief Liquid share of the precipitation mass reaching the surface <!--
+     * --> (fraction)
+     *
+     * It is not a probability. 0.5 means a mix of liquid and ice, not even
+     * odds.
+     */
+    float liquid_fraction = MISSING;
+
+    /**
+     * \brief Height of the lowest supercooled liquid water (m AGL)
+     *
+     * 0 when the surface type is freezing rain, alone or with ice pellets.
+     * sharp::MISSING when the classifier finds no supercooled liquid.
+     */
+    float supercooled_liquid_height = MISSING;
+};
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief A drop-size distribution and the per-bin constants that the <!--
+ * --> spectral bin classifier reads.
+ *
+ * Build one with sharp::spectral_bin_dsd or sharp::spectral_bin_dsd_default,
+ * and reuse it for every column. It holds up to sharp::SBC_MAX_BINS bins in
+ * fixed-size arrays and allocates nothing. Only the first nbins() elements
+ * of each array are bins, and the rest are 0. A default-constructed object
+ * has nbins() == 0 and is invalid, like every distribution the builder
+ * rejects.
+ *
+ * Each constant depends only on the diameters and the riming factor, and
+ * comes from the 2023 Python reference. Each accessor names its variable in
+ * the reference. Diameters are in mm, masses in g, densities in g cm^-3, and
+ * fall speeds in m/s, the units of the reference's formulas.
+ *
+ * The snow_ constants describe the snow that a frozen cloud top produces,
+ * and liquid_aa() and liquid_bb() belong to a liquid cloud top. The liquid_
+ * aspect-ratio factors apply to a bin whose class at the level above takes
+ * the raindrop aspect ratio in the reference. Those are its liquid_ar
+ * classes, which include ice pellets. Other bins use an aspect ratio of 0.8.
+ *
+ * References:
+ * Reeves et al. 2016: https://doi.org/10.1175/JAMC-D-16-0044.1
+ *
+ * Python reference (sbc_alg_2023Aug31.py): D. Tripp, 2023
+ */
+struct SpectralBinDSD {
+    /**
+     * \brief Number of bins, or 0 for an invalid distribution
+     */
+    [[nodiscard]] std::ptrdiff_t nbins() const { return m_nbins; }
+
+    /**
+     * \brief Degree of riming of the snow from a frozen cloud top (1 to 5)
+     *
+     * sharp::MISSING for an invalid distribution.
+     */
+    [[nodiscard]] float rime_factor() const { return m_rime_factor; }
+
+    /**
+     * \brief Melted diameter of each bin, exactly as passed (mm)
+     *
+     * particle_diam in the reference.
+     */
+    [[nodiscard]] const std::array<float, SBC_MAX_BINS>& diameter() const {
+        return m_diameter;
+    }
+
+    /**
+     * \brief Number concentration of each bin, exactly as passed
+     *
+     * particle_count in the reference.
+     */
+    [[nodiscard]] const std::array<float, SBC_MAX_BINS>& concentration()
+        const {
+        return m_concentration;
+    }
+
+    /**
+     * \brief Mass of each hydrometeor, (pi / 6) 10^-3 D^3 (g)
+     *
+     * mass_hydro in the reference.
+     */
+    [[nodiscard]] const std::array<float, SBC_MAX_BINS>& mass() const {
+        return m_mass;
+    }
+
+    /**
+     * \brief Raindrop fall speed near the ground (m/s)
+     *
+     * velocity_RA_sfc in the reference: -0.1021 + 4.932 D - 0.9551 D^2 +
+     * 0.07932 D^3 - 0.002362 D^4, raised to at least 0.01 m/s and to the
+     * fall speed of the bin below it, so it never decreases with diameter.
+     */
+    [[nodiscard]] const std::array<float, SBC_MAX_BINS>& rain_fall_speed()
+        const {
+        return m_rain_fall_speed;
+    }
+
+    /**
+     * \brief Ice pellet fall speed near the ground (m/s)
+     *
+     * velocity_PL_sfc in the reference: 0.2259 + 1.5954 D_i - 0.0405 D_i^2,
+     * with the frozen-drop diameter D_i = D (1 / 0.917)^(1/3).
+     */
+    [[nodiscard]] const std::array<float, SBC_MAX_BINS>& pellet_fall_speed()
+        const {
+        return m_pellet_fall_speed;
+    }
+
+    /**
+     * \brief Raindrop fall speed of Foote and du Toit (1969) (m/s)
+     *
+     * -0.193 + 4.96 D - 0.904 D^2 + 0.0566 D^3, which the reference scales
+     * by exp(z / 20 km) below a liquid cloud top. It is negative for
+     * diameters below about 0.039 mm, as in the reference.
+     */
+    [[nodiscard]] const std::array<float, SBC_MAX_BINS>&
+    foote_du_toit_fall_speed() const {
+        return m_foote_du_toit_fall_speed;
+    }
+
+    /**
+     * \brief Capacitance factor for the raindrop aspect ratio
+     *
+     * The reference's capac is this factor times the diameter of the level
+     * above, plus 0.2 fw: 0.5 a^(-1/3) e / asin(e) 0.8, with
+     * e = 0.198997487421 and the raindrop aspect ratio
+     * a = min(0.9951 + 0.02510 D - 0.03644 D^2 + 0.005303 D^3 -
+     * 0.0002492 D^4, 1).
+     */
+    [[nodiscard]] const std::array<float, SBC_MAX_BINS>&
+    liquid_capacitance_factor() const {
+        return m_liquid_capacitance_factor;
+    }
+
+    /**
+     * \brief Length factor for the raindrop aspect ratio
+     *
+     * The reference's unknwn_leng is this factor times the diameter of the
+     * level above: (2 + a^2 / e ln((1 + e) / (1 - e))) / (4 a^(1/3)), with
+     * e and a as for liquid_capacitance_factor().
+     */
+    [[nodiscard]] const std::array<float, SBC_MAX_BINS>& liquid_length_factor()
+        const {
+        return m_liquid_length_factor;
+    }
+
+    /**
+     * \brief Diameter of the snow at a frozen cloud top (mm)
+     *
+     * diam_melt_snow at a frozen cloud top in the reference:
+     * 2.29 f_rim^-0.48 D^1.443 for D at or above
+     * 0.154 f_rim^1.08 0.5^-0.75 mm, and 0.5^(-1/3) D below it.
+     */
+    [[nodiscard]] const std::array<float, SBC_MAX_BINS>& snow_diameter()
+        const {
+        return m_snow_diameter;
+    }
+
+    /**
+     * \brief Density of the dry snow at a frozen cloud top (g cm^-3)
+     *
+     * density_drySnow at a frozen cloud top in the reference:
+     * 0.178 f_rim D_s^-0.922 for the snow diameter D_s, capped at 0.5.
+     */
+    [[nodiscard]] const std::array<float, SBC_MAX_BINS>& snow_density()
+        const {
+        return m_snow_density;
+    }
+
+    /**
+     * \brief Fall-speed coefficient aa of the snow at a frozen cloud top
+     *
+     * uknwn_aa in the reference: 1.26 rho^(-1/3), from the snow density
+     * before the cap at 0.5. Melting snow falls at the raindrop fall speed,
+     * corrected for air density, divided by aa - bb fw (1 + fw).
+     */
+    [[nodiscard]] const std::array<float, SBC_MAX_BINS>& snow_aa() const {
+        return m_snow_aa;
+    }
+
+    /**
+     * \brief Fall-speed coefficient bb of the snow at a frozen cloud top
+     *
+     * uknwn_bb in the reference: (aa - 1) / 2.
+     */
+    [[nodiscard]] const std::array<float, SBC_MAX_BINS>& snow_bb() const {
+        return m_snow_bb;
+    }
+
+    /**
+     * \brief Fall-speed coefficient aa at a liquid cloud top
+     *
+     * uknwn_aa at a liquid cloud top in the reference: 1.26 rho^(-1/3), with
+     * the dry-snow density of the melted diameter, 0.178 f_rim D^-0.922,
+     * uncapped.
+     */
+    [[nodiscard]] const std::array<float, SBC_MAX_BINS>& liquid_aa() const {
+        return m_liquid_aa;
+    }
+
+    /**
+     * \brief Fall-speed coefficient bb at a liquid cloud top
+     *
+     * uknwn_bb at a liquid cloud top in the reference: (aa - 1) / 2.
+     */
+    [[nodiscard]] const std::array<float, SBC_MAX_BINS>& liquid_bb() const {
+        return m_liquid_bb;
+    }
+
+   private:
+    std::ptrdiff_t m_nbins = 0;
+    float m_rime_factor = MISSING;
+    std::array<float, SBC_MAX_BINS> m_diameter{};
+    std::array<float, SBC_MAX_BINS> m_concentration{};
+    std::array<float, SBC_MAX_BINS> m_mass{};
+    std::array<float, SBC_MAX_BINS> m_rain_fall_speed{};
+    std::array<float, SBC_MAX_BINS> m_pellet_fall_speed{};
+    std::array<float, SBC_MAX_BINS> m_foote_du_toit_fall_speed{};
+    std::array<float, SBC_MAX_BINS> m_liquid_capacitance_factor{};
+    std::array<float, SBC_MAX_BINS> m_liquid_length_factor{};
+    std::array<float, SBC_MAX_BINS> m_snow_diameter{};
+    std::array<float, SBC_MAX_BINS> m_snow_density{};
+    std::array<float, SBC_MAX_BINS> m_snow_aa{};
+    std::array<float, SBC_MAX_BINS> m_snow_bb{};
+    std::array<float, SBC_MAX_BINS> m_liquid_aa{};
+    std::array<float, SBC_MAX_BINS> m_liquid_bb{};
+
+    friend SpectralBinDSD spectral_bin_dsd(const float diameter[],
+                                           const float concentration[],
+                                           const std::ptrdiff_t nbins,
+                                           const float rime_factor);
+};
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief Builds a drop-size distribution for the spectral bin classifier.
+ *
+ * Validates the bins and precomputes the per-bin constants of
+ * sharp::SpectralBinDSD. The diameters are melted diameters in mm, as in the
+ * paper and the reference code. Only the ratios of the concentrations
+ * matter, so any unit works, and a bin may hold 0.
+ *
+ * The result is invalid, with nbins() == 0, unless:
+ *
+ * - 1 <= nbins <= sharp::SBC_MAX_BINS
+ * - the diameters are finite, positive, and strictly increasing
+ * - the raindrop aspect-ratio fit of the reference is positive at every
+ *   diameter, which holds below about 12.16 mm
+ * - the concentrations are finite and non-negative, and at least one is
+ *   positive
+ * - rime_factor is in [1, 5]
+ *
+ * The function checks this in every build, including NO_QC builds. With
+ * nbins outside [1, sharp::SBC_MAX_BINS], it returns before reading any
+ * array element.
+ *
+ * rime_factor is the degree of riming of the snow that a frozen cloud top
+ * produces, from 1 (none) to 5 (graupel). It replaces the reference's fixed
+ * value of 1. Melting layers below a refreezing layer use 5 instead, as in
+ * the reference.
+ *
+ * References:
+ * Reeves et al. 2016: https://doi.org/10.1175/JAMC-D-16-0044.1
+ *
+ * Python reference (sbc_alg_2023Aug31.py, run_sbc.py): D. Tripp, 2023
+ *
+ * C++ MRMS code (sbcmodel_core.cc): A. Rosenow and D. Tripp
+ *
+ * \param   diameter        Melted diameter of each bin (mm)
+ * \param   concentration   Number concentration of each bin (any unit)
+ * \param   nbins           (length of arrays)
+ * \param   rime_factor     Degree of riming (1 to 5, unitless)
+ *
+ * \return  The drop-size distribution, or one with nbins() == 0
+ */
+[[nodiscard]] SpectralBinDSD spectral_bin_dsd(const float diameter[],
+                                              const float concentration[],
+                                              const std::ptrdiff_t nbins,
+                                              const float rime_factor = 1.0f);
+
+/**
+ * \author Kelton Halbert - NWS Storm Prediction Center
+ *
+ * \brief The default drop-size distribution of the spectral bin classifier.
+ *
+ * The 4-bin distribution of the 2023 Python reference (run_sbc.py), with
+ * rime_factor = 1:
+ *
+ * | Diameter (mm) | 0.05    | 0.75    | 1.45    | 2.15    |
+ * |---------------|---------|---------|---------|---------|
+ * | Concentration | 55.1843 | 146.647 | 11.6891 | 3.60886 |
+ *
+ * The reference interpolates its table of the DSD25 distribution of Reeves
+ * et al. (2016), 0.05 to 1.65 mm, every 0.7 mm. The 2.15 mm bin lies past
+ * the end of the table and takes its last value. The paper uses DSD25 as
+ * measured, with 18 bins 0.1 mm apart and a largest diameter of 1.84 mm.
+ * The C++ MRMS code (version 2.0.3) caps the bins at 1.85 mm: 0.05, 0.65,
+ * 1.25, and 1.85 mm, with concentrations 55.1843, 206.606, 25.4924, and
+ * 3.60886. Either can be passed to sharp::spectral_bin_dsd.
+ *
+ * References:
+ * Reeves et al. 2016: https://doi.org/10.1175/JAMC-D-16-0044.1
+ *
+ * Python reference (run_sbc.py): D. Tripp, 2023
+ *
+ * \return  The default drop-size distribution
+ */
+[[nodiscard]] SpectralBinDSD spectral_bin_dsd_default();
+
+// ---------------------------------------------------------------------------
+// Cloud top from a sounding
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Precipitation type from a given cloud top: pre-classifier
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Microphysics: frozen cloud tops and melting
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Microphysics: refreezing
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Microphysics: liquid cloud tops
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Precipitation type from a full sounding
+// ---------------------------------------------------------------------------
 
 }  // namespace sharp
 

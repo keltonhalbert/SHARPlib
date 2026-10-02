@@ -73,3 +73,46 @@ options cost. Neither option changes the total melting energy.
 
 .. doxygenfunction:: sharp::modified_bourgouin(const float[], const float[], const float[], const float[], const float[], const std::ptrdiff_t, const float, const float, const float)
 
+
+Spectral bin classifier
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Precipitation type from the spectral bin classifier (SBC) of Reeves et al.
+(2016, https://doi.org/10.1175/JAMC-D-16-0044.1). The classifier follows a
+spectrum of drop sizes from the cloud top to the surface, computes the liquid
+fraction of each through melting and refreezing layers, and returns one of
+seven categories at the surface. It gives no probabilities.
+
+SHARPlib ports the 2023 version of the algorithm. It follows the Python
+reference by D. Tripp, which the authors consider authoritative, and the C++
+MRMS code by A. Rosenow and D. Tripp. The authors gave permission for the
+port, and its documentation notes each place where it departs from the
+paper. Drop-size distribution diameters are in mm.
+
+.. Result types and the drop-size distribution
+
+.. doxygenenum:: sharp::PrecipType
+
+.. doxygenstruct:: sharp::SpectralBinResult
+   :members:
+
+.. doxygenvariable:: sharp::SBC_MAX_BINS
+.. doxygenvariable:: sharp::SBC_ICE_NUCLEATION_TEMPERATURE
+
+.. doxygenstruct:: sharp::SpectralBinDSD
+   :members:
+
+.. doxygenfunction:: sharp::spectral_bin_dsd
+.. doxygenfunction:: sharp::spectral_bin_dsd_default
+
+.. Cloud top from a sounding
+
+.. Precipitation type from a given cloud top: pre-classifier
+
+.. Microphysics: frozen cloud tops and melting
+
+.. Microphysics: refreezing
+
+.. Microphysics: liquid cloud tops
+
+.. Precipitation type from a full sounding

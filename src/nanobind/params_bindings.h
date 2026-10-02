@@ -14,6 +14,7 @@
 #include <SHARPlib/winds.h>
 #include <fmt/core.h>
 
+#include <algorithm>
 #include <cstddef>
 
 #include "binding_utils.h"
@@ -1525,6 +1526,218 @@ float
         using Lft = typename decltype(tag)::type;
         bind_pyrocb_firepower<Lft>(m_params, pft_template_doc, lifter_name);
     });
+
+    // =======================================================================
+    // Precipitation type: the spectral bin classifier (Reeves et al. 2016)
+    // =======================================================================
+
+    // -----------------------------------------------------------------------
+    // Result types and the drop-size distribution
+    // -----------------------------------------------------------------------
+
+    m_params.attr("SBC_MAX_BINS") = sharp::SBC_MAX_BINS;
+    m_params.attr("SBC_ICE_NUCLEATION_TEMPERATURE") =
+        sharp::SBC_ICE_NUCLEATION_TEMPERATURE;
+
+    nb::enum_<sharp::PrecipType>(m_params, "PrecipType", nb::is_arithmetic(),
+                                 R"pbdoc(
+Precipitation type from the spectral bin classifier.
+
+The seven categories of the 2023 version of the classifier, which adds
+rain mixed with ice pellets to the six categories of Reeves et al. (2016).
+The integer values are stable, for gridded output, and 0 is unused.
+PrecipType.missing is -9999, the value of MISSING.
+
+References
+----------
+Reeves et al. 2016: https://doi.org/10.1175/JAMC-D-16-0044.1
+)pbdoc")
+        .value("missing", sharp::PrecipType::missing, "No classification")
+        .value("rain", sharp::PrecipType::rain, "Rain (RA)")
+        .value("snow", sharp::PrecipType::snow, "Snow (SN)")
+        .value("rain_snow", sharp::PrecipType::rain_snow,
+               "Rain and snow (RASN)")
+        .value("freezing_rain", sharp::PrecipType::freezing_rain,
+               "Freezing rain (FZRA)")
+        .value("ice_pellets", sharp::PrecipType::ice_pellets,
+               "Ice pellets (PL)")
+        .value("freezing_rain_ice_pellets",
+               sharp::PrecipType::freezing_rain_ice_pellets,
+               "Freezing rain and ice pellets (FZRAPL)")
+        .value("rain_ice_pellets", sharp::PrecipType::rain_ice_pellets,
+               "Rain and ice pellets (RAPL)");
+
+    nb::class_<sharp::SpectralBinResult>(m_params, "SpectralBinResult",
+                                         R"pbdoc(
+Result of the spectral bin classifier for one column.
+
+Every field defaults to missing: PrecipType.missing and MISSING. The fields
+are read-only.
+)pbdoc")
+        .def(nb::init<>())
+        .def_ro("precip_type", &sharp::SpectralBinResult::precip_type,
+                "Precipitation type at the surface (PrecipType)")
+        .def_ro("liquid_fraction", &sharp::SpectralBinResult::liquid_fraction,
+                "Liquid share of the precipitation mass reaching the surface "
+                "(fraction). It is not a probability. 0.5 means a mix of "
+                "liquid and ice, not even odds.")
+        .def_ro("supercooled_liquid_height",
+                &sharp::SpectralBinResult::supercooled_liquid_height,
+                "Height of the lowest supercooled liquid water (m AGL). 0 "
+                "when the surface type is freezing rain, alone or with ice "
+                "pellets. MISSING when the classifier finds no supercooled "
+                "liquid.");
+
+    nb::class_<sharp::SpectralBinDSD>(m_params, "SpectralBinDSD", R"pbdoc(
+A drop-size distribution for the spectral bin classifier.
+
+Build one with spectral_bin_dsd or spectral_bin_dsd_default, and reuse it
+for every column. It holds up to SBC_MAX_BINS bins, with the per-bin
+constants that the classifier reads. An invalid distribution has
+nbins == 0. The fields are read-only.
+)pbdoc")
+        .def_prop_ro("nbins", &sharp::SpectralBinDSD::nbins,
+                     "Number of bins, or 0 for an invalid distribution")
+        .def_prop_ro("rime_factor", &sharp::SpectralBinDSD::rime_factor,
+                     "Degree of riming of the snow from a frozen cloud top "
+                     "(1 to 5). MISSING for an invalid distribution.")
+        .def_prop_ro(
+            "diameter",
+            [](const sharp::SpectralBinDSD& dsd) {
+                const auto nbins = static_cast<std::size_t>(dsd.nbins());
+                return make_output_array(nbins, [&](float* out) {
+                    std::copy_n(dsd.diameter().data(), nbins, out);
+                });
+            },
+            nb::rv_policy::move,
+            "Melted diameter of each bin, exactly as passed (mm). A new "
+            "float32 array of length nbins.")
+        .def_prop_ro(
+            "concentration",
+            [](const sharp::SpectralBinDSD& dsd) {
+                const auto nbins = static_cast<std::size_t>(dsd.nbins());
+                return make_output_array(nbins, [&](float* out) {
+                    std::copy_n(dsd.concentration().data(), nbins, out);
+                });
+            },
+            nb::rv_policy::move,
+            "Number concentration of each bin, exactly as passed. A new "
+            "float32 array of length nbins.");
+
+    m_params.def(
+        "spectral_bin_dsd",
+        [](const_prof_arr_t diameter, const_prof_arr_t concentration,
+           const float rime_factor) {
+            check_equal_sizes(diameter, concentration);
+            return sharp::spectral_bin_dsd(
+                diameter.data(), concentration.data(),
+                static_cast<std::ptrdiff_t>(diameter.size()), rime_factor);
+        },
+        nb::arg("diameter"), nb::arg("concentration"),
+        nb::arg("rime_factor") = 1.0f,
+        R"pbdoc(
+Builds a drop-size distribution for the spectral bin classifier.
+
+Validates the bins and precomputes the per-bin constants that the
+classifier reads. The diameters are melted diameters in mm, as in the
+paper and the reference code. Only the ratios of the concentrations
+matter, so any unit works, and a bin may hold 0.
+
+The result is invalid, with nbins == 0, unless:
+
+* there are 1 to SBC_MAX_BINS bins
+* the diameters are finite, positive, and strictly increasing
+* the raindrop aspect-ratio fit of the reference is positive at every
+  diameter, which holds below about 12.16 mm
+* the concentrations are finite and non-negative, and at least one is
+  positive
+* rime_factor is in [1, 5]
+
+Empty arrays give an invalid distribution.
+
+rime_factor is the degree of riming of the snow that a frozen cloud top
+produces, from 1 (none) to 5 (graupel). It replaces the reference's fixed
+value of 1. Melting layers below a refreezing layer use 5 instead, as in
+the reference.
+
+References
+----------
+Reeves et al. 2016: https://doi.org/10.1175/JAMC-D-16-0044.1
+
+Python reference (sbc_alg_2023Aug31.py, run_sbc.py): D. Tripp, 2023
+
+C++ MRMS code (sbcmodel_core.cc): A. Rosenow and D. Tripp
+
+Parameters
+----------
+diameter : numpy.ndarray[dtype=float32]
+    1D NumPy array of the melted diameter of each bin (mm)
+concentration : numpy.ndarray[dtype=float32]
+    1D NumPy array of the number concentration of each bin (any unit)
+rime_factor : float, default = 1.0
+    Degree of riming (1 to 5, unitless)
+
+Returns
+-------
+nwsspc.sharp.calc.params.SpectralBinDSD
+    The drop-size distribution, or one with nbins == 0
+    )pbdoc");
+
+    m_params.def("spectral_bin_dsd_default", &sharp::spectral_bin_dsd_default,
+                 R"pbdoc(
+The default drop-size distribution of the spectral bin classifier.
+
+The 4-bin distribution of the 2023 Python reference (run_sbc.py), with
+rime_factor = 1:
+
+============== ======= ======= ======= =======
+Diameter (mm)  0.05    0.75    1.45    2.15
+Concentration  55.1843 146.647 11.6891 3.60886
+============== ======= ======= ======= =======
+
+The reference interpolates its table of the DSD25 distribution of Reeves
+et al. (2016), 0.05 to 1.65 mm, every 0.7 mm. The 2.15 mm bin lies past
+the end of the table and takes its last value. The paper uses DSD25 as
+measured, with 18 bins 0.1 mm apart and a largest diameter of 1.84 mm.
+The C++ MRMS code (version 2.0.3) caps the bins at 1.85 mm: 0.05, 0.65,
+1.25, and 1.85 mm, with concentrations 55.1843, 206.606, 25.4924, and
+3.60886. Either can be passed to spectral_bin_dsd.
+
+References
+----------
+Reeves et al. 2016: https://doi.org/10.1175/JAMC-D-16-0044.1
+
+Python reference (run_sbc.py): D. Tripp, 2023
+
+Returns
+-------
+nwsspc.sharp.calc.params.SpectralBinDSD
+    The default drop-size distribution
+    )pbdoc");
+
+    // -----------------------------------------------------------------------
+    // Cloud top from a sounding
+    // -----------------------------------------------------------------------
+
+    // -----------------------------------------------------------------------
+    // Precipitation type from a given cloud top: pre-classifier
+    // -----------------------------------------------------------------------
+
+    // -----------------------------------------------------------------------
+    // Microphysics: frozen cloud tops and melting
+    // -----------------------------------------------------------------------
+
+    // -----------------------------------------------------------------------
+    // Microphysics: refreezing
+    // -----------------------------------------------------------------------
+
+    // -----------------------------------------------------------------------
+    // Microphysics: liquid cloud tops
+    // -----------------------------------------------------------------------
+
+    // -----------------------------------------------------------------------
+    // Precipitation type from a full sounding
+    // -----------------------------------------------------------------------
 }
 
 #endif

@@ -1,3 +1,4 @@
+import enum
 from typing import Annotated, overload
 
 import numpy
@@ -1631,4 +1632,185 @@ def pyrocumulonimbus_firepower_threshold(lifter: nwsspc.sharp.calc.parcel.lifter
     -------
     float 
         The PyroCB Firepower Threshold (Watts)
+    """
+
+SBC_MAX_BINS: int = 64
+
+SBC_ICE_NUCLEATION_TEMPERATURE: float = 267.1499938964844
+
+class PrecipType(enum.IntEnum):
+    """
+    Precipitation type from the spectral bin classifier.
+
+    The seven categories of the 2023 version of the classifier, which adds
+    rain mixed with ice pellets to the six categories of Reeves et al. (2016).
+    The integer values are stable, for gridded output, and 0 is unused.
+    PrecipType.missing is -9999, the value of MISSING.
+
+    References
+    ----------
+    Reeves et al. 2016: https://doi.org/10.1175/JAMC-D-16-0044.1
+    """
+
+    missing = -9999
+    """No classification"""
+
+    rain = 1
+    """Rain (RA)"""
+
+    snow = 2
+    """Snow (SN)"""
+
+    rain_snow = 3
+    """Rain and snow (RASN)"""
+
+    freezing_rain = 4
+    """Freezing rain (FZRA)"""
+
+    ice_pellets = 5
+    """Ice pellets (PL)"""
+
+    freezing_rain_ice_pellets = 6
+    """Freezing rain and ice pellets (FZRAPL)"""
+
+    rain_ice_pellets = 7
+    """Rain and ice pellets (RAPL)"""
+
+class SpectralBinResult:
+    """
+    Result of the spectral bin classifier for one column.
+
+    Every field defaults to missing: PrecipType.missing and MISSING. The fields
+    are read-only.
+    """
+
+    def __init__(self) -> None: ...
+
+    @property
+    def precip_type(self) -> PrecipType:
+        """Precipitation type at the surface (PrecipType)"""
+
+    @property
+    def liquid_fraction(self) -> float:
+        """
+        Liquid share of the precipitation mass reaching the surface (fraction). It is not a probability. 0.5 means a mix of liquid and ice, not even odds.
+        """
+
+    @property
+    def supercooled_liquid_height(self) -> float:
+        """
+        Height of the lowest supercooled liquid water (m AGL). 0 when the surface type is freezing rain, alone or with ice pellets. MISSING when the classifier finds no supercooled liquid.
+        """
+
+class SpectralBinDSD:
+    """
+    A drop-size distribution for the spectral bin classifier.
+
+    Build one with spectral_bin_dsd or spectral_bin_dsd_default, and reuse it
+    for every column. It holds up to SBC_MAX_BINS bins, with the per-bin
+    constants that the classifier reads. An invalid distribution has
+    nbins == 0. The fields are read-only.
+    """
+
+    @property
+    def nbins(self) -> int:
+        """Number of bins, or 0 for an invalid distribution"""
+
+    @property
+    def rime_factor(self) -> float:
+        """
+        Degree of riming of the snow from a frozen cloud top (1 to 5). MISSING for an invalid distribution.
+        """
+
+    @property
+    def diameter(self) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
+        """
+        Melted diameter of each bin, exactly as passed (mm). A new float32 array of length nbins.
+        """
+
+    @property
+    def concentration(self) -> Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C')]:
+        """
+        Number concentration of each bin, exactly as passed. A new float32 array of length nbins.
+        """
+
+def spectral_bin_dsd(diameter: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], concentration: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], rime_factor: float = 1.0) -> SpectralBinDSD:
+    """
+    Builds a drop-size distribution for the spectral bin classifier.
+
+    Validates the bins and precomputes the per-bin constants that the
+    classifier reads. The diameters are melted diameters in mm, as in the
+    paper and the reference code. Only the ratios of the concentrations
+    matter, so any unit works, and a bin may hold 0.
+
+    The result is invalid, with nbins == 0, unless:
+
+    * there are 1 to SBC_MAX_BINS bins
+    * the diameters are finite, positive, and strictly increasing
+    * the raindrop aspect-ratio fit of the reference is positive at every
+      diameter, which holds below about 12.16 mm
+    * the concentrations are finite and non-negative, and at least one is
+      positive
+    * rime_factor is in [1, 5]
+
+    Empty arrays give an invalid distribution.
+
+    rime_factor is the degree of riming of the snow that a frozen cloud top
+    produces, from 1 (none) to 5 (graupel). It replaces the reference's fixed
+    value of 1. Melting layers below a refreezing layer use 5 instead, as in
+    the reference.
+
+    References
+    ----------
+    Reeves et al. 2016: https://doi.org/10.1175/JAMC-D-16-0044.1
+
+    Python reference (sbc_alg_2023Aug31.py, run_sbc.py): D. Tripp, 2023
+
+    C++ MRMS code (sbcmodel_core.cc): A. Rosenow and D. Tripp
+
+    Parameters
+    ----------
+    diameter : numpy.ndarray[dtype=float32]
+        1D NumPy array of the melted diameter of each bin (mm)
+    concentration : numpy.ndarray[dtype=float32]
+        1D NumPy array of the number concentration of each bin (any unit)
+    rime_factor : float, default = 1.0
+        Degree of riming (1 to 5, unitless)
+
+    Returns
+    -------
+    nwsspc.sharp.calc.params.SpectralBinDSD
+        The drop-size distribution, or one with nbins == 0
+    """
+
+def spectral_bin_dsd_default() -> SpectralBinDSD:
+    """
+    The default drop-size distribution of the spectral bin classifier.
+
+    The 4-bin distribution of the 2023 Python reference (run_sbc.py), with
+    rime_factor = 1:
+
+    ============== ======= ======= ======= =======
+    Diameter (mm)  0.05    0.75    1.45    2.15
+    Concentration  55.1843 146.647 11.6891 3.60886
+    ============== ======= ======= ======= =======
+
+    The reference interpolates its table of the DSD25 distribution of Reeves
+    et al. (2016), 0.05 to 1.65 mm, every 0.7 mm. The 2.15 mm bin lies past
+    the end of the table and takes its last value. The paper uses DSD25 as
+    measured, with 18 bins 0.1 mm apart and a largest diameter of 1.84 mm.
+    The C++ MRMS code (version 2.0.3) caps the bins at 1.85 mm: 0.05, 0.65,
+    1.25, and 1.85 mm, with concentrations 55.1843, 206.606, 25.4924, and
+    3.60886. Either can be passed to spectral_bin_dsd.
+
+    References
+    ----------
+    Reeves et al. 2016: https://doi.org/10.1175/JAMC-D-16-0044.1
+
+    Python reference (run_sbc.py): D. Tripp, 2023
+
+    Returns
+    -------
+    nwsspc.sharp.calc.params.SpectralBinDSD
+        The default drop-size distribution
     """
