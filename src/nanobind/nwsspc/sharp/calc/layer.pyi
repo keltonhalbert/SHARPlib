@@ -191,6 +191,13 @@ def layer_min(layer: HeightLayer, height: Annotated[NDArray[numpy.float32], dict
     Returns the minimum value of the data array within the given HeightLayer. The 
     function bounds checks the layer by calling get_layer_index. 
 
+    This routine skips levels whose data is MISSING or NaN. It interpolates
+    the layer bottom and top across missing levels, like interp_height and
+    interp_pressure, and ignores an endpoint that has no valid data on one
+    side. If the layer has no valid data, it returns MISSING. A layer
+    entirely outside the profile returns MISSING, and level_of_min is the
+    layer endpoint closest to the profile.
+
     Parameters
     ----------
     layer : nwsspc.sharp.calc.layer.HeightLayer 
@@ -210,6 +217,13 @@ def layer_min(layer: PressureLayer, pressure: Annotated[NDArray[numpy.float32], 
     """
     Returns the minimum value of the data array within the given PressureLayer. The 
     function bounds checks the layer by calling get_layer_index. 
+
+    This routine skips levels whose data is MISSING or NaN. It interpolates
+    the layer bottom and top across missing levels, like interp_height and
+    interp_pressure, and ignores an endpoint that has no valid data on one
+    side. If the layer has no valid data, it returns MISSING. A layer
+    entirely outside the profile returns MISSING, and level_of_min is the
+    layer endpoint closest to the profile.
 
     Parameters
     ----------
@@ -231,6 +245,9 @@ def layer_max(layer: HeightLayer, height: Annotated[NDArray[numpy.float32], dict
     Returns the maximum value of the data array within the given HeightLayer. The 
     function bounds checks the layer by calling get_layer_index. 
 
+    Handles missing data and layers outside the profile the same way as
+    layer_min.
+
     Parameters
     ----------
     layer : nwsspc.sharp.calc.layer.HeightLayer 
@@ -250,6 +267,9 @@ def layer_max(layer: PressureLayer, pressure: Annotated[NDArray[numpy.float32], 
     """
     Returns the maximum value of the data array within the given PressureLayer. The 
     function bounds checks the layer by calling get_layer_index. 
+
+    Handles missing data and layers outside the profile the same way as
+    layer_min.
 
     Parameters
     ----------
@@ -271,6 +291,9 @@ def layer_mean(layer: PressureLayer, pressure: Annotated[NDArray[numpy.float32],
     Computes the pressure-weighted mean value of a field over 
     a given PressureLayer. 
 
+    A layer that extends past the profile is clipped to it. A layer entirely
+    outside the profile, or touching it at only one level, returns MISSING.
+
     Parameters
     ----------
     layer : nwsspc.sharp.calc.layer.PressureLayer 
@@ -290,6 +313,9 @@ def layer_mean(layer: HeightLayer, height: Annotated[NDArray[numpy.float32], dic
     """
     Computes the pressure-weighted mean value of a field over 
     a given HeightLayer. 
+
+    Clips the layer and returns MISSING the same way as the PressureLayer
+    overload.
 
     Parameters
     ----------

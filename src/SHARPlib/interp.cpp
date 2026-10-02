@@ -14,6 +14,7 @@
 #include <SHARPlib/algorithms.h>
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
+#include <SHARPlib/qc.h>
 
 #include <cmath>
 #include <cstddef>
@@ -21,34 +22,71 @@
 
 namespace sharp {
 
+#ifndef NO_QC
+static bool widen_bracket_past_missing(const float coord_val,
+                                       const float coord_arr[],
+                                       const float data_arr[],
+                                       const std::ptrdiff_t N,
+                                       std::ptrdiff_t& idx_bot,
+                                       std::ptrdiff_t& idx_top, float& result) {
+    const bool bot_missing = is_missing(data_arr[idx_bot]);
+    const bool top_missing = is_missing(data_arr[idx_top]);
+    if (!bot_missing && !top_missing) return false;
+
+    if (!bot_missing && (coord_val == coord_arr[idx_bot])) {
+        result = data_arr[idx_bot];
+        return true;
+    }
+    if (!top_missing && (coord_val == coord_arr[idx_top])) {
+        result = data_arr[idx_top];
+        return true;
+    }
+
+    for (; idx_bot > 0; --idx_bot) {
+        if (!is_missing(data_arr[idx_bot])) break;
+    }
+
+    for (; idx_top < N - 1; ++idx_top) {
+        if (!is_missing(data_arr[idx_top])) break;
+    }
+
+    // in the case the data are still missing at this point,
+    // return a missing value
+    if (is_missing(data_arr[idx_bot]) || is_missing(data_arr[idx_top])) {
+        result = MISSING;
+        return true;
+    }
+    return false;
+}
+#endif
+
 float interp_height(const float height_val, const float height_arr[],
                     const float data_arr[], const std::ptrdiff_t N) {
+    if (N < 1) return MISSING;
 #ifndef NO_QC
-    if (height_val == MISSING) return MISSING;
-    if (std::isnan(height_val)) return MISSING;
+    if (is_missing(height_val)) return MISSING;
 #endif
     // If the height value is beyond the top of the profile,
     // or below the surface, we can't reasonably extrapolate
     if ((height_val > height_arr[N - 1]) || (height_val < height_arr[0]))
         return MISSING;
 
+    if (N == 1) {
+#ifndef NO_QC
+        if (is_missing(data_arr[0])) return MISSING;
+#endif
+        return data_arr[0];
+    }
+
     static constexpr auto comp = std::less<float>();
     std::ptrdiff_t idx_top = upper_bound(height_arr, N, height_val, comp);
     std::ptrdiff_t idx_bot = idx_top - 1;
 
 #ifndef NO_QC
-    for (; idx_bot > 0; --idx_bot) {
-        if (data_arr[idx_bot] != MISSING) break;
-    }
-
-    for (; idx_top < N - 1; ++idx_top) {
-        if (data_arr[idx_top] != MISSING) break;
-    }
-
-    // in the case the data are still missing at this point,
-    // return a missing value
-    if ((data_arr[idx_bot] == MISSING) || (data_arr[idx_top] == MISSING))
-        return MISSING;
+    float bridged = MISSING;
+    if (widen_bracket_past_missing(height_val, height_arr, data_arr, N, idx_bot,
+                                   idx_top, bridged))
+        return bridged;
 #endif
 
     const float height_bot = height_arr[idx_bot];
@@ -66,9 +104,9 @@ float interp_height(const float height_val, const float height_arr[],
 
 float interp_pressure(const float pressure_val, const float pressure_arr[],
                       const float data_arr[], const std::ptrdiff_t N) {
+    if (N < 1) return MISSING;
 #ifndef NO_QC
-    if (pressure_val == MISSING) return MISSING;
-    if (std::isnan(pressure_val)) return MISSING;
+    if (is_missing(pressure_val)) return MISSING;
 #endif
     // If the pressure value is beyond the top of the profile,
     // or below the surface, we can't reasonably extrapolate
@@ -77,23 +115,22 @@ float interp_pressure(const float pressure_val, const float pressure_arr[],
         return MISSING;
     }
 
+    if (N == 1) {
+#ifndef NO_QC
+        if (is_missing(data_arr[0])) return MISSING;
+#endif
+        return data_arr[0];
+    }
+
     static constexpr auto comp = std::greater<float>();
     std::ptrdiff_t idx_top = upper_bound(pressure_arr, N, pressure_val, comp);
     std::ptrdiff_t idx_bot = idx_top - 1;
 
 #ifndef NO_QC
-    for (; idx_bot > 0; --idx_bot) {
-        if (data_arr[idx_bot] != MISSING) break;
-    }
-
-    for (; idx_top < N - 1; ++idx_top) {
-        if (data_arr[idx_top] != MISSING) break;
-    }
-
-    // in the case the data are still missing at this point,
-    // return a missing value
-    if ((data_arr[idx_bot] == MISSING) || (data_arr[idx_top] == MISSING))
-        return MISSING;
+    float bridged = MISSING;
+    if (widen_bracket_past_missing(pressure_val, pressure_arr, data_arr, N,
+                                   idx_bot, idx_top, bridged))
+        return bridged;
 #endif
 
     const float pressure_bot = pressure_arr[idx_bot];
@@ -116,21 +153,22 @@ float find_first_pressure(const float data_val, const float pressure_arr[],
                           const float data_arr[], const std::ptrdiff_t N) {
     std::ptrdiff_t k_start = 0;
 #ifndef NO_QC
-    if (data_val == MISSING) {
+    if (is_missing(data_val)) {
         return MISSING;
     }
     for (; k_start < N; ++k_start) {
-        if (data_arr[k_start] != MISSING) break;
+        if (!is_missing(data_arr[k_start])) break;
     }
 #endif
+    if ((k_start < N) && (data_arr[k_start] == data_val))
+        return pressure_arr[k_start];
 
     for (std::ptrdiff_t k = k_start + 1; k < N; ++k) {
         float val0 = data_arr[k_start];
         float val1 = data_arr[k];
 #ifndef NO_QC
-        if (val1 == MISSING) continue;
+        if (is_missing(val1)) continue;
 #endif
-        if (val0 == data_val) return pressure_arr[k_start];
         if (val1 == data_val) return pressure_arr[k];
 
         if ((data_val - val0) * (data_val - val1) < 0) {
@@ -152,21 +190,22 @@ float find_first_height(const float data_val, const float height_arr[],
                         const float data_arr[], const std::ptrdiff_t N) {
     std::ptrdiff_t k_start = 0;
 #ifndef NO_QC
-    if (data_val == MISSING) {
+    if (is_missing(data_val)) {
         return MISSING;
     }
     for (; k_start < N; ++k_start) {
-        if (data_arr[k_start] != MISSING) break;
+        if (!is_missing(data_arr[k_start])) break;
     }
 #endif
+    if ((k_start < N) && (data_arr[k_start] == data_val))
+        return height_arr[k_start];
 
     for (std::ptrdiff_t k = k_start + 1; k < N; ++k) {
         float val0 = data_arr[k_start];
         float val1 = data_arr[k];
 #ifndef NO_QC
-        if (val1 == MISSING) continue;
+        if (is_missing(val1)) continue;
 #endif
-        if (val0 == data_val) return height_arr[k_start];
         if (val1 == data_val) return height_arr[k];
 
         // will have a negative sign if levels straddle

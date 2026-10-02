@@ -31,6 +31,11 @@ inline void make_interp_bindings(nb::module_ m) {
 Interpolate a value from an array in height coordinates (meters).
 The coordinate array (hght_arr) is assumed to be sorted (ascending).
 
+This routine skips levels whose data is MISSING or NaN. A hght_val
+exactly on a valid level returns that level's value. Otherwise, it
+interpolates between the nearest valid levels above and below hght_val,
+and returns MISSING if either side has none. Empty arrays return MISSING.
+
 Parameters
 ----------
 hght_val : float 
@@ -60,6 +65,8 @@ Interpolate a value from an array in pressure coordinates (Pa).
 All pressure interpolation happens in log10 space.
 The coordinate array (pres_arr) is assumed to be sorted (descending).
 
+Handles missing data and empty arrays the same way as interp_height.
+
 Parameters
 ----------
 pres_val : float 
@@ -88,6 +95,10 @@ float
 Conducts a bottom-up search for the first occurrence of a given value,
 and interpolates in order to get the pressure level it occurs at.
 
+An exact match returns that level's pressure. The search skips levels
+whose data is MISSING or NaN, so it can find a crossing across a gap in
+the data. A MISSING or NaN data_val returns MISSING.
+
 Parameters
 ----------
 data_val : float 
@@ -115,6 +126,8 @@ float
         R"pbdoc(
 Conducts a bottom-up search for the first occurrence of a given value,
 and interpolates in order to get the height level it occurs at.
+
+Handles missing data the same way as find_first_pressure.
 
 Parameters
 ----------

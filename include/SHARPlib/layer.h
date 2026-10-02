@@ -18,6 +18,7 @@
 #include <SHARPlib/algorithms.h>
 #include <SHARPlib/constants.h>
 #include <SHARPlib/interp.h>
+#include <SHARPlib/qc.h>
 
 #include <cmath>
 #include <cstddef>
@@ -340,6 +341,9 @@ template <typename L, typename Cb, typename Ct>
  * dereferenced and filled with the pressure or height of the maximum/minum
  * value.
  *
+ * Handles missing data and layers outside the profile the same way as
+ * sharp::layer_min.
+ *
  * \param   layer           (sharp::PressureLayer or sharp::HeightLayer)
  * \param   coord_arr       (pressure or height)
  * \param   data_arr        (data array to find max on)
@@ -363,6 +367,19 @@ template <typename L, typename C>
 
     LayerIndex layer_idx = get_layer_index(layer, coord_arr, N);
 
+    // Each end is clipped only against its own edge of the profile, so a
+    // layer wholly outside it comes out inverted. Not a QC check.
+    const bool outside = (layer.coord == LayerCoordinate::pressure)
+                             ? (layer.bottom < layer.top)
+                             : (layer.bottom > layer.top);
+    if (outside) {
+        if (lvl_min_or_max) {
+            const bool above = (layer.top == coord_arr[N - 1]);
+            *lvl_min_or_max = above ? layer.bottom : layer.top;
+        }
+        return MISSING;
+    }
+
     float min_or_max = MISSING;
     float top_val = MISSING;
     if constexpr (layer.coord == LayerCoordinate::pressure) {
@@ -373,16 +390,24 @@ template <typename L, typename C>
         top_val = interp_height(layer.top, coord_arr, data_arr, N);
     }
 
+    const auto replaces = [&min_or_max, comp](const float val) -> bool {
+#ifndef NO_QC
+        if (is_missing(val)) return false;
+        if (min_or_max == MISSING) return true;
+#endif
+        return comp(val, min_or_max);
+    };
+
     float coord_lvl = layer.bottom;
     for (std::ptrdiff_t k = layer_idx.kbot; k < layer_idx.ktop + 1; ++k) {
         const float val = data_arr[k];
-        if (comp(val, min_or_max)) {
+        if (replaces(val)) {
             min_or_max = val;
             coord_lvl = coord_arr[k];
         }
     }
 
-    if (comp(top_val, min_or_max)) {
+    if (replaces(top_val)) {
         min_or_max = top_val;
         coord_lvl = layer.top;
     }
@@ -404,6 +429,15 @@ template <typename L, typename C>
  * If lvl_of_min is not a nullptr, then the pointer will be
  * dereferenced and filled with the coordinate of the minimum
  * value.
+ *
+ * By default, this routine skips levels whose data is sharp::MISSING or
+ * NaN. It interpolates the layer bottom and top across missing levels,
+ * like sharp::interp_height and sharp::interp_pressure, and ignores an
+ * endpoint that has no valid data on one side. If the layer has no valid
+ * data, it returns sharp::MISSING. Building with NO_QC turns these checks
+ * off. In every build, a layer entirely outside the profile returns
+ * sharp::MISSING, and lvl_of_min is set to the layer endpoint closest to
+ * the profile.
  *
  * \param   layer       (sharp::PressureLayer or sharp::HeightLayer)
  * \param   coord_arr   (coordinate units; Pa or meters)
@@ -435,6 +469,9 @@ constexpr float layer_min(L layer, const float coord_arr[],
  * If lvl_of_max is not a nullptr, then the pointer will be
  * dereferenced and filled with the coordinate of the maximum
  * value.
+ *
+ * Handles missing data and layers outside the profile the same way as
+ * sharp::layer_min.
  *
  * \param   layer           (sharp::PressureLayer or sharp::HeightLayer)
  * \param   coord_arr       (coordinate units; Pa or meters)
@@ -579,6 +616,10 @@ template <typename L>
  *
  * Computes the mass-weighted mean value of given arrays of data
  * and corresponding pressure coordinates over the given sharp::PressureLayer.
+ *
+ * A layer that extends past the profile is clipped to it. A layer entirely
+ * outside the profile, or touching it at only one level, returns
+ * sharp::MISSING.
  *
  * \param   layer       (sharp::PressureLayer)
  * \param   pressure    (vertical pressure array; Pa)

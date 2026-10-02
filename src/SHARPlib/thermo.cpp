@@ -476,6 +476,10 @@ float lapse_rate(PressureLayer layer, const float pressure[],
         layer.top = pressure[N - 1];
     }
 
+    // Each end is clipped only against its own edge of the profile, so a
+    // layer wholly outside it comes out inverted. Not a QC check.
+    if (layer.bottom < layer.top) return MISSING;
+
     HeightLayer h_layer =
         pressure_layer_to_height(layer, pressure, height, N, true);
 
@@ -485,10 +489,19 @@ float lapse_rate(PressureLayer layer, const float pressure[],
 float lapse_rate_max(HeightLayer layer_agl, const float depth,
                      const float height[], const float temperature[],
                      const std::ptrdiff_t N, HeightLayer* max_lyr) {
+    if (max_lyr) {
+        max_lyr->bottom = MISSING;
+        max_lyr->top = MISSING;
+    }
+    // Not a QC check: a zero or wrong-signed delta never ends the loop.
+    if (!(layer_agl.delta > 0.0f)) return MISSING;
     float max_lr = MISSING;
     for (float z = layer_agl.bottom; z <= (layer_agl.top - depth);
          z += layer_agl.delta) {
         HeightLayer lyr = {z, z + depth};
+        const float bottom_msl = lyr.bottom + height[0];
+        const float top_msl = lyr.top + height[0];
+        if ((bottom_msl < height[0]) || (top_msl > height[N - 1])) continue;
         float lr = lapse_rate(lyr, height, temperature, N);
         if (lr > max_lr) {
             max_lr = lr;
@@ -505,9 +518,16 @@ float lapse_rate_max(PressureLayer layer, const float depth,
                      const float pressure[], const float height[],
                      const float temperature[], const std::ptrdiff_t N,
                      PressureLayer* max_lyr) {
+    if (max_lyr) {
+        max_lyr->bottom = MISSING;
+        max_lyr->top = MISSING;
+    }
+    // Not a QC check: a zero or wrong-signed delta never ends the loop.
+    if (!(layer.delta < 0.0f)) return MISSING;
     float max_lr = MISSING;
     for (float p = layer.bottom; p >= (layer.top + depth); p += layer.delta) {
         PressureLayer lyr = {p, p - depth};
+        if ((lyr.bottom > pressure[0]) || (lyr.top < pressure[N - 1])) continue;
         float lr = lapse_rate(lyr, pressure, height, temperature, N);
         if (lr > max_lr) {
             max_lr = lr;

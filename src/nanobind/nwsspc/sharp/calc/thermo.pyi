@@ -1296,6 +1296,9 @@ def lapse_rate(layer_agl: nwsspc.sharp.calc.layer.HeightLayer, height: Annotated
     This routine handles converting the height AGL to MSL by adding
     the surface height value to the HeightLayer.
 
+    A layer that extends past the profile is clipped to it. A layer entirely
+    outside the profile, or touching it at only one level, returns MISSING.
+
     Parameters
     ----------
     layer_agl : nwsspc.sharp.calc.layer.HeightLayer 
@@ -1315,6 +1318,9 @@ def lapse_rate(layer_agl: nwsspc.sharp.calc.layer.HeightLayer, height: Annotated
 def lapse_rate(layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], height: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], temperature: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)]) -> float:
     """
     Computes the lapse rate over a given PressureLayer (Pa).
+
+    Clips the layer and returns MISSING the same way as the HeightLayer
+    overload.
 
     Parameters
     ----------
@@ -1340,6 +1346,13 @@ def lapse_rate_max(layer: nwsspc.sharp.calc.layer.HeightLayer, depth: float, hei
     lapse rate over the provided depth (e.g. 2 km) within that given layer. 
     Returns the maximum lapse rate, as well as the layer it was found in. 
 
+    Each candidate layer is depth meters deep, starting at the bottom of
+    layer and stepping up by its delta. Candidates that extend below the
+    surface or above the top of the profile are skipped, not clipped as in
+    lapse_rate. The delta must be positive. If it is not, or if no candidate
+    fits in the profile and has a lapse rate, this returns MISSING for the
+    lapse rate and for both ends of the returned layer.
+
     Parameters
     ----------
     layer : nwsspc.sharp.calc.layer.HeightLayer 
@@ -1363,6 +1376,9 @@ def lapse_rate_max(layer: nwsspc.sharp.calc.layer.PressureLayer, depth: float, p
     Given a layer of the atmosphere (e.g. 800 hPa - 500 hPa), find the maximum
     lapse rate over the provided depth (e.g. 100 hPa) within that given layer. 
     Returns the maximum lapse rate, as well as the layer it was found in. 
+
+    Same as the HeightLayer overload, except the delta of layer must be
+    negative.
 
     Parameters
     ----------
@@ -1419,7 +1435,7 @@ def buoyancy(parcel_temperature: Annotated[NDArray[numpy.float32], dict(shape=(N
         1D NumPy array of buoyancy values (m/s^2)
     """
 
-def pbl_top(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], thetav: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], offset: float = 0.5) -> int:
+def pbl_top(pressure: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], thetav: Annotated[NDArray[numpy.float32], dict(shape=(None,), order='C', device='cpu', writable=False)], offset: float = 0.5) -> float:
     """
     Compute the pressure of the top of the Planetary Boundary Layer (PBL). 
     Uses the method described by Stull (1988), by which the virtual potential 

@@ -555,6 +555,10 @@ template <typename Lft>
  * This routine handles converting AGL to MSL by adding the surface height
  * value to the layer.
  *
+ * A layer that extends past the profile is clipped to it. A layer entirely
+ * outside the profile, or touching it at only one level, returns
+ * sharp::MISSING.
+ *
  * \param   layer_agl               (meters AGL)
  * \param   height                  (meters MSL)
  * \param   temperature             (K)
@@ -574,6 +578,9 @@ template <typename Lft>
  * Computes the lapse rate over a given sharp::PressureLayer. This routine
  * handles converting the pressure layer into a height layer, and
  * then calles the sharp::HeightLayer implementation of this routine.
+ *
+ * Clips the layer and returns sharp::MISSING the same way as the
+ * sharp::HeightLayer overload.
  *
  * \param   layer                   (Pa)
  * \param   pressure                (Pa)
@@ -596,6 +603,13 @@ template <typename Lft>
  * over the provided depth (e.g. 2 km) within that given layer. Returns the
  * maximum lapse rate, with the optional ability to return the layer that lapse
  * rate exists within.
+ *
+ * Each candidate layer is depth meters deep, starting at the bottom of
+ * layer_agl and stepping up by its delta. Candidates that extend below the
+ * surface or above the top of the profile are skipped, not clipped as in
+ * sharp::lapse_rate. The delta must be positive. If it is not, or if no
+ * candidate fits in the profile and has a lapse rate, this returns
+ * sharp::MISSING and sets both ends of max_lyr to sharp::MISSING.
  *
  * \param   layer_agl       (meters AGL)
  * \param   depth           (meters)
@@ -621,6 +635,9 @@ template <typename Lft>
  * lapse rate over the provided depth (e.g. 100 hPa) within that given layer.
  * Returns the maximum lapse rate, with the optional ability to return the layer
  * that lapse rate exists within.
+ *
+ * Same as the sharp::HeightLayer overload, except the delta of layer must
+ * be negative.
  *
  * \param   layer           (Pa)
  * \param   depth           (Pa)
