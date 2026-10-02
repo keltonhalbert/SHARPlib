@@ -447,24 +447,25 @@ def test_pft():
     assert (pft == pytest.approx(158187356160.0, abs=1e6))
 
 
-def test_pft_missing():
+@pytest.mark.parametrize("field, mask", [
+    ("theta", snd_data["pres"] < 75000.0),
+    ("uwin", snd_data["pres"] > 80000.0),
+])
+def test_pft_missing(field, mask):
     lifter = parcel.lifter_cm1()
     lifter.ma_type = thermo.adiabat.pseudo_liq
-    M = constants.MISSING
     pres = snd_data["pres"]
     mix_layer = layer.PressureLayer(pres[0], pres[0] - 10000.0)
-    theta = snd_data["theta"].copy()
-    theta[pres < 75000.0] = M
-    uwin = snd_data["uwin"].copy()
-    uwin[pres > 80000.0] = M
-    for u, th in ((snd_data["uwin"], theta), (uwin, snd_data["theta"])):
-        pcl = parcel.Parcel()
-        pft = params.pyrocumulonimbus_firepower_threshold(
-            lifter, mix_layer, pres, snd_data["hght"], snd_data["tmpk"],
-            snd_data["mixr"], snd_data["vtmp"], u, snd_data["vwin"], th,
-            pcl=pcl)
-        assert (pft == M)
-        assert (pcl.pres == M)
+    data = {"uwin": snd_data["uwin"], "theta": snd_data["theta"]}
+    data[field] = np.where(mask, constants.MISSING,
+                           data[field]).astype("float32")
+    pcl = parcel.Parcel()
+    pft = params.pyrocumulonimbus_firepower_threshold(
+        lifter, mix_layer, pres, snd_data["hght"], snd_data["tmpk"],
+        snd_data["mixr"], snd_data["vtmp"], data["uwin"], snd_data["vwin"],
+        data["theta"], pcl=pcl)
+    assert (pft == constants.MISSING)
+    assert (pcl.pres == constants.MISSING)
 
 
 # ===========================================================================

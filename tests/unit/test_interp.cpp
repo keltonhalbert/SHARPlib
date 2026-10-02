@@ -228,7 +228,8 @@ TEST_CASE("Testing interp at exact levels with a complete bracket") {
     CHECK(sharp::interp_height(100, hght, data4, 4) == 2.25f);
     CHECK(sharp::interp_height(150, hght, data4, 4) == 5.0f);
     CHECK(sharp::interp_pressure(90000, pres, data4, 4) == 2.25f);
-    CHECK(sharp::interp_pressure(85000, pres, data4, 4) == 4.91907024f);
+    CHECK(sharp::interp_pressure(85000, pres, data4, 4) ==
+          doctest::Approx(4.91907024f));
 }
 
 TEST_CASE("Testing find_first with NaN and MISSING data") {

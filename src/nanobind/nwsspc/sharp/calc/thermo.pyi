@@ -1359,9 +1359,8 @@ def lapse_rate(layer_agl: nwsspc.sharp.calc.layer.HeightLayer, height: Annotated
     This routine handles converting the height AGL to MSL by adding
     the surface height value to the HeightLayer.
 
-    A layer that extends past the profile is clipped to it. A layer that
-    lies wholly outside the profile, or touches it at only one level, has
-    no lapse rate and returns MISSING.
+    A layer that extends past the profile is clipped to it. A layer entirely
+    outside the profile, or touching it at only one level, returns MISSING.
 
     Parameters
     ----------
@@ -1383,7 +1382,8 @@ def lapse_rate(layer: nwsspc.sharp.calc.layer.PressureLayer, pressure: Annotated
     """
     Computes the lapse rate over a given PressureLayer (Pa).
 
-    Clipping and MISSING results are as for the HeightLayer overload.
+    Clips the layer and returns MISSING the same way as the HeightLayer
+    overload.
 
     Parameters
     ----------
@@ -1409,16 +1409,12 @@ def lapse_rate_max(layer: nwsspc.sharp.calc.layer.HeightLayer, depth: float, hei
     lapse rate over the provided depth (e.g. 2 km) within that given layer. 
     Returns the maximum lapse rate, as well as the layer it was found in. 
 
-    The search skips every layer of the given depth that extends past the
-    surface or the top of the profile, rather than clipping it to a shallower
-    layer as lapse_rate would. A layer that touches the surface or the top
-    level counts as inside the profile. The layers start at the bottom of the
-    search layer and step up by its delta, so when the search layer starts
-    below the surface, the first layer searched starts at the first step at
-    or above the surface, not at the surface itself. The delta of the search
-    layer must be greater than 0 m. With any other delta, NaN included, or
-    when no layer in the search has a lapse rate, the returned lapse rate is
-    MISSING, and so are the bottom and top of the returned layer.
+    Each candidate layer is depth meters deep, starting at the bottom of
+    layer and stepping up by its delta. Candidates that extend below the
+    surface or above the top of the profile are skipped, not clipped as in
+    lapse_rate. The delta must be positive. If it is not, or if no candidate
+    fits in the profile and has a lapse rate, this returns MISSING for the
+    lapse rate and for both ends of the returned layer.
 
     Parameters
     ----------
@@ -1444,8 +1440,8 @@ def lapse_rate_max(layer: nwsspc.sharp.calc.layer.PressureLayer, depth: float, p
     lapse rate over the provided depth (e.g. 100 hPa) within that given layer. 
     Returns the maximum lapse rate, as well as the layer it was found in. 
 
-    As the HeightLayer overload, but the delta of the search layer must be
-    less than 0 Pa.
+    Same as the HeightLayer overload, except the delta of layer must be
+    negative.
 
     Parameters
     ----------

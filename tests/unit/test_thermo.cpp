@@ -7,6 +7,8 @@
 
 #include "doctest.h"
 
+constexpr float nanval = std::numeric_limits<float>::quiet_NaN();
+
 TEST_CASE("Testing theta") {
     constexpr float tmpk = 298.0f;
     constexpr float pres = 10000.0f;
@@ -285,8 +287,6 @@ TEST_CASE("Testing lapse_rate_max at the top of the profile") {
 }
 
 TEST_CASE("Testing lapse_rate_max with a delta that doesn't step upward") {
-    constexpr float nanval = std::numeric_limits<float>::quiet_NaN();
-
     for (const float delta : {0.0f, -100.0f, nanval}) {
         CAPTURE(delta);
         const sharp::HeightLayer search(0, 1000, delta);
