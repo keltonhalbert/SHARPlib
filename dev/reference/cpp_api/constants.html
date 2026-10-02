@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 
@@ -8,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>constants &#8212; SHARPlib v1.4.1-14-gafaec62 Manual</title>
+    <title>constants &#8212; SHARPlib v1.4.3-10-gc18b67a Manual</title>
   
   
   
@@ -27,38 +26,38 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=7f76b32a3354e82990f2" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
-    <script src="../../_static/documentation_options.js?v=8ef9151b"></script>
+    <script src="../../_static/documentation_options.js?v=4766b593"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/cpp_api/constants';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.17.0';
+        DOCUMENTATION_OPTIONS.theme_version = '0.22.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://keltonhalbert.github.io/SHARPlib/versions.json';
-        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.4.1-14-gafaec62';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '1.4.3-10-gc18b67a';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="interp" href="interp.html" />
+    <link rel="next" title="qc" href="qc.html" />
     <link rel="prev" title="C++ API" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="1.4.1-14-gafaec62" />
-    <meta name="docbuild:last-update" content="Apr 09, 2026"/>
+  <meta name="docsearch:version" content="1.4.3-10-gc18b67a" />
+    <meta name="docbuild:last-update" content="Oct 02, 2026"/>
   
     
     <script src="../../_static/searchtools.js"></script>
@@ -76,7 +75,9 @@
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -104,7 +105,7 @@
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -209,7 +210,7 @@
         <div class="navbar-item navbar-persistent--container">
           
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
 </button>
         </div>
@@ -226,8 +227,7 @@
           
           
           
-          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -238,18 +238,24 @@
           
           
           
-          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">Bluesky</span></a>
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i><span class="visually-hidden">Bluesky</span></a>
         </li>
 </ul></div>
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
     </div>
     
@@ -258,14 +264,14 @@
   
     <div class="navbar-persistent--mobile">
 
-<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button type="button" class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
 </button>
     </div>
   
 
   
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -350,8 +356,7 @@
           
           
           
-          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/keltonhalbert/SHARPlib" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -362,25 +367,32 @@
           
           
           
-          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">Bluesky</span></a>
+          <a href="https://bsky.app/profile/stormscale.io" title="Bluesky" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-bluesky fa-lg" aria-hidden="true"></i><span class="visually-hidden">Bluesky</span></a>
         </li>
 </ul></div>
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
       </div>
     
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
     <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
   </svg>
   <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
@@ -394,7 +406,8 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">C++ API</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">constants</a></li>
+<li class="toctree-l2 current active"><a aria-current="page" class="current reference internal" href="#">constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qc.html">qc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="interp.html">interp</a></li>
 <li class="toctree-l2"><a class="reference internal" href="layer.html">layer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="params.html">params</a></li>
@@ -476,157 +489,157 @@
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-variables">Variables</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp4RGASE">
-<span id="_CPPv3N5sharp4RGASE"></span><span id="_CPPv2N5sharp4RGASE"></span><span id="sharp::RGAS__float"></span><span class="target" id="namespacesharp_1a4718012c47a66f5229433dd785fc753f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RGAS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">8.314462618f</span></span><a class="headerlink" href="#_CPPv4N5sharp4RGASE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp4RGASE"></span><span id="_CPPv2N5sharp4RGASE"></span><span id="sharp::RGAS__float"></span><span class="target" id="namespacesharp_1a4718012c47a66f5229433dd785fc753f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RGAS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">8.314462618f</span></span><a class="headerlink" href="#_CPPv4N5sharp4RGASE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp4MDRYE">
-<span id="_CPPv3N5sharp4MDRYE"></span><span id="_CPPv2N5sharp4MDRYE"></span><span id="sharp::MDRY__float"></span><span class="target" id="namespacesharp_1a741f56d59b05fd970ec5f84382c444af"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MDRY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">28.96546e-3f</span></span><a class="headerlink" href="#_CPPv4N5sharp4MDRYE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp4MDRYE"></span><span id="_CPPv2N5sharp4MDRYE"></span><span id="sharp::MDRY__float"></span><span class="target" id="namespacesharp_1a741f56d59b05fd970ec5f84382c444af"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MDRY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">28.96546e-3f</span></span><a class="headerlink" href="#_CPPv4N5sharp4MDRYE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp6MWATERE">
-<span id="_CPPv3N5sharp6MWATERE"></span><span id="_CPPv2N5sharp6MWATERE"></span><span id="sharp::MWATER__float"></span><span class="target" id="namespacesharp_1a5d349d4863e1a955abac2ba65f264a55"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MWATER</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">18.015268e-3f</span></span><a class="headerlink" href="#_CPPv4N5sharp6MWATERE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp6MWATERE"></span><span id="_CPPv2N5sharp6MWATERE"></span><span id="sharp::MWATER__float"></span><span class="target" id="namespacesharp_1a5d349d4863e1a955abac2ba65f264a55"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MWATER</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">18.015268e-3f</span></span><a class="headerlink" href="#_CPPv4N5sharp6MWATERE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp22DRYAIR_SPEC_HEAT_RATIOE">
-<span id="_CPPv3N5sharp22DRYAIR_SPEC_HEAT_RATIOE"></span><span id="_CPPv2N5sharp22DRYAIR_SPEC_HEAT_RATIOE"></span><span id="sharp::DRYAIR_SPEC_HEAT_RATIO__float"></span><span class="target" id="namespacesharp_1a76aec25e3cffb5ba454e762e63aafbf3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DRYAIR_SPEC_HEAT_RATIO</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.4f</span></span><a class="headerlink" href="#_CPPv4N5sharp22DRYAIR_SPEC_HEAT_RATIOE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp22DRYAIR_SPEC_HEAT_RATIOE"></span><span id="_CPPv2N5sharp22DRYAIR_SPEC_HEAT_RATIOE"></span><span id="sharp::DRYAIR_SPEC_HEAT_RATIO__float"></span><span class="target" id="namespacesharp_1a76aec25e3cffb5ba454e762e63aafbf3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DRYAIR_SPEC_HEAT_RATIO</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.4f</span></span><a class="headerlink" href="#_CPPv4N5sharp22DRYAIR_SPEC_HEAT_RATIOE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp7ZEROCNKE">
-<span id="_CPPv3N5sharp7ZEROCNKE"></span><span id="_CPPv2N5sharp7ZEROCNKE"></span><span id="sharp::ZEROCNK__float"></span><span class="target" id="namespacesharp_1aa8d73d01806950def2c52b818f90cb6c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZEROCNK</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">273.15f</span></span><a class="headerlink" href="#_CPPv4N5sharp7ZEROCNKE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp7ZEROCNKE"></span><span id="_CPPv2N5sharp7ZEROCNKE"></span><span id="sharp::ZEROCNK__float"></span><span class="target" id="namespacesharp_1aa8d73d01806950def2c52b818f90cb6c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZEROCNK</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">273.15f</span></span><a class="headerlink" href="#_CPPv4N5sharp7ZEROCNKE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp9HPA_TO_PAE">
-<span id="_CPPv3N5sharp9HPA_TO_PAE"></span><span id="_CPPv2N5sharp9HPA_TO_PAE"></span><span id="sharp::HPA_TO_PA__float"></span><span class="target" id="namespacesharp_1a4e158bdc0b7370e0fb83a4aaa4dd6757"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HPA_TO_PA</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100.0f</span></span><a class="headerlink" href="#_CPPv4N5sharp9HPA_TO_PAE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp9HPA_TO_PAE"></span><span id="_CPPv2N5sharp9HPA_TO_PAE"></span><span id="sharp::HPA_TO_PA__float"></span><span class="target" id="namespacesharp_1a4e158bdc0b7370e0fb83a4aaa4dd6757"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HPA_TO_PA</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100.0f</span></span><a class="headerlink" href="#_CPPv4N5sharp9HPA_TO_PAE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp9PA_TO_HPAE">
-<span id="_CPPv3N5sharp9PA_TO_HPAE"></span><span id="_CPPv2N5sharp9PA_TO_HPAE"></span><span id="sharp::PA_TO_HPA__float"></span><span class="target" id="namespacesharp_1a6ed9189675cbc084cdba640eac37a0c4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PA_TO_HPA</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.01f</span></span><a class="headerlink" href="#_CPPv4N5sharp9PA_TO_HPAE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp9PA_TO_HPAE"></span><span id="_CPPv2N5sharp9PA_TO_HPAE"></span><span id="sharp::PA_TO_HPA__float"></span><span class="target" id="namespacesharp_1a6ed9189675cbc084cdba640eac37a0c4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PA_TO_HPA</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.01f</span></span><a class="headerlink" href="#_CPPv4N5sharp9PA_TO_HPAE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp18THETA_REF_PRESSUREE">
-<span id="_CPPv3N5sharp18THETA_REF_PRESSUREE"></span><span id="_CPPv2N5sharp18THETA_REF_PRESSUREE"></span><span id="sharp::THETA_REF_PRESSURE__float"></span><span class="target" id="namespacesharp_1ab4bb52918c53f75e2175d67840111600"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">THETA_REF_PRESSURE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100000.0f</span></span><a class="headerlink" href="#_CPPv4N5sharp18THETA_REF_PRESSUREE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp18THETA_REF_PRESSUREE"></span><span id="_CPPv2N5sharp18THETA_REF_PRESSUREE"></span><span id="sharp::THETA_REF_PRESSURE__float"></span><span class="target" id="namespacesharp_1ab4bb52918c53f75e2175d67840111600"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">THETA_REF_PRESSURE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">100000.0f</span></span><a class="headerlink" href="#_CPPv4N5sharp18THETA_REF_PRESSUREE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp7MISSINGE">
-<span id="_CPPv3N5sharp7MISSINGE"></span><span id="_CPPv2N5sharp7MISSINGE"></span><span id="sharp::MISSING__float"></span><span class="target" id="namespacesharp_1af2ffcc858ff03be6e2ae2fe2ee20040d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MISSING</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">9999.0f</span></span><a class="headerlink" href="#_CPPv4N5sharp7MISSINGE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp7MISSINGE"></span><span id="_CPPv2N5sharp7MISSINGE"></span><span id="sharp::MISSING__float"></span><span class="target" id="namespacesharp_1af2ffcc858ff03be6e2ae2fe2ee20040d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MISSING</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">9999.0f</span></span><a class="headerlink" href="#_CPPv4N5sharp7MISSINGE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp7GRAVITYE">
-<span id="_CPPv3N5sharp7GRAVITYE"></span><span id="_CPPv2N5sharp7GRAVITYE"></span><span id="sharp::GRAVITY__float"></span><span class="target" id="namespacesharp_1a6e49daafd469b40abf4197bf26af2097"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GRAVITY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">9.80665f</span></span><a class="headerlink" href="#_CPPv4N5sharp7GRAVITYE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp7GRAVITYE"></span><span id="_CPPv2N5sharp7GRAVITYE"></span><span id="sharp::GRAVITY__float"></span><span class="target" id="namespacesharp_1a6e49daafd469b40abf4197bf26af2097"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GRAVITY</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">9.80665f</span></span><a class="headerlink" href="#_CPPv4N5sharp7GRAVITYE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp3TOLE">
-<span id="_CPPv3N5sharp3TOLE"></span><span id="_CPPv2N5sharp3TOLE"></span><span id="sharp::TOL__float"></span><span class="target" id="namespacesharp_1a97ce2ca879d02b75bc90aa0f33da4ecb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TOL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1e-10f</span></span><a class="headerlink" href="#_CPPv4N5sharp3TOLE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp3TOLE"></span><span id="_CPPv2N5sharp3TOLE"></span><span id="sharp::TOL__float"></span><span class="target" id="namespacesharp_1a97ce2ca879d02b75bc90aa0f33da4ecb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TOL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1e-10f</span></span><a class="headerlink" href="#_CPPv4N5sharp3TOLE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp2PIE">
-<span id="_CPPv3N5sharp2PIE"></span><span id="_CPPv2N5sharp2PIE"></span><span id="sharp::PI__float"></span><span class="target" id="namespacesharp_1a36f9a81a6f5f2f96e2e34b5607b8a3da"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PI</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">3.14159265f</span></span><a class="headerlink" href="#_CPPv4N5sharp2PIE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp2PIE"></span><span id="_CPPv2N5sharp2PIE"></span><span id="sharp::PI__float"></span><span class="target" id="namespacesharp_1a36f9a81a6f5f2f96e2e34b5607b8a3da"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PI</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">3.14159265f</span></span><a class="headerlink" href="#_CPPv4N5sharp2PIE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp5RDGASE">
-<span id="_CPPv3N5sharp5RDGASE"></span><span id="_CPPv2N5sharp5RDGASE"></span><span id="sharp::RDGAS__float"></span><span class="target" id="namespacesharp_1a95fe38384587dd0ca0f08eafa30c0597"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RDGAS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp4RGASE" title="sharp::RGAS"><span class="n"><span class="pre">RGAS</span></span></a><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp4MDRYE" title="sharp::MDRY"><span class="n"><span class="pre">MDRY</span></span></a><a class="headerlink" href="#_CPPv4N5sharp5RDGASE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp5RDGASE"></span><span id="_CPPv2N5sharp5RDGASE"></span><span id="sharp::RDGAS__float"></span><span class="target" id="namespacesharp_1a95fe38384587dd0ca0f08eafa30c0597"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RDGAS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp4RGASE" title="sharp::RGAS"><span class="n"><span class="pre">RGAS</span></span></a><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp4MDRYE" title="sharp::MDRY"><span class="n"><span class="pre">MDRY</span></span></a><a class="headerlink" href="#_CPPv4N5sharp5RDGASE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp5RVGASE">
-<span id="_CPPv3N5sharp5RVGASE"></span><span id="_CPPv2N5sharp5RVGASE"></span><span id="sharp::RVGAS__float"></span><span class="target" id="namespacesharp_1a230af88716879ad2bc5cbafef0570e8f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RVGAS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp4RGASE" title="sharp::RGAS"><span class="n"><span class="pre">RGAS</span></span></a><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp6MWATERE" title="sharp::MWATER"><span class="n"><span class="pre">MWATER</span></span></a><a class="headerlink" href="#_CPPv4N5sharp5RVGASE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp5RVGASE"></span><span id="_CPPv2N5sharp5RVGASE"></span><span id="sharp::RVGAS__float"></span><span class="target" id="namespacesharp_1a230af88716879ad2bc5cbafef0570e8f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RVGAS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp4RGASE" title="sharp::RGAS"><span class="n"><span class="pre">RGAS</span></span></a><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp6MWATERE" title="sharp::MWATER"><span class="n"><span class="pre">MWATER</span></span></a><a class="headerlink" href="#_CPPv4N5sharp5RVGASE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp7EPSILONE">
-<span id="_CPPv3N5sharp7EPSILONE"></span><span id="_CPPv2N5sharp7EPSILONE"></span><span id="sharp::EPSILON__float"></span><span class="target" id="namespacesharp_1a83dfda911c84f0dda42368d0c1b63ef1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EPSILON</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp5RDGASE" title="sharp::RDGAS"><span class="n"><span class="pre">RDGAS</span></span></a><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp5RVGASE" title="sharp::RVGAS"><span class="n"><span class="pre">RVGAS</span></span></a><a class="headerlink" href="#_CPPv4N5sharp7EPSILONE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp7EPSILONE"></span><span id="_CPPv2N5sharp7EPSILONE"></span><span id="sharp::EPSILON__float"></span><span class="target" id="namespacesharp_1a83dfda911c84f0dda42368d0c1b63ef1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EPSILON</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp5RDGASE" title="sharp::RDGAS"><span class="n"><span class="pre">RDGAS</span></span></a><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp5RVGASE" title="sharp::RVGAS"><span class="n"><span class="pre">RVGAS</span></span></a><a class="headerlink" href="#_CPPv4N5sharp7EPSILONE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp9CP_DRYAIRE">
-<span id="_CPPv3N5sharp9CP_DRYAIRE"></span><span id="_CPPv2N5sharp9CP_DRYAIRE"></span><span id="sharp::CP_DRYAIR__float"></span><span class="target" id="namespacesharp_1afda77fe7a6cefaab1ecb404167ed90b4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CP_DRYAIR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">DRYAIR_SPEC_HEAT_RATIO</span> <span class="pre">*</span> <span class="pre">RDGAS</span> <span class="pre">/</span> <span class="pre">(DRYAIR_SPEC_HEAT_RATIO</span> <span class="pre">-</span> <span class="pre">1.0f)</span></code><a class="headerlink" href="#_CPPv4N5sharp9CP_DRYAIRE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp9CP_DRYAIRE"></span><span id="_CPPv2N5sharp9CP_DRYAIRE"></span><span id="sharp::CP_DRYAIR__float"></span><span class="target" id="namespacesharp_1afda77fe7a6cefaab1ecb404167ed90b4"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CP_DRYAIR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><code class="docutils literal notranslate"><span class="pre">=</span> <span class="pre">DRYAIR_SPEC_HEAT_RATIO</span> <span class="pre">*</span> <span class="pre">RDGAS</span> <span class="pre">/</span> <span class="pre">(DRYAIR_SPEC_HEAT_RATIO</span> <span class="pre">-</span> <span class="pre">1.0f)</span></code><a class="headerlink" href="#_CPPv4N5sharp9CP_DRYAIRE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp8CP_VAPORE">
-<span id="_CPPv3N5sharp8CP_VAPORE"></span><span id="_CPPv2N5sharp8CP_VAPORE"></span><span id="sharp::CP_VAPOR__float"></span><span class="target" id="namespacesharp_1ac7b120df294d5b7f6fb85dbed074d52d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CP_VAPOR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1875.0f</span></span><a class="headerlink" href="#_CPPv4N5sharp8CP_VAPORE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp8CP_VAPORE"></span><span id="_CPPv2N5sharp8CP_VAPORE"></span><span id="sharp::CP_VAPOR__float"></span><span class="target" id="namespacesharp_1ac7b120df294d5b7f6fb85dbed074d52d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CP_VAPOR</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1875.0f</span></span><a class="headerlink" href="#_CPPv4N5sharp8CP_VAPORE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp9CP_LIQUIDE">
-<span id="_CPPv3N5sharp9CP_LIQUIDE"></span><span id="_CPPv2N5sharp9CP_LIQUIDE"></span><span id="sharp::CP_LIQUID__float"></span><span class="target" id="namespacesharp_1a2e3e641b9148566d1f4fc1bd06494ec2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CP_LIQUID</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4190.0f</span></span><a class="headerlink" href="#_CPPv4N5sharp9CP_LIQUIDE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp9CP_LIQUIDE"></span><span id="_CPPv2N5sharp9CP_LIQUIDE"></span><span id="sharp::CP_LIQUID__float"></span><span class="target" id="namespacesharp_1a2e3e641b9148566d1f4fc1bd06494ec2"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CP_LIQUID</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4190.0f</span></span><a class="headerlink" href="#_CPPv4N5sharp9CP_LIQUIDE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp6CP_ICEE">
-<span id="_CPPv3N5sharp6CP_ICEE"></span><span id="_CPPv2N5sharp6CP_ICEE"></span><span id="sharp::CP_ICE__float"></span><span class="target" id="namespacesharp_1a5e0154c5bf801be652400fa05934af6c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CP_ICE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2118.636f</span></span><a class="headerlink" href="#_CPPv4N5sharp6CP_ICEE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp6CP_ICEE"></span><span id="_CPPv2N5sharp6CP_ICEE"></span><span id="sharp::CP_ICE__float"></span><span class="target" id="namespacesharp_1a5e0154c5bf801be652400fa05934af6c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CP_ICE</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2118.636f</span></span><a class="headerlink" href="#_CPPv4N5sharp6CP_ICEE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp6EXP_LVE">
-<span id="_CPPv3N5sharp6EXP_LVE"></span><span id="_CPPv2N5sharp6EXP_LVE"></span><span id="sharp::EXP_LV__float"></span><span class="target" id="namespacesharp_1addc30683489f1fc452c739aeba758985"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXP_LV</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2.501e6f</span></span><a class="headerlink" href="#_CPPv4N5sharp6EXP_LVE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp6EXP_LVE"></span><span id="_CPPv2N5sharp6EXP_LVE"></span><span id="sharp::EXP_LV__float"></span><span class="target" id="namespacesharp_1addc30683489f1fc452c739aeba758985"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXP_LV</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2.501e6f</span></span><a class="headerlink" href="#_CPPv4N5sharp6EXP_LVE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp6EXP_LSE">
-<span id="_CPPv3N5sharp6EXP_LSE"></span><span id="_CPPv2N5sharp6EXP_LSE"></span><span id="sharp::EXP_LS__float"></span><span class="target" id="namespacesharp_1adf7769c64b4673b190d07f0b5d294269"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXP_LS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2.836017e6f</span></span><a class="headerlink" href="#_CPPv4N5sharp6EXP_LSE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp6EXP_LSE"></span><span id="_CPPv2N5sharp6EXP_LSE"></span><span id="sharp::EXP_LS__float"></span><span class="target" id="namespacesharp_1adf7769c64b4673b190d07f0b5d294269"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EXP_LS</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">2.836017e6f</span></span><a class="headerlink" href="#_CPPv4N5sharp6EXP_LSE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp3LV1E">
-<span id="_CPPv3N5sharp3LV1E"></span><span id="_CPPv2N5sharp3LV1E"></span><span id="sharp::LV1__float"></span><span class="target" id="namespacesharp_1a44c890aa9dcb1317ac2e1ad0eeb5ea9c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LV1</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp6EXP_LVE" title="sharp::EXP_LV"><span class="n"><span class="pre">EXP_LV</span></span></a><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4N5sharp9CP_LIQUIDE" title="sharp::CP_LIQUID"><span class="n"><span class="pre">CP_LIQUID</span></span></a><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp8CP_VAPORE" title="sharp::CP_VAPOR"><span class="n"><span class="pre">CP_VAPOR</span></span></a><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">*</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp7ZEROCNKE" title="sharp::ZEROCNK"><span class="n"><span class="pre">ZEROCNK</span></span></a><a class="headerlink" href="#_CPPv4N5sharp3LV1E" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp3LV1E"></span><span id="_CPPv2N5sharp3LV1E"></span><span id="sharp::LV1__float"></span><span class="target" id="namespacesharp_1a44c890aa9dcb1317ac2e1ad0eeb5ea9c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LV1</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp6EXP_LVE" title="sharp::EXP_LV"><span class="n"><span class="pre">EXP_LV</span></span></a><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4N5sharp9CP_LIQUIDE" title="sharp::CP_LIQUID"><span class="n"><span class="pre">CP_LIQUID</span></span></a><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp8CP_VAPORE" title="sharp::CP_VAPOR"><span class="n"><span class="pre">CP_VAPOR</span></span></a><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">*</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp7ZEROCNKE" title="sharp::ZEROCNK"><span class="n"><span class="pre">ZEROCNK</span></span></a><a class="headerlink" href="#_CPPv4N5sharp3LV1E" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp3LV2E">
-<span id="_CPPv3N5sharp3LV2E"></span><span id="_CPPv2N5sharp3LV2E"></span><span id="sharp::LV2__float"></span><span class="target" id="namespacesharp_1aa60aa56bd4c3247725da749cfa87ade6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LV2</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp9CP_LIQUIDE" title="sharp::CP_LIQUID"><span class="n"><span class="pre">CP_LIQUID</span></span></a><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp8CP_VAPORE" title="sharp::CP_VAPOR"><span class="n"><span class="pre">CP_VAPOR</span></span></a><a class="headerlink" href="#_CPPv4N5sharp3LV2E" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp3LV2E"></span><span id="_CPPv2N5sharp3LV2E"></span><span id="sharp::LV2__float"></span><span class="target" id="namespacesharp_1aa60aa56bd4c3247725da749cfa87ade6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LV2</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp9CP_LIQUIDE" title="sharp::CP_LIQUID"><span class="n"><span class="pre">CP_LIQUID</span></span></a><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp8CP_VAPORE" title="sharp::CP_VAPOR"><span class="n"><span class="pre">CP_VAPOR</span></span></a><a class="headerlink" href="#_CPPv4N5sharp3LV2E" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp3LS1E">
-<span id="_CPPv3N5sharp3LS1E"></span><span id="_CPPv2N5sharp3LS1E"></span><span id="sharp::LS1__float"></span><span class="target" id="namespacesharp_1a6adf296a3a61023be86b275deeb25924"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LS1</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp6EXP_LSE" title="sharp::EXP_LS"><span class="n"><span class="pre">EXP_LS</span></span></a><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4N5sharp6CP_ICEE" title="sharp::CP_ICE"><span class="n"><span class="pre">CP_ICE</span></span></a><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp8CP_VAPORE" title="sharp::CP_VAPOR"><span class="n"><span class="pre">CP_VAPOR</span></span></a><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">*</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp7ZEROCNKE" title="sharp::ZEROCNK"><span class="n"><span class="pre">ZEROCNK</span></span></a><a class="headerlink" href="#_CPPv4N5sharp3LS1E" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp3LS1E"></span><span id="_CPPv2N5sharp3LS1E"></span><span id="sharp::LS1__float"></span><span class="target" id="namespacesharp_1a6adf296a3a61023be86b275deeb25924"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LS1</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp6EXP_LSE" title="sharp::EXP_LS"><span class="n"><span class="pre">EXP_LS</span></span></a><span class="w"> </span><span class="o"><span class="pre">+</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="#_CPPv4N5sharp6CP_ICEE" title="sharp::CP_ICE"><span class="n"><span class="pre">CP_ICE</span></span></a><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp8CP_VAPORE" title="sharp::CP_VAPOR"><span class="n"><span class="pre">CP_VAPOR</span></span></a><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="o"><span class="pre">*</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp7ZEROCNKE" title="sharp::ZEROCNK"><span class="n"><span class="pre">ZEROCNK</span></span></a><a class="headerlink" href="#_CPPv4N5sharp3LS1E" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp3LS2E">
-<span id="_CPPv3N5sharp3LS2E"></span><span id="_CPPv2N5sharp3LS2E"></span><span id="sharp::LS2__float"></span><span class="target" id="namespacesharp_1a2fd1765db902cdc4872bc01af9b619e5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LS2</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp6CP_ICEE" title="sharp::CP_ICE"><span class="n"><span class="pre">CP_ICE</span></span></a><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp8CP_VAPORE" title="sharp::CP_VAPOR"><span class="n"><span class="pre">CP_VAPOR</span></span></a><a class="headerlink" href="#_CPPv4N5sharp3LS2E" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp3LS2E"></span><span id="_CPPv2N5sharp3LS2E"></span><span id="sharp::LS2__float"></span><span class="target" id="namespacesharp_1a2fd1765db902cdc4872bc01af9b619e5"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LS2</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp6CP_ICEE" title="sharp::CP_ICE"><span class="n"><span class="pre">CP_ICE</span></span></a><span class="w"> </span><span class="o"><span class="pre">-</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp8CP_VAPORE" title="sharp::CP_VAPOR"><span class="n"><span class="pre">CP_VAPOR</span></span></a><a class="headerlink" href="#_CPPv4N5sharp3LS2E" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp4ROCPE">
-<span id="_CPPv3N5sharp4ROCPE"></span><span id="_CPPv2N5sharp4ROCPE"></span><span id="sharp::ROCP__float"></span><span class="target" id="namespacesharp_1a21aa81ae76506b5845830b588cbfb993"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ROCP</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp5RDGASE" title="sharp::RDGAS"><span class="n"><span class="pre">RDGAS</span></span></a><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp9CP_DRYAIRE" title="sharp::CP_DRYAIR"><span class="n"><span class="pre">CP_DRYAIR</span></span></a><a class="headerlink" href="#_CPPv4N5sharp4ROCPE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp4ROCPE"></span><span id="_CPPv2N5sharp4ROCPE"></span><span id="sharp::ROCP__float"></span><span class="target" id="namespacesharp_1a21aa81ae76506b5845830b588cbfb993"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ROCP</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp5RDGASE" title="sharp::RDGAS"><span class="n"><span class="pre">RDGAS</span></span></a><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp9CP_DRYAIRE" title="sharp::CP_DRYAIR"><span class="n"><span class="pre">CP_DRYAIR</span></span></a><a class="headerlink" href="#_CPPv4N5sharp4ROCPE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp7GAMMA_DE">
-<span id="_CPPv3N5sharp7GAMMA_DE"></span><span id="_CPPv2N5sharp7GAMMA_DE"></span><span id="sharp::GAMMA_D__float"></span><span class="target" id="namespacesharp_1a35757d2935b734ce153186ef51c2692c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GAMMA_D</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp7GRAVITYE" title="sharp::GRAVITY"><span class="n"><span class="pre">GRAVITY</span></span></a><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp9CP_DRYAIRE" title="sharp::CP_DRYAIR"><span class="n"><span class="pre">CP_DRYAIR</span></span></a><a class="headerlink" href="#_CPPv4N5sharp7GAMMA_DE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp7GAMMA_DE"></span><span id="_CPPv2N5sharp7GAMMA_DE"></span><span id="sharp::GAMMA_D__float"></span><span class="target" id="namespacesharp_1a35757d2935b734ce153186ef51c2692c"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GAMMA_D</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp7GRAVITYE" title="sharp::GRAVITY"><span class="n"><span class="pre">GRAVITY</span></span></a><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5sharp9CP_DRYAIRE" title="sharp::CP_DRYAIR"><span class="n"><span class="pre">CP_DRYAIR</span></span></a><a class="headerlink" href="#_CPPv4N5sharp7GAMMA_DE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp7PRANDTLE">
-<span id="_CPPv3N5sharp7PRANDTLE"></span><span id="_CPPv2N5sharp7PRANDTLE"></span><span id="sharp::PRANDTL__float"></span><span class="target" id="namespacesharp_1a9390aa610ba3e66b2e8f84c4261c49af"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PRANDTL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.f</span></span><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><span class="m"><span class="pre">3.f</span></span><a class="headerlink" href="#_CPPv4N5sharp7PRANDTLE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp7PRANDTLE"></span><span id="_CPPv2N5sharp7PRANDTLE"></span><span id="sharp::PRANDTL__float"></span><span class="target" id="namespacesharp_1a9390aa610ba3e66b2e8f84c4261c49af"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PRANDTL</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.f</span></span><span class="w"> </span><span class="o"><span class="pre">/</span></span><span class="w"> </span><span class="m"><span class="pre">3.f</span></span><a class="headerlink" href="#_CPPv4N5sharp7PRANDTLE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp4VKSQE">
-<span id="_CPPv3N5sharp4VKSQE"></span><span id="_CPPv2N5sharp4VKSQE"></span><span id="sharp::VKSQ__float"></span><span class="target" id="namespacesharp_1aee70f2aa7bfda20363d82e6eef5b1a21"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VKSQ</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.18f</span></span><a class="headerlink" href="#_CPPv4N5sharp4VKSQE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp4VKSQE"></span><span id="_CPPv2N5sharp4VKSQE"></span><span id="sharp::VKSQ__float"></span><span class="target" id="namespacesharp_1aee70f2aa7bfda20363d82e6eef5b1a21"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VKSQ</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.18f</span></span><a class="headerlink" href="#_CPPv4N5sharp4VKSQE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp11VAPPRES_REFE">
-<span id="_CPPv3N5sharp11VAPPRES_REFE"></span><span id="_CPPv2N5sharp11VAPPRES_REFE"></span><span id="sharp::VAPPRES_REF__float"></span><span class="target" id="namespacesharp_1a2a834f494fab1d9ccc18699ad11a51bc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VAPPRES_REF</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">611.65f</span></span><a class="headerlink" href="#_CPPv4N5sharp11VAPPRES_REFE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp11VAPPRES_REFE"></span><span id="_CPPv2N5sharp11VAPPRES_REFE"></span><span id="sharp::VAPPRES_REF__float"></span><span class="target" id="namespacesharp_1a2a834f494fab1d9ccc18699ad11a51bc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">VAPPRES_REF</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">611.65f</span></span><a class="headerlink" href="#_CPPv4N5sharp11VAPPRES_REFE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5sharp8RHO_LWATE">
-<span id="_CPPv3N5sharp8RHO_LWATE"></span><span id="_CPPv2N5sharp8RHO_LWATE"></span><span id="sharp::RHO_LWAT__float"></span><span class="target" id="namespacesharp_1a4c5854beb8b7984ccfd1c7b60c60c783"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RHO_LWAT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">999.97495</span></span><a class="headerlink" href="#_CPPv4N5sharp8RHO_LWATE" title="Link to this definition">#</a><br /></dt>
+<span id="_CPPv3N5sharp8RHO_LWATE"></span><span id="_CPPv2N5sharp8RHO_LWATE"></span><span id="sharp::RHO_LWAT__float"></span><span class="target" id="namespacesharp_1a4c5854beb8b7984ccfd1c7b60c60c783"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RHO_LWAT</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">999.97495</span></span><a class="headerlink" href="#_CPPv4N5sharp8RHO_LWATE" title="Link to this definition">#</a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -654,11 +667,11 @@
       </div>
     </a>
     <a class="right-next"
-       href="interp.html"
+       href="qc.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">interp</p>
+        <p class="prev-next-title">qc</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -731,8 +744,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=7f76b32a3354e82990f2"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=7f76b32a3354e82990f2"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -753,7 +766,6 @@
 
   <p class="sphinx-version">
     Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
-    <br/>
   </p>
 </div>
       
@@ -766,7 +778,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.17.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0.
 </p></div>
       
     </div>
