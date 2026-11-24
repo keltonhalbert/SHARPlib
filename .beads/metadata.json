@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "SHARPlib",
+  "project_id": "b06f497d-cd28-4b6c-af10-336fe6f62250"
+}

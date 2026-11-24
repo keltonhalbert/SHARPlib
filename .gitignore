@@ -63,3 +63,12 @@ __pycache__/
 .pyd
 .pytest_cache/
 src/nanobind/_version.py
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+.beads/proxieddb/
+
+# Local copies of third-party reference papers (cite by DOI instead)
+papers/
